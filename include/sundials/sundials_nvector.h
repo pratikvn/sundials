@@ -184,7 +184,7 @@ struct _generic_N_Vector_Ops
   void (*nvprintfile)(N_Vector, FILE*);
 
 #ifdef __cplusplus
-  _generic_N_Vector_Ops() = default;
+  // _generic_N_Vector_Ops() = default;
 #endif
 };
 
@@ -197,7 +197,7 @@ struct _generic_N_Vector
   N_Vector_Ops ops;
   SUNContext sunctx;
 #ifdef __cplusplus
-  _generic_N_Vector() = default;
+  // _generic_N_Vector() = default;
 #endif
 };
 

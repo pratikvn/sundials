@@ -94,7 +94,7 @@ struct _generic_SUNMatrix_Ops
   int (*matvec)(SUNMatrix, N_Vector, N_Vector);
   int (*space)(SUNMatrix, long int*, long int*);
 #ifdef __cplusplus
-  _generic_SUNMatrix_Ops() = default;
+  // _generic_SUNMatrix_Ops() = default;
 #endif
 };
 
@@ -107,7 +107,7 @@ struct _generic_SUNMatrix
   SUNMatrix_Ops ops;
   SUNContext sunctx;
 #ifdef __cplusplus
-  _generic_SUNMatrix() = default;
+  // _generic_SUNMatrix() = default;
 #endif
 };
 

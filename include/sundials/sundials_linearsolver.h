@@ -125,7 +125,7 @@ struct _generic_SUNLinearSolver_Ops
   N_Vector (*resid)(SUNLinearSolver);
   int (*free)(SUNLinearSolver);
 #ifdef __cplusplus
-  _generic_SUNLinearSolver_Ops() = default;
+  // _generic_SUNLinearSolver_Ops() = default;
 #endif
 };
 
@@ -138,7 +138,7 @@ struct _generic_SUNLinearSolver
   SUNLinearSolver_Ops ops;
   SUNContext sunctx;
 #ifdef __cplusplus
-  _generic_SUNLinearSolver() = default;
+  // _generic_SUNLinearSolver() = default;
 #endif
 };
 

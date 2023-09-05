@@ -109,7 +109,7 @@ struct _generic_SUNNonlinearSolver_Ops
   int (*getcuriter)(SUNNonlinearSolver, int*);
   int (*getnumconvfails)(SUNNonlinearSolver, long int*);
 #ifdef __cplusplus
-  _generic_SUNNonlinearSolver_Ops() = default;
+  // _generic_SUNNonlinearSolver_Ops() = default;
 #endif
 };
 
@@ -122,7 +122,7 @@ struct _generic_SUNNonlinearSolver
   SUNNonlinearSolver_Ops ops;
   SUNContext sunctx;
 #ifdef __cplusplus
-  _generic_SUNNonlinearSolver() = default;
+  // _generic_SUNNonlinearSolver() = default;
 #endif
 };
 
