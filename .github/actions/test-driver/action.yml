@@ -22,6 +22,10 @@ runs:
           eval `/opt/spack/bin/spack env activate --sh /opt/spack-environment`
           /opt/spack/bin/spack find -v
       shell: bash
+    - id: spack-arch
+      run: |
+         eval `/opt/spack/bin/spack env activate --sh /opt/spack-environment`
+         /opt/spack/bin/spack arch
     - id: run-test-driver
       run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
