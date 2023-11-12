@@ -191,7 +191,7 @@ static int check_retval(void *returnvalue, char *funcname, int opt);
  *--------------------------------------------------------------------
  */
 
-int main()
+int main(void)
 {
   void *mem;
   UserData webdata;

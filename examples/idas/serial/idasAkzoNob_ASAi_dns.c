@@ -79,7 +79,7 @@ static void PrintOutput(realtype tfinal, N_Vector yB, N_Vector ypB);
 static int check_retval(void *returnvalue, const char *funcname, int opt);
 
 /* Main program */
-int main()
+int main(void)
 {
   UserData data;
   void *mem;

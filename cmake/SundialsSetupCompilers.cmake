@@ -136,7 +136,7 @@ endif()
 check_c_source_compiles("
   #include <stdio.h>
   #include <stdarg.h>
-  int main() {
+  int main(void) {
     int size = snprintf(NULL, 0, \"%s\", \"snprintf works\");
     va_list args;
     va_list tmp;
@@ -157,7 +157,7 @@ endif()
 set(CMAKE_REQUIRED_LIBRARIES ${SUNDIALS_MATH_LIBRARY})
 check_c_source_compiles("
   #include <math.h>
-  int main() {
+  int main(void) {
     float a, a_result;
     long double b, b_result;
 
@@ -186,7 +186,7 @@ check_c_source_compiles("
 
 check_c_source_compiles("
   #include <math.h>
-  int main() {
+  int main(void) {
     double a = 0.0;
     int result = isinf(a);
     result = isnan(a);
@@ -202,7 +202,7 @@ check_c_source_compiles("
   static inline double add1(double a) {
     return a + 1.0;
   }
-  int main() {
+  int main(void) {
     double a = 0.0;
     return add1(a) < a;
   }
@@ -235,7 +235,7 @@ endif()
 check_c_source_compiles("
   #define msg \"test\"
   ${COMPILER_DEPRECATED_MSG_ATTRIBUTE} int somefunc() { return 0; }
-  int main() { return somefunc();}" COMPILER_HAS_DEPRECATED_MSG
+  int main(void) { return somefunc();}" COMPILER_HAS_DEPRECATED_MSG
 )
 
 # ===============================================================

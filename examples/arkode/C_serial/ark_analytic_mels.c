@@ -63,7 +63,7 @@ static int check_retval(void *returnvalue, const char *funcname, int opt);
 static int check_ans(N_Vector y, realtype t, realtype rtol, realtype atol);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   realtype T0 = RCONST(0.0);         /* initial time */

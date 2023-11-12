@@ -163,7 +163,7 @@ static int PSolve(realtype tn, N_Vector u, N_Vector fu,
  *-------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   realtype abstol, reltol, t, tout;

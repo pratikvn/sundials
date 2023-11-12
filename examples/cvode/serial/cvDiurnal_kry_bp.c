@@ -147,7 +147,7 @@ static int f(realtype t, N_Vector u, N_Vector udot, void *user_data);
  *-------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   realtype abstol, reltol, t, tout;

@@ -236,7 +236,7 @@ static SUNContext sunctx;
 
 /* Implementation */
 
-int main()
+int main(void)
 {
   realtype abstol=ATOL, reltol=RTOL, t, tout;
   N_Vector c;

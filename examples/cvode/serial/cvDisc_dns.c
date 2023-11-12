@@ -48,7 +48,7 @@ static int f(realtype t, N_Vector y, N_Vector ydot, void *f_data);
 /* Function for checking return values */
 static int check_retval(void *flagvalue, const char *funcname, int opt);
 
-int main()
+int main(void)
 {
   void *cvode_mem;
   SUNMatrix A;

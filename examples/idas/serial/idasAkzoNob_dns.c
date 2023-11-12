@@ -69,7 +69,7 @@ static int PrintFinalStats(void *mem);
 static int check_retval(void *returnvalue, const char *funcname, int opt);
 
 /* Main program */
-int main()
+int main(void)
 {
   UserData data;
   void *mem;

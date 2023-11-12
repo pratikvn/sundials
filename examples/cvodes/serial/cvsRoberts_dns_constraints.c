@@ -121,7 +121,7 @@ static int check_ans(N_Vector y, realtype t, realtype rtol, N_Vector atol);
  *-------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   realtype t, tout;

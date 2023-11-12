@@ -64,7 +64,7 @@ static int check_flag(void *flagvalue, const char *funcname, int opt);
 static int check_ans(N_Vector y, realtype t, realtype rtol, realtype atol);
 
 /* Main Program */
-int main()
+int main(void)
 {
   realtype ONE = RCONST(1.0);
 

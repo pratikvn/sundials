@@ -103,7 +103,7 @@ static int check_flag(void *flagvalue, const char *funcname, int opt);
 
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   realtype T0 = RCONST(0.0);    /* initial time */

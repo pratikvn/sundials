@@ -117,7 +117,7 @@ static int SetDefaults(UserOpt *uopt);
 static int ReadInputs(int *argc, char ***argv, UserOpt uopt);
 
 /* Print command line options */
-static void InputHelp();
+static void InputHelp(void);
 
 /* Check function return values */
 static int check_retval(void *returnvalue, const char *funcname, int opt);
@@ -463,7 +463,7 @@ static int ReadInputs(int *argc, char ***argv, UserOpt uopt)
 /* -----------------------------------------------------------------------------
  * Print command line options
  * ---------------------------------------------------------------------------*/
-static void InputHelp()
+static void InputHelp(void)
 {
   printf("\n");
   printf(" Command line options:\n");

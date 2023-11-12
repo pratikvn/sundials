@@ -66,7 +66,7 @@ static int check_retval(void *retvalvalue, const char *funcname, int opt);
  *--------------------------------------------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   realtype fnormtol, scsteptol;

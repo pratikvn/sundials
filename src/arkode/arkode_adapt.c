@@ -32,7 +32,7 @@
   ARKodeHAdaptMem structure.  This returns a non-NULL structure
   if no errors occurred, or a NULL value otherwise.
   ---------------------------------------------------------------*/
-ARKodeHAdaptMem arkAdaptInit()
+ARKodeHAdaptMem arkAdaptInit(void)
 {
   ARKodeHAdaptMem hadapt_mem;
 

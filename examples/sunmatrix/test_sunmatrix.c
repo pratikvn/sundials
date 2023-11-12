@@ -34,7 +34,7 @@
 #endif
 
 /* private functions */
-static double get_time();
+static double get_time(void);
 
 int print_time = 0;
 int print_all_ranks = 0;
@@ -601,7 +601,7 @@ void SetPrintAllRanks(int onoff)
 /* ----------------------------------------------------------------------
  * Timer
  * --------------------------------------------------------------------*/
-static double get_time()
+static double get_time(void)
 {
 #if defined( SUNDIALS_HAVE_POSIX_TIMERS) && defined(_POSIX_TIMERS)
   struct timespec spec;
