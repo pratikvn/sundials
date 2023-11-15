@@ -361,6 +361,12 @@ All new code added to SUNDIALS should be linted with  `clang-tidy
 ``.clang-format`` files in the root of the project define our configurations
 for the tools respectively.
 
+.. warning::
+
+   We use v17 of clang-tidy and clang-format. Any other version may produce different
+   results or not work at all. 
+   
+
 It may be necessary to override clang-tidy at times. This can be done with the
 ``NOLINT`` magic comments e.g.,
 
