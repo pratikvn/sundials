@@ -30,8 +30,8 @@ jobs:
           spack mirror add --oci-username ${{ github.actor }} --oci-password ${{ secrets.OCI_TOKEN }} sundials_spack_cache oci://ghcr.io/LLNL/sundials_spack_cache
           spack buildcache keys --install --trust 
       
-      - name: Spack install llvm@17.0.4
-        run: spack install llvm@17.0.4 && spack load llvm
+      - name: Install llvm@17.0.4 dependencies
+        run: spack install --only dependencies llvm@17.0.4
       
       - name: Push to buildcache
         if: ${{ !cancelled() }}
