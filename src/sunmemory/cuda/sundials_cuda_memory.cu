@@ -189,7 +189,7 @@ int SUNMemoryHelper_Alloc_Cuda(SUNMemoryHelper helper, SUNMemory* memptr,
 int SUNMemoryHelper_Dealloc_Cuda(SUNMemoryHelper helper, SUNMemory mem,
                                  void* queue)
 {
-  if (mem == NULL) return (0);
+  if (mem == NULL) { return (0); }
 
   if (mem->ptr != NULL && mem->own)
   {
@@ -266,7 +266,7 @@ int SUNMemoryHelper_Copy_Cuda(SUNMemoryHelper helper, SUNMemory dst,
     {
       cuerr = cudaMemcpy(dst->ptr, src->ptr, memory_size, cudaMemcpyHostToDevice);
     }
-    if (!SUNDIALS_CUDA_VERIFY(cuerr)) retval = -1;
+    if (!SUNDIALS_CUDA_VERIFY(cuerr)) { retval = -1; }
     break;
   case SUNMEMTYPE_UVM:
   case SUNMEMTYPE_DEVICE:
@@ -279,7 +279,7 @@ int SUNMemoryHelper_Copy_Cuda(SUNMemoryHelper helper, SUNMemory dst,
       cuerr = cudaMemcpy(dst->ptr, src->ptr, memory_size,
                          cudaMemcpyDeviceToDevice);
     }
-    if (!SUNDIALS_CUDA_VERIFY(cuerr)) retval = -1;
+    if (!SUNDIALS_CUDA_VERIFY(cuerr)) { retval = -1; }
     break;
   default:
     SUNDIALS_DEBUG_PRINT(
@@ -312,7 +312,7 @@ int SUNMemoryHelper_CopyAsync_Cuda(SUNMemoryHelper helper, SUNMemory dst,
       cuerr = cudaMemcpyAsync(dst->ptr, src->ptr, memory_size,
                               cudaMemcpyHostToDevice, stream);
     }
-    if (!SUNDIALS_CUDA_VERIFY(cuerr)) retval = -1;
+    if (!SUNDIALS_CUDA_VERIFY(cuerr)) { retval = -1; }
     break;
   case SUNMEMTYPE_UVM:
   case SUNMEMTYPE_DEVICE:
@@ -326,7 +326,7 @@ int SUNMemoryHelper_CopyAsync_Cuda(SUNMemoryHelper helper, SUNMemory dst,
       cuerr = cudaMemcpyAsync(dst->ptr, src->ptr, memory_size,
                               cudaMemcpyDeviceToDevice, stream);
     }
-    if (!SUNDIALS_CUDA_VERIFY(cuerr)) retval = -1;
+    if (!SUNDIALS_CUDA_VERIFY(cuerr)) { retval = -1; }
     break;
   default:
     SUNDIALS_DEBUG_PRINT(

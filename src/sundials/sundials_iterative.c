@@ -19,9 +19,9 @@
  * -----------------------------------------------------------------*/
 
 #include <stdio.h>
+#include <sundials/impl/sundials_errors_impl.h>
 #include <sundials/sundials_core.h>
 
-#include <sundials/impl/sundials_errors_impl.h>
 #include "sundials_iterative_impl.h"
 
 #define FACTOR SUN_RCONST(1000.0)
@@ -46,8 +46,9 @@ SUNErrCode SUNModifiedGS(N_Vector* v, sunrealtype** h, int k, int p,
   int i, k_minus_1, i0;
   sunrealtype new_norm_2, new_product, vk_norm, temp;
 
-  vk_norm = N_VDotProd(v[k], v[k]); SUNCheckLastErr();
-  vk_norm = SUNRsqrt(vk_norm);
+  vk_norm = N_VDotProd(v[k], v[k]);
+  SUNCheckLastErr();
+  vk_norm   = SUNRsqrt(vk_norm);
   k_minus_1 = k - 1;
   i0        = SUNMAX(k - p, 0);
 
@@ -55,13 +56,16 @@ SUNErrCode SUNModifiedGS(N_Vector* v, sunrealtype** h, int k, int p,
 
   for (i = i0; i < k; i++)
   {
-    h[i][k_minus_1] = N_VDotProd(v[i], v[k]); SUNCheckLastErr();
-    N_VLinearSum(ONE, v[k], -h[i][k_minus_1], v[i], v[k]); SUNCheckLastErr();
+    h[i][k_minus_1] = N_VDotProd(v[i], v[k]);
+    SUNCheckLastErr();
+    N_VLinearSum(ONE, v[k], -h[i][k_minus_1], v[i], v[k]);
+    SUNCheckLastErr();
   }
 
   /* Compute the norm of the new vector at v[k] */
 
-  *new_vk_norm = N_VDotProd(v[k], v[k]); SUNCheckLastErr();
+  *new_vk_norm = N_VDotProd(v[k], v[k]);
+  SUNCheckLastErr();
   *new_vk_norm = SUNRsqrt(*new_vk_norm);
 
   /* If the norm of the new vector at v[k] is less than
@@ -71,17 +75,19 @@ SUNErrCode SUNModifiedGS(N_Vector* v, sunrealtype** h, int k, int p,
      by a very small vector length. */
 
   temp = FACTOR * vk_norm;
-  if ((temp + (*new_vk_norm)) != temp) return (0);
+  if ((temp + (*new_vk_norm)) != temp) { return (0); }
 
   new_norm_2 = ZERO;
 
   for (i = i0; i < k; i++)
   {
-    new_product = N_VDotProd(v[i], v[k]); SUNCheckLastErr();
+    new_product = N_VDotProd(v[i], v[k]);
+    SUNCheckLastErr();
     temp = FACTOR * h[i][k_minus_1];
-    if ((temp + new_product) == temp) continue;
+    if ((temp + new_product) == temp) { continue; }
     h[i][k_minus_1] += new_product;
-    N_VLinearSum(ONE, v[k], -new_product, v[i], v[k]); SUNCheckLastErr();
+    N_VLinearSum(ONE, v[k], -new_product, v[i], v[k]);
+    SUNCheckLastErr();
     new_norm_2 += SUNSQR(new_product);
   }
 
@@ -104,7 +110,8 @@ SUNErrCode SUNModifiedGS(N_Vector* v, sunrealtype** h, int k, int p,
  */
 
 SUNErrCode SUNClassicalGS(N_Vector* v, sunrealtype** h, int k, int p,
-                          sunrealtype* new_vk_norm, sunrealtype* stemp, N_Vector* vtemp)
+                          sunrealtype* new_vk_norm, sunrealtype* stemp,
+                          N_Vector* vtemp)
 {
   int i, i0, k_minus_1;
   sunrealtype vk_norm;
@@ -131,7 +138,8 @@ SUNErrCode SUNClassicalGS(N_Vector* v, sunrealtype** h, int k, int p,
 
   /* Compute the norm of the new vector at v[k] */
 
-  *new_vk_norm = SUNRsqrt(N_VDotProd(v[k], v[k])); SUNCheckLastErr();
+  *new_vk_norm = SUNRsqrt(N_VDotProd(v[k], v[k]));
+  SUNCheckLastErr();
 
   /* Reorthogonalize if necessary */
 
@@ -150,7 +158,8 @@ SUNErrCode SUNClassicalGS(N_Vector* v, sunrealtype** h, int k, int p,
 
     SUNCheckCall(N_VLinearCombination(k + 1, stemp, vtemp, v[k]));
 
-    *new_vk_norm = SUNRsqrt(N_VDotProd(v[k], v[k])); SUNCheckLastErr();
+    *new_vk_norm = SUNRsqrt(N_VDotProd(v[k], v[k]));
+    SUNCheckLastErr();
   }
 
   return (0);
@@ -164,7 +173,6 @@ SUNErrCode SUNClassicalGS(N_Vector* v, sunrealtype** h, int k, int p,
  * previous routine (called qrfact) written by Milo Dorr.
  * -----------------------------------------------------------------
  */
-
 
 int SUNQRfact(int n, sunrealtype** h, sunrealtype* q, int job)
 {
@@ -217,7 +225,7 @@ int SUNQRfact(int n, sunrealtype** h, sunrealtype* q, int job)
       }
       q[q_ptr]     = c;
       q[q_ptr + 1] = s;
-      if ((h[k][k] = c * temp1 - s * temp2) == ZERO) code = k + 1;
+      if ((h[k][k] = c * temp1 - s * temp2) == ZERO) { code = k + 1; }
     }
     break;
 
@@ -267,7 +275,7 @@ int SUNQRfact(int n, sunrealtype** h, sunrealtype* q, int job)
     q_ptr        = 2 * n_minus_1;
     q[q_ptr]     = c;
     q[q_ptr + 1] = s;
-    if ((h[n_minus_1][n_minus_1] = c * temp1 - s * temp2) == ZERO) code = n;
+    if ((h[n_minus_1][n_minus_1] = c * temp1 - s * temp2) == ZERO) { code = n; }
   }
 
   return (code);
@@ -310,7 +318,7 @@ int SUNQRsol(int n, sunrealtype** h, sunrealtype* q, sunrealtype* b)
       break;
     }
     b[k] /= h[k][k];
-    for (i = 0; i < k; i++) b[i] -= b[k] * h[i][k];
+    for (i = 0; i < k; i++) { b[i] -= b[k] * h[i][k]; }
   }
 
   return (code);
@@ -324,22 +332,27 @@ int SUNQRsol(int n, sunrealtype** h, sunrealtype* q, sunrealtype* b)
  * -----------------------------------------------------------------
  */
 
-SUNErrCode SUNQRAdd_MGS(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMax,
-                        void* QRdata)
+SUNErrCode SUNQRAdd_MGS(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
+                        int mMax, void* QRdata)
 {
   sunindextype j;
-  SUNQRData qrdata  = (SUNQRData)QRdata;
+  SUNQRData qrdata = (SUNQRData)QRdata;
   SUNFunctionBegin(Q[0]->sunctx);
 
-  N_VScale(ONE, df, qrdata->vtemp); SUNCheckLastErr();
+  N_VScale(ONE, df, qrdata->vtemp);
+  SUNCheckLastErr();
   for (j = 0; j < m; j++)
   {
-    R[m * mMax + j] = N_VDotProd(Q[j], qrdata->vtemp); SUNCheckLastErr();
-    N_VLinearSum(ONE, qrdata->vtemp, -R[m * mMax + j], Q[j], qrdata->vtemp); SUNCheckLastErr();
+    R[m * mMax + j] = N_VDotProd(Q[j], qrdata->vtemp);
+    SUNCheckLastErr();
+    N_VLinearSum(ONE, qrdata->vtemp, -R[m * mMax + j], Q[j], qrdata->vtemp);
+    SUNCheckLastErr();
   }
-  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp); SUNCheckLastErr();
+  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp);
+  SUNCheckLastErr();
   R[m * mMax + m] = SUNRsqrt(R[m * mMax + m]);
-  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]); SUNCheckLastErr();
+  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]);
+  SUNCheckLastErr();
 
   return SUN_SUCCESS;
 }
@@ -353,20 +366,21 @@ SUNErrCode SUNQRAdd_MGS(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMa
  * -----------------------------------------------------------------
  */
 
-SUNErrCode SUNQRAdd_ICWY(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMax,
-                         void* QRdata)
+SUNErrCode SUNQRAdd_ICWY(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
+                         int mMax, void* QRdata)
 {
   sunindextype j, k;
-  SUNQRData qrdata  = (SUNQRData)QRdata;
+  SUNQRData qrdata = (SUNQRData)QRdata;
   SUNFunctionBegin(Q[0]->sunctx);
 
-  N_VScale(ONE, df, qrdata->vtemp); SUNCheckLastErr();  /* stores d_fi in temp */
+  N_VScale(ONE, df, qrdata->vtemp);
+  SUNCheckLastErr(); /* stores d_fi in temp */
 
   if (m > 0)
   {
     /* T(1:k-1,k-1)^T = Q(:,1:k-1)^T * Q(:,k-1) */
-    SUNCheckCall(N_VDotProdMulti(m, Q[m - 1], Q,
-                                       qrdata->temp_array + (m - 1) * mMax));
+    SUNCheckCall(
+      N_VDotProdMulti(m, Q[m - 1], Q, qrdata->temp_array + (m - 1) * mMax));
 
     /* T(k-1,k-1) = 1.0 */
     qrdata->temp_array[(m - 1) * mMax + (m - 1)] = ONE;
@@ -387,14 +401,17 @@ SUNErrCode SUNQRAdd_ICWY(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mM
 
     /* Q(:,k-1) = df - Q_k-1 R(1:k-1,k) */
     SUNCheckCall(N_VLinearCombination(m, R + m * mMax, Q, qrdata->vtemp2));
-    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp); SUNCheckLastErr();
+    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp);
+    SUNCheckLastErr();
   }
 
   /* R(k,k) = \| df \| */
-  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp); SUNCheckLastErr();
+  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp);
+  SUNCheckLastErr();
   R[m * mMax + m] = SUNRsqrt(R[m * mMax + m]);
   /* Q(:,k) = df / \| df \| */
-  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]); SUNCheckLastErr();
+  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]);
+  SUNCheckLastErr();
 
   return SUN_SUCCESS;
 }
@@ -412,26 +429,25 @@ SUNErrCode SUNQRAdd_ICWY_SB(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
                             int mMax, void* QRdata)
 {
   sunindextype j, k;
-  SUNQRData qrdata  = (SUNQRData)QRdata;
+  SUNQRData qrdata = (SUNQRData)QRdata;
   SUNFunctionBegin(Q[0]->sunctx);
 
-  N_VScale(ONE, df, qrdata->vtemp); SUNCheckLastErr();  /* stores d_fi in temp */
+  N_VScale(ONE, df, qrdata->vtemp);
+  SUNCheckLastErr(); /* stores d_fi in temp */
 
   if (m > 0)
   {
     /* T(1:k-1,k-1)^T = Q(:,1:k-1)^T * Q(:,k-1) */
     SUNCheckCall(N_VDotProdMultiLocal(m, Q[m - 1], Q,
-                                            qrdata->temp_array + (m - 1) * mMax));
+                                      qrdata->temp_array + (m - 1) * mMax));
 
     /* R(1:k-1,k) = Q_k-1^T * df */
     /* Put R values at end of temp_array */
     SUNCheckCall(N_VDotProdMultiLocal(m, qrdata->vtemp, Q,
-                                            qrdata->temp_array +
-                                              (m - 1) * mMax + m));
+                                      qrdata->temp_array + (m - 1) * mMax + m));
 
     SUNCheckCall(N_VDotProdMultiAllReduce(m + m, qrdata->vtemp,
-                                                qrdata->temp_array +
-                                                  (m - 1) * mMax));
+                                          qrdata->temp_array + (m - 1) * mMax));
 
     /* Move the last values from temp array into R */
     for (k = 0; k < m; k++)
@@ -455,14 +471,17 @@ SUNErrCode SUNQRAdd_ICWY_SB(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
 
     /* Q(:,k-1) = df - Q_k-1 R(1:k-1,k) */
     SUNCheckCall(N_VLinearCombination(m, R + m * mMax, Q, qrdata->vtemp2));
-    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp); SUNCheckLastErr();
+    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp);
+    SUNCheckLastErr();
   }
 
   /* R(k,k) = \| df \| */
-  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp); SUNCheckLastErr();
+  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp);
+  SUNCheckLastErr();
   R[m * mMax + m] = SUNRsqrt(R[m * mMax + m]);
   /* Q(:,k) = df / \| df \| */
-  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]); SUNCheckLastErr();
+  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]);
+  SUNCheckLastErr();
 
   return SUN_SUCCESS;
 }
@@ -476,14 +495,15 @@ SUNErrCode SUNQRAdd_ICWY_SB(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
  * -----------------------------------------------------------------
  */
 
-SUNErrCode SUNQRAdd_CGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMax,
-                         void* QRdata)
+SUNErrCode SUNQRAdd_CGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
+                         int mMax, void* QRdata)
 {
   sunindextype j;
-  SUNQRData qrdata  = (SUNQRData)QRdata;
+  SUNQRData qrdata = (SUNQRData)QRdata;
   SUNFunctionBegin(Q[0]->sunctx);
 
-  N_VScale(ONE, df, qrdata->vtemp); SUNCheckLastErr();  /* temp = df */
+  N_VScale(ONE, df, qrdata->vtemp);
+  SUNCheckLastErr(); /* temp = df */
 
   if (m > 0)
   {
@@ -492,14 +512,16 @@ SUNErrCode SUNQRAdd_CGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mM
 
     /* y = df - Q_k-1 s_k */
     SUNCheckCall(N_VLinearCombination(m, R + m * mMax, Q, qrdata->vtemp2));
-    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp2); SUNCheckLastErr();
+    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp2);
+    SUNCheckLastErr();
 
     /* z_k = Q_k-1^T y */
     SUNCheckCall(N_VDotProdMulti(m, qrdata->vtemp2, Q, qrdata->temp_array));
 
     /* df = y - Q_k-1 z_k */
     SUNCheckCall(N_VLinearCombination(m, qrdata->temp_array, Q, Q[m]));
-    N_VLinearSum(ONE, qrdata->vtemp2, -ONE, Q[m], qrdata->vtemp); SUNCheckLastErr();
+    N_VLinearSum(ONE, qrdata->vtemp2, -ONE, Q[m], qrdata->vtemp);
+    SUNCheckLastErr();
 
     /* R(1:k-1,k) = s_k + z_k */
     for (j = 0; j < m; j++)
@@ -509,10 +531,12 @@ SUNErrCode SUNQRAdd_CGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mM
   }
 
   /* R(k,k) = \| df \| */
-  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp); SUNCheckLastErr();
+  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp);
+  SUNCheckLastErr();
   R[m * mMax + m] = SUNRsqrt(R[m * mMax + m]);
   /* Q(:,k) = df / R(k,k) */
-  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]); SUNCheckLastErr();
+  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]);
+  SUNCheckLastErr();
 
   return SUN_SUCCESS;
 }
@@ -530,10 +554,11 @@ SUNErrCode SUNQRAdd_DCGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
                           int mMax, void* QRdata)
 {
   sunindextype j;
-  SUNQRData qrdata  = (SUNQRData)QRdata;
+  SUNQRData qrdata = (SUNQRData)QRdata;
   SUNFunctionBegin(Q[0]->sunctx);
 
-  N_VScale(ONE, df, qrdata->vtemp); SUNCheckLastErr();  /* temp = df */
+  N_VScale(ONE, df, qrdata->vtemp);
+  SUNCheckLastErr(); /* temp = df */
 
   if (m > 0)
   {
@@ -546,9 +571,10 @@ SUNErrCode SUNQRAdd_DCGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
       SUNCheckCall(N_VDotProdMulti(m - 1, Q[m - 1], Q, qrdata->temp_array));
 
       /* Q(:,k-1) = Q(:,k-1) - Q_k-2 s */
-      SUNCheckCall(N_VLinearCombination(m - 1, qrdata->temp_array, Q,
-                                              qrdata->vtemp2));
-      N_VLinearSum(ONE, Q[m - 1], -ONE, qrdata->vtemp2, Q[m - 1]); SUNCheckLastErr();
+      SUNCheckCall(
+        N_VLinearCombination(m - 1, qrdata->temp_array, Q, qrdata->vtemp2));
+      N_VLinearSum(ONE, Q[m - 1], -ONE, qrdata->vtemp2, Q[m - 1]);
+      SUNCheckLastErr();
 
       /* R(1:k-2,k-1) = R(1:k-2,k-1) + s */
       for (j = 0; j < m - 1; j++)
@@ -559,14 +585,17 @@ SUNErrCode SUNQRAdd_DCGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
 
     /* df = df - Q(:,k-1) R(1:k-1,k) */
     SUNCheckCall(N_VLinearCombination(m, R + m * mMax, Q, qrdata->vtemp2));
-    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp); SUNCheckLastErr();
+    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp);
+    SUNCheckLastErr();
   }
 
   /* R(k,k) = \| df \| */
-  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp); SUNCheckLastErr();
+  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp);
+  SUNCheckLastErr();
   R[m * mMax + m] = SUNRsqrt(R[m * mMax + m]);
   /* Q(:,k) = df / R(k,k) */
-  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]); SUNCheckLastErr();
+  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]);
+  SUNCheckLastErr();
 
   return SUN_SUCCESS;
 }
@@ -584,10 +613,11 @@ SUNErrCode SUNQRAdd_DCGS2_SB(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
                              int mMax, void* QRdata)
 {
   sunindextype j;
-  SUNQRData qrdata  = (SUNQRData)QRdata;
+  SUNQRData qrdata = (SUNQRData)QRdata;
   SUNFunctionBegin(Q[0]->sunctx);
 
-  N_VScale(ONE, df, qrdata->vtemp); SUNCheckLastErr();  /* temp = df */
+  N_VScale(ONE, df, qrdata->vtemp);
+  SUNCheckLastErr(); /* temp = df */
 
   if (m > 0)
   {
@@ -601,22 +631,22 @@ SUNErrCode SUNQRAdd_DCGS2_SB(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
     {
       /* R(1:k-1,k) = Q_k-1^T df_aa */
       /* Put R values at beginning of temp array */
-      SUNCheckCall(N_VDotProdMultiLocal(m, qrdata->vtemp, Q,
-                                              qrdata->temp_array));
+      SUNCheckCall(N_VDotProdMultiLocal(m, qrdata->vtemp, Q, qrdata->temp_array));
 
       /* s = Q_k-2^T Q(:,k-1) */
-      SUNCheckCall(N_VDotProdMultiLocal(m - 1, Q[m - 1], Q,
-                                              qrdata->temp_array + m));
-      SUNCheckCall(N_VDotProdMultiAllReduce(m + m - 1, qrdata->vtemp,
-                                                  qrdata->temp_array));
+      SUNCheckCall(
+        N_VDotProdMultiLocal(m - 1, Q[m - 1], Q, qrdata->temp_array + m));
+      SUNCheckCall(
+        N_VDotProdMultiAllReduce(m + m - 1, qrdata->vtemp, qrdata->temp_array));
 
       /* Move R values to R */
       for (j = 0; j < m; j++) { R[m * mMax + j] = qrdata->temp_array[j]; }
 
       /* Q(:,k-1) = Q(:,k-1) - Q_k-2 s */
-      SUNCheckCall(N_VLinearCombination(m - 1, qrdata->temp_array + m, Q,
-                                              qrdata->vtemp2));
-      N_VLinearSum(ONE, Q[m - 1], -ONE, qrdata->vtemp2, Q[m - 1]); SUNCheckLastErr();
+      SUNCheckCall(
+        N_VLinearCombination(m - 1, qrdata->temp_array + m, Q, qrdata->vtemp2));
+      N_VLinearSum(ONE, Q[m - 1], -ONE, qrdata->vtemp2, Q[m - 1]);
+      SUNCheckLastErr();
 
       /* R(1:k-2,k-1) = R(1:k-2,k-1) + s */
       for (j = 0; j < m - 1; j++)
@@ -627,14 +657,17 @@ SUNErrCode SUNQRAdd_DCGS2_SB(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
 
     /* df = df - Q(:,k-1) R(1:k-1,k) */
     SUNCheckCall(N_VLinearCombination(m, R + m * mMax, Q, qrdata->vtemp2));
-    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp); SUNCheckLastErr();
+    N_VLinearSum(ONE, qrdata->vtemp, -ONE, qrdata->vtemp2, qrdata->vtemp);
+    SUNCheckLastErr();
   }
 
   /* R(k,k) = \| df \| */
-  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp); SUNCheckLastErr();
+  R[m * mMax + m] = N_VDotProd(qrdata->vtemp, qrdata->vtemp);
+  SUNCheckLastErr();
   R[m * mMax + m] = SUNRsqrt(R[m * mMax + m]);
   /* Q(:,k) = df / R(k,k) */
-  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]); SUNCheckLastErr();
+  N_VScale((1 / R[m * mMax + m]), qrdata->vtemp, Q[m]);
+  SUNCheckLastErr();
 
   return SUN_SUCCESS;
 }

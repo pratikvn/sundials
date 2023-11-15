@@ -63,7 +63,6 @@ SUNErrCode SUNMemoryHelper_CopyOps(SUNMemoryHelper src, SUNMemoryHelper dst)
   return SUN_SUCCESS;
 }
 
-
 sunbooleantype SUNMemoryHelper_ImplementsRequiredOps(SUNMemoryHelper helper)
 {
   if (helper->ops->alloc == NULL || helper->ops->dealloc == NULL ||
@@ -184,7 +183,7 @@ SUNErrCode SUNMemoryHelper_CopyAsync(SUNMemoryHelper helper, SUNMemory dst,
 
 SUNErrCode SUNMemoryHelper_Destroy(SUNMemoryHelper helper)
 {
-  if (!helper) return SUN_SUCCESS;
+  if (!helper) { return SUN_SUCCESS; }
 
   if (helper->ops->destroy)
   {
@@ -220,7 +219,7 @@ SUNMemoryHelper SUNMemoryHelper_Clone(SUNMemoryHelper helper)
     else
     {
       SUNMemoryHelper hclone = SUNMemoryHelper_NewEmpty(helper->sunctx);
-      if (hclone) SUNMemoryHelper_CopyOps(helper, hclone);
+      if (hclone) { SUNMemoryHelper_CopyOps(helper, hclone); }
       return (hclone);
     }
   }

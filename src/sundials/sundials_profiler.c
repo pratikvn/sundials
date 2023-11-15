@@ -97,8 +97,8 @@ static void sunTimerStructFree(void* TS)
   sunTimerStruct* ts = (sunTimerStruct*)TS;
   if (ts)
   {
-    if (ts->tic) free(ts->tic);
-    if (ts->toc) free(ts->toc);
+    if (ts->tic) { free(ts->tic); }
+    if (ts->toc) { free(ts->toc); }
     free(ts);
   }
 }
@@ -177,8 +177,8 @@ SUNErrCode SUNProfiler_Create(SUNComm comm, const char* title, SUNProfiler* p)
   /* Check to see if max entries env variable was set, and use if it was. */
   max_entries     = 2560;
   max_entries_env = getenv("SUNPROFILER_MAX_ENTRIES");
-  if (max_entries_env) max_entries = atoi(max_entries_env);
-  if (max_entries <= 0) max_entries = 2560;
+  if (max_entries_env) { max_entries = atoi(max_entries_env); }
+  if (max_entries <= 0) { max_entries = 2560; }
 
   /* Create the hashmap used to store the timers */
   if (SUNHashMap_New(max_entries, &profiler->map))
@@ -192,10 +192,7 @@ SUNErrCode SUNProfiler_Create(SUNComm comm, const char* title, SUNProfiler* p)
   /* Attach the comm, duplicating it if MPI is used. */
 #if SUNDIALS_MPI_ENABLED
   profiler->comm = SUN_COMM_NULL;
-  if (comm != SUN_COMM_NULL)
-  {
-    MPI_Comm_dup(comm, &profiler->comm);
-  }
+  if (comm != SUN_COMM_NULL) { MPI_Comm_dup(comm, &profiler->comm); }
 #else
   profiler->comm = comm;
 #endif
@@ -223,10 +220,7 @@ SUNErrCode SUNProfiler_Free(SUNProfiler* p)
     SUNHashMap_Destroy(&(*p)->map, sunTimerStructFree);
     sunTimerStructFree((void*)(*p)->overhead);
 #if SUNDIALS_MPI_ENABLED
-    if ((*p)->comm != SUN_COMM_NULL)
-    {
-      MPI_Comm_free(&(*p)->comm);
-    }
+    if ((*p)->comm != SUN_COMM_NULL) { MPI_Comm_free(&(*p)->comm); }
 #endif
     free((*p)->title);
     free(*p);
@@ -332,9 +326,9 @@ SUNErrCode SUNProfiler_Reset(SUNProfiler p)
   /* Reset all timers */
   for (i = 0; i < p->map->max_size; i++)
   {
-    if (!(p->map->buckets[i])) continue;
+    if (!(p->map->buckets[i])) { continue; }
     timer = p->map->buckets[i]->value;
-    if (timer) sunResetTiming(timer);
+    if (timer) { sunResetTiming(timer); }
   }
 
   /* Reset the overall timer. */
@@ -354,7 +348,7 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
   sunTimerStruct* timer      = NULL;
   SUNHashMapKeyValue* sorted = NULL;
 
-  if (p == NULL) return (-1);
+  if (p == NULL) { return (-1); }
   sunStartTiming(p->overhead);
 
   /* Get the total SUNDIALS time up to this point */
@@ -396,8 +390,10 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
 
 #if SUNDIALS_MPI_ENABLED
     if (p->comm == SUN_COMM_NULL)
+    {
       printf(
         "WARNING: no MPI communicator provided, times shown are for rank 0\n");
+    }
 #endif
 
     /* Print all the other timers out */
@@ -453,7 +449,7 @@ SUNErrCode sunCollectTimers(SUNProfiler p)
   SUNHashMap_Values(p->map, (void***)&values, sizeof(sunTimerStruct));
   sunTimerStruct* reduced =
     (sunTimerStruct*)malloc(p->map->size * sizeof(sunTimerStruct));
-  for (i = 0; i < p->map->size; ++i) reduced[i] = *values[i];
+  for (i = 0; i < p->map->size; ++i) { reduced[i] = *values[i]; }
 
   /* Register MPI datatype for sunTimerStruct */
   MPI_Datatype tmp_type, MPI_sunTimerStruct;

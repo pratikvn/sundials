@@ -13,8 +13,8 @@
 #ifndef _SUNDIALS_CORE_HPP
 #define _SUNDIALS_CORE_HPP
 
-#include <sundials/sundials_core.h>
 #include <sundials/sundials_context.hpp>
+#include <sundials/sundials_core.h>
 #include <sundials/sundials_linearsolver.hpp>
 #include <sundials/sundials_matrix.hpp>
 #include <sundials/sundials_nonlinearsolver.hpp>

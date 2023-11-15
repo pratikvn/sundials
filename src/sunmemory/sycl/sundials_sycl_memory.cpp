@@ -116,9 +116,9 @@ int SUNMemoryHelper_Alloc_Sycl(SUNMemoryHelper helper, SUNMemory* memptr,
   }
 
   // Initialize the memory content
-  mem->ptr  = nullptr;
-  mem->own  = SUNTRUE;
-  mem->type = mem_type;
+  mem->ptr   = nullptr;
+  mem->own   = SUNTRUE;
+  mem->type  = mem_type;
   mem->bytes = mem_size;
 
   // Allocate the data pointer
@@ -213,7 +213,7 @@ int SUNMemoryHelper_Alloc_Sycl(SUNMemoryHelper helper, SUNMemory* memptr,
 int SUNMemoryHelper_Dealloc_Sycl(SUNMemoryHelper helper, SUNMemory mem,
                                  void* queue)
 {
-  if (!mem) return 0;
+  if (!mem) { return 0; }
 
   if (mem->ptr && mem->own)
   {
@@ -276,7 +276,9 @@ int SUNMemoryHelper_Copy_Sycl(SUNMemoryHelper helper, SUNMemory dst,
   ::sycl::queue* sycl_queue = static_cast<::sycl::queue*>(queue);
 
   if (SUNMemoryHelper_CopyAsync_Sycl(helper, dst, src, memory_size, queue))
+  {
     return -1;
+  }
   sycl_queue->wait_and_throw();
   return 0;
 }
