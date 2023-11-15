@@ -13,11 +13,13 @@ jobs:
       # - run: wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
       # - run: sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main'
       # - run: sudo apt-get -yqq update && sudo apt-get -yqq install clang-format-17
+    
       - name: Checkout Spack
         uses: actions/checkout@v4
         with:
           repository: spack/spack
           ref: v0.21.0
+          path: spack
 
       - name: Setup Spack
         run: echo "$PWD/spack/bin" >> "$GITHUB_PATH"
