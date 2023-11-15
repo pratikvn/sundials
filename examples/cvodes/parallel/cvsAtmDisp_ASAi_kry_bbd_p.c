@@ -166,7 +166,7 @@ typedef struct
   /* Source */
   N_Vector p; /* Source parameters */
 
-} * ProblemData;
+}* ProblemData;
 
 /*
  *------------------------------------------------------------------

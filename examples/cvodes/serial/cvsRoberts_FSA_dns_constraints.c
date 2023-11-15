@@ -107,7 +107,7 @@
 typedef struct
 {
   sunrealtype p[3]; /* problem parameters */
-} * UserData;
+}* UserData;
 
 /* Functions Called by the Solver */
 

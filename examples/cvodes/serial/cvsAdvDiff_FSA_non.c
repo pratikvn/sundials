@@ -81,7 +81,7 @@ typedef struct
 {
   sunrealtype* p;
   sunrealtype dx;
-} * UserData;
+}* UserData;
 
 /* Functions Called by the CVODES Solver */
 

@@ -102,7 +102,7 @@ typedef struct
 {
   sunrealtype dx, dy, hdcoef, hacoef, vdcoef;
   int nthreads;
-} * UserData;
+}* UserData;
 
 /* Private Helper Functions */
 
@@ -272,8 +272,8 @@ static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data)
   verdc = data->vdcoef;
 
   /* Loop over all grid points. */
-#pragma omp parallel for default(shared) private(j, i, uij, udn, uup, ult, \
-                                                 urt, hdiff, hadv, vdiff)  \
+#pragma omp parallel for default(shared) private(j, i, uij, udn, uup, ult,  \
+                                                   urt, hdiff, hadv, vdiff) \
   num_threads(data->nthreads)
   for (j = 1; j <= MY; j++)
   {

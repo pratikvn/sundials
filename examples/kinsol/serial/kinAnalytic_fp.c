@@ -102,7 +102,7 @@ typedef struct
   int orth_aa;            /* orthogonalization method         */
   sunrealtype damping_fp; /* damping parameter for FP         */
   sunrealtype damping_aa; /* damping parameter for AA         */
-} * UserOpt;
+}* UserOpt;
 
 /* Nonlinear fixed point function */
 static int FPFunction(N_Vector u, N_Vector f, void* user_data);

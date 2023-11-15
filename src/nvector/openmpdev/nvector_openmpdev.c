@@ -865,8 +865,8 @@ sunrealtype N_VMaxNorm_OpenMPDEV(N_Vector x)
   dev = omp_get_default_device();
 
 #pragma omp target map(tofrom : max) is_device_ptr(xd_dev) device(dev)
-#pragma omp teams distribute parallel for reduction(max \
-                                                    : max) schedule(static, 1)
+#pragma omp teams distribute parallel for reduction(max : max) \
+  schedule(static, 1)
   for (i = 0; i < N; i++) { max = SUNMAX(SUNRabs(xd_dev[i]), max); }
 
   return (max);
@@ -939,8 +939,8 @@ sunrealtype N_VWSqrSumMaskLocal_OpenMPDEV(N_Vector x, N_Vector w, N_Vector id)
   /* get default device identifier */
   dev = omp_get_default_device();
 
-#pragma omp target map(tofrom \
-                       : sum) is_device_ptr(xd_dev, wd_dev, idd_dev) device(dev)
+#pragma omp target map(tofrom : sum) is_device_ptr(xd_dev, wd_dev, idd_dev) \
+  device(dev)
 #pragma omp teams distribute parallel for reduction(+ : sum) schedule(static, 1)
   for (i = 0; i < N; i++)
   {
@@ -1083,8 +1083,8 @@ sunbooleantype N_VInvTest_OpenMPDEV(N_Vector x, N_Vector z)
   val = ZERO;
 
 #pragma omp target map(tofrom : val) is_device_ptr(xd_dev, zd_dev) device(dev)
-#pragma omp teams distribute parallel for reduction(max \
-                                                    : val) schedule(static, 1)
+#pragma omp teams distribute parallel for reduction(max : val) \
+  schedule(static, 1)
   for (i = 0; i < N; i++)
   {
     if (xd_dev[i] == ZERO) { val = ONE; }
@@ -1118,10 +1118,10 @@ sunbooleantype N_VConstrMask_OpenMPDEV(N_Vector c, N_Vector x, N_Vector m)
 
   temp = ONE;
 
-#pragma omp target map(tofrom \
-                       : temp) is_device_ptr(xd_dev, cd_dev, md_dev) device(dev)
-#pragma omp teams distribute parallel for reduction(min \
-                                                    : temp) schedule(static, 1)
+#pragma omp target map(tofrom : temp) is_device_ptr(xd_dev, cd_dev, md_dev) \
+  device(dev)
+#pragma omp teams distribute parallel for reduction(min : temp) \
+  schedule(static, 1)
   for (i = 0; i < N; i++)
   {
     md_dev[i] = ZERO;
@@ -1171,8 +1171,8 @@ sunrealtype N_VMinQuotient_OpenMPDEV(N_Vector num, N_Vector denom)
   min = SUN_BIG_REAL;
 
 #pragma omp target map(tofrom : min) is_device_ptr(nd_dev, dd_dev) device(dev)
-#pragma omp teams distribute parallel for reduction(min \
-                                                    : min) schedule(static, 1)
+#pragma omp teams distribute parallel for reduction(min : min) \
+  schedule(static, 1)
   for (i = 0; i < N; i++)
   {
     if (dd_dev[i] != ZERO) { min = SUNMIN(nd_dev[i] / dd_dev[i], min); }
@@ -1230,9 +1230,8 @@ int N_VLinearCombination_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X,
    */
   if ((X[0] == z) && (c[0] == ONE))
   {
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nvec], xd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, zd_dev) device(dev)
+#pragma omp target map(to : N, nvec, c[ : nvec], xd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
     {
       for (i = 1; i < nvec; i++)
@@ -1256,17 +1255,15 @@ int N_VLinearCombination_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X,
    */
   if (X[0] == z)
   {
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nvec], xd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, zd_dev)
+#pragma omp target map(to : N, nvec, c[ : nvec], xd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, zd_dev)
     {
 #pragma omp teams distribute parallel for schedule(static, 1)
       for (j = 0; j < N; j++) { zd_dev[j] *= c[0]; }
     }
 
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nvec], xd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, zd_dev)
+#pragma omp target map(to : N, nvec, c[ : nvec], xd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, zd_dev)
 #pragma omp teams distribute
     {
       for (i = 1; i < nvec; i++)
@@ -1289,16 +1286,15 @@ int N_VLinearCombination_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X,
    * z = sum{ c[i] * X[i] }, i = 0,...,nvec-1
    */
   xd_dev = NV_DATA_DEV_OMPDEV(X[0]);
-#pragma omp target map(to \
-                       : N, c[:nvec]) is_device_ptr(xd_dev, zd_dev) device(dev)
+#pragma omp target map(to : N, c[ : nvec]) is_device_ptr(xd_dev, zd_dev) \
+  device(dev)
   {
 #pragma omp teams distribute parallel for schedule(static, 1)
     for (j = 0; j < N; j++) { zd_dev[j] = c[0] * xd_dev[j]; }
   }
 
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nvec], xd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, zd_dev) device(dev)
+#pragma omp target map(to : N, nvec, c[ : nvec], xd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 1; i < nvec; i++)
@@ -1354,9 +1350,8 @@ int N_VScaleAddMulti_OpenMPDEV(int nvec, sunrealtype* a, N_Vector x,
    */
   if (Y == Z)
   {
-#pragma omp target map(to                               \
-                       : N, nvec, a[:nvec], yd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev) device(dev)
+#pragma omp target map(to : N, nvec, a[ : nvec], yd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, yd_dev) device(dev)
 #pragma omp teams distribute
     {
       for (i = 0; i < nvec; i++)
@@ -1377,11 +1372,9 @@ int N_VScaleAddMulti_OpenMPDEV(int nvec, sunrealtype* a, N_Vector x,
   /*
    * Z[i][j] = Y[i][j] + a[i] * x[j]
    */
-#pragma omp target map(to                                             \
-                       : N, nvec, a[:nvec], yd_dev_ptrs               \
-                       [:nvec], zd_dev_ptrs                           \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, nvec, a[ : nvec], yd_dev_ptrs[ : nvec], \
+                         zd_dev_ptrs[ : nvec])                         \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -1432,10 +1425,8 @@ int N_VDotProdMulti_OpenMPDEV(int nvec, N_Vector x, N_Vector* Y,
   for (i = 0; i < nvec; i++) { yd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Y[i]); }
 
   /* compute multiple dot products */
-#pragma omp target map(to                                                    \
-                       : N, nvec, yd_dev_ptrs[:nvec]) map(tofrom             \
-                                                          : dotprods[:nvec]) \
-  is_device_ptr(xd_dev, yd_dev) device(dev)
+#pragma omp target map(to : N, nvec, yd_dev_ptrs[ : nvec]) \
+  map(tofrom : dotprods[ : nvec]) is_device_ptr(xd_dev, yd_dev) device(dev)
 #pragma omp teams distribute
   for (i = 0; i < nvec; i++)
   {
@@ -1560,11 +1551,9 @@ int N_VLinearSumVectorArray_OpenMPDEV(int nvec, sunrealtype a, N_Vector* X,
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
   /* compute linear sum for each vector pair in vector arrays */
-#pragma omp target map(to                                               \
-                       : N, nvec, a, b, xd_dev_ptrs[:nvec], yd_dev_ptrs \
-                       [:nvec], zd_dev_ptrs                             \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev)   \
-  device(dev)
+#pragma omp target map(to : N, nvec, a, b, xd_dev_ptrs[ : nvec],     \
+                         yd_dev_ptrs[ : nvec], zd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -1618,9 +1607,8 @@ int N_VScaleVectorArray_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X,
    */
   if (X == Z)
   {
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nvec], xd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev) device(dev)
+#pragma omp target map(to : N, nvec, c[ : nvec], xd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev) device(dev)
 #pragma omp teams distribute
     {
       for (i = 0; i < nvec; i++)
@@ -1641,10 +1629,9 @@ int N_VScaleVectorArray_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X,
   /*
    * Z[i] = c[i] * X[i]
    */
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nvec], xd_dev_ptrs \
-                       [:nvec], zd_dev_ptrs             \
-                       [:nvec]) is_device_ptr(xd_dev, zd_dev) device(dev)
+#pragma omp target map(to : N, nvec, c[ : nvec], xd_dev_ptrs[ : nvec],       \
+                         zd_dev_ptrs[ : nvec]) is_device_ptr(xd_dev, zd_dev) \
+  device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -1688,9 +1675,8 @@ int N_VConstVectorArray_OpenMPDEV(int nvec, sunrealtype c, N_Vector* Z)
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
   /* set each vector in the vector array to a constant */
-#pragma omp target map(to                                                   \
-                       : N, nvec, zd_dev_ptrs[:nvec]) is_device_ptr(zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, nvec, zd_dev_ptrs[ : nvec]) \
+  is_device_ptr(zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -1742,11 +1728,8 @@ int N_VWrmsNormVectorArray_OpenMPDEV(int nvec, N_Vector* X, N_Vector* W,
   for (i = 0; i < nvec; i++) { xd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(X[i]); }
 
   /* compute the WRMS norm for each vector in the vector array */
-#pragma omp target map(to                                         \
-                       : N, nvec, xd_dev_ptrs[:nvec], wd_dev_ptrs \
-                       [:nvec]) map(tofrom                        \
-                                    : nrm[:nvec])                 \
-  is_device_ptr(xd_dev, wd_dev) device(dev)
+#pragma omp target map(to : N, nvec, xd_dev_ptrs[ : nvec], wd_dev_ptrs[ : nvec]) \
+  map(tofrom : nrm[ : nvec]) is_device_ptr(xd_dev, wd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -1806,11 +1789,8 @@ int N_VWrmsNormMaskVectorArray_OpenMPDEV(int nvec, N_Vector* X, N_Vector* W,
   for (i = 0; i < nvec; i++) { wd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(W[i]); }
 
   /* compute the WRMS norm for each vector in the vector array */
-#pragma omp target map(to                                         \
-                       : N, nvec, xd_dev_ptrs[:nvec], wd_dev_ptrs \
-                       [:nvec]) map(tofrom                        \
-                                    : nrm[:nvec])                 \
-  is_device_ptr(idd_dev, xd_dev, wd_dev) device(dev)
+#pragma omp target map(to : N, nvec, xd_dev_ptrs[ : nvec], wd_dev_ptrs[ : nvec]) \
+  map(tofrom : nrm[ : nvec]) is_device_ptr(idd_dev, xd_dev, wd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -1922,10 +1902,9 @@ int N_VScaleAddMultiVectorArray_OpenMPDEV(int nvec, int nsum, sunrealtype* a,
    */
   if (Y == Z)
   {
-#pragma omp target map(to                                     \
-                       : N, nvec, nsum, a[:nsum], xd_dev_ptrs \
-                       [:nvec], yd_dev_ptrs                   \
-                       [:nvec * nsum]) is_device_ptr(xd_dev, yd_dev) device(dev)
+#pragma omp target map(to : N, nvec, nsum, a[ : nsum], xd_dev_ptrs[ : nvec], \
+                         yd_dev_ptrs[ : nvec * nsum])                        \
+  is_device_ptr(xd_dev, yd_dev) device(dev)
 #pragma omp teams distribute
     {
       for (i = 0; i < nvec; i++)
@@ -1957,12 +1936,10 @@ int N_VScaleAddMultiVectorArray_OpenMPDEV(int nvec, int nsum, sunrealtype* a,
   /*
    * Z[i][j] = Y[i][j] + a[i] * x[j]
    */
-#pragma omp target map(to                                                    \
-                       : N, nvec, nsum, a[:nsum], xd_dev_ptrs                \
-                       [:nvec], yd_dev_ptrs                                  \
-                       [:nvec * nsum], zd_dev_ptrs                           \
-                       [:nvec * nsum]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, nvec, nsum, a[ : nsum], xd_dev_ptrs[ : nvec], \
+                         yd_dev_ptrs[ : nvec * nsum],                        \
+                         zd_dev_ptrs[ : nvec * nsum])                        \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -2086,10 +2063,9 @@ int N_VLinearCombinationVectorArray_OpenMPDEV(int nvec, int nsum, sunrealtype* c
    */
   if ((X[0] == Z) && (c[0] == ONE))
   {
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nsum], xd_dev_ptrs \
-                       [:nvec * nsum], zd_dev_ptrs      \
-                       [:nvec]) is_device_ptr(xd_dev, zd_dev) device(dev)
+#pragma omp target map(to : N, nvec, c[ : nsum], xd_dev_ptrs[ : nvec * nsum], \
+                         zd_dev_ptrs[ : nvec]) is_device_ptr(xd_dev, zd_dev)  \
+  device(dev)
 #pragma omp teams distribute
     {
       for (j = 0; j < nvec; j++)
@@ -2113,10 +2089,8 @@ int N_VLinearCombinationVectorArray_OpenMPDEV(int nvec, int nsum, sunrealtype* c
    */
   if (X[0] == Z)
   {
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nsum], xd_dev_ptrs \
-                       [:nvec * nsum], zd_dev_ptrs      \
-                       [:nvec]) is_device_ptr(zd_dev) device(dev)
+#pragma omp target map(to : N, nvec, c[ : nsum], xd_dev_ptrs[ : nvec * nsum], \
+                         zd_dev_ptrs[ : nvec]) is_device_ptr(zd_dev) device(dev)
 #pragma omp teams distribute
     {
       for (j = 0; j < nvec; j++)
@@ -2141,10 +2115,8 @@ int N_VLinearCombinationVectorArray_OpenMPDEV(int nvec, int nsum, sunrealtype* c
   /*
    * Z[j] = sum{ c[i] * X[i][j] }, i = 0,...,nvec-1
    */
-#pragma omp target map(to                               \
-                       : N, nvec, c[:nsum], xd_dev_ptrs \
-                       [:nvec * nsum], zd_dev_ptrs      \
-                       [:nvec]) is_device_ptr(zd_dev) device(dev)
+#pragma omp target map(to : N, nvec, c[ : nsum], xd_dev_ptrs[ : nvec * nsum], \
+                         zd_dev_ptrs[ : nvec]) is_device_ptr(zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (j = 0; j < nvec; j++)
@@ -2487,11 +2459,9 @@ static int VSumVectorArray_OpenMPDEV(int nvec, N_Vector* X, N_Vector* Y,
   for (i = 0; i < nvec; i++) { yd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Y[i]); }
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
-#pragma omp target map(to                                             \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs           \
-                       [:nvec], zd_dev_ptrs                           \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec], \
+                         zd_dev_ptrs[ : nvec])                             \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -2535,11 +2505,9 @@ static int VDiffVectorArray_OpenMPDEV(int nvec, N_Vector* X, N_Vector* Y,
   for (i = 0; i < nvec; i++) { yd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Y[i]); }
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
-#pragma omp target map(to                                             \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs           \
-                       [:nvec], zd_dev_ptrs                           \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec], \
+                         zd_dev_ptrs[ : nvec])                             \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -2583,11 +2551,9 @@ static int VScaleSumVectorArray_OpenMPDEV(int nvec, sunrealtype c, N_Vector* X,
   for (i = 0; i < nvec; i++) { yd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Y[i]); }
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
-#pragma omp target map(to                                             \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs           \
-                       [:nvec], zd_dev_ptrs                           \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec], \
+                         zd_dev_ptrs[ : nvec])                             \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -2631,11 +2597,9 @@ static int VScaleDiffVectorArray_OpenMPDEV(int nvec, sunrealtype c, N_Vector* X,
   for (i = 0; i < nvec; i++) { yd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Y[i]); }
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
-#pragma omp target map(to                                             \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs           \
-                       [:nvec], zd_dev_ptrs                           \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec], \
+                         zd_dev_ptrs[ : nvec])                             \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -2679,11 +2643,9 @@ static int VLin1VectorArray_OpenMPDEV(int nvec, sunrealtype a, N_Vector* X,
   for (i = 0; i < nvec; i++) { yd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Y[i]); }
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
-#pragma omp target map(to                                             \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs           \
-                       [:nvec], zd_dev_ptrs                           \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec], \
+                         zd_dev_ptrs[ : nvec])                             \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -2727,11 +2689,9 @@ static int VLin2VectorArray_OpenMPDEV(int nvec, sunrealtype a, N_Vector* X,
   for (i = 0; i < nvec; i++) { yd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Y[i]); }
   for (i = 0; i < nvec; i++) { zd_dev_ptrs[i] = NV_DATA_DEV_OMPDEV(Z[i]); }
 
-#pragma omp target map(to                                             \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs           \
-                       [:nvec], zd_dev_ptrs                           \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev, zd_dev) \
-  device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec], \
+                         zd_dev_ptrs[ : nvec])                             \
+  is_device_ptr(xd_dev, yd_dev, zd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)
@@ -2773,9 +2733,8 @@ static int VaxpyVectorArray_OpenMPDEV(int nvec, sunrealtype a, N_Vector* X,
 
   if (a == ONE)
   {
-#pragma omp target map(to                                   \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev) device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, yd_dev) device(dev)
 #pragma omp teams distribute
     {
       for (i = 0; i < nvec; i++)
@@ -2793,9 +2752,8 @@ static int VaxpyVectorArray_OpenMPDEV(int nvec, sunrealtype a, N_Vector* X,
 
   if (a == -ONE)
   {
-#pragma omp target map(to                                   \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev) device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, yd_dev) device(dev)
 #pragma omp teams distribute
     {
       for (i = 0; i < nvec; i++)
@@ -2811,9 +2769,8 @@ static int VaxpyVectorArray_OpenMPDEV(int nvec, sunrealtype a, N_Vector* X,
     return (0);
   }
 
-#pragma omp target map(to                                   \
-                       : N, xd_dev_ptrs[:nvec], yd_dev_ptrs \
-                       [:nvec]) is_device_ptr(xd_dev, yd_dev) device(dev)
+#pragma omp target map(to : N, xd_dev_ptrs[ : nvec], yd_dev_ptrs[ : nvec]) \
+  is_device_ptr(xd_dev, yd_dev) device(dev)
 #pragma omp teams distribute
   {
     for (i = 0; i < nvec; i++)

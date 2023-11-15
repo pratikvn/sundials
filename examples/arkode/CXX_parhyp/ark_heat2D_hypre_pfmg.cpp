@@ -1770,7 +1770,7 @@ static int ScaleAddI(UserData* udata, sunrealtype gamma)
   if (flag != 0) { return (flag); }
 
   // Scale work array by c
-  for (HYPRE_Int i = 0; i < nwork; i++) work[i] *= -gamma;
+  for (HYPRE_Int i = 0; i < nwork; i++) { work[i] *= -gamma; }
 
   // Insert scaled values into A
   flag = HYPRE_StructMatrixSetBoxValues(udata->Amatrix, ilower, iupper, 5,
@@ -1778,7 +1778,7 @@ static int ScaleAddI(UserData* udata, sunrealtype gamma)
   if (flag != 0) { return (flag); }
 
   // Set first 1/5 of work array to 1
-  for (HYPRE_Int i = 0; i < nwork / 5; i++) work[i] = ONE;
+  for (HYPRE_Int i = 0; i < nwork / 5; i++) { work[i] = ONE; }
 
   // Add values to the diagonal of A
   HYPRE_Int entry[1] = {0};

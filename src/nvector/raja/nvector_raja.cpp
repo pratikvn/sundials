@@ -534,7 +534,7 @@ void N_VCopyToDevice_Raja(N_Vector x)
 #if defined(SUNDIALS_RAJA_BACKENDS_SYCL)
   void* queue = static_cast<void*>(::RAJA::sycl::detail::getQueue());
 #else
-  void* queue                      = nullptr;
+  void* queue = nullptr;
 #endif
 
   copy_fail = SUNMemoryHelper_CopyAsync(NVEC_RAJA_MEMHELP(x),
@@ -1463,7 +1463,7 @@ int N_VBufPack_Raja(N_Vector x, void* buf)
   ::sycl::queue* q = ::RAJA::sycl::detail::getQueue();
   q->wait_and_throw();
 #else
-  cuerr       = SUNDIALS_GPU_PREFIX(StreamSynchronize)(0);
+  cuerr = SUNDIALS_GPU_PREFIX(StreamSynchronize)(0);
 #endif
 
   SUNMemoryHelper_Dealloc(NVEC_RAJA_MEMHELP(x), buf_mem, queue);
@@ -1502,7 +1502,7 @@ int N_VBufUnpack_Raja(N_Vector x, void* buf)
   ::sycl::queue* q = ::RAJA::sycl::detail::getQueue();
   q->wait_and_throw();
 #else
-  cuerr       = SUNDIALS_GPU_PREFIX(StreamSynchronize)(0);
+  cuerr = SUNDIALS_GPU_PREFIX(StreamSynchronize)(0);
 #endif
 
   SUNMemoryHelper_Dealloc(NVEC_RAJA_MEMHELP(x), buf_mem, queue);
@@ -1535,12 +1535,12 @@ int N_VEnableFusedOps_Raja(N_Vector v, sunbooleantype tf)
     v->ops->nvscaleaddmulti     = N_VScaleAddMulti_Raja;
     v->ops->nvdotprodmulti      = NULL;
     /* enable all vector array operations */
-    v->ops->nvlinearsumvectorarray         = N_VLinearSumVectorArray_Raja;
-    v->ops->nvscalevectorarray             = N_VScaleVectorArray_Raja;
-    v->ops->nvconstvectorarray             = N_VConstVectorArray_Raja;
-    v->ops->nvwrmsnormvectorarray          = NULL;
-    v->ops->nvwrmsnormmaskvectorarray      = NULL;
-    v->ops->nvscaleaddmultivectorarray     = N_VScaleAddMultiVectorArray_Raja;
+    v->ops->nvlinearsumvectorarray     = N_VLinearSumVectorArray_Raja;
+    v->ops->nvscalevectorarray         = N_VScaleVectorArray_Raja;
+    v->ops->nvconstvectorarray         = N_VConstVectorArray_Raja;
+    v->ops->nvwrmsnormvectorarray      = NULL;
+    v->ops->nvwrmsnormmaskvectorarray  = NULL;
+    v->ops->nvscaleaddmultivectorarray = N_VScaleAddMultiVectorArray_Raja;
     v->ops->nvlinearcombinationvectorarray = N_VLinearCombinationVectorArray_Raja;
   }
   else

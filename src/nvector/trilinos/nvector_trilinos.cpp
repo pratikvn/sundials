@@ -198,7 +198,7 @@ N_Vector N_VClone_Trilinos(N_Vector w)
 
 void N_VDestroy_Trilinos(N_Vector v)
 {
-  if (v == NULL) return;
+  if (v == NULL) { return; }
 
   if (v->content != NULL)
   {

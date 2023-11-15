@@ -145,8 +145,8 @@ int ARKBraid_SetStepFn(braid_App app, braid_PtFcnStep step)
   content = (ARKBraidContent)app->content;
 
   /* Restore default or set function pointer */
-  if (step == NULL) content->step = ARKBraid_Step;
-  else content->step = step;
+  if (step == NULL) { content->step = ARKBraid_Step; }
+  else { content->step = step; }
 
   return SUNBRAID_SUCCESS;
 }
@@ -161,8 +161,8 @@ int ARKBraid_SetInitFn(braid_App app, braid_PtFcnInit init)
   content = (ARKBraidContent)app->content;
 
   /* Restore default or set function pointer */
-  if (init == NULL) content->init = ARKBraid_Init;
-  else content->init = init;
+  if (init == NULL) { content->init = ARKBraid_Init; }
+  else { content->init = init; }
 
   return SUNBRAID_SUCCESS;
 }
@@ -177,8 +177,8 @@ int ARKBraid_SetSpatialNormFn(braid_App app, braid_PtFcnSpatialNorm snorm)
   content = (ARKBraidContent)app->content;
 
   /* Restore default or set function pointer */
-  if (snorm == NULL) content->snorm = SUNBraidVector_SpatialNorm;
-  else content->snorm = snorm;
+  if (snorm == NULL) { content->snorm = SUNBraidVector_SpatialNorm; }
+  else { content->snorm = snorm; }
 
   return SUNBRAID_SUCCESS;
 }
@@ -193,8 +193,8 @@ int ARKBraid_SetAccessFn(braid_App app, braid_PtFcnAccess access)
   content = (ARKBraidContent)app->content;
 
   /* Restore default or set function pointer */
-  if (access == NULL) content->access = ARKBraid_Access;
-  else content->access = access;
+  if (access == NULL) { content->access = ARKBraid_Access; }
+  else { content->access = access; }
 
   return SUNBRAID_SUCCESS;
 }

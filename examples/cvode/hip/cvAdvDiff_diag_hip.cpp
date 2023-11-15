@@ -66,7 +66,7 @@ typedef struct
   sunrealtype dx;
   sunrealtype hdcoef;
   sunrealtype hacoef;
-} * UserData;
+}* UserData;
 
 /* Private Helper Functions */
 

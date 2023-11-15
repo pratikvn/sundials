@@ -71,7 +71,7 @@ typedef struct
   sunindextype MX, MY, NEQ;
   sunrealtype dx, dy, XMAX, YMAX;
   sunrealtype hdcoef, hacoef, vdcoef;
-} * UserData;
+}* UserData;
 
 /*typedef _UserData *UserData;*/
 
@@ -287,8 +287,7 @@ static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data)
   dev = omp_get_default_device();
 
   /* Loop over all grid points. */
-#pragma omp target map(to                             \
-                       : MY, MX, hordc, horac, verdc) \
+#pragma omp target map(to : MY, MX, hordc, horac, verdc) \
   is_device_ptr(udata, dudata) device(dev)
 #pragma omp teams distribute parallel for schedule(static, 1)
   for (k = 0; k < MY * MX; k++)
@@ -339,8 +338,7 @@ static int jtv(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector u, N_Vector fu,
   /* Get device */
   dev = omp_get_default_device();
 
-#pragma omp target map(to                             \
-                       : MX, MY, hordc, horac, verdc) \
+#pragma omp target map(to : MX, MY, hordc, horac, verdc) \
   is_device_ptr(vdata, Jvdata) device(dev)
 #pragma omp teams distribute parallel for schedule(static, 1)
   for (k = 0; k < MX * MY; k++)

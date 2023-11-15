@@ -85,7 +85,7 @@ typedef struct
   sunrealtype dx;
   sunrealtype coeff;
   N_Vector pp; /* vector of prec. diag. elements */
-} * UserData;
+}* UserData;
 
 /* Prototypes for functions called by IDA */
 

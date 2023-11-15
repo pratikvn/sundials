@@ -59,7 +59,7 @@ int SUNBraidApp_FreeEmpty(braid_App* app)
 {
   if (*app == NULL) { return SUNBRAID_SUCCESS; }
 
-  if ((*app)->ops) free((*app)->ops);
+  if ((*app)->ops) { free((*app)->ops); }
   (*app)->ops = NULL;
 
   free(*app);

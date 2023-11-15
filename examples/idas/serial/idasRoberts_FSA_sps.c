@@ -81,7 +81,7 @@ typedef struct
 {
   sunrealtype p[3]; /* problem parameters */
   sunrealtype coef;
-} * UserData;
+}* UserData;
 
 /* Prototypes of functions by IDAS */
 

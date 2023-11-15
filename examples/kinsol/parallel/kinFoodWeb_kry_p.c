@@ -158,7 +158,7 @@ typedef struct
   sunrealtype cext[NUM_SPECIES * (MXSUB + 2) * (MYSUB + 2)];
   int my_pe, isubx, isuby, nsmxsub, nsmxsub2;
   MPI_Comm comm;
-} * UserData;
+}* UserData;
 
 /* Functions called by the KINSOL Solver */
 

@@ -75,7 +75,7 @@ typedef struct
   sunrealtype uext[(MXSUB + 2) * (MYSUB + 2)];
   N_Vector pp; /* vector of diagonal preconditioner elements */
   MPI_Comm comm;
-} * UserData;
+}* UserData;
 
 /* User-supplied residual function and supporting routines */
 

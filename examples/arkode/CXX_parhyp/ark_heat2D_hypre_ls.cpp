@@ -2445,7 +2445,7 @@ int Hypre5ptMatrix_ScaleAddI(sunrealtype c, SUNMatrix A)
   if (flag != 0) { return (flag); }
 
   // Scale work array by c
-  for (HYPRE_Int i = 0; i < H5PM_NWORK(A); i++) H5PM_WORK(A)[i] *= c;
+  for (HYPRE_Int i = 0; i < H5PM_NWORK(A); i++) { H5PM_WORK(A)[i] *= c; }
 
   // Insert scaled values back into A
   flag = HYPRE_StructMatrixSetBoxValues(H5PM_MATRIX(A), H5PM_ILOWER(A),
@@ -2453,7 +2453,7 @@ int Hypre5ptMatrix_ScaleAddI(sunrealtype c, SUNMatrix A)
   if (flag != 0) { return (flag); }
 
   // Set first 1/5 of work array to 1
-  for (HYPRE_Int i = 0; i < H5PM_NWORK(A) / 5; i++) H5PM_WORK(A)[i] = ONE;
+  for (HYPRE_Int i = 0; i < H5PM_NWORK(A) / 5; i++) { H5PM_WORK(A)[i] = ONE; }
 
   // Insert resulting values back into diagonal of A
   HYPRE_Int entry[1] = {0};

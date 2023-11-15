@@ -70,7 +70,7 @@ typedef struct
   int npes, my_pe;
   MPI_Comm comm;
   sunrealtype z[100];
-} * UserData;
+}* UserData;
 
 /* Private Helper Functions */
 
@@ -383,11 +383,11 @@ static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data)
   horac = data->hacoef;
 
   /* Extract parameters for parallel computation. */
-  comm      = data->comm;
-  npes      = data->npes;                    /* Number of processes. */
-  my_pe     = data->my_pe;                   /* Current process number. */
+  comm  = data->comm;
+  npes  = data->npes;                        /* Number of processes. */
+  my_pe = data->my_pe;                       /* Current process number. */
   my_length = N_VGetLocalLength_Parallel(u); /* Number of local elements of u. */
-  z         = data->z;
+  z = data->z;
 
   /* Compute related parameters. */
   my_pe_m1 = my_pe - 1;

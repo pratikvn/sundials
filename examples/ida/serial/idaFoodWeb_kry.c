@@ -141,7 +141,7 @@
  * species index is = 0, x-index ix = i, and y-index jy = j.
  */
 
-#define IJ_Vptr(vv, i, j) (&NV_Ith_S(vv, (i)*NUM_SPECIES + (j)*NSMX))
+#define IJ_Vptr(vv, i, j) (&NV_Ith_S(vv, (i) * NUM_SPECIES + (j) * NSMX))
 
 /* Type: UserData.  Contains problem constants, etc. */
 
@@ -155,7 +155,7 @@ typedef struct
   N_Vector rates;
   N_Vector ewt;
   void* ida_mem;
-} * UserData;
+}* UserData;
 
 /* Prototypes for functions called by the IDA Solver. */
 

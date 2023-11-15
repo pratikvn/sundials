@@ -296,7 +296,7 @@ void set_element_range(N_Vector X, sunindextype is, sunindextype ie,
 #endif
 
   sunindextype i;
-  for (i = is; i <= ie; i++) x_1d(i) = val;
+  for (i = is; i <= ie; i++) { x_1d(i) = val; }
 
 #if TRILINOS_MAJOR_VERSION < 14
   /* Sync the device with the host */
@@ -326,12 +326,14 @@ sunrealtype get_element(N_Vector X, sunindextype i)
 
 double max_time(N_Vector X, double time)
 {
-  double maxtime                                      = 0.0;
+  double maxtime = 0.0;
   Teuchos::RCP<TpetraVectorInterface::vector_type> xv = N_VGetVector_Trilinos(X);
-  auto comm                                           = xv->getMap()->getComm();
+  auto comm = xv->getMap()->getComm();
   Teuchos::reduceAll<int, double>(*comm, Teuchos::REDUCE_SUM, time,
                                   Teuchos::outArg(maxtime));
   return maxtime;
 }
 
-void sync_device(N_Vector x) { /* Kokkos should take care of this */ }
+void sync_device(N_Vector x)
+{ /* Kokkos should take care of this */
+}

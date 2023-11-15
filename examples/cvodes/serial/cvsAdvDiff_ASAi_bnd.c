@@ -97,7 +97,7 @@
 typedef struct
 {
   sunrealtype dx, dy, hdcoef, hacoef, vdcoef;
-} * UserData;
+}* UserData;
 
 /* Prototypes of user-supplied functions */
 

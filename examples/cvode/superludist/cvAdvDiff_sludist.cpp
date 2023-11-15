@@ -77,7 +77,7 @@ typedef struct
   int npes, my_pe;
   MPI_Comm comm;
   sunrealtype z[100];
-} * UserData;
+}* UserData;
 
 /* Private Helper Functions */
 
@@ -172,14 +172,17 @@ int main(int argc, char* argv[])
   my_base = (my_pe < nrem) ? my_pe * local_N : my_pe * nperpe + nrem;
 
   data = (UserData)malloc(sizeof *data); /* Allocate data memory */
-  if (check_retval((void*)data, "malloc", 2, my_pe)) MPI_Abort(grid.comm, 1);
+  if (check_retval((void*)data, "malloc", 2, my_pe))
+  {
+    MPI_Abort(grid.comm, 1);
+  }
 
   data->comm  = grid.comm;
   data->npes  = npes;
   data->my_pe = my_pe;
 
   u = N_VNew_Parallel(grid.comm, local_N, NEQ, sunctx); /* Allocate u vector */
-  if (check_retval((void*)u, "N_VNew", 0, my_pe)) MPI_Abort(grid.comm, 1);
+  if (check_retval((void*)u, "N_VNew", 0, my_pe)) { MPI_Abort(grid.comm, 1); }
 
   reltol = ZERO; /* Set the tolerances */
   abstol = ATOL;
@@ -214,43 +217,58 @@ int main(int argc, char* argv[])
   /* Call CVodeCreate to create the solver memory and specify the Adams-Moulton LMM */
   cvode_mem = CVodeCreate(CV_ADAMS, sunctx);
   if (check_retval((void*)cvode_mem, "CVodeCreate", 0, my_pe))
+  {
     MPI_Abort(grid.comm, 1);
+  }
 
   retval = CVodeSetUserData(cvode_mem, data);
   if (check_retval(&retval, "CVodeSetUserData", 1, my_pe))
+  {
     MPI_Abort(grid.comm, 1);
+  }
 
   /* Call CVodeInit to initialize the integrator memory and specify the
    * user's right hand side function in u'=f(t,u), the inital time T0, and
    * the initial dependent variable vector u. */
   retval = CVodeInit(cvode_mem, f, T0, u);
-  if (check_retval(&retval, "CVodeInit", 1, my_pe)) MPI_Abort(grid.comm, 1);
+  if (check_retval(&retval, "CVodeInit", 1, my_pe)) { MPI_Abort(grid.comm, 1); }
 
   /* Call CVodeSStolerances to specify the scalar relative tolerance
    * and scalar absolute tolerances */
   retval = CVodeSStolerances(cvode_mem, reltol, abstol);
   if (check_retval(&retval, "CVodeSStolerances", 1, my_pe))
+  {
     MPI_Abort(grid.comm, 1);
+  }
 
   /* create the SuperLU SLU_NR_loc SUNMatrix */
   A = SUNMatrix_SLUNRloc(&Asuper, &grid, sunctx);
   if (check_retval((void*)A, "SUNMatrix_SLUNRloc", 0, my_pe))
+  {
     MPI_Abort(grid.comm, 1);
+  }
 
   /* create SuperLU-DIST linear solver object */
   LS = SUNLinSol_SuperLUDIST(u, A, &grid, &LUstruct, &scaleperm, &solve, &stat,
                              &options, sunctx);
   if (check_retval((void*)LS, "SUNLinSol_SuperLUDIST", 0, my_pe))
+  {
     MPI_Abort(grid.comm, 1);
+  }
 
   /* attach linear solver object to CVode */
   retval = CVodeSetLinearSolver(cvode_mem, LS, A);
   if (check_retval(&retval, "CVodeSetLinearSolver", 1, my_pe))
+  {
     MPI_Abort(grid.comm, 1);
+  }
 
   /* attach the Jacobian function */
   retval = CVodeSetJacFn(cvode_mem, Jac);
-  if (check_retval(&retval, "CVodeSetJacFn", 1, my_pe)) MPI_Abort(grid.comm, 1);
+  if (check_retval(&retval, "CVodeSetJacFn", 1, my_pe))
+  {
+    MPI_Abort(grid.comm, 1);
+  }
 
   if (my_pe == 0) { PrintIntro(npes); }
 
@@ -395,11 +413,11 @@ static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data)
   horac = data->hacoef;
 
   /* Extract parameters for parallel computation. */
-  comm      = data->comm;
-  npes      = data->npes;                    /* Number of processes. */
-  my_pe     = data->my_pe;                   /* Current process number. */
+  comm  = data->comm;
+  npes  = data->npes;                        /* Number of processes. */
+  my_pe = data->my_pe;                       /* Current process number. */
   my_length = N_VGetLocalLength_Parallel(u); /* Number of local elements of u. */
-  z         = data->z;
+  z = data->z;
 
   /* Compute related parameters. */
   my_pe_m1 = my_pe - 1;

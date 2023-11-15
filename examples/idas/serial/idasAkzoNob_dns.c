@@ -55,7 +55,7 @@ typedef struct
 {
   sunrealtype k1, k2, k3, k4;
   sunrealtype K, klA, Ks, pCO2, H;
-} * UserData;
+}* UserData;
 
 static int res(sunrealtype t, N_Vector yy, N_Vector yd, N_Vector resval,
                void* userdata);

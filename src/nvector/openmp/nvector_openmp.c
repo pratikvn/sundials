@@ -717,8 +717,8 @@ sunrealtype N_VDotProd_OpenMP(N_Vector x, N_Vector y)
   xd = NV_DATA_OMP(x);
   yd = NV_DATA_OMP(y);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
   for (i = 0; i < N; i++) { sum += xd[i] * yd[i]; }
 
   return (sum);
@@ -831,8 +831,8 @@ sunrealtype N_VWL2Norm_OpenMP(N_Vector x, N_Vector w)
   xd = NV_DATA_OMP(x);
   wd = NV_DATA_OMP(w);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,wd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel for default(none) private(i) shared(N, xd, wd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
   for (i = 0; i < N; i++) { sum += SUNSQR(xd[i] * wd[i]); }
 
   return (SUNRsqrt(sum));
@@ -854,8 +854,8 @@ sunrealtype N_VL1Norm_OpenMP(N_Vector x)
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel for default(none) private(i) shared(N, xd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
   for (i = 0; i < N; i++) { sum += SUNRabs(xd[i]); }
 
   return (sum);
@@ -937,7 +937,7 @@ sunbooleantype N_VConstrMask_OpenMP(N_Vector c, N_Vector x, N_Vector m)
 
 #pragma omp parallel for default(none) private(i, test) \
   shared(N, xd, cd, md, temp) schedule(static)          \
-    num_threads(NV_NUM_THREADS_OMP(x))
+  num_threads(NV_NUM_THREADS_OMP(x))
   for (i = 0; i < N; i++)
   {
     md[i] = ZERO;
@@ -1014,8 +1014,8 @@ sunrealtype N_VWSqrSumLocal_OpenMP(N_Vector x, N_Vector w)
   xd = NV_DATA_OMP(x);
   wd = NV_DATA_OMP(w);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,wd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel for default(none) private(i) shared(N, xd, wd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
   for (i = 0; i < N; i++) { sum += SUNSQR(xd[i] * wd[i]); }
 
   return (sum);
@@ -1039,8 +1039,8 @@ sunrealtype N_VWSqrSumMaskLocal_OpenMP(N_Vector x, N_Vector w, N_Vector id)
   wd  = NV_DATA_OMP(w);
   idd = NV_DATA_OMP(id);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,wd,idd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel for default(none) private(i) shared(N, xd, wd, idd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
   for (i = 0; i < N; i++)
   {
     if (idd[i] > ZERO) { sum += SUNSQR(xd[i] * wd[i]); }

@@ -164,7 +164,7 @@ typedef struct
   sunrealtype ax, ay, dx, dy;
   sunrealtype uround, sqruround;
   int mx, my, ns, np;
-} * UserData;
+}* UserData;
 
 /* Functions Called by the KINSOL Solver */
 
