@@ -1566,12 +1566,12 @@ int N_VEnableFusedOps_Petsc(N_Vector v, sunbooleantype tf)
     v->ops->nvscaleaddmulti     = N_VScaleAddMulti_Petsc;
     v->ops->nvdotprodmulti      = N_VDotProdMulti_Petsc;
     /* enable all vector array operations */
-    v->ops->nvlinearsumvectorarray     = N_VLinearSumVectorArray_Petsc;
-    v->ops->nvscalevectorarray         = N_VScaleVectorArray_Petsc;
-    v->ops->nvconstvectorarray         = N_VConstVectorArray_Petsc;
-    v->ops->nvwrmsnormvectorarray      = N_VWrmsNormVectorArray_Petsc;
-    v->ops->nvwrmsnormmaskvectorarray  = N_VWrmsNormMaskVectorArray_Petsc;
-    v->ops->nvscaleaddmultivectorarray = N_VScaleAddMultiVectorArray_Petsc;
+    v->ops->nvlinearsumvectorarray         = N_VLinearSumVectorArray_Petsc;
+    v->ops->nvscalevectorarray             = N_VScaleVectorArray_Petsc;
+    v->ops->nvconstvectorarray             = N_VConstVectorArray_Petsc;
+    v->ops->nvwrmsnormvectorarray          = N_VWrmsNormVectorArray_Petsc;
+    v->ops->nvwrmsnormmaskvectorarray      = N_VWrmsNormMaskVectorArray_Petsc;
+    v->ops->nvscaleaddmultivectorarray     = N_VScaleAddMultiVectorArray_Petsc;
     v->ops->nvlinearcombinationvectorarray = N_VLinearCombinationVectorArray_Petsc;
     /* enable single buffer reduction operations */
     v->ops->nvdotprodmultilocal = N_VDotProdMultiLocal_Petsc;

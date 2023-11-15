@@ -105,7 +105,7 @@ typedef struct IntegratorMemRec
   N_Vector ycor;
   N_Vector ycur;
   N_Vector w;
-}* IntegratorMem;
+} * IntegratorMem;
 
 /* -----------------------------------------------------------------------------
  * Main testing routine

@@ -78,7 +78,7 @@ typedef struct
   int npes, my_pe;
   MPI_Comm comm;
   sunrealtype z[100];
-}* UserData;
+} * UserData;
 
 /* Private Helper Functions */
 

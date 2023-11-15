@@ -91,7 +91,7 @@ typedef struct UserData_
   int tstop; /* use tstop mode */
   int nout;  /* number of outputs per orbit */
 
-}* UserData;
+} * UserData;
 
 /* Functions provided to CVODES */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);

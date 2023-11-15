@@ -1926,12 +1926,12 @@ int N_VEnableFusedOps_Sycl(N_Vector v, sunbooleantype tf)
     v->ops->nvscaleaddmulti     = N_VScaleAddMulti_Sycl;
     v->ops->nvdotprodmulti      = NULL;
     /* enable all vector array operations */
-    v->ops->nvlinearsumvectorarray     = N_VLinearSumVectorArray_Sycl;
-    v->ops->nvscalevectorarray         = N_VScaleVectorArray_Sycl;
-    v->ops->nvconstvectorarray         = N_VConstVectorArray_Sycl;
-    v->ops->nvwrmsnormvectorarray      = NULL;
-    v->ops->nvwrmsnormmaskvectorarray  = NULL;
-    v->ops->nvscaleaddmultivectorarray = N_VScaleAddMultiVectorArray_Sycl;
+    v->ops->nvlinearsumvectorarray         = N_VLinearSumVectorArray_Sycl;
+    v->ops->nvscalevectorarray             = N_VScaleVectorArray_Sycl;
+    v->ops->nvconstvectorarray             = N_VConstVectorArray_Sycl;
+    v->ops->nvwrmsnormvectorarray          = NULL;
+    v->ops->nvwrmsnormmaskvectorarray      = NULL;
+    v->ops->nvscaleaddmultivectorarray     = N_VScaleAddMultiVectorArray_Sycl;
     v->ops->nvlinearcombinationvectorarray = N_VLinearCombinationVectorArray_Sycl;
   }
   else

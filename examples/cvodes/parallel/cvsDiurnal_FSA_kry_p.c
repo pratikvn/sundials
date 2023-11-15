@@ -159,7 +159,7 @@ typedef struct
   sunrealtype **P[MXSUB][MYSUB], **Jbd[MXSUB][MYSUB];
   sunindextype* pivot[MXSUB][MYSUB];
 
-}* UserData;
+} * UserData;
 
 /* Functions Called by the CVODES Solver */
 

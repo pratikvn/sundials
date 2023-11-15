@@ -80,7 +80,7 @@ typedef struct
 {
   N_Vector pp; /* vector of diagonal preconditioner elements */
   DM da;       /* PETSc data management object */
-}* UserData;
+} * UserData;
 
 /* User-supplied residual function */
 

@@ -156,7 +156,7 @@
  * species index is = 0, x-index ix = i, and y-index jy = j.
  */
 
-#define IJ_Vptr(vv, i, j) (&NV_Ith_P(vv, (i) * NUM_SPECIES + (j) * NSMXSUB))
+#define IJ_Vptr(vv, i, j) (&NV_Ith_P(vv, (i)*NUM_SPECIES + (j)*NSMXSUB))
 
 /* Type: UserData.  Contains problem constants, preconditioner data, etc. */
 
@@ -170,7 +170,7 @@ typedef struct
   MPI_Comm comm;
   N_Vector rates;
   sunindextype n_local;
-}* UserData;
+} * UserData;
 
 /* Prototypes for functions called by the IDA Solver. */
 

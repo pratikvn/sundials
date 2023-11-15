@@ -71,7 +71,7 @@ typedef struct
   sunrealtype l0;
   sunrealtype params[2];
   sunrealtype F;
-}* UserData;
+} * UserData;
 
 static int ressc(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector resval,
                  void* user_data);

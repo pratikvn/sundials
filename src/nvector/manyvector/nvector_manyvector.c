@@ -1175,7 +1175,7 @@ sunbooleantype MVAPPEND(N_VInvTestLocal)(N_Vector x, N_Vector z)
     if (MANYVECTOR_SUBVEC(x, i)->ops->nvinvtestlocal)
     {
       subval = N_VInvTestLocal(MANYVECTOR_SUBVEC(x, i), MANYVECTOR_SUBVEC(z, i));
-      val = (val && subval);
+      val    = (val && subval);
 
       /* otherwise, call nvinvtest and accumulate to overall val */
     }

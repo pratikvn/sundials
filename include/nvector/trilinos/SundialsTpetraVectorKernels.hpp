@@ -78,12 +78,12 @@ inline void elementWiseDivide(const vector_type& x, const vector_type& y,
 
   z.modify<memory_space>();
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto y_2d = y.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto y_1d = Kokkos::subview(y_2d, Kokkos::ALL(), 0);
-  auto z_2d = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto z_1d = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto y_2d   = y.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto y_1d   = Kokkos::subview(y_2d, Kokkos::ALL(), 0);
+  auto z_2d   = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto z_1d   = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
 #endif
 
   Kokkos::parallel_for(
@@ -109,10 +109,10 @@ inline void addConst(const vector_type& x, scalar_type b, vector_type& z)
 
   z.modify<memory_space>();
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto z_2d = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto z_1d = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto z_2d   = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto z_1d   = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
 #endif
 
   Kokkos::parallel_for(
@@ -138,10 +138,10 @@ inline void compare(scalar_type c, const vector_type& x, vector_type& z)
 
   z.modify<memory_space>();
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto z_2d = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto z_1d = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto z_2d   = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto z_1d   = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
 #endif
 
   Kokkos::parallel_for(
@@ -174,10 +174,10 @@ inline mag_type normWrms(const vector_type& x, const vector_type& w)
   auto w_2d = w.getLocalView<memory_space>();
   auto w_1d = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto w_2d = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto w_1d = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto w_2d   = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto w_1d   = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;
@@ -217,12 +217,12 @@ inline mag_type normWrmsMask(const vector_type& x, const vector_type& w,
   auto id_2d = id.getLocalView<memory_space>();
   auto id_1d = Kokkos::subview(id_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d  = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d  = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto w_2d  = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto w_1d  = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
-  auto id_2d = id.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto id_1d = Kokkos::subview(id_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto w_2d   = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto w_1d   = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
+  auto id_2d  = id.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto id_1d  = Kokkos::subview(id_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;
@@ -253,8 +253,8 @@ inline scalar_type minElement(const vector_type& x)
   auto x_2d = x.getLocalView<memory_space>();
   auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #endif
 
   scalar_type minimum;
@@ -289,10 +289,10 @@ inline mag_type normWL2(const vector_type& x, const vector_type& w)
   auto w_2d = w.getLocalView<memory_space>();
   auto w_1d = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto w_2d = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto w_1d = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto w_2d   = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto w_1d   = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;
@@ -327,10 +327,10 @@ inline bool invTest(const vector_type& x, vector_type& z)
 
   z.modify<memory_space>();
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto z_2d = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto z_1d = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto z_2d   = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto z_1d   = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
 #endif
 
   scalar_type minimum;
@@ -373,12 +373,12 @@ inline bool constraintMask(const vector_type& c, const vector_type& x,
 
   m.modify<memory_space>();
 #else
-  auto c_2d = c.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto c_1d = Kokkos::subview(c_2d, Kokkos::ALL(), 0);
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto m_2d = m.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto m_1d = Kokkos::subview(m_2d, Kokkos::ALL(), 0);
+  auto c_2d   = c.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto c_1d   = Kokkos::subview(c_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto m_2d   = m.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto m_1d   = Kokkos::subview(m_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;
@@ -454,10 +454,10 @@ inline scalar_type dotProdLocal(const vector_type& x, const vector_type& y)
   auto y_2d = y.getLocalView<memory_space>();
   auto y_1d = Kokkos::subview(y_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto y_2d = y.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto y_1d = Kokkos::subview(y_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto y_2d   = y.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto y_1d   = Kokkos::subview(y_2d, Kokkos::ALL(), 0);
 #endif
 
   scalar_type sum = zero;
@@ -485,8 +485,8 @@ inline mag_type maxNormLocal(const vector_type& x)
   auto x_2d = x.getLocalView<memory_space>();
   auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type maximum;
@@ -516,8 +516,8 @@ inline scalar_type minLocal(const vector_type& x)
   auto x_2d = x.getLocalView<memory_space>();
   auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #endif
 
   scalar_type minimum;
@@ -547,8 +547,8 @@ inline mag_type L1NormLocal(const vector_type& x)
   auto x_2d = x.getLocalView<memory_space>();
   auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;
@@ -578,10 +578,10 @@ inline mag_type WSqrSumLocal(const vector_type& x, const vector_type& w)
   auto w_2d = w.getLocalView<memory_space>();
   auto w_1d = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto w_2d = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto w_1d = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto w_2d   = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto w_1d   = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;
@@ -616,12 +616,12 @@ inline mag_type WSqrSumMaskLocal(const vector_type& x, const vector_type& w,
   auto id_2d = id.getLocalView<memory_space>();
   auto id_1d = Kokkos::subview(id_2d, Kokkos::ALL(), 0);
 #else
-  auto x_2d  = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d  = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto w_2d  = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto w_1d  = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
-  auto id_2d = id.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto id_1d = Kokkos::subview(id_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto w_2d   = w.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto w_1d   = Kokkos::subview(w_2d, Kokkos::ALL(), 0);
+  auto id_2d  = id.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto id_1d  = Kokkos::subview(id_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;
@@ -653,10 +653,10 @@ inline bool invTestLocal(const vector_type& x, vector_type& z)
 
   z.modify<memory_space>();
 #else
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto z_2d = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto z_1d = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto z_2d   = z.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto z_1d   = Kokkos::subview(z_2d, Kokkos::ALL(), 0);
 #endif
 
   scalar_type minimum;
@@ -696,12 +696,12 @@ inline bool constraintMaskLocal(const vector_type& c, const vector_type& x,
 
   m.modify<memory_space>();
 #else
-  auto c_2d = c.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto c_1d = Kokkos::subview(c_2d, Kokkos::ALL(), 0);
-  auto x_2d = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  auto x_1d = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
-  auto m_2d = m.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto m_1d = Kokkos::subview(m_2d, Kokkos::ALL(), 0);
+  auto c_2d   = c.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto c_1d   = Kokkos::subview(c_2d, Kokkos::ALL(), 0);
+  auto x_2d   = x.getLocalView<memory_space>(Tpetra::Access::ReadOnly);
+  auto x_1d   = Kokkos::subview(x_2d, Kokkos::ALL(), 0);
+  auto m_2d   = m.getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto m_1d   = Kokkos::subview(m_2d, Kokkos::ALL(), 0);
 #endif
 
   mag_type sum = zero;

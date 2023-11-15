@@ -74,7 +74,7 @@ typedef struct IntegratorMemRec
   N_Vector x;
   SUNMatrix A;
   SUNLinearSolver LS;
-}* IntegratorMem;
+} * IntegratorMem;
 
 /* Linear solver setup interface function */
 static int LSetup(sunbooleantype jbad, sunbooleantype* jcur, void* mem);

@@ -153,7 +153,7 @@ typedef struct
   sunrealtype **P[MXSUB][MYSUB], **Jbd[MXSUB][MYSUB];
   sunindextype* pivot[MXSUB][MYSUB];
 
-}* UserData;
+} * UserData;
 
 /* Private Helper Functions */
 

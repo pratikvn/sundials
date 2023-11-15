@@ -82,7 +82,7 @@ typedef struct
   sunrealtype lb[NVAR];
   sunrealtype ub[NVAR];
   int nnz;
-}* UserData;
+} * UserData;
 
 /* Functions Called by the KINSOL Solver */
 static int func(N_Vector u, N_Vector f, void* user_data);

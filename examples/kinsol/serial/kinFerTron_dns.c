@@ -80,7 +80,7 @@ typedef struct
 {
   sunrealtype lb[NVAR];
   sunrealtype ub[NVAR];
-}* UserData;
+} * UserData;
 
 /* Accessor macro */
 #define Ith(v, i) NV_Ith_S(v, i - 1)

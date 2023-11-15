@@ -227,12 +227,12 @@ SUNErrCode N_VCopyOps(N_Vector w, N_Vector v)
   v->ops->nvdotprodmulti      = w->ops->nvdotprodmulti;
 
   /* vector array operations */
-  v->ops->nvlinearsumvectorarray     = w->ops->nvlinearsumvectorarray;
-  v->ops->nvscalevectorarray         = w->ops->nvscalevectorarray;
-  v->ops->nvconstvectorarray         = w->ops->nvconstvectorarray;
-  v->ops->nvwrmsnormvectorarray      = w->ops->nvwrmsnormvectorarray;
-  v->ops->nvwrmsnormmaskvectorarray  = w->ops->nvwrmsnormmaskvectorarray;
-  v->ops->nvscaleaddmultivectorarray = w->ops->nvscaleaddmultivectorarray;
+  v->ops->nvlinearsumvectorarray         = w->ops->nvlinearsumvectorarray;
+  v->ops->nvscalevectorarray             = w->ops->nvscalevectorarray;
+  v->ops->nvconstvectorarray             = w->ops->nvconstvectorarray;
+  v->ops->nvwrmsnormvectorarray          = w->ops->nvwrmsnormvectorarray;
+  v->ops->nvwrmsnormmaskvectorarray      = w->ops->nvwrmsnormmaskvectorarray;
+  v->ops->nvscaleaddmultivectorarray     = w->ops->nvscaleaddmultivectorarray;
   v->ops->nvlinearcombinationvectorarray = w->ops->nvlinearcombinationvectorarray;
 
   /*

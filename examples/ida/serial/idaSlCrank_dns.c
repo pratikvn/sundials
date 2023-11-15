@@ -49,7 +49,7 @@ typedef struct
   sunrealtype J1, J2, m2;
   sunrealtype k, c, l0;
   sunrealtype F;
-}* UserData;
+} * UserData;
 
 int ressc(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector resval,
           void* user_data);

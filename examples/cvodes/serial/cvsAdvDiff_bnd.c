@@ -84,7 +84,7 @@
 typedef struct
 {
   sunrealtype dx, dy, hdcoef, hacoef, vdcoef;
-}* UserData;
+} * UserData;
 
 /* Private Helper Functions */
 
@@ -335,7 +335,7 @@ static void SetIC(N_Vector u, UserData data)
     y = j * dy;
     for (i = 1; i <= MX; i++)
     {
-      x = i * dx;
+      x                 = i * dx;
       IJth(udata, i, j) = x * (XMAX - x) * y * (YMAX - y) * SUNRexp(FIVE * x * y);
     }
   }

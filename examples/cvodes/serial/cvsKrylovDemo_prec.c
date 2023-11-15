@@ -189,7 +189,7 @@ typedef struct
   N_Vector tmp;
   N_Vector rewt;
   void* cvode_mem;
-}* WebData;
+} * WebData;
 
 /* Private Helper Functions */
 

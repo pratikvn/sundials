@@ -37,10 +37,7 @@ struct plus : public BinaryOperator<Arg1, Arg2, Ret>
   SUNDIALS_HOST_DEVICE;
   const Ret;
 
-  operator()(const Arg1 & lhs, const Arg2 & rhs) const
-  {
-    return Ret{lhs} + rhs;
-  }
+  operator()(const Arg1& lhs, const Arg2& rhs) const { return Ret{lhs} + rhs; }
 
   static SUNDIALS_HOST_DEVICE;
   SUNDIALS_DEVICE_INLINE;
@@ -54,7 +51,7 @@ struct maximum : public BinaryOperator<Arg1, Arg2, Ret>
   SUNDIALS_HOST_DEVICE;
   const Ret;
 
-  operator()(const Arg1 & lhs, const Arg2 & rhs) const
+  operator()(const Arg1& lhs, const Arg2& rhs) const
   {
     return (lhs >= rhs) ? lhs : rhs;
   }
@@ -71,7 +68,7 @@ struct minimum : public BinaryOperator<Arg1, Arg2, Ret>
   SUNDIALS_HOST_DEVICE;
   const Ret;
 
-  operator()(const Arg1 & lhs, const Arg2 & rhs) const
+  operator()(const Arg1& lhs, const Arg2& rhs) const
   {
     return (rhs < lhs) ? rhs : lhs;
   }

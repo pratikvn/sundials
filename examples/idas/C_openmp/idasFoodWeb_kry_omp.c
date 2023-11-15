@@ -162,7 +162,7 @@
  * species index is = 0, x-index ix = i, and y-index jy = j.
  */
 
-#define IJ_Vptr(vv, i, j) (&NV_Ith_OMP(vv, (i) * NUM_SPECIES + (j) * NSMX))
+#define IJ_Vptr(vv, i, j) (&NV_Ith_OMP(vv, (i)*NUM_SPECIES + (j)*NSMX))
 
 /* Type: UserData.  Contains problem constants, etc. */
 
@@ -177,7 +177,7 @@ typedef struct
   N_Vector ewt;
   void* ida_mem;
   int nthreads;
-}* UserData;
+} * UserData;
 
 /* Prototypes for functions called by the IDA Solver. */
 
@@ -515,7 +515,7 @@ static int PSolve(sunrealtype tt, N_Vector cc, N_Vector cp, N_Vector rr,
   N_VScale(ONE, rvec, zvec);
 
 #pragma omp parallel for collapse(2) default(shared) private(jx, jy, zxy, Pxy, \
-                                                               pivot)          \
+                                                             pivot)            \
   schedule(static) num_threads(webdata->nthreads)
   for (jx = 0; jx < MX; jx++)
   {

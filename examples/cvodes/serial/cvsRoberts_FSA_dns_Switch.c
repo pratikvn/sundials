@@ -62,7 +62,7 @@ typedef struct
   sunbooleantype fsDQ;    /* user provided r.h.s sensitivity analysis (T/F) */
   int meth;               /* sensitivity method                             */
   sunrealtype p[3];       /* sensitivity variables                          */
-}* UserData;
+} * UserData;
 
 /* User provided routine called by the solver to compute
  * the function f(t,y). */

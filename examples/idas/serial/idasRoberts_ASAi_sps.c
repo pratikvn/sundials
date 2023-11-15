@@ -95,7 +95,7 @@
 typedef struct
 {
   sunrealtype p[3];
-}* UserData;
+} * UserData;
 
 /* Prototypes of user-supplied functions */
 

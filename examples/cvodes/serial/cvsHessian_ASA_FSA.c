@@ -49,7 +49,7 @@
 typedef struct
 {
   sunrealtype p1, p2;
-}* UserData;
+} * UserData;
 
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int fQ(sunrealtype t, N_Vector y, N_Vector qdot, void* user_data);

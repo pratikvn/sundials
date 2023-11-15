@@ -76,7 +76,7 @@ typedef struct
   sunrealtype dx, dy, coeffx, coeffy, coeffxy;
   sunrealtype uext[(MXSUB + 2) * (MYSUB + 2)];
   MPI_Comm comm;
-}* UserData;
+} * UserData;
 
 /* Prototypes of user-supplied and supporting functions */
 

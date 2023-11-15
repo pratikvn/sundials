@@ -392,10 +392,10 @@ int SUNLinSolSolve_SPBCGS(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   converged = SUNFALSE;
 
   /* set sunbooleantype flags for internal solver options */
-  preOnLeft = ((PRETYPE(S) == SUN_PREC_LEFT) || (PRETYPE(S) == SUN_PREC_BOTH));
+  preOnLeft  = ((PRETYPE(S) == SUN_PREC_LEFT) || (PRETYPE(S) == SUN_PREC_BOTH));
   preOnRight = ((PRETYPE(S) == SUN_PREC_RIGHT) || (PRETYPE(S) == SUN_PREC_BOTH));
-  scale_x = (sx != NULL);
-  scale_b = (sb != NULL);
+  scale_x    = (sx != NULL);
+  scale_b    = (sb != NULL);
 
   /* Check for unsupported use case */
   if (preOnRight && !(*zeroguess))
