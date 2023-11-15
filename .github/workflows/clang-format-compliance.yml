@@ -13,24 +13,34 @@ jobs:
       # - run: wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
       # - run: sudo add-apt-repository 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main'
       # - run: sudo apt-get -yqq update && sudo apt-get -yqq install clang-format-17
-      - name: Check out Spack
+      - name: Checkout Spack
         uses: actions/checkout@v4
         with:
           repository: spack/spack
           ref: v0.21.0
+
+      - name: Setup Spack
+        run: echo "$PWD/spack/bin" >> "$GITHUB_PATH"
+
       - name: Setup Spack Binary Cache
         run: spack mirror add --oci-username ${{ github.actor }} --oci-password ${{ secrets.OCI_TOKEN }} sundials_spack_cache oci://ghcr.io/LLNL/sundials_spack_cache    
+      
       - name: Spack install llvm@17.0.4
         run: spack install llvm@17.0.4 && spack buildache push sundials_spack_cache llvm   
+      
       - name: Check out repository code
         uses: actions/checkout@v4
+      
       - name: Run checker on code
         run: find ${{ github.workspace }} -name fmod -prune -iname *.h -o -iname *.hpp -o -iname *.c -o -iname *.cpp -o -iname *.cuh -o -iname *.cu | xargs clang-format -i
+      
       - name: Run git diff to see if anything changed
         run: git diff --name-only --exit-code
+      
       - name: Run git diff if we failed
         if: failure()
         run: git diff > diff
+      
       - name: Archive diff if we failed
         uses: actions/upload-artifact@v3
         if: failure()
