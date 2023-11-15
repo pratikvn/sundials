@@ -364,8 +364,8 @@ for the tools respectively.
 .. warning::
 
    We use version 17.0.4 of clang-tidy and clang-format. Any other version may produce different
-   results or not work at all. The easiest way to install this version of the tools is with Spack:
-   ``spack install llvm@17.0.4``.
+   results or not work at all. The easiest way to install the specific version of the tools is 
+   with Spack: ``spack install llvm@17.0.4``.
    
 
 It may be necessary to override clang-tidy at times. This can be done with the
