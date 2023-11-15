@@ -35,7 +35,7 @@ jobs:
       
       - name: Push to buildcache
         if: ${{ !cancelled() }}
-        run: spack buildache push sundials_spack_cache llvm
+        run: spack buildcache push sundials_spack_cache llvm
         
       - name: Check out repository code
         uses: actions/checkout@v4
