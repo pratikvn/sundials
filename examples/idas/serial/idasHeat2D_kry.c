@@ -62,7 +62,7 @@ typedef struct
   sunrealtype dx;
   sunrealtype coeff;
   N_Vector pp; /* vector of prec. diag. elements */
-} * UserData;
+}* UserData;
 
 /* Prototypes for functions called by IDA */
 
@@ -90,7 +90,7 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
  *--------------------------------------------------------------------
  */
 
-int main()
+int main(void)
 {
   void* mem;
   UserData data;

@@ -117,7 +117,7 @@ int RefSol(sunrealtype tf, N_Vector yref, int nout);
 static int ReadInputs(int* argc, char*** argv, sunrealtype* rtol,
                       sunrealtype* atol, sunrealtype* tf, int* nout,
                       sunbooleantype* projerr);
-static void InputHelp();
+static void InputHelp(void);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* SUNDIALS context */
@@ -731,7 +731,7 @@ static int ReadInputs(int* argc, char*** argv, sunrealtype* rtol,
 }
 
 /* Print command line options */
-static void InputHelp()
+static void InputHelp(void)
 {
   printf("\nCommand line options:\n");
   printf("  --tol <rtol> <atol> : relative and absolute tolerance\n");

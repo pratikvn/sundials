@@ -156,12 +156,12 @@ N_Vector N_VCloneEmpty_Trilinos(N_Vector w)
 {
   N_Vector v;
 
-  if (w == NULL) return (NULL);
+  if (w == NULL) { return (NULL); }
 
   /* Create vector */
   v = NULL;
   v = N_VNewEmpty(w->sunctx);
-  if (v == NULL) return (NULL);
+  if (v == NULL) { return (NULL); }
 
   /* Attach operations */
   if (N_VCopyOps(w, v))
@@ -176,7 +176,7 @@ N_Vector N_VCloneEmpty_Trilinos(N_Vector w)
 N_Vector N_VClone_Trilinos(N_Vector w)
 {
   N_Vector v = N_VCloneEmpty_Trilinos(w);
-  if (v == NULL) return (NULL);
+  if (v == NULL) { return (NULL); }
 
   // Get raw pointer to Tpetra vector
   Teuchos::RCP<vector_type> wvec = N_VGetVector_Trilinos(w);

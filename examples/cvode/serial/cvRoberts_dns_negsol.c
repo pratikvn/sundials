@@ -77,7 +77,7 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
  *-------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   sunrealtype t, tout;

@@ -65,7 +65,7 @@ static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol,
                      sunrealtype atol);
 
 /* Main Program */
-int main()
+int main(void)
 {
   sunrealtype ONE = SUN_RCONST(1.0);
 

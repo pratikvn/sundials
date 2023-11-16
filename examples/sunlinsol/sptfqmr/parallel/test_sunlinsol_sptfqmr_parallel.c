@@ -64,7 +64,7 @@ int PSolve(void* ProbData, N_Vector r, N_Vector z, sunrealtype tol, int lr);
 /*    checks function return values  */
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 /*    uniform random number generator in [0,1] */
-static sunrealtype urand();
+static sunrealtype urand(void);
 
 /* global copy of Nloc (for check_vector routine) */
 sunindextype local_problem_size;
@@ -586,7 +586,7 @@ int PSolve(void* Data, N_Vector r_vec, N_Vector z_vec, sunrealtype tol, int lr)
 }
 
 /* uniform random number generator */
-static sunrealtype urand()
+static sunrealtype urand(void)
 {
   return ((sunrealtype)rand() / (sunrealtype)RAND_MAX);
 }
@@ -652,4 +652,4 @@ int check_vector(N_Vector X, N_Vector Y, sunrealtype tol)
   else { return (0); }
 }
 
-void sync_device() {}
+void sync_device(void) {}

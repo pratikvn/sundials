@@ -57,7 +57,7 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   sunrealtype T0     = SUN_RCONST(0.0);  /* initial time */

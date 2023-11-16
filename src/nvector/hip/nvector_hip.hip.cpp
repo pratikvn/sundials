@@ -211,12 +211,12 @@ N_Vector N_VNew_Hip(sunindextype length, SUNContext sunctx)
   v = N_VNewEmpty_Hip(sunctx);
   if (v == NULL) { return (NULL); }
 
-  NVEC_HIP_CONTENT(v)->length             = length;
-  NVEC_HIP_CONTENT(v)->mem_helper         = SUNMemoryHelper_Hip(sunctx);
+  NVEC_HIP_CONTENT(v)->length     = length;
+  NVEC_HIP_CONTENT(v)->mem_helper = SUNMemoryHelper_Hip(sunctx);
   NVEC_HIP_CONTENT(v)->stream_exec_policy = DEFAULT_STREAMING_EXECPOLICY.clone();
   NVEC_HIP_CONTENT(v)->reduce_exec_policy = DEFAULT_REDUCTION_EXECPOLICY.clone();
-  NVEC_HIP_CONTENT(v)->own_helper         = SUNTRUE;
-  NVEC_HIP_PRIVATE(v)->use_managed_mem    = SUNFALSE;
+  NVEC_HIP_CONTENT(v)->own_helper      = SUNTRUE;
+  NVEC_HIP_PRIVATE(v)->use_managed_mem = SUNFALSE;
 
   if (NVEC_HIP_MEMHELP(v) == NULL)
   {
@@ -259,12 +259,12 @@ N_Vector N_VNewWithMemHelp_Hip(sunindextype length,
   v = N_VNewEmpty_Hip(sunctx);
   if (v == NULL) { return (NULL); }
 
-  NVEC_HIP_CONTENT(v)->length             = length;
-  NVEC_HIP_CONTENT(v)->mem_helper         = helper;
+  NVEC_HIP_CONTENT(v)->length     = length;
+  NVEC_HIP_CONTENT(v)->mem_helper = helper;
   NVEC_HIP_CONTENT(v)->stream_exec_policy = DEFAULT_STREAMING_EXECPOLICY.clone();
   NVEC_HIP_CONTENT(v)->reduce_exec_policy = DEFAULT_REDUCTION_EXECPOLICY.clone();
-  NVEC_HIP_CONTENT(v)->own_helper         = SUNFALSE;
-  NVEC_HIP_PRIVATE(v)->use_managed_mem    = use_managed_mem;
+  NVEC_HIP_CONTENT(v)->own_helper      = SUNFALSE;
+  NVEC_HIP_PRIVATE(v)->use_managed_mem = use_managed_mem;
 
   if (AllocateData(v))
   {
@@ -285,12 +285,12 @@ N_Vector N_VNewManaged_Hip(sunindextype length, SUNContext sunctx)
   v = N_VNewEmpty_Hip(sunctx);
   if (v == NULL) { return (NULL); }
 
-  NVEC_HIP_CONTENT(v)->length             = length;
+  NVEC_HIP_CONTENT(v)->length = length;
   NVEC_HIP_CONTENT(v)->stream_exec_policy = DEFAULT_STREAMING_EXECPOLICY.clone();
   NVEC_HIP_CONTENT(v)->reduce_exec_policy = DEFAULT_REDUCTION_EXECPOLICY.clone();
-  NVEC_HIP_CONTENT(v)->mem_helper         = SUNMemoryHelper_Hip(sunctx);
-  NVEC_HIP_CONTENT(v)->own_helper         = SUNTRUE;
-  NVEC_HIP_PRIVATE(v)->use_managed_mem    = SUNTRUE;
+  NVEC_HIP_CONTENT(v)->mem_helper      = SUNMemoryHelper_Hip(sunctx);
+  NVEC_HIP_CONTENT(v)->own_helper      = SUNTRUE;
+  NVEC_HIP_PRIVATE(v)->use_managed_mem = SUNTRUE;
 
   if (NVEC_HIP_MEMHELP(v) == NULL)
   {
@@ -321,15 +321,15 @@ N_Vector N_VMake_Hip(sunindextype length, sunrealtype* h_vdata,
   v = N_VNewEmpty_Hip(sunctx);
   if (v == NULL) { return (NULL); }
 
-  NVEC_HIP_CONTENT(v)->length    = length;
+  NVEC_HIP_CONTENT(v)->length = length;
   NVEC_HIP_CONTENT(v)->host_data = SUNMemoryHelper_Wrap(h_vdata, SUNMEMTYPE_HOST);
-  NVEC_HIP_CONTENT(v)->device_data        = SUNMemoryHelper_Wrap(d_vdata,
-                                                                 SUNMEMTYPE_DEVICE);
+  NVEC_HIP_CONTENT(v)->device_data = SUNMemoryHelper_Wrap(d_vdata,
+                                                          SUNMEMTYPE_DEVICE);
   NVEC_HIP_CONTENT(v)->stream_exec_policy = DEFAULT_STREAMING_EXECPOLICY.clone();
   NVEC_HIP_CONTENT(v)->reduce_exec_policy = DEFAULT_REDUCTION_EXECPOLICY.clone();
-  NVEC_HIP_CONTENT(v)->mem_helper         = SUNMemoryHelper_Hip(sunctx);
-  NVEC_HIP_CONTENT(v)->own_helper         = SUNTRUE;
-  NVEC_HIP_PRIVATE(v)->use_managed_mem    = SUNFALSE;
+  NVEC_HIP_CONTENT(v)->mem_helper      = SUNMemoryHelper_Hip(sunctx);
+  NVEC_HIP_CONTENT(v)->own_helper      = SUNTRUE;
+  NVEC_HIP_PRIVATE(v)->use_managed_mem = SUNFALSE;
 
   if (NVEC_HIP_MEMHELP(v) == NULL)
   {
@@ -367,9 +367,9 @@ N_Vector N_VMakeManaged_Hip(sunindextype length, sunrealtype* vdata,
     SUNMemoryHelper_Alias(NVEC_HIP_CONTENT(v)->host_data);
   NVEC_HIP_CONTENT(v)->stream_exec_policy = DEFAULT_STREAMING_EXECPOLICY.clone();
   NVEC_HIP_CONTENT(v)->reduce_exec_policy = DEFAULT_REDUCTION_EXECPOLICY.clone();
-  NVEC_HIP_CONTENT(v)->mem_helper         = SUNMemoryHelper_Hip(sunctx);
-  NVEC_HIP_CONTENT(v)->own_helper         = SUNTRUE;
-  NVEC_HIP_PRIVATE(v)->use_managed_mem    = SUNTRUE;
+  NVEC_HIP_CONTENT(v)->mem_helper      = SUNMemoryHelper_Hip(sunctx);
+  NVEC_HIP_CONTENT(v)->own_helper      = SUNTRUE;
+  NVEC_HIP_PRIVATE(v)->use_managed_mem = SUNTRUE;
 
   if (NVEC_HIP_MEMHELP(v) == NULL)
   {
@@ -2032,12 +2032,12 @@ int N_VEnableFusedOps_Hip(N_Vector v, sunbooleantype tf)
     v->ops->nvscaleaddmulti     = N_VScaleAddMulti_Hip;
     v->ops->nvdotprodmulti      = N_VDotProdMulti_Hip;
     /* enable all vector array operations */
-    v->ops->nvlinearsumvectorarray         = N_VLinearSumVectorArray_Hip;
-    v->ops->nvscalevectorarray             = N_VScaleVectorArray_Hip;
-    v->ops->nvconstvectorarray             = N_VConstVectorArray_Hip;
-    v->ops->nvwrmsnormvectorarray          = N_VWrmsNormVectorArray_Hip;
-    v->ops->nvwrmsnormmaskvectorarray      = N_VWrmsNormMaskVectorArray_Hip;
-    v->ops->nvscaleaddmultivectorarray     = N_VScaleAddMultiVectorArray_Hip;
+    v->ops->nvlinearsumvectorarray     = N_VLinearSumVectorArray_Hip;
+    v->ops->nvscalevectorarray         = N_VScaleVectorArray_Hip;
+    v->ops->nvconstvectorarray         = N_VConstVectorArray_Hip;
+    v->ops->nvwrmsnormvectorarray      = N_VWrmsNormVectorArray_Hip;
+    v->ops->nvwrmsnormmaskvectorarray  = N_VWrmsNormMaskVectorArray_Hip;
+    v->ops->nvscaleaddmultivectorarray = N_VScaleAddMultiVectorArray_Hip;
     v->ops->nvlinearcombinationvectorarray = N_VLinearCombinationVectorArray_Hip;
     /* enable single buffer reduction operations */
     v->ops->nvdotprodmultilocal = N_VDotProdMulti_Hip;
@@ -2469,11 +2469,11 @@ static int GetKernelParameters(N_Vector v, sunbooleantype reduction,
   if (reduction)
   {
     SUNHipExecPolicy* reduce_exec_policy = NVEC_HIP_CONTENT(v)->reduce_exec_policy;
-    grid                                 = reduce_exec_policy->gridSize(n);
-    block                                = reduce_exec_policy->blockSize();
-    shMemSize                            = 0;
-    stream                               = *(reduce_exec_policy->stream());
-    atomic                               = reduce_exec_policy->atomic();
+    grid      = reduce_exec_policy->gridSize(n);
+    block     = reduce_exec_policy->blockSize();
+    shMemSize = 0;
+    stream    = *(reduce_exec_policy->stream());
+    atomic    = reduce_exec_policy->atomic();
 
     if (!atomic)
     {
@@ -2498,11 +2498,11 @@ static int GetKernelParameters(N_Vector v, sunbooleantype reduction,
   else
   {
     SUNHipExecPolicy* stream_exec_policy = NVEC_HIP_CONTENT(v)->stream_exec_policy;
-    grid                                 = stream_exec_policy->gridSize(n);
-    block                                = stream_exec_policy->blockSize();
-    shMemSize                            = 0;
-    stream                               = *(stream_exec_policy->stream());
-    atomic                               = false;
+    grid      = stream_exec_policy->gridSize(n);
+    block     = stream_exec_policy->blockSize();
+    shMemSize = 0;
+    stream    = *(stream_exec_policy->stream());
+    atomic    = false;
   }
 
   if (grid == 0)

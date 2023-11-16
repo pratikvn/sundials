@@ -981,8 +981,10 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
                   (ONE - yfact);
 
       if (i == 0 || i == data->mx - 1 || j == 0 || j == data->my - 1)
+      {
         id_1d(loc) = ZERO;
-      else id_1d(loc) = ONE;
+      }
+      else { id_1d(loc) = ONE; }
     }
   }
 

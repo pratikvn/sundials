@@ -115,7 +115,7 @@
    work with matrices stored by column in a 2-dimensional array. In C,
    arrays are indexed starting at 0, not 1. */
 
-#define IJKth(vdata, i, j, k) (vdata[i - 1 + (j)*NUM_SPECIES + (k)*NSMX])
+#define IJKth(vdata, i, j, k) (vdata[i - 1 + (j) * NUM_SPECIES + (k) * NSMX])
 #define IJth(a, i, j)         (a[j - 1][i - 1])
 
 /* Type : UserData
@@ -124,7 +124,7 @@
 typedef struct
 {
   sunrealtype q4, om, dx, dy, hdco, haco, vdco;
-} * UserData;
+}* UserData;
 
 /* Private Helper Functions */
 
@@ -147,7 +147,7 @@ static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data);
  *-------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   sunrealtype abstol, reltol, t, tout;

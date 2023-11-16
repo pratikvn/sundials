@@ -361,7 +361,7 @@ int main(int argc, char* argv[])
   fails += Test_SUNMatCopy(A, grid.iam);
   fails += Test_SUNMatZero(A, grid.iam);
   fails += Test_SUNMatScaleAdd(A, I, grid.iam);
-  if (square) fails += Test_SUNMatScaleAddI(A, I, grid.iam);
+  if (square) { fails += Test_SUNMatScaleAddI(A, I, grid.iam); }
   fails += Test_SUNMatMatvecSetup(A, grid.iam);
   fails += Test_SUNMatMatvec(A, x, y, grid.iam);
   fails += Test_SUNMatSpace(A, grid.iam);

@@ -170,7 +170,7 @@ typedef struct
   sunrealtype uround, sqruround;
   sunindextype mx, my, ns, np;
   int nthreads;
-} * UserData;
+}* UserData;
 
 /* Functions Called by the KINSOL Solver */
 
@@ -492,7 +492,7 @@ static int PrecSolveBD(N_Vector cc, N_Vector cscale, N_Vector fval,
   data = (UserData)user_data;
 
 #pragma omp parallel for collapse(2) default( \
-  shared) private(jx, jy, Pxy, piv, vxy) schedule(static)
+    shared) private(jx, jy, Pxy, piv, vxy) schedule(static)
   for (jx = 0; jx < MX; jx++)
   {
     for (jy = 0; jy < MY; jy++)

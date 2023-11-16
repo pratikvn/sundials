@@ -81,7 +81,7 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   sunrealtype T0     = SUN_RCONST(0.0);       /* initial time */
@@ -284,12 +284,12 @@ int main()
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   sunrealtype* rdata = (sunrealtype*)user_data; /* cast user_data to sunrealtype */
-  sunrealtype a      = rdata[0];                /* access data entries */
-  sunrealtype b      = rdata[1];
-  sunrealtype ep     = rdata[2];
-  sunrealtype u      = NV_Ith_S(y, 0); /* access solution values */
-  sunrealtype v      = NV_Ith_S(y, 1);
-  sunrealtype w      = NV_Ith_S(y, 2);
+  sunrealtype a  = rdata[0];                    /* access data entries */
+  sunrealtype b  = rdata[1];
+  sunrealtype ep = rdata[2];
+  sunrealtype u  = NV_Ith_S(y, 0); /* access solution values */
+  sunrealtype v  = NV_Ith_S(y, 1);
+  sunrealtype w  = NV_Ith_S(y, 2);
 
   /* fill in the RHS function */
   NV_Ith_S(ydot, 0) = a - (w + 1.0) * u + v * u * u;
@@ -304,10 +304,10 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   sunrealtype* rdata = (sunrealtype*)user_data; /* cast user_data to sunrealtype */
-  sunrealtype ep     = rdata[2];                /* access data entries */
-  sunrealtype u      = NV_Ith_S(y, 0);          /* access solution values */
-  sunrealtype v      = NV_Ith_S(y, 1);
-  sunrealtype w      = NV_Ith_S(y, 2);
+  sunrealtype ep = rdata[2];                    /* access data entries */
+  sunrealtype u  = NV_Ith_S(y, 0);              /* access solution values */
+  sunrealtype v  = NV_Ith_S(y, 1);
+  sunrealtype w  = NV_Ith_S(y, 2);
 
   /* fill in the Jacobian via SUNDenseMatrix macro, SM_ELEMENT_D (see sunmatrix_dense.h) */
   SM_ELEMENT_D(J, 0, 0) = -(w + 1.0) + 2.0 * u * v;

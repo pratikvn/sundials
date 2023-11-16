@@ -166,7 +166,7 @@ typedef struct
   /* Source */
   N_Vector p; /* Source parameters */
 
-} * ProblemData;
+}* ProblemData;
 
 /*
  *------------------------------------------------------------------
@@ -200,7 +200,7 @@ static void SetSource(ProblemData d);
 static void f_comm(sunindextype Nlocal, sunrealtype t, N_Vector y,
                    void* user_data);
 static void Load_yext(sunrealtype* src, ProblemData d);
-static void PrintHeader();
+static void PrintHeader(void);
 static int PrintFinalStats(void* cvode_mem);
 static void OutputGradient(int myId, N_Vector qB, ProblemData d);
 static int check_retval(void* returnvalue, const char* funcname, int opt, int id);
@@ -1121,7 +1121,7 @@ static void Load_yext(sunrealtype* src, ProblemData d)
  *------------------------------------------------------------------
  */
 
-static void PrintHeader()
+static void PrintHeader(void)
 {
   printf("\nParallel Krylov adjoint sensitivity analysis example\n");
   printf("%1dD Advection diffusion PDE with homogeneous Neumann B.C.\n", DIM);

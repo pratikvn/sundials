@@ -166,7 +166,7 @@ typedef struct
   N_Vector vtemp;
   void* cvode_mem;
   int indexB;
-} * WebData;
+}* WebData;
 
 /* Adjoint calculation constants */
 /* g = int_x int_y c(ISPEC) dy dx at t = Tfinal */

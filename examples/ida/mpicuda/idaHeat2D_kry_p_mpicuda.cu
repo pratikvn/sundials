@@ -71,7 +71,7 @@ typedef struct
   sunrealtype* dev_recv_buff;
   N_Vector pp; /* vector of diagonal preconditioner elements */
   MPI_Comm comm;
-} * UserData;
+}* UserData;
 
 /* User-supplied residual function and supporting routines */
 

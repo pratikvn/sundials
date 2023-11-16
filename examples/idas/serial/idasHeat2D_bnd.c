@@ -62,7 +62,7 @@ typedef struct
   sunindextype mm;
   sunrealtype dx;
   sunrealtype coeff;
-} * UserData;
+}* UserData;
 
 /* Prototypes of functions called by IDA */
 

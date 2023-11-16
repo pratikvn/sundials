@@ -62,7 +62,7 @@ static time_t base_time_tv_sec = 0; /* Base time; makes time values returned
 #endif
 
 /* private functions */
-static double get_time();
+static double get_time(void);
 
 /* private variables */
 static int print_time = 0;
@@ -85,7 +85,7 @@ int Test_Init(SUNComm comm)
   return 0;
 }
 
-int Test_Finalize()
+int Test_Finalize(void)
 {
   if (sunctx != NULL)
   {
@@ -6018,7 +6018,7 @@ void SetTiming(int onoff, int myid)
 /* ----------------------------------------------------------------------
  * Timer
  * --------------------------------------------------------------------*/
-static double get_time()
+static double get_time(void)
 {
   double time;
 #if defined(SUNDIALS_HAVE_POSIX_TIMERS) && defined(_POSIX_TIMERS)

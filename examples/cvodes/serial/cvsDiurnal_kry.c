@@ -116,7 +116,7 @@
    work with matrices stored by column in a 2-dimensional array. In C,
    arrays are indexed starting at 0, not 1. */
 
-#define IJKth(vdata, i, j, k) (vdata[i - 1 + (j)*NUM_SPECIES + (k)*NSMX])
+#define IJKth(vdata, i, j, k) (vdata[i - 1 + (j) * NUM_SPECIES + (k) * NSMX])
 #define IJth(a, i, j)         (a[j - 1][i - 1])
 
 /* Type : UserData
@@ -127,7 +127,7 @@ typedef struct
   sunrealtype **P[MX][MY], **Jbd[MX][MY];
   sunindextype* pivot[MX][MY];
   sunrealtype q4, om, dx, dy, hdco, haco, vdco;
-} * UserData;
+}* UserData;
 
 /* Private Helper Functions */
 
@@ -158,7 +158,7 @@ static int PSolve(sunrealtype tn, N_Vector u, N_Vector fu, N_Vector r, N_Vector 
  *-------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   sunrealtype abstol, reltol, t, tout;

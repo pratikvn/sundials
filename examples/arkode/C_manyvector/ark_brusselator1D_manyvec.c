@@ -86,7 +86,7 @@ typedef struct
   sunrealtype dv; /* diffusion coeff for v   */
   sunrealtype dw; /* diffusion coeff for w   */
   sunrealtype ep; /* stiffness parameter     */
-} * UserData;
+}* UserData;
 
 /* User-supplied Functions Called by the Solver */
 static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -98,7 +98,7 @@ static int JacVI(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   sunrealtype T0    = ZERO;             /* initial time */

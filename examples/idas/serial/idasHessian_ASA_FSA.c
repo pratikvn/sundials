@@ -81,7 +81,7 @@
 typedef struct
 {
   sunrealtype p[3];
-} * UserData;
+}* UserData;
 
 /* residual for forward problem */
 static int res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector resval,

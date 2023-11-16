@@ -78,7 +78,7 @@ struct _sunTimerStruct
 
 typedef struct _sunTimerStruct sunTimerStruct;
 
-static sunTimerStruct* sunTimerStructNew()
+static sunTimerStruct* sunTimerStructNew(void)
 {
   sunTimerStruct* ts = (sunTimerStruct*)malloc(sizeof(sunTimerStruct));
   ts->tic            = (sunTimespec*)malloc(sizeof(sunTimespec));

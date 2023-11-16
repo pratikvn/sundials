@@ -91,7 +91,7 @@ typedef struct UserData_
   int tstop; /* use tstop mode */
   int nout;  /* number of outputs per orbit */
 
-} * UserData;
+}* UserData;
 
 /* Functions provided to CVODE */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -103,7 +103,7 @@ static int Proj(sunrealtype t, N_Vector ycur, N_Vector corr,
 /* Utility functions */
 static int InitUserData(int* argc, char*** argv, UserData udata);
 static int PrintUserData(UserData udata);
-static void InputHelp();
+static void InputHelp(void);
 static int ComputeSolution(sunrealtype t, N_Vector y, UserData udata);
 static int ComputeError(sunrealtype t, N_Vector y, N_Vector e, sunrealtype* ec,
                         UserData udata);
@@ -473,7 +473,7 @@ static int PrintUserData(UserData udata)
 }
 
 /* Print command line options */
-static void InputHelp()
+static void InputHelp(void)
 {
   printf("\nCommand line options:\n");
   printf("  --alpha <vel>      : particle velocity\n");

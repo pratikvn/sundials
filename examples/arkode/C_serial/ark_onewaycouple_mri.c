@@ -72,7 +72,7 @@ static int err(N_Vector y, N_Vector ytrue, sunrealtype* e);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   sunrealtype T0    = SUN_RCONST(0.0);       /* initial time */

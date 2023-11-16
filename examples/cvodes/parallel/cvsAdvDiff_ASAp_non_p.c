@@ -89,7 +89,7 @@ typedef struct
   sunindextype nperpe, nrem;
   MPI_Comm comm;        /* MPI communicator                         */
   sunrealtype *z1, *z2; /* work space                               */
-} * UserData;
+}* UserData;
 
 /* Prototypes of user-supplied funcitons */
 

@@ -76,7 +76,7 @@ typedef struct
   sunrealtype dv; /* diffusion coeff for v   */
   sunrealtype dw; /* diffusion coeff for w   */
   sunrealtype ep; /* stiffness parameter     */
-} * UserData;
+}* UserData;
 
 /* User-supplied Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -91,7 +91,7 @@ static int ReactionJac(sunrealtype c, N_Vector y, SUNMatrix Jac, UserData udata)
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   sunrealtype T0 = SUN_RCONST(0.0);  /* initial time */
@@ -113,7 +113,7 @@ int main()
 
   /* general problem variables */
   int flag;              /* reusable error-checking flag */
-  N_Vector y     = NULL; /* empty vector for storing solution */
+  N_Vector y = NULL;     /* empty vector for storing solution */
   N_Vector umask = NULL; /* empty mask vectors for viewing solution components */
   N_Vector vmask     = NULL;
   N_Vector wmask     = NULL;

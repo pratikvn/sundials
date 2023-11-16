@@ -75,7 +75,7 @@ typedef struct
   sunrealtype* x;         /* current mesh */
   sunrealtype k;          /* diffusion coefficient */
   sunrealtype refine_tol; /* adaptivity tolerance */
-} * UserData;
+}* UserData;
 
 /* User-supplied Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -89,7 +89,7 @@ static int project(sunindextype Nold, sunrealtype* xold, N_Vector yold,
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   sunrealtype T0     = SUN_RCONST(0.0);    /* initial time */

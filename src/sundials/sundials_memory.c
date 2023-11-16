@@ -27,7 +27,7 @@ static SUNProfiler getSUNProfiler(SUNMemoryHelper H)
 }
 #endif
 
-SUNMemory SUNMemoryNewEmpty()
+SUNMemory SUNMemoryNewEmpty(void)
 {
   SUNMemory mem = NULL;
 

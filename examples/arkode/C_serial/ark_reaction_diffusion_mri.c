@@ -66,7 +66,7 @@ typedef struct
   sunrealtype dx; /* mesh spacing          */
   sunrealtype k;  /* diffusion coefficient */
   sunrealtype lam;
-} * UserData;
+}* UserData;
 
 /* User-supplied Functions Called by the Solver */
 static int fs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
@@ -79,7 +79,7 @@ static int SetInitialCondition(N_Vector y, UserData udata);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Main Program */
-int main()
+int main(void)
 {
   /* general problem parameters */
   sunrealtype T0    = SUN_RCONST(0.0);       /* initial time */

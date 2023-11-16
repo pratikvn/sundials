@@ -589,9 +589,9 @@ void N_VLinearSum_Pthreads(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y,
      (3) a,b == other, a !=b, a != -b */
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = (pthread_t*)malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = (pthread_t*)malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -671,9 +671,9 @@ void N_VConst_Pthreads(sunrealtype c, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(z);
-  nthreads    = NV_NUM_THREADS_PT(z);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(z);
+  nthreads = NV_NUM_THREADS_PT(z);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -747,9 +747,9 @@ void N_VProd_Pthreads(N_Vector x, N_Vector y, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -824,9 +824,9 @@ void N_VDiv_Pthreads(N_Vector x, N_Vector y, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -911,9 +911,9 @@ void N_VScale_Pthreads(sunrealtype c, N_Vector x, N_Vector z)
   else
   {
     /* allocate threads and thread data structs */
-    N           = NV_LENGTH_PT(x);
-    nthreads    = NV_NUM_THREADS_PT(x);
-    threads     = malloc(nthreads * sizeof(pthread_t));
+    N        = NV_LENGTH_PT(x);
+    nthreads = NV_NUM_THREADS_PT(x);
+    threads  = malloc(nthreads * sizeof(pthread_t));
     thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
     /* set thread attributes */
@@ -990,9 +990,9 @@ void N_VAbs_Pthreads(N_Vector x, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1065,9 +1065,9 @@ void N_VInv_Pthreads(N_Vector x, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1140,9 +1140,9 @@ void N_VAddConst_Pthreads(N_Vector x, sunrealtype b, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1220,9 +1220,9 @@ sunrealtype N_VDotProd_Pthreads(N_Vector x, N_Vector y)
   sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1314,9 +1314,9 @@ sunrealtype N_VMaxNorm_Pthreads(N_Vector x)
   sunrealtype max = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1418,9 +1418,9 @@ sunrealtype N_VWSqrSumLocal_Pthreads(N_Vector x, N_Vector w)
   sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1521,9 +1521,9 @@ sunrealtype N_VWSqrSumMaskLocal_Pthreads(N_Vector x, N_Vector w, N_Vector id)
   sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1623,9 +1623,9 @@ sunrealtype N_VMin_Pthreads(N_Vector x)
   min = NV_Ith_PT(x, 0);
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1718,9 +1718,9 @@ sunrealtype N_VWL2Norm_Pthreads(N_Vector x, N_Vector w)
   sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1812,9 +1812,9 @@ sunrealtype N_VL1Norm_Pthreads(N_Vector x)
   sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1902,9 +1902,9 @@ void N_VCompare_Pthreads(sunrealtype c, N_Vector x, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -1982,9 +1982,9 @@ sunbooleantype N_VInvTest_Pthreads(N_Vector x, N_Vector z)
   sunrealtype val = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2072,9 +2072,9 @@ sunbooleantype N_VConstrMask_Pthreads(N_Vector c, N_Vector x, N_Vector m)
   sunrealtype val = ZERO;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2173,9 +2173,9 @@ sunrealtype N_VMinQuotient_Pthreads(N_Vector num, N_Vector denom)
   sunrealtype min = SUN_BIG_REAL;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(num);
-  nthreads    = NV_NUM_THREADS_PT(num);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(num);
+  nthreads = NV_NUM_THREADS_PT(num);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2293,9 +2293,9 @@ int N_VLinearCombination_Pthreads(int nvec, sunrealtype* c, N_Vector* X,
   }
 
   /* get vector length and data array */
-  N           = NV_LENGTH_PT(z);
-  nthreads    = NV_NUM_THREADS_PT(z);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(z);
+  nthreads = NV_NUM_THREADS_PT(z);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2419,9 +2419,9 @@ int N_VScaleAddMulti_Pthreads(int nvec, sunrealtype* a, N_Vector x, N_Vector* Y,
   }
 
   /* get vector length and data array */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2536,9 +2536,9 @@ int N_VDotProdMulti_Pthreads(int nvec, N_Vector x, N_Vector* Y,
   for (i = 0; i < nvec; i++) { dotprods[i] = ZERO; }
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2721,9 +2721,9 @@ int N_VLinearSumVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
   /*   (3) a,b == other, a !=b, a != -b                            */
 
   /* get vector length and data array */
-  N           = NV_LENGTH_PT(Z[0]);
-  nthreads    = NV_NUM_THREADS_PT(Z[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(Z[0]);
+  nthreads = NV_NUM_THREADS_PT(Z[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2823,9 +2823,9 @@ int N_VScaleVectorArray_Pthreads(int nvec, sunrealtype* c, N_Vector* X,
   }
 
   /* get vector length and data array */
-  N           = NV_LENGTH_PT(Z[0]);
-  nthreads    = NV_NUM_THREADS_PT(Z[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(Z[0]);
+  nthreads = NV_NUM_THREADS_PT(Z[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -2932,9 +2932,9 @@ int N_VConstVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* Z)
   }
 
   /* get vector length and data array */
-  N           = NV_LENGTH_PT(Z[0]);
-  nthreads    = NV_NUM_THREADS_PT(Z[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(Z[0]);
+  nthreads = NV_NUM_THREADS_PT(Z[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3027,9 +3027,9 @@ int N_VWrmsNormVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* W,
   for (i = 0; i < nvec; i++) { nrm[i] = ZERO; }
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3145,9 +3145,9 @@ int N_VWrmsNormMaskVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* W,
   for (i = 0; i < nvec; i++) { nrm[i] = ZERO; }
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3308,9 +3308,9 @@ int N_VScaleAddMultiVectorArray_Pthreads(int nvec, int nsum, sunrealtype* a,
    * ---------------------------- */
 
   /* get vector length and data array */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3486,9 +3486,9 @@ int N_VLinearCombinationVectorArray_Pthreads(int nvec, int nsum, sunrealtype* c,
    * -------------------------- */
 
   /* get vector length and data array */
-  N           = NV_LENGTH_PT(Z[0]);
-  nthreads    = NV_NUM_THREADS_PT(Z[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(Z[0]);
+  nthreads = NV_NUM_THREADS_PT(Z[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3633,9 +3633,9 @@ int N_VBufPack_Pthreads(N_Vector x, void* buf)
   if (x == NULL || buf == NULL) { return (-1); }
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3710,9 +3710,9 @@ int N_VBufUnpack_Pthreads(N_Vector x, void* buf)
   if (x == NULL || buf == NULL) { return (-1); }
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3791,9 +3791,9 @@ static void VCopy_Pthreads(N_Vector x, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3866,9 +3866,9 @@ static void VSum_Pthreads(N_Vector x, N_Vector y, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -3943,9 +3943,9 @@ static void VDiff_Pthreads(N_Vector x, N_Vector y, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4020,9 +4020,9 @@ static void VNeg_Pthreads(N_Vector x, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4095,9 +4095,9 @@ static void VScaleSum_Pthreads(sunrealtype c, N_Vector x, N_Vector y, N_Vector z
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4175,9 +4175,9 @@ static void VScaleDiff_Pthreads(sunrealtype c, N_Vector x, N_Vector y, N_Vector 
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4255,9 +4255,9 @@ static void VLin1_Pthreads(sunrealtype a, N_Vector x, N_Vector y, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4335,9 +4335,9 @@ static void VLin2_Pthreads(sunrealtype a, N_Vector x, N_Vector y, N_Vector z)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4415,9 +4415,9 @@ static void Vaxpy_Pthreads(sunrealtype a, N_Vector x, N_Vector y)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4509,9 +4509,9 @@ static void VScaleBy_Pthreads(sunrealtype a, N_Vector x)
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(x);
-  nthreads    = NV_NUM_THREADS_PT(x);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(x);
+  nthreads = NV_NUM_THREADS_PT(x);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4588,9 +4588,9 @@ static int VSumVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* Y,
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4659,9 +4659,9 @@ static int VDiffVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* Y,
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4730,9 +4730,9 @@ static int VScaleSumVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* X,
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4804,9 +4804,9 @@ static int VScaleDiffVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* X,
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4878,9 +4878,9 @@ static int VLin1VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -4952,9 +4952,9 @@ static int VLin2VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */
@@ -5026,9 +5026,9 @@ static int VaxpyVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
   pthread_attr_t attr;
 
   /* allocate threads and thread data structs */
-  N           = NV_LENGTH_PT(X[0]);
-  nthreads    = NV_NUM_THREADS_PT(X[0]);
-  threads     = malloc(nthreads * sizeof(pthread_t));
+  N        = NV_LENGTH_PT(X[0]);
+  nthreads = NV_NUM_THREADS_PT(X[0]);
+  threads  = malloc(nthreads * sizeof(pthread_t));
   thread_data = (Pthreads_Data*)malloc(nthreads * sizeof(struct _Pthreads_Data));
 
   /* set thread attributes */

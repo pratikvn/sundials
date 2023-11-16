@@ -102,7 +102,7 @@ typedef struct
   int orth_aa;            /* orthogonalization method         */
   sunrealtype damping_fp; /* damping parameter for FP         */
   sunrealtype damping_aa; /* damping parameter for AA         */
-} * UserOpt;
+}* UserOpt;
 
 /* Nonlinear fixed point function */
 static int FPFunction(N_Vector u, N_Vector f, void* user_data);
@@ -117,7 +117,7 @@ static int SetDefaults(UserOpt* uopt);
 static int ReadInputs(int* argc, char*** argv, UserOpt uopt);
 
 /* Print command line options */
-static void InputHelp();
+static void InputHelp(void);
 
 /* Check function return values */
 static int check_retval(void* returnvalue, const char* funcname, int opt);
@@ -457,7 +457,7 @@ static int ReadInputs(int* argc, char*** argv, UserOpt uopt)
 /* -----------------------------------------------------------------------------
  * Print command line options
  * ---------------------------------------------------------------------------*/
-static void InputHelp()
+static void InputHelp(void)
 {
   printf("\n");
   printf(" Command line options:\n");

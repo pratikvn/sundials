@@ -190,7 +190,7 @@ typedef struct
   N_Vector tmp;
   N_Vector rewt;
   void* cvode_mem;
-} * WebData;
+}* WebData;
 
 /* Private Helper Functions */
 
@@ -238,7 +238,7 @@ static SUNContext sunctx = NULL;
 
 /* Implementation */
 
-int main()
+int main(void)
 {
   sunrealtype abstol = ATOL, reltol = RTOL, t, tout;
   N_Vector c;

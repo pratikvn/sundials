@@ -86,7 +86,7 @@ static int check_ans(N_Vector u, sunrealtype rtol, sunrealtype atol);
  *--------------------------------------------------------------------
  */
 
-int main()
+int main(void)
 {
   SUNContext sunctx;
   sunrealtype fnormtol, fnorm;

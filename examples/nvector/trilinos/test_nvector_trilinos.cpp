@@ -326,9 +326,9 @@ sunrealtype get_element(N_Vector X, sunindextype i)
 
 double max_time(N_Vector X, double time)
 {
-  double maxtime                                      = 0.0;
+  double maxtime = 0.0;
   Teuchos::RCP<TpetraVectorInterface::vector_type> xv = N_VGetVector_Trilinos(X);
-  auto comm                                           = xv->getMap()->getComm();
+  auto comm = xv->getMap()->getComm();
   Teuchos::reduceAll<int, double>(*comm, Teuchos::REDUCE_SUM, time,
                                   Teuchos::outArg(maxtime));
   return maxtime;

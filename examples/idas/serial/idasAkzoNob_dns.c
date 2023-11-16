@@ -55,7 +55,7 @@ typedef struct
 {
   sunrealtype k1, k2, k3, k4;
   sunrealtype K, klA, Ks, pCO2, H;
-} * UserData;
+}* UserData;
 
 static int res(sunrealtype t, N_Vector yy, N_Vector yd, N_Vector resval,
                void* userdata);
@@ -69,7 +69,7 @@ static int PrintFinalStats(void* mem);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Main program */
-int main()
+int main(void)
 {
   UserData data;
   void* mem;

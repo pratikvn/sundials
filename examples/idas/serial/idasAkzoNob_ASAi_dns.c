@@ -63,7 +63,7 @@ typedef struct
 {
   sunrealtype k1, k2, k3, k4;
   sunrealtype K, klA, Ks, pCO2, H;
-} * UserData;
+}* UserData;
 
 static int res(sunrealtype t, N_Vector yy, N_Vector yd, N_Vector resval,
                void* userdata);
@@ -78,7 +78,7 @@ static void PrintOutput(sunrealtype tfinal, N_Vector yB, N_Vector ypB);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Main program */
-int main()
+int main(void)
 {
   UserData data;
   void* mem;
@@ -417,8 +417,8 @@ static int resB(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector yyB,
 
   Ith(rrB, 3) = ypB3 + k2 * y4 * (yB1 - yB3 - yB4 + yB5);
 
-  tmp1        = k3 * y1 * y4;
-  tmp2        = k2 * y3;
+  tmp1 = k3 * y1 * y4;
+  tmp2 = k2 * y3;
   Ith(rrB, 4) = ypB4 + (tmp2 - TWO * tmp1) * yB1 - TWO * tmp1 * yB2 - tmp2 * yB3 -
                 (tmp2 + FOUR * tmp1) * yB4 + tmp2 * yB5 + Ks * y1 * yB6;
 

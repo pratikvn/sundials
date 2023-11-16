@@ -41,7 +41,7 @@
 #include "test_nvector_performance.h"
 
 /* private functions */
-static double get_time();
+static double get_time(void);
 static void time_stats(N_Vector X, double* times, int start, int ntimes,
                        double* avg, double* sdev, double* min, double* max);
 
@@ -2814,7 +2814,7 @@ void rand_realtype_constraints(sunrealtype* data, sunindextype len)
 /* ----------------------------------------------------------------------
  * Timer
  * --------------------------------------------------------------------*/
-static double get_time()
+static double get_time(void)
 {
   double time;
 #if defined(SUNDIALS_HAVE_POSIX_TIMERS) && defined(_POSIX_TIMERS)

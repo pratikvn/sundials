@@ -128,7 +128,7 @@ typedef struct
   int my_pe, isubx, isuby;
   sunindextype nvmxsub, nvmxsub2, Nlocal;
   MPI_Comm comm;
-} * UserData;
+}* UserData;
 
 /* Prototypes of private helper functions */
 

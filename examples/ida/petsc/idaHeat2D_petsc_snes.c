@@ -89,7 +89,7 @@ typedef struct
   N_Vector pp;   /* vector of diagonal preconditioner elements */
   DM da;         /* PETSc data management object */
   void* ida_mem; /* IDA integrator memory */
-} * UserData;
+}* UserData;
 
 /* User-supplied residual function */
 
