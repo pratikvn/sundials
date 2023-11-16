@@ -17,11 +17,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <sunlinsol/sunlinsol_dense.h>
+
 #include "sundials_linearsolver_impl.h"
 
-#define ONE  RCONST(1.0)
+#define ONE RCONST(1.0)
 
 /*
  * -----------------------------------------------------------------
@@ -29,9 +29,9 @@
  * -----------------------------------------------------------------
  */
 
-#define DENSE_CONTENT(S)  ( (SUNLinearSolverContent_Dense)(S->content) )
-#define PIVOTS(S)         ( DENSE_CONTENT(S)->pivots )
-#define LASTFLAG(S)       ( DENSE_CONTENT(S)->last_flag )
+#define DENSE_CONTENT(S) ((SUNLinearSolverContent_Dense)(S->content))
+#define PIVOTS(S)        (DENSE_CONTENT(S)->pivots)
+#define LASTFLAG(S)      (DENSE_CONTENT(S)->last_flag)
 
 /*
  * -----------------------------------------------------------------
@@ -51,7 +51,8 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
   sunindextype MatrixRows;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
-  SUNAssert(SUNDenseMatrix_Rows(A) == SUNDenseMatrix_Columns(A), SUN_ERR_ARG_DIMSMISMATCH);
+  SUNAssert(SUNDenseMatrix_Rows(A) == SUNDenseMatrix_Columns(A),
+            SUN_ERR_ARG_DIMSMISMATCH);
   SUNAssert(y->ops->nvgetarraypointer, SUN_ERR_ARG_INCOMPATIBLE);
 
   MatrixRows = SUNDenseMatrix_Rows(A);
@@ -73,7 +74,7 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
 
   /* Create content */
   content = NULL;
-  content = (SUNLinearSolverContent_Dense) malloc(sizeof *content);
+  content = (SUNLinearSolverContent_Dense)malloc(sizeof *content);
   SUNAssert(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
@@ -85,10 +86,10 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
   content->pivots    = NULL;
 
   /* Allocate content */
-  content->pivots = (sunindextype *) malloc(MatrixRows * sizeof(sunindextype));
+  content->pivots = (sunindextype*)malloc(MatrixRows * sizeof(sunindextype));
   SUNAssert(content->pivots, SUN_ERR_MALLOC_FAIL);
 
-  return(S);
+  return (S);
 }
 
 /*
@@ -99,12 +100,12 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
 
 SUNLinearSolver_Type SUNLinSolGetType_Dense(SUNLinearSolver S)
 {
-  return(SUNLINEARSOLVER_DIRECT);
+  return (SUNLINEARSOLVER_DIRECT);
 }
 
 SUNLinearSolver_ID SUNLinSolGetID_Dense(SUNLinearSolver S)
 {
-  return(SUNLINEARSOLVER_DENSE);
+  return (SUNLINEARSOLVER_DENSE);
 }
 
 SUNErrCode SUNLinSolInitialize_Dense(SUNLinearSolver S)
@@ -117,8 +118,8 @@ SUNErrCode SUNLinSolInitialize_Dense(SUNLinearSolver S)
 int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
 {
   SUNAssignSUNCTX(S->sunctx);
-  realtype **A_cols;
-  sunindextype *pivots;
+  realtype** A_cols;
+  sunindextype* pivots;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
 
@@ -127,9 +128,10 @@ int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
   pivots = NULL;
   A_cols = SUNDenseMatrix_Cols(A);
   pivots = PIVOTS(S);
-  if ( (A_cols == NULL) || (pivots == NULL) ) {
+  if ((A_cols == NULL) || (pivots == NULL))
+  {
     LASTFLAG(S) = SUNLS_MEM_FAIL;
-    return(SUNLS_MEM_FAIL);
+    return (SUNLS_MEM_FAIL);
   }
 
   /* perform LU factorization of input matrix */
@@ -137,43 +139,43 @@ int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
                                      SUNDenseMatrix_Columns(A), pivots);
 
   /* store error flag (if nonzero, this row encountered zero-valued pivod) */
-  if (LASTFLAG(S) > 0)
-    return(SUNLS_LUFACT_FAIL);
-  return(SUNLS_SUCCESS);
+  if (LASTFLAG(S) > 0) { return (SUNLS_LUFACT_FAIL); }
+  return (SUNLS_SUCCESS);
 }
 
-int SUNLinSolSolve_Dense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                         N_Vector b, realtype tol)
+int SUNLinSolSolve_Dense(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
+                         realtype tol)
 {
   SUNAssignSUNCTX(S->sunctx);
   realtype **A_cols, *xdata;
-  sunindextype *pivots;
+  sunindextype* pivots;
 
   /* copy b into x */
   SUNCheckCallLastErrNoRet(N_VScale(ONE, b, x));
 
   /* access data pointers (return with failure on NULL) */
   A_cols = NULL;
-  xdata = NULL;
+  xdata  = NULL;
   pivots = NULL;
   A_cols = SUNCheckCallLastErrNoRet(SUNDenseMatrix_Cols(A));
-  xdata = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(x));
+  xdata  = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(x));
   pivots = PIVOTS(S);
-  if ( (A_cols == NULL) || (xdata == NULL)  || (pivots == NULL) ) {
+  if ((A_cols == NULL) || (xdata == NULL) || (pivots == NULL))
+  {
     LASTFLAG(S) = SUNLS_MEM_FAIL;
-    return(SUNLS_MEM_FAIL);
+    return (SUNLS_MEM_FAIL);
   }
 
   /* solve using LU factors */
   SUNDlsMat_denseGETRS(A_cols, SUNDenseMatrix_Rows(A), pivots, xdata);
   LASTFLAG(S) = SUNLS_SUCCESS;
-  return(SUNLS_SUCCESS);
+  return (SUNLS_SUCCESS);
 }
 
 sunindextype SUNLinSolLastFlag_Dense(SUNLinearSolver S)
 {
   /* return the stored 'last_flag' value */
-  return(LASTFLAG(S));
+  return (LASTFLAG(S));
 }
 
 SUNErrCode SUNLinSolSpace_Dense(SUNLinearSolver S, long int* lenrwLS,
@@ -189,21 +191,25 @@ SUNErrCode SUNLinSolSpace_Dense(SUNLinearSolver S, long int* lenrwLS,
 SUNErrCode SUNLinSolFree_Dense(SUNLinearSolver S)
 {
   /* return if S is already free */
-  if (S == NULL) return SUN_SUCCESS;
+  if (S == NULL) { return SUN_SUCCESS; }
 
   /* delete items from contents, then delete generic structure */
-  if (S->content) {
-    if (PIVOTS(S)) {
+  if (S->content)
+  {
+    if (PIVOTS(S))
+    {
       free(PIVOTS(S));
       PIVOTS(S) = NULL;
     }
     free(S->content);
     S->content = NULL;
   }
-  if (S->ops) {
+  if (S->ops)
+  {
     free(S->ops);
     S->ops = NULL;
   }
-  free(S); S = NULL;
+  free(S);
+  S = NULL;
   return SUN_SUCCESS;
 }

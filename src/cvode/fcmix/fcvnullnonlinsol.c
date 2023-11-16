@@ -19,8 +19,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "fcvode.h"
+
 #include "cvode_impl.h"
+#include "fcvode.h"
 
 /*=============================================================*/
 
@@ -31,10 +32,7 @@ SUNNonlinearSolver F2C_CVODE_nonlinsol;
 /*=============================================================*/
 
 /* C routine that is called when using the default nonlinear solver */
-void FCVNullNonlinSol()
-{
-  F2C_CVODE_nonlinsol = NULL;
-}
+void FCVNullNonlinSol() { F2C_CVODE_nonlinsol = NULL; }
 
 /*===============================================================
    EOF

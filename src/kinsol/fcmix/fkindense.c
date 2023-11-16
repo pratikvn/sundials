@@ -16,14 +16,13 @@
  * of a user-supplied Jacobian approximation routine.
  * -----------------------------------------------------------------*/
 
+#include <kinsol/kinsol_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sunmatrix/sunmatrix_dense.h>
 
 #include "fkinsol.h"     /* prototypes of standard interfaces and global vars.*/
 #include "kinsol_impl.h" /* definition of KINMem type                         */
-
-#include <kinsol/kinsol_ls.h>
-#include <sunmatrix/sunmatrix_dense.h>
 
 /*
  * ----------------------------------------------------------------
@@ -31,13 +30,12 @@
  * ----------------------------------------------------------------
  */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-extern void FK_DJAC(long int* N, realtype* uudata , realtype* fdata,
-                    realtype* jacdata, realtype* v1, realtype* v2,
-                    int* ier);
+extern void FK_DJAC(long int* N, realtype* uudata, realtype* fdata,
+                    realtype* jacdata, realtype* v1, realtype* v2, int* ier);
 
 #ifdef __cplusplus
 }
@@ -49,14 +47,10 @@ extern void FK_DJAC(long int* N, realtype* uudata , realtype* fdata,
  * ----------------------------------------------------------------
  */
 
-void FKIN_DENSESETJAC(int *flag, int *ier)
+void FKIN_DENSESETJAC(int* flag, int* ier)
 {
-  if (*flag == 0) {
-    *ier = KINSetJacFn(KIN_kinmem, NULL);
-  }
-  else {
-    *ier = KINSetJacFn(KIN_kinmem, FKINDenseJac);
-  }
+  if (*flag == 0) { *ier = KINSetJacFn(KIN_kinmem, NULL); }
+  else { *ier = KINSetJacFn(KIN_kinmem, FKINDenseJac); }
   return;
 }
 
@@ -72,8 +66,8 @@ void FKIN_DENSESETJAC(int *flag, int *ier)
  * ----------------------------------------------------------------
  */
 
-int FKINDenseJac(N_Vector uu, N_Vector fval, SUNMatrix J,
-                 void *user_data, N_Vector vtemp1, N_Vector vtemp2)
+int FKINDenseJac(N_Vector uu, N_Vector fval, SUNMatrix J, void* user_data,
+                 N_Vector vtemp1, N_Vector vtemp2)
 {
   realtype *uu_data, *fval_data, *jacdata, *v1_data, *v2_data;
   long int N;
@@ -95,10 +89,10 @@ int FKINDenseJac(N_Vector uu, N_Vector fval, SUNMatrix J,
   v2_data   = N_VGetArrayPointer(vtemp2);
 
   N       = SUNDenseMatrix_Columns(J);
-  jacdata = SUNDenseMatrix_Column(J,0);
+  jacdata = SUNDenseMatrix_Column(J, 0);
 
   /* Call user-supplied routine */
   FK_DJAC(&N, uu_data, fval_data, jacdata, v1_data, v2_data, &ier);
 
-  return(ier);
+  return (ier);
 }

@@ -28,7 +28,7 @@ extern "C" {
 #endif
 /* Forward declarations for implementation specific utility functions */
 int check_vector(N_Vector expected, N_Vector computed, realtype tol);
-void sync_device();
+void sync_device(voidvoidvoidvoidvoidvoidvoidvoidvoidvoidvoidvoid);
 
 /* Test function declarations */
 int Test_SUNLinSolGetType(SUNLinearSolver S, SUNLinearSolver_Type suntype, int myid);

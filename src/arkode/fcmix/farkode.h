@@ -374,9 +374,9 @@ extern "C" {
 
   int FARKExpStab(N_Vector y, realtype t, realtype *hstab, void *user_data);
 
-  void FARKNullMatrix();
-  void FARKNullLinsol();
-  void FARKNullNonlinsol();
+  void FARKNullMatrix(void);
+  void FARKNullLinsol(void);
+  void FARKNullNonlinsol(void);
 
   /* Declarations for global variables shared amongst various routines;
      each of these is defined in the implementation routines for the Fortran

@@ -20,30 +20,27 @@
  * -----------------------------------------------------------------
  */
 
+#include "fcvbbd.h" /* prototypes of interfaces to CVBBDPRE           */
+
+#include <cvode/cvode_bbdpre.h> /* prototypes of CVBBDPRE functions and macros    */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fcvode.h"              /* actual function names, prototypes, global vars.*/
-#include "fcvbbd.h"              /* prototypes of interfaces to CVBBDPRE           */
-
-#include <cvode/cvode_bbdpre.h>  /* prototypes of CVBBDPRE functions and macros    */
+#include "fcvode.h" /* actual function names, prototypes, global vars.*/
 
 /***************************************************************************/
 
 /* Prototypes of the Fortran routines */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FCV_GLOCFN(long int *NLOC, realtype *T,
-                         realtype *YLOC, realtype *GLOC,
-                         long int *IPAR, realtype *RPAR,
-                         int *ier);
+extern void FCV_GLOCFN(long int* NLOC, realtype* T, realtype* YLOC,
+                       realtype* GLOC, long int* IPAR, realtype* RPAR, int* ier);
 
-  extern void FCV_COMMFN(long int *NLOC, realtype *T,
-                         realtype *Y, long int *IPAR,
-                         realtype *RPAR, int *ier);
+extern void FCV_COMMFN(long int* NLOC, realtype* T, realtype* Y, long int* IPAR,
+                       realtype* RPAR, int* ier);
 
 #ifdef __cplusplus
 }
@@ -51,10 +48,9 @@ extern "C" {
 
 /***************************************************************************/
 
-void FCV_BBDINIT(long int *Nloc, long int *mudq, long int *mldq,
-                 long int *mu, long int *ml, realtype* dqrely, int *ier)
+void FCV_BBDINIT(long int* Nloc, long int* mudq, long int* mldq, long int* mu,
+                 long int* ml, realtype* dqrely, int* ier)
 {
-
   /*
      First call CVBBDPrecInit to initialize CVBBDPRE module:
      Nloc       is the local vector size
@@ -65,22 +61,17 @@ void FCV_BBDINIT(long int *Nloc, long int *mudq, long int *mldq,
      FCVcfn     is a pointer to the CVCommFn function
   */
 
-  *ier = CVBBDPrecInit(CV_cvodemem,
-                       (sunindextype)(*Nloc),
-                       (sunindextype)(*mudq),
-                       (sunindextype)(*mldq),
-                       (sunindextype)(*mu),
-                       (sunindextype)(*ml),
-                       *dqrely,
-                       (CVLocalFn) FCVgloc, (CVCommFn) FCVcfn);
+  *ier = CVBBDPrecInit(CV_cvodemem, (sunindextype)(*Nloc),
+                       (sunindextype)(*mudq), (sunindextype)(*mldq),
+                       (sunindextype)(*mu), (sunindextype)(*ml), *dqrely,
+                       (CVLocalFn)FCVgloc, (CVCommFn)FCVcfn);
 
   return;
 }
 
 /***************************************************************************/
 
-void FCV_BBDREINIT(long int *mudq, long int *mldq,
-                   realtype* dqrely, int *ier)
+void FCV_BBDREINIT(long int* mudq, long int* mldq, realtype* dqrely, int* ier)
 {
   /*
      First call CVReInitBBD to re-initialize CVBBDPRE module:
@@ -90,10 +81,8 @@ void FCV_BBDREINIT(long int *mudq, long int *mldq,
      FCVcfn      is a pointer to the CVCommFn function
   */
 
-  *ier = CVBBDPrecReInit(CV_cvodemem,
-                         (sunindextype)(*mudq),
-                         (sunindextype)(*mldq),
-                         *dqrely);
+  *ier = CVBBDPrecReInit(CV_cvodemem, (sunindextype)(*mudq),
+                         (sunindextype)(*mldq), *dqrely);
 }
 
 /***************************************************************************/
@@ -102,7 +91,7 @@ void FCV_BBDREINIT(long int *mudq, long int *mldq,
    subroutine FCVLOCFN. */
 
 int FCVgloc(long int Nloc, realtype t, N_Vector yloc, N_Vector gloc,
-            void *user_data)
+            void* user_data)
 {
   int ier;
   realtype *yloc_data, *gloc_data;
@@ -111,11 +100,11 @@ int FCVgloc(long int Nloc, realtype t, N_Vector yloc, N_Vector gloc,
   yloc_data = N_VGetArrayPointer(yloc);
   gloc_data = N_VGetArrayPointer(gloc);
 
-  CV_userdata = (FCVUserData) user_data;
+  CV_userdata = (FCVUserData)user_data;
 
-  FCV_GLOCFN(&Nloc, &t, yloc_data, gloc_data,
-             CV_userdata->ipar, CV_userdata->rpar, &ier);
-  return(ier);
+  FCV_GLOCFN(&Nloc, &t, yloc_data, gloc_data, CV_userdata->ipar,
+             CV_userdata->rpar, &ier);
+  return (ier);
 }
 
 /***************************************************************************/
@@ -123,26 +112,26 @@ int FCVgloc(long int Nloc, realtype t, N_Vector yloc, N_Vector gloc,
 /* C function FCVcfn to interface between CVBBDPRE module and a Fortran
    subroutine FCVCOMMF. */
 
-int FCVcfn(long int Nloc, realtype t, N_Vector y, void *user_data)
+int FCVcfn(long int Nloc, realtype t, N_Vector y, void* user_data)
 {
   int ier;
-  realtype *yloc;
+  realtype* yloc;
   FCVUserData CV_userdata;
 
   yloc = N_VGetArrayPointer(y);
 
-  CV_userdata = (FCVUserData) user_data;
+  CV_userdata = (FCVUserData)user_data;
 
   FCV_COMMFN(&Nloc, &t, yloc, CV_userdata->ipar, CV_userdata->rpar, &ier);
 
-  return(ier);
+  return (ier);
 }
 
 /***************************************************************************/
 
 /* C function FCVBBDOPT to access optional outputs from CVBBD_Data */
 
-void FCV_BBDOPT(long int *lenrwbbd, long int *leniwbbd, long int *ngebbd)
+void FCV_BBDOPT(long int* lenrwbbd, long int* leniwbbd, long int* ngebbd)
 {
   CVBBDPrecGetWorkSpace(CV_cvodemem, lenrwbbd, leniwbbd);
   CVBBDPrecGetNumGfnEvals(CV_cvodemem, ngebbd);

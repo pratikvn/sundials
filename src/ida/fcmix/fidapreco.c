@@ -16,29 +16,26 @@
  * Note the use of the generic name FIDA_PSET below.
  * -----------------------------------------------------------------*/
 
+#include <ida/ida_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "fida.h"     /* actual fn. names, prototypes and global vars.*/
 #include "ida_impl.h" /* definition of IDAMem type                    */
 
-#include <ida/ida_ls.h>
-
 /*************************************************/
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FIDA_PSET(realtype* t,  realtype* yy,   realtype* yp,
-                        realtype* rr, realtype* c_j,  realtype* ewt,
-                        realtype* h,  long int* ipar, realtype* rpar,
-                        int* ier);
-  
-  extern void FIDA_PSOL(realtype* t,    realtype* yy,    realtype* yp,
-                        realtype* rr,   realtype* r,     realtype* z,
-                        realtype* c_j,  realtype* delta, realtype* ewt,
-                        long int* ipar, realtype* rpar,  int* ier);
+extern void FIDA_PSET(realtype* t, realtype* yy, realtype* yp, realtype* rr,
+                      realtype* c_j, realtype* ewt, realtype* h, long int* ipar,
+                      realtype* rpar, int* ier);
+
+extern void FIDA_PSOL(realtype* t, realtype* yy, realtype* yp, realtype* rr,
+                      realtype* r, realtype* z, realtype* c_j, realtype* delta,
+                      realtype* ewt, long int* ipar, realtype* rpar, int* ier);
 
 #ifdef __cplusplus
 }
@@ -47,22 +44,20 @@ extern "C" {
 /*************************************************/
 
 /*** DEPRECATED ***/
-void FIDA_SPILSSETPREC(int *flag, int *ier)
-{ FIDA_LSSETPREC(flag, ier); }
+void FIDA_SPILSSETPREC(int* flag, int* ier) { FIDA_LSSETPREC(flag, ier); }
 
-void FIDA_LSSETPREC(int *flag, int *ier)
+void FIDA_LSSETPREC(int* flag, int* ier)
 {
   *ier = 0;
 
-  if (*flag == 0) {
-
-    *ier = IDASetPreconditioner(IDA_idamem, NULL, NULL);
-
-  } else {
-
-    if (F2C_IDA_ewtvec == NULL) {
+  if (*flag == 0) { *ier = IDASetPreconditioner(IDA_idamem, NULL, NULL); }
+  else
+  {
+    if (F2C_IDA_ewtvec == NULL)
+    {
       F2C_IDA_ewtvec = N_VClone(F2C_IDA_vec);
-      if (F2C_IDA_ewtvec == NULL) {
+      if (F2C_IDA_ewtvec == NULL)
+      {
         *ier = -1;
         return;
       }
@@ -76,8 +71,8 @@ void FIDA_LSSETPREC(int *flag, int *ier)
 
 /*************************************************/
 
-int FIDAPSet(realtype t, N_Vector yy, N_Vector yp, N_Vector rr,
-	     realtype c_j, void *user_data)
+int FIDAPSet(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, realtype c_j,
+             void* user_data)
 {
   realtype *yy_data, *yp_data, *rr_data, *ewtdata;
   realtype h;
@@ -102,20 +97,19 @@ int FIDAPSet(realtype t, N_Vector yy, N_Vector yp, N_Vector rr,
   rr_data = N_VGetArrayPointer(rr);
   ewtdata = N_VGetArrayPointer(F2C_IDA_ewtvec);
 
-  IDA_userdata = (FIDAUserData) user_data;
+  IDA_userdata = (FIDAUserData)user_data;
 
   /* Call user-supplied routine */
   FIDA_PSET(&t, yy_data, yp_data, rr_data, &c_j, ewtdata, &h,
             IDA_userdata->ipar, IDA_userdata->rpar, &ier);
 
-  return(ier);
+  return (ier);
 }
 
 /*************************************************/
 
-int FIDAPSol(realtype t, N_Vector yy, N_Vector yp, N_Vector rr,
-	     N_Vector rvec, N_Vector zvec,
-	     realtype c_j, realtype delta, void *user_data)
+int FIDAPSol(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, N_Vector rvec,
+             N_Vector zvec, realtype c_j, realtype delta, void* user_data)
 {
   realtype *yy_data, *yp_data, *rr_data, *ewtdata, *rdata, *zdata;
   int ier;
@@ -140,12 +134,11 @@ int FIDAPSol(realtype t, N_Vector yy, N_Vector yp, N_Vector rr,
   rdata   = N_VGetArrayPointer(rvec);
   zdata   = N_VGetArrayPointer(zvec);
 
-  IDA_userdata = (FIDAUserData) user_data;
+  IDA_userdata = (FIDAUserData)user_data;
 
   /* Call user-supplied routine */
-  FIDA_PSOL(&t, yy_data, yp_data, rr_data, rdata, zdata,
-	    &c_j, &delta, ewtdata, 
+  FIDA_PSOL(&t, yy_data, yp_data, rr_data, rdata, zdata, &c_j, &delta, ewtdata,
             IDA_userdata->ipar, IDA_userdata->rpar, &ier);
 
-  return(ier);
+  return (ier);
 }

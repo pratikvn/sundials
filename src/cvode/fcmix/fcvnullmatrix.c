@@ -19,8 +19,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "fcvode.h"
+
 #include "cvode_impl.h"
+#include "fcvode.h"
 
 /*=============================================================*/
 
@@ -31,10 +32,7 @@ SUNMatrix F2C_CVODE_matrix;
 /*=============================================================*/
 
 /* C routine that is called when using matrix-free linear solvers */
-void FCVNullMatrix()
-{
-  F2C_CVODE_matrix = NULL;
-}
+void FCVNullMatrix() { F2C_CVODE_matrix = NULL; }
 
 /*===============================================================
    EOF

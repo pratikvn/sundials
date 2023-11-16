@@ -1056,9 +1056,9 @@ extern "C" {
   
   int FCVEwtSet(N_Vector y, N_Vector ewt, void *user_data);
 
-  void FCVNullMatrix();
-  void FCVNullLinsol();
-  void FCVNullNonlinSol();
+  void FCVNullMatrix(void);
+  void FCVNullLinsol(void);
+  void FCVNullNonlinSol(void);
 
   /* Declarations for global variables shared amongst various routines */
 

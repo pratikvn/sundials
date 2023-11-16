@@ -27,13 +27,13 @@
 
 /* Prototype of user-supplied Fortran routine */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage (IDAEwtFn) */
+#ifdef __cplusplus /* wrapper to enable C++ usage (IDAEwtFn) */
 extern "C" {
 #endif
 
-  extern void FIDA_EWT(realtype*, realtype*,   /* Y, EWT */ 
-                       long int*, realtype*,   /* IPAR, RPAR */
-                       int*);                  /* IER */
+extern void FIDA_EWT(realtype*, realtype*, /* Y, EWT */
+                     long int*, realtype*, /* IPAR, RPAR */
+                     int*);                /* IER */
 
 #ifdef __cplusplus
 }
@@ -45,13 +45,11 @@ extern "C" {
  * User-callable function to interface to IDASetEwtFn.
  */
 
-void FIDA_EWTSET(int *flag, int *ier)
+void FIDA_EWTSET(int* flag, int* ier)
 {
   *ier = 0;
 
-  if (*flag != 0) {
-    *ier = IDAWFtolerances(IDA_idamem,  FIDAEwtSet);
-  }
+  if (*flag != 0) { *ier = IDAWFtolerances(IDA_idamem, FIDAEwtSet); }
 
   return;
 }
@@ -62,7 +60,7 @@ void FIDA_EWTSET(int *flag, int *ier)
  * C function to interface between IDA and a Fortran subroutine FIDAVEWT.
  */
 
-int FIDAEwtSet(N_Vector y, N_Vector ewt, void *user_data)
+int FIDAEwtSet(N_Vector y, N_Vector ewt, void* user_data)
 {
   int ier;
   realtype *y_data, *ewt_data;
@@ -80,10 +78,10 @@ int FIDAEwtSet(N_Vector y, N_Vector ewt, void *user_data)
   y_data   = N_VGetArrayPointer(y);
   ewt_data = N_VGetArrayPointer(ewt);
 
-  IDA_userdata = (FIDAUserData) user_data;
+  IDA_userdata = (FIDAUserData)user_data;
 
   /* Call user-supplied routine */
   FIDA_EWT(y_data, ewt_data, IDA_userdata->ipar, IDA_userdata->rpar, &ier);
 
-  return(ier);
+  return (ier);
 }

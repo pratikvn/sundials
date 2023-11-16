@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "fida.h"
 #include "ida_impl.h"
 
@@ -31,10 +32,7 @@ SUNNonlinearSolver F2C_IDA_nonlinsol;
 /*=============================================================*/
 
 /* C routine that is called when using the default nonlinear solver */
-void FIDANullNonlinSol()
-{
-  F2C_IDA_nonlinsol = NULL;
-}
+void FIDANullNonlinSol() { F2C_IDA_nonlinsol = NULL; }
 
 /*===============================================================
    EOF

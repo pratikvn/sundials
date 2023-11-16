@@ -15,10 +15,10 @@
  * of the SUNNonlinearSolver Newton moudule operations in Fortran.
  * ---------------------------------------------------------------------------*/
 
+#include "fsunnonlinsol_newton.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "fsunnonlinsol_newton.h"
 
 /* Define global nonlinsol variables */
 
@@ -34,62 +34,64 @@ extern N_Vector F2C_ARKODE_vec;
 
 /* Fortran callable interfaces */
 
-void FSUNNEWTON_INIT(int *code, int *ier)
+void FSUNNEWTON_INIT(int* code, int* ier)
 {
   *ier = 0;
 
-  switch(*code) {
+  switch (*code)
+  {
   case FCMIX_CVODE:
-    if (F2C_CVODE_nonlinsol)  SUNNonlinSolFree(F2C_CVODE_nonlinsol);
+    if (F2C_CVODE_nonlinsol) { SUNNonlinSolFree(F2C_CVODE_nonlinsol); }
     F2C_CVODE_nonlinsol = NULL;
     F2C_CVODE_nonlinsol = SUNNonlinSol_Newton(F2C_CVODE_vec);
-    if (F2C_CVODE_nonlinsol == NULL) *ier = -1;
+    if (F2C_CVODE_nonlinsol == NULL) { *ier = -1; }
     break;
   case FCMIX_IDA:
-    if (F2C_IDA_nonlinsol)  SUNNonlinSolFree(F2C_IDA_nonlinsol);
+    if (F2C_IDA_nonlinsol) { SUNNonlinSolFree(F2C_IDA_nonlinsol); }
     F2C_IDA_nonlinsol = NULL;
     F2C_IDA_nonlinsol = SUNNonlinSol_Newton(F2C_IDA_vec);
-    if (F2C_IDA_nonlinsol == NULL) *ier = -1;
+    if (F2C_IDA_nonlinsol == NULL) { *ier = -1; }
     break;
   case FCMIX_ARKODE:
-    if (F2C_ARKODE_nonlinsol)  SUNNonlinSolFree(F2C_ARKODE_nonlinsol);
+    if (F2C_ARKODE_nonlinsol) { SUNNonlinSolFree(F2C_ARKODE_nonlinsol); }
     F2C_ARKODE_nonlinsol = NULL;
     F2C_ARKODE_nonlinsol = SUNNonlinSol_Newton(F2C_ARKODE_vec);
-    if (F2C_ARKODE_nonlinsol == NULL) *ier = -1;
+    if (F2C_ARKODE_nonlinsol == NULL) { *ier = -1; }
     break;
-  default:
-    *ier = -1;
+  default: *ier = -1;
   }
 }
 
-
-void FSUNNEWTON_SETMAXITERS(int *code, int *maxiters, int *ier)
+void FSUNNEWTON_SETMAXITERS(int* code, int* maxiters, int* ier)
 {
   *ier = 0;
 
-  switch(*code) {
+  switch (*code)
+  {
   case FCMIX_CVODE:
-    if (!F2C_CVODE_nonlinsol) {
+    if (!F2C_CVODE_nonlinsol)
+    {
       *ier = -1;
       return;
     }
     *ier = SUNNonlinSolSetMaxIters(F2C_CVODE_nonlinsol, *maxiters);
     break;
   case FCMIX_IDA:
-    if (!F2C_IDA_nonlinsol) {
+    if (!F2C_IDA_nonlinsol)
+    {
       *ier = -1;
       return;
     }
     *ier = SUNNonlinSolSetMaxIters(F2C_IDA_nonlinsol, *maxiters);
     break;
   case FCMIX_ARKODE:
-    if (!F2C_ARKODE_nonlinsol) {
+    if (!F2C_ARKODE_nonlinsol)
+    {
       *ier = -1;
       return;
     }
     *ier = SUNNonlinSolSetMaxIters(F2C_ARKODE_nonlinsol, *maxiters);
     break;
-  default:
-    *ier = -1;
+  default: *ier = -1;
   }
 }

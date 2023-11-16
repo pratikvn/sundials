@@ -20,10 +20,10 @@
 
 // Preconditioner setup routine
 int PSetup(realtype t, N_Vector u, N_Vector f, booleantype jok,
-           booleantype *jcurPtr, realtype gamma, void *user_data)
+           booleantype* jcurPtr, realtype gamma, void* user_data)
 {
   // Access problem data
-  UserData *udata = (UserData *) user_data;
+  UserData* udata = (UserData*)user_data;
 
   SUNDIALS_CXX_MARK_FUNCTION(udata->prof);
 
@@ -37,25 +37,21 @@ int PSetup(realtype t, N_Vector u, N_Vector f, booleantype jok,
   realtype c = ONE / (ONE - gamma * cc);
   N_VConst(c, udata->diag);
 
-
   // Return success
   return 0;
 }
 
-
 // Preconditioner solve routine for Pz = r
-int PSolve(realtype t, N_Vector u, N_Vector f, N_Vector r,
-           N_Vector z, realtype gamma, realtype delta, int lr,
-           void *user_data)
+int PSolve(realtype t, N_Vector u, N_Vector f, N_Vector r, N_Vector z,
+           realtype gamma, realtype delta, int lr, void* user_data)
 {
   // Access user_data structure
-  UserData *udata = (UserData *) user_data;
+  UserData* udata = (UserData*)user_data;
 
   SUNDIALS_CXX_MARK_FUNCTION(udata->prof);
 
   // Perform Jacobi iteration
   N_VProd(udata->diag, r, z);
-
 
   // Return success
   return 0;
@@ -65,10 +61,10 @@ int PSolve(realtype t, N_Vector u, N_Vector f, N_Vector r,
 
 // Preconditioner setup and solve functions
 int PSetup(realtype t, N_Vector u, N_Vector up, N_Vector res, realtype cj,
-           void *user_data)
+           void* user_data)
 {
   // Access problem data
-  UserData *udata = (UserData *) user_data;
+  UserData* udata = (UserData*)user_data;
 
   SUNDIALS_CXX_MARK_FUNCTION(udata->prof);
 
@@ -82,23 +78,20 @@ int PSetup(realtype t, N_Vector u, N_Vector up, N_Vector res, realtype cj,
   realtype c = ONE / (cj - cc);
   N_VConst(c, udata->diag);
 
-
   // Return success
   return 0;
 }
 
-
 int PSolve(realtype t, N_Vector u, N_Vector up, N_Vector res, N_Vector r,
-           N_Vector z, realtype cj, realtype delta, void *user_data)
+           N_Vector z, realtype cj, realtype delta, void* user_data)
 {
   // Access user_data structure
-  UserData *udata = (UserData *) user_data;
+  UserData* udata = (UserData*)user_data;
 
   SUNDIALS_CXX_MARK_FUNCTION(udata->prof);
 
   // Perform Jacobi iteration
   N_VProd(udata->diag, r, z);
-
 
   // Return success
   return 0;

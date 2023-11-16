@@ -17,18 +17,17 @@
  * user-supplied routine FKJTIMES (Jacobian J times vector v).
  * -----------------------------------------------------------------*/
 
+#include <kinsol/kinsol_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "fkinsol.h"
 #include "kinsol_impl.h"
 
-#include <kinsol/kinsol_ls.h>
-
 /*------------------------------------------------------------------
   prototype of the user-supplied fortran routine
   ------------------------------------------------------------------*/
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
@@ -42,10 +41,10 @@ extern void FK_JTIMES(realtype* vdata, realtype* Jvdata, int* new_uu,
 /*------------------------------------------------------------------
   Function : FKIN_LSSETJAC
   ------------------------------------------------------------------*/
-void FKIN_LSSETJAC(int *flag, int *ier)
+void FKIN_LSSETJAC(int* flag, int* ier)
 {
-  if ((*flag) == 0) KINSetJacTimesVecFn(KIN_kinmem, NULL);
-  else              KINSetJacTimesVecFn(KIN_kinmem, FKINJtimes);
+  if ((*flag) == 0) { KINSetJacTimesVecFn(KIN_kinmem, NULL); }
+  else { KINSetJacTimesVecFn(KIN_kinmem, FKINJtimes); }
 
   return;
 }
@@ -53,8 +52,7 @@ void FKIN_LSSETJAC(int *flag, int *ier)
 /*------------------------------------------------------------------
   Function : FKIN_SPILSSETJAC -- DEPRECATED
   ------------------------------------------------------------------*/
-void FKIN_SPILSSETJAC(int *flag, int *ier)
-{ FKIN_LSSETJAC(flag, ier); }
+void FKIN_SPILSSETJAC(int* flag, int* ier) { FKIN_LSSETJAC(flag, ier); }
 
 /*------------------------------------------------------------------
   Function : FKINJtimes
@@ -63,9 +61,8 @@ void FKIN_SPILSSETJAC(int *flag, int *ier)
   KINSp* / KINSp*JTimes and FK_JTIMES (user-supplied Fortran
   routine).
   ------------------------------------------------------------------*/
-int FKINJtimes(N_Vector v, N_Vector Jv,
-               N_Vector uu, booleantype *new_uu, 
-               void *user_data)
+int FKINJtimes(N_Vector v, N_Vector Jv, N_Vector uu, booleantype* new_uu,
+               void* user_data)
 {
   int retcode;
   realtype *vdata, *Jvdata, *uudata;
@@ -75,8 +72,8 @@ int FKINJtimes(N_Vector v, N_Vector Jv,
   vdata  = N_VGetArrayPointer(v);
   uudata = N_VGetArrayPointer(uu);
   Jvdata = N_VGetArrayPointer(Jv);
- 
-  FK_JTIMES(vdata, Jvdata, (int *) new_uu, uudata, &retcode);
 
-  return(retcode);
+  FK_JTIMES(vdata, Jvdata, (int*)new_uu, uudata, &retcode);
+
+  return (retcode);
 }

@@ -45,7 +45,7 @@ void sync_device(N_Vector X);
 
 /* Shared test initialization/finalization */
 int Test_Init(void* comm);
-int Test_Finalize();
+int Test_Finalize(voidvoidvoidvoidvoidvoid);
 void Test_Abort(int code);
 void Test_AbortMPI(void* comm, int code);
 

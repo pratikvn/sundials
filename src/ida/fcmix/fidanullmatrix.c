@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "fida.h"
 #include "ida_impl.h"
 
@@ -31,10 +32,7 @@ SUNMatrix F2C_IDA_matrix;
 /*=============================================================*/
 
 /* C routine that is called when using matrix-free linear solvers */
-void FIDANullMatrix()
-{
-  F2C_IDA_matrix = NULL;
-}
+void FIDANullMatrix() { F2C_IDA_matrix = NULL; }
 
 /*===============================================================
    EOF

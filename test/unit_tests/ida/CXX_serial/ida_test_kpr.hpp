@@ -14,28 +14,28 @@
  * Kvaerno-Prothero-Robinson ODE test problem, see .cpp file for details
  * ---------------------------------------------------------------------------*/
 
-#include <cstdio>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include <cmath>
-#include <vector>
 #include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <sstream>
+#include <vector>
 
 // Include desired integrators, vectors, linear solvers, and nonlinear solvers
 #include "ida/ida.h"
 #include "nvector/nvector_serial.h"
-#include "sunmatrix/sunmatrix_dense.h"
 #include "sunlinsol/sunlinsol_dense.h"
+#include "sunmatrix/sunmatrix_dense.h"
 
 // Macros for problem constants
-#define ZERO    RCONST(0.0)
-#define HALF    RCONST(0.5)
-#define ONE     RCONST(1.0)
-#define TWO     RCONST(2.0)
-#define TWENTY  RCONST(20.0)
+#define ZERO   RCONST(0.0)
+#define HALF   RCONST(0.5)
+#define ONE    RCONST(1.0)
+#define TWO    RCONST(2.0)
+#define TWENTY RCONST(20.0)
 
 using namespace std;
 
@@ -68,7 +68,7 @@ struct TestOptions
 
   // Output options
   realtype dtout = ONE; // output interval
-  int      nout  = 10;  // number of outputs
+  int nout       = 10;  // number of outputs
 };
 
 // -----------------------------------------------------------------------------
@@ -76,40 +76,27 @@ struct TestOptions
 // -----------------------------------------------------------------------------
 
 // DAE residual function
-int res(realtype t, N_Vector y, N_Vector yp, N_Vector rr, void *user_data);
+int res(realtype t, N_Vector y, N_Vector yp, N_Vector rr, void* user_data);
 
 // Jacobian of RHS function
-int J(realtype t,  realtype cj, N_Vector y, N_Vector yp, N_Vector rr,
-      SUNMatrix J, void *user_data, N_Vector tempv1, N_Vector tempv2,
-      N_Vector tempv3);
+int J(realtype t, realtype cj, N_Vector y, N_Vector yp, N_Vector rr, SUNMatrix J,
+      void* user_data, N_Vector tempv1, N_Vector tempv2, N_Vector tempv3);
 
 // -----------------------------------------------------------------------------
 // Helper functions
 // -----------------------------------------------------------------------------
 
 // Compute r(t)
-static realtype r(realtype t)
-{
-  return HALF * cos(t);
-}
+static realtype r(realtype t) { return HALF * cos(t); }
 
 // Compute the derivative of r(t)
-static realtype rdot(realtype t)
-{
-  return -HALF * sin(t);
-}
+static realtype rdot(realtype t) { return -HALF * sin(t); }
 
 // Compute s(t)
-static realtype s(realtype t)
-{
-  return cos(TWENTY * t);
-}
+static realtype s(realtype t) { return cos(TWENTY * t); }
 
 // Compute the derivative of s(t)
-static realtype sdot(realtype t)
-{
-  return -TWENTY * sin(TWENTY * t);
-}
+static realtype sdot(realtype t) { return -TWENTY * sin(TWENTY * t); }
 
 // Compute the true solution
 static int true_sol(realtype t, realtype* u, realtype* v)
@@ -136,21 +123,21 @@ static int true_sol_p(realtype t, realtype* up, realtype* vp)
 // Check function return flag
 int check_flag(int flag, const string funcname)
 {
-  if (!flag) return 0;
-  if (flag < 0) cerr << "ERROR: ";
+  if (!flag) { return 0; }
+  if (flag < 0) { cerr << "ERROR: "; }
   cerr << funcname << " returned " << flag << endl;
   return 1;
 }
 
 // Check if a function returned a NULL pointer
-int check_ptr(void *ptr, const string funcname)
+int check_ptr(void* ptr, const string funcname)
 {
-  if (ptr) return 0;
+  if (ptr) { return 0; }
   cerr << "ERROR: " << funcname << " returned NULL" << endl;
   return 1;
 }
 
-inline void find_arg(vector<string> &args, const string key, realtype &dest)
+inline void find_arg(vector<string>& args, const string key, realtype& dest)
 {
   auto it = find(args.begin(), args.end(), key);
   if (it != args.end())
@@ -166,7 +153,7 @@ inline void find_arg(vector<string> &args, const string key, realtype &dest)
   }
 }
 
-inline void find_arg(vector<string> &args, const string key, long int &dest)
+inline void find_arg(vector<string>& args, const string key, long int& dest)
 {
   auto it = find(args.begin(), args.end(), key);
   if (it != args.end())
@@ -176,7 +163,7 @@ inline void find_arg(vector<string> &args, const string key, long int &dest)
   }
 }
 
-inline void find_arg(vector<string> &args, const string key, int &dest)
+inline void find_arg(vector<string>& args, const string key, int& dest)
 {
   auto it = find(args.begin(), args.end(), key);
   if (it != args.end())
@@ -186,7 +173,7 @@ inline void find_arg(vector<string> &args, const string key, int &dest)
   }
 }
 
-inline void find_arg(vector<string> &args, const string key, bool &dest,
+inline void find_arg(vector<string>& args, const string key, bool& dest,
                      bool store = true)
 {
   auto it = find(args.begin(), args.end(), key);
@@ -216,7 +203,7 @@ void InputHelp()
   cout << "  --nout        : number of outputs\n";
 }
 
-int ReadInputs(vector<string> &args, TestOptions &opts, SUNContext ctx)
+int ReadInputs(vector<string>& args, TestOptions& opts, SUNContext ctx)
 {
   if (find(args.begin(), args.end(), "--help") != args.end())
   {

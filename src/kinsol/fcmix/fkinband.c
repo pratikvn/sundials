@@ -16,14 +16,13 @@
  * of a user-supplied Jacobian approximation routine.
  * -----------------------------------------------------------------*/
 
+#include <kinsol/kinsol_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sunmatrix/sunmatrix_band.h>
 
 #include "fkinsol.h"     /* standard interfaces and global vars.*/
 #include "kinsol_impl.h" /* definition of KINMem type           */
-
-#include <kinsol/kinsol_ls.h>
-#include <sunmatrix/sunmatrix_band.h>
 
 /*
  * ----------------------------------------------------------------
@@ -31,15 +30,13 @@
  * ----------------------------------------------------------------
  */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-extern void FK_BJAC(long int* N, long int* MU, long int* ML,
-                    long int* EBAND,
-                    realtype* UU, realtype* FU,
-                    realtype* BJAC,
-                    realtype* WK1, realtype* WK2, int* IER);
+extern void FK_BJAC(long int* N, long int* MU, long int* ML, long int* EBAND,
+                    realtype* UU, realtype* FU, realtype* BJAC, realtype* WK1,
+                    realtype* WK2, int* IER);
 
 #ifdef __cplusplus
 }
@@ -51,14 +48,10 @@ extern void FK_BJAC(long int* N, long int* MU, long int* ML,
  * ----------------------------------------------------------------
  */
 
-void FKIN_BANDSETJAC(int *flag, int *ier)
+void FKIN_BANDSETJAC(int* flag, int* ier)
 {
-  if (*flag == 0) {
-    *ier = KINSetJacFn(KIN_kinmem, NULL);
-  }
-  else {
-    *ier = KINSetJacFn(KIN_kinmem, FKINBandJac);
-  }
+  if (*flag == 0) { *ier = KINSetJacFn(KIN_kinmem, NULL); }
+  else { *ier = KINSetJacFn(KIN_kinmem, FKINBandJac); }
 
   return;
 }
@@ -75,8 +68,7 @@ void FKIN_BANDSETJAC(int *flag, int *ier)
  * ----------------------------------------------------------------
  */
 
-int FKINBandJac(N_Vector uu, N_Vector fval,
-                SUNMatrix J, void *user_data,
+int FKINBandJac(N_Vector uu, N_Vector fval, SUNMatrix J, void* user_data,
                 N_Vector vtemp1, N_Vector vtemp2)
 {
   realtype *uu_data, *fval_data, *jacdata, *v1_data, *v2_data;
@@ -103,15 +95,11 @@ int FKINBandJac(N_Vector uu, N_Vector fval,
   mlower  = SUNBandMatrix_LowerBandwidth(J);
   smu     = SUNBandMatrix_StoredUpperBandwidth(J);
   eband   = smu + mlower + 1;
-  jacdata = SUNBandMatrix_Column(J,0) - mupper;
+  jacdata = SUNBandMatrix_Column(J, 0) - mupper;
 
   /* Call user-supplied routine */
-  FK_BJAC(&N, &mupper, &mlower, &eband,
-          uu_data, fval_data, 
-          jacdata,
-          v1_data, v2_data, &ier);
+  FK_BJAC(&N, &mupper, &mlower, &eband, uu_data, fval_data, jacdata, v1_data,
+          v2_data, &ier);
 
-  return(ier);
+  return (ier);
 }
-
-

@@ -21,30 +21,27 @@
  * -----------------------------------------------------------------
  */
 
+#include <cvode/cvode_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fcvode.h"     /* actual fn. names, prototypes and global vars.*/
 #include "cvode_impl.h" /* definition of CVodeMem type                  */
-
-#include <cvode/cvode_ls.h>
+#include "fcvode.h"     /* actual fn. names, prototypes and global vars.*/
 
 /***************************************************************************/
 
 /* Prototype of the Fortran routine */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FCV_JTSETUP(realtype *T, realtype *Y, realtype *FY, 
-                          realtype *H, long int *IPAR, 
-                          realtype *RPAR, int *IER);
+extern void FCV_JTSETUP(realtype* T, realtype* Y, realtype* FY, realtype* H,
+                        long int* IPAR, realtype* RPAR, int* IER);
 
-  extern void FCV_JTIMES(realtype *V, realtype *JV, realtype *T, 
-			  realtype *Y, realtype *FY, realtype *H,
-			  long int *IPAR, realtype *RPAR,
-			  realtype *WRK, int *IER);
+extern void FCV_JTIMES(realtype* V, realtype* JV, realtype* T, realtype* Y,
+                       realtype* FY, realtype* H, long int* IPAR,
+                       realtype* RPAR, realtype* WRK, int* IER);
 
 #ifdef __cplusplus
 }
@@ -53,17 +50,12 @@ extern "C" {
 /***************************************************************************/
 
 /* ---DEPRECATED--- */
-void FCV_SPILLSSETJAC(int *flag, int *ier)
-{ FCV_LSSETJAC(flag, ier); }
+void FCV_SPILLSSETJAC(int* flag, int* ier) { FCV_LSSETJAC(flag, ier); }
 
-
-void FCV_LSSETJAC(int *flag, int *ier)
+void FCV_LSSETJAC(int* flag, int* ier)
 {
-  if (*flag == 0) {
-    *ier = CVodeSetJacTimes(CV_cvodemem, NULL, NULL);
-  } else {
-    *ier = CVodeSetJacTimes(CV_cvodemem, FCVJTSetup, FCVJtimes);
-  }
+  if (*flag == 0) { *ier = CVodeSetJacTimes(CV_cvodemem, NULL, NULL); }
+  else { *ier = CVodeSetJacTimes(CV_cvodemem, FCVJTSetup, FCVJtimes); }
 }
 
 /***************************************************************************/
@@ -74,21 +66,20 @@ void FCV_LSSETJAC(int *flag, int *ier)
    using the routine N_VGetArrayPointer from NVECTOR.
    A return flag ier from FCVJTSETUP is returned by FCVJTSetup. */
 
-int FCVJTSetup(realtype t, N_Vector y, N_Vector fy, void *user_data)
+int FCVJTSetup(realtype t, N_Vector y, N_Vector fy, void* user_data)
 {
   realtype *ydata, *fydata;
   realtype h;
   FCVUserData CV_userdata;
   int ier = 0;
-  
+
   CVodeGetLastStep(CV_cvodemem, &h);
-  ydata  = N_VGetArrayPointer(y);
-  fydata = N_VGetArrayPointer(fy);
-  CV_userdata = (FCVUserData) user_data;
- 
-  FCV_JTSETUP(&t, ydata, fydata, &h, CV_userdata->ipar, 
-	      CV_userdata->rpar, &ier);
-  return(ier);
+  ydata       = N_VGetArrayPointer(y);
+  fydata      = N_VGetArrayPointer(fy);
+  CV_userdata = (FCVUserData)user_data;
+
+  FCV_JTSETUP(&t, ydata, fydata, &h, CV_userdata->ipar, CV_userdata->rpar, &ier);
+  return (ier);
 }
 
 /* C function  FCVJtimes to interface between CVODE and  user-supplied
@@ -97,28 +88,27 @@ int FCVJTSetup(realtype t, N_Vector y, N_Vector fy, void *user_data)
    using the routine N_VGetArrayPointer from NVECTOR.
    A return flag ier from FCVJTIMES is returned by FCVJtimes. */
 
-int FCVJtimes(N_Vector v, N_Vector Jv, realtype t, 
-              N_Vector y, N_Vector fy,
-              void *user_data, N_Vector work)
+int FCVJtimes(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
+              void* user_data, N_Vector work)
 {
   realtype *vdata, *Jvdata, *ydata, *fydata, *wkdata;
   realtype h;
   FCVUserData CV_userdata;
 
   int ier = 0;
-  
+
   CVodeGetLastStep(CV_cvodemem, &h);
 
-  vdata   = N_VGetArrayPointer(v);
-  Jvdata  = N_VGetArrayPointer(Jv);
-  ydata   = N_VGetArrayPointer(y);
-  fydata  = N_VGetArrayPointer(fy);
-  wkdata  = N_VGetArrayPointer(work);
+  vdata  = N_VGetArrayPointer(v);
+  Jvdata = N_VGetArrayPointer(Jv);
+  ydata  = N_VGetArrayPointer(y);
+  fydata = N_VGetArrayPointer(fy);
+  wkdata = N_VGetArrayPointer(work);
 
-  CV_userdata = (FCVUserData) user_data;
- 
-  FCV_JTIMES (vdata, Jvdata, &t, ydata, fydata, &h, 
-              CV_userdata->ipar, CV_userdata->rpar, wkdata, &ier);
+  CV_userdata = (FCVUserData)user_data;
 
-  return(ier);
+  FCV_JTIMES(vdata, Jvdata, &t, ydata, fydata, &h, CV_userdata->ipar,
+             CV_userdata->rpar, wkdata, &ier);
+
+  return (ier);
 }

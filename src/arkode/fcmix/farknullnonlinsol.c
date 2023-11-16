@@ -19,8 +19,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "farkode.h"
+
 #include "arkode_impl.h"
+#include "farkode.h"
 
 /*=============================================================*/
 
@@ -31,10 +32,7 @@ SUNNonlinearSolver F2C_ARKODE_nonlinsol;
 /*=============================================================*/
 
 /* C routine that is called when solving an explicit problem */
-void FARKNullNonlinsol()
-{
-  F2C_ARKODE_nonlinsol = NULL;
-}
+void FARKNullNonlinsol() { F2C_ARKODE_nonlinsol = NULL; }
 
 /*===============================================================
    EOF

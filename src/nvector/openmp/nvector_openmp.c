@@ -20,11 +20,11 @@
  * of the NVECTOR module.
  * -----------------------------------------------------------------*/
 
+#include <nvector/nvector_openmp.h>
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <nvector/nvector_openmp.h>
 #include "sundials/sundials_context.h"
 #include "sundials_nvector_impl.h"
 
@@ -34,12 +34,10 @@
 #define ONEPT5 RCONST(1.5)
 
 /* Private functions for special cases of vector operations */
-static void VCopy_OpenMP(N_Vector x, N_Vector z); /* z=x */
-static void VSum_OpenMP(N_Vector x, N_Vector y,
-                        N_Vector z); /* z=x+y     */
-static void VDiff_OpenMP(N_Vector x, N_Vector y,
-                         N_Vector z); /* z=x-y     */
-static void VNeg_OpenMP(N_Vector x, N_Vector z); /* z=-x */
+static void VCopy_OpenMP(N_Vector x, N_Vector z);             /* z=x */
+static void VSum_OpenMP(N_Vector x, N_Vector y, N_Vector z);  /* z=x+y     */
+static void VDiff_OpenMP(N_Vector x, N_Vector y, N_Vector z); /* z=x-y     */
+static void VNeg_OpenMP(N_Vector x, N_Vector z);              /* z=-x */
 static void VScaleSum_OpenMP(realtype c, N_Vector x, N_Vector y,
                              N_Vector z); /* z=c(x+y)  */
 static void VScaleDiff_OpenMP(realtype c, N_Vector x, N_Vector y,
@@ -47,11 +45,9 @@ static void VScaleDiff_OpenMP(realtype c, N_Vector x, N_Vector y,
 static void VLin1_OpenMP(realtype a, N_Vector x, N_Vector y,
                          N_Vector z); /* z=ax+y    */
 static void VLin2_OpenMP(realtype a, N_Vector x, N_Vector y,
-                         N_Vector z); /* z=ax-y    */
-static void Vaxpy_OpenMP(realtype a, N_Vector x,
-                         N_Vector y); /* y <- ax+y */
-static void VScaleBy_OpenMP(realtype a,
-                            N_Vector x); /* x <-
+                         N_Vector z);                         /* z=ax-y    */
+static void Vaxpy_OpenMP(realtype a, N_Vector x, N_Vector y); /* y <- ax+y */
+static void VScaleBy_OpenMP(realtype a, N_Vector x);          /* x <-
                                                                           ax */
 
 /* Private functions for special cases of vector array operations */
@@ -60,19 +56,15 @@ static void VSumVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* Y,
 static void VDiffVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* Y,
                                     N_Vector* Z); /* Z=X-Y */
 static void VScaleSumVectorArray_OpenMP(int nvec, realtype c, N_Vector* X,
-                                        N_Vector* Y,
-                                        N_Vector* Z); /* Z=c(X+Y)
+                                        N_Vector* Y, N_Vector* Z); /* Z=c(X+Y)
                                                                          */
 static void VScaleDiffVectorArray_OpenMP(int nvec, realtype c, N_Vector* X,
-                                         N_Vector* Y,
-                                         N_Vector* Z); /* Z=c(X-Y)
+                                         N_Vector* Y, N_Vector* Z); /* Z=c(X-Y)
                                                                           */
 static void VLin1VectorArray_OpenMP(int nvec, realtype a, N_Vector* X,
-                                    N_Vector* Y,
-                                    N_Vector* Z); /* Z=aX+Y */
+                                    N_Vector* Y, N_Vector* Z); /* Z=aX+Y */
 static void VLin2VectorArray_OpenMP(int nvec, realtype a, N_Vector* X,
-                                    N_Vector* Y,
-                                    N_Vector* Z); /* Z=aX-Y */
+                                    N_Vector* Y, N_Vector* Z); /* Z=aX-Y */
 static void VaxpyVectorArray_OpenMP(int nvec, realtype a, N_Vector* X,
                                     N_Vector* Y); /* Y <- aX+Y
                                                                      */
@@ -87,16 +79,14 @@ static void VaxpyVectorArray_OpenMP(int nvec, realtype a, N_Vector* X,
  * Returns vector type ID. Used to identify vector implementation
  * from abstract N_Vector interface.
  */
-N_Vector_ID N_VGetVectorID_OpenMP(N_Vector v)
-{
-  return SUNDIALS_NVEC_OPENMP;
-}
+N_Vector_ID N_VGetVectorID_OpenMP(N_Vector v) { return SUNDIALS_NVEC_OPENMP; }
 
 /* ----------------------------------------------------------------------------
  * Function to create a new empty vector
  */
 
-N_Vector N_VNewEmpty_OpenMP(sunindextype length, int num_threads, SUNContext sunctx)
+N_Vector N_VNewEmpty_OpenMP(sunindextype length, int num_threads,
+                            SUNContext sunctx)
 {
   SUNAssignSUNCTX(sunctx);
   N_Vector v;
@@ -169,7 +159,7 @@ N_Vector N_VNewEmpty_OpenMP(sunindextype length, int num_threads, SUNContext sun
 
   /* Create content */
   content = NULL;
-  content = (N_VectorContent_OpenMP) malloc(sizeof *content);
+  content = (N_VectorContent_OpenMP)malloc(sizeof *content);
   SUNAssert(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
@@ -181,7 +171,7 @@ N_Vector N_VNewEmpty_OpenMP(sunindextype length, int num_threads, SUNContext sun
   content->own_data    = SUNFALSE;
   content->data        = NULL;
 
-  return(v);
+  return (v);
 }
 
 /* ----------------------------------------------------------------------------
@@ -192,7 +182,7 @@ N_Vector N_VNew_OpenMP(sunindextype length, int num_threads, SUNContext sunctx)
 {
   SUNAssignSUNCTX(sunctx);
   N_Vector v;
-  realtype *data;
+  realtype* data;
 
   SUNAssert(length > 0, SUN_ERR_ARG_OUTOFRANGE);
 
@@ -201,25 +191,26 @@ N_Vector N_VNew_OpenMP(sunindextype length, int num_threads, SUNContext sunctx)
 
   /* Create data */
   data = NULL;
-  data = (realtype *) malloc(length * sizeof(realtype));
+  data = (realtype*)malloc(length * sizeof(realtype));
   SUNAssert(data, SUN_ERR_MALLOC_FAIL);
 
   /* Attach data */
   NV_OWN_DATA_OMP(v) = SUNTRUE;
   NV_DATA_OMP(v)     = data;
 
-  return(v);
+  return (v);
 }
 
 /* ----------------------------------------------------------------------------
  * Function to create a vector with user data component
  */
 
-N_Vector N_VMake_OpenMP(sunindextype length, realtype *v_data, int num_threads, SUNContext sunctx)
+N_Vector N_VMake_OpenMP(sunindextype length, realtype* v_data, int num_threads,
+                        SUNContext sunctx)
 {
   SUNAssignSUNCTX(sunctx);
   N_Vector v;
-  
+
   SUNAssert(length > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   v = NULL;
@@ -229,7 +220,7 @@ N_Vector N_VMake_OpenMP(sunindextype length, realtype *v_data, int num_threads, 
   NV_OWN_DATA_OMP(v) = SUNFALSE;
   NV_DATA_OMP(v)     = v_data;
 
-  return(v);
+  return (v);
 }
 
 /* ----------------------------------------------------------------------------
@@ -268,35 +259,30 @@ void N_VDestroyVectorArray_OpenMP(N_Vector* vs, int count)
 /* ----------------------------------------------------------------------------
  * Function to return number of vector elements
  */
-sunindextype N_VGetLength_OpenMP(N_Vector v)
-{
-  return NV_LENGTH_OMP(v);
-}
+sunindextype N_VGetLength_OpenMP(N_Vector v) { return NV_LENGTH_OMP(v); }
 
 /* ----------------------------------------------------------------------------
  * Function to print a vector to stdout
  */
 
-void N_VPrint_OpenMP(N_Vector x)
-{
-  N_VPrintFile_OpenMP(x, stdout);
-}
+void N_VPrint_OpenMP(N_Vector x) { N_VPrintFile_OpenMP(x, stdout); }
 
 /* ----------------------------------------------------------------------------
  * Function to print a vector to outfile
  */
 
-void N_VPrintFile_OpenMP(N_Vector x, FILE *outfile)
+void N_VPrintFile_OpenMP(N_Vector x, FILE* outfile)
 {
   sunindextype i, N;
-  realtype *xd;
+  realtype* xd;
 
   xd = NULL;
 
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
 
-  for (i = 0; i < N; i++) {
+  for (i = 0; i < N; i++)
+  {
 #if defined(SUNDIALS_EXTENDED_PRECISION)
     fprintf(outfile, "%11.8Lg\n", xd[i]);
 #elif defined(SUNDIALS_DOUBLE_PRECISION)
@@ -325,7 +311,7 @@ N_Vector N_VCloneEmpty_OpenMP(N_Vector w)
   N_Vector v;
   N_VectorContent_OpenMP content;
 
-  if (w == NULL) return(NULL);
+  if (w == NULL) { return (NULL); }
 
   SUNAssignSUNCTX(w->sunctx);
 
@@ -338,7 +324,7 @@ N_Vector N_VCloneEmpty_OpenMP(N_Vector w)
 
   /* Create content */
   content = NULL;
-  content = (N_VectorContent_OpenMP) malloc(sizeof *content);
+  content = (N_VectorContent_OpenMP)malloc(sizeof *content);
   SUNAssert(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
@@ -350,9 +336,8 @@ N_Vector N_VCloneEmpty_OpenMP(N_Vector w)
   content->own_data    = SUNFALSE;
   content->data        = NULL;
 
-  return(v);
+  return (v);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Create new vector from existing vector and attach data
@@ -362,7 +347,7 @@ N_Vector N_VClone_OpenMP(N_Vector w)
 {
   SUNAssignSUNCTX(w->sunctx);
   N_Vector v;
-  realtype *data;
+  realtype* data;
   sunindextype length;
 
   v = NULL;
@@ -372,16 +357,15 @@ N_Vector N_VClone_OpenMP(N_Vector w)
 
   /* Create data */
   data = NULL;
-  data = (realtype *) malloc(length * sizeof(realtype));
+  data = (realtype*)malloc(length * sizeof(realtype));
   SUNAssert(data, SUN_ERR_MALLOC_FAIL);
 
   /* Attach data */
   NV_OWN_DATA_OMP(v) = SUNTRUE;
   NV_DATA_OMP(v)     = data;
 
-  return(v);
+  return (v);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Destroy vector and free vector memory
@@ -389,12 +373,14 @@ N_Vector N_VClone_OpenMP(N_Vector w)
 
 void N_VDestroy_OpenMP(N_Vector v)
 {
-  if (v == NULL) return;
+  if (v == NULL) { return; }
 
   /* free content */
-  if (v->content != NULL) {
+  if (v->content != NULL)
+  {
     /* free data array if it's owned by the vector */
-    if (NV_OWN_DATA_OMP(v) && NV_DATA_OMP(v) != NULL) {
+    if (NV_OWN_DATA_OMP(v) && NV_DATA_OMP(v) != NULL)
+    {
       free(NV_DATA_OMP(v));
       NV_DATA_OMP(v) = NULL;
     }
@@ -403,18 +389,22 @@ void N_VDestroy_OpenMP(N_Vector v)
   }
 
   /* free ops and vector */
-  if (v->ops != NULL) { free(v->ops); v->ops = NULL; }
-  free(v); v = NULL;
+  if (v->ops != NULL)
+  {
+    free(v->ops);
+    v->ops = NULL;
+  }
+  free(v);
+  v = NULL;
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Get storage requirement for N_Vector
  */
 
-void N_VSpace_OpenMP(N_Vector v, sunindextype *lrw, sunindextype *liw)
+void N_VSpace_OpenMP(N_Vector v, sunindextype* lrw, sunindextype* liw)
 {
   *lrw = NV_LENGTH_OMP(v);
   *liw = 1;
@@ -422,34 +412,32 @@ void N_VSpace_OpenMP(N_Vector v, sunindextype *lrw, sunindextype *liw)
   return;
 }
 
-
 /* ----------------------------------------------------------------------------
  * Get vector data pointer
  */
 
-realtype *N_VGetArrayPointer_OpenMP(N_Vector v)
+realtype* N_VGetArrayPointer_OpenMP(N_Vector v)
 {
-  return((realtype *) NV_DATA_OMP(v));
+  return ((realtype*)NV_DATA_OMP(v));
 }
-
 
 /* ----------------------------------------------------------------------------
  * Set vector data pointer
  */
 
-void N_VSetArrayPointer_OpenMP(realtype *v_data, N_Vector v)
+void N_VSetArrayPointer_OpenMP(realtype* v_data, N_Vector v)
 {
-  if (NV_LENGTH_OMP(v) > 0) NV_DATA_OMP(v) = v_data;
+  if (NV_LENGTH_OMP(v) > 0) { NV_DATA_OMP(v) = v_data; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute linear combination z[i] = a*x[i]+b*y[i]
  */
 
-void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y, N_Vector z)
+void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y,
+                         N_Vector z)
 {
   sunindextype i, N;
   realtype c, *xd, *yd, *zd;
@@ -459,26 +447,30 @@ void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y, N_Vecto
   i  = 0; /* initialize to suppress clang warning */
   xd = yd = zd = NULL;
 
-  if ((b == ONE) && (z == y)) {    /* BLAS usage: axpy y <- ax+y */
-    Vaxpy_OpenMP(a,x,y);
+  if ((b == ONE) && (z == y))
+  { /* BLAS usage: axpy y <- ax+y */
+    Vaxpy_OpenMP(a, x, y);
     return;
   }
 
-  if ((a == ONE) && (z == x)) {    /* BLAS usage: axpy x <- by+x */
-    Vaxpy_OpenMP(b,y,x);
+  if ((a == ONE) && (z == x))
+  { /* BLAS usage: axpy x <- by+x */
+    Vaxpy_OpenMP(b, y, x);
     return;
   }
 
   /* Case: a == b == 1.0 */
 
-  if ((a == ONE) && (b == ONE)) {
+  if ((a == ONE) && (b == ONE))
+  {
     VSum_OpenMP(x, y, z);
     return;
   }
 
   /* Cases: (1) a == 1.0, b = -1.0, (2) a == -1.0, b == 1.0 */
 
-  if ((test = ((a == ONE) && (b == -ONE))) || ((a == -ONE) && (b == ONE))) {
+  if ((test = ((a == ONE) && (b == -ONE))) || ((a == -ONE) && (b == ONE)))
+  {
     v1 = test ? y : x;
     v2 = test ? x : y;
     VDiff_OpenMP(v2, v1, z);
@@ -488,7 +480,8 @@ void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y, N_Vecto
   /* Cases: (1) a == 1.0, b == other or 0.0, (2) a == other or 0.0, b == 1.0 */
   /* if a or b is 0.0, then user should have called N_VScale */
 
-  if ((test = (a == ONE)) || (b == ONE)) {
+  if ((test = (a == ONE)) || (b == ONE))
+  {
     c  = test ? b : a;
     v1 = test ? y : x;
     v2 = test ? x : y;
@@ -498,8 +491,9 @@ void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y, N_Vecto
 
   /* Cases: (1) a == -1.0, b != 1.0, (2) a != 1.0, b == -1.0 */
 
-  if ((test = (a == -ONE)) || (b == -ONE)) {
-    c = test ? b : a;
+  if ((test = (a == -ONE)) || (b == -ONE))
+  {
+    c  = test ? b : a;
     v1 = test ? y : x;
     v2 = test ? x : y;
     VLin2_OpenMP(c, v1, v2, z);
@@ -509,14 +503,16 @@ void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y, N_Vecto
   /* Case: a == b */
   /* catches case both a and b are 0.0 - user should have called N_VConst */
 
-  if (a == b) {
+  if (a == b)
+  {
     VScaleSum_OpenMP(a, x, y, z);
     return;
   }
 
   /* Case: a == -b */
 
-  if (a == -b) {
+  if (a == -b)
+  {
     VScaleDiff_OpenMP(a, x, y, z);
     return;
   }
@@ -531,14 +527,12 @@ void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y, N_Vecto
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,a,b,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = (a*xd[i])+(b*yd[i]);
+#pragma omp parallel for default(none) private(i) shared(N, a, b, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = (a * xd[i]) + (b * yd[i]); }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Assigns constant value to all vector elements, z[i] = c
@@ -547,7 +541,7 @@ void N_VLinearSum_OpenMP(realtype a, N_Vector x, realtype b, N_Vector y, N_Vecto
 void N_VConst_OpenMP(realtype c, N_Vector z)
 {
   sunindextype i, N;
-  realtype *zd;
+  realtype* zd;
 
   i  = 0; /* initialize to suppress clang warning */
   zd = NULL;
@@ -555,13 +549,12 @@ void N_VConst_OpenMP(realtype c, N_Vector z)
   N  = NV_LENGTH_OMP(z);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,c,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(z))
-  for (i = 0; i < N; i++) zd[i] = c;
+#pragma omp parallel for default(none) private(i) shared(N, c, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(z))
+  for (i = 0; i < N; i++) { zd[i] = c; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute componentwise product z[i] = x[i]*y[i]
@@ -580,14 +573,12 @@ void N_VProd_OpenMP(N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = xd[i]*yd[i];
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = xd[i] * yd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute componentwise division z[i] = x[i]/y[i]
@@ -606,14 +597,12 @@ void N_VDiv_OpenMP(N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = xd[i]/yd[i];
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = xd[i] / yd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute scaler multiplication z[i] = c*x[i]
@@ -627,29 +616,27 @@ void N_VScale_OpenMP(realtype c, N_Vector x, N_Vector z)
   i  = 0; /* initialize to suppress clang warning */
   xd = zd = NULL;
 
-  if (z == x) {  /* BLAS usage: scale x <- cx */
+  if (z == x)
+  { /* BLAS usage: scale x <- cx */
     VScaleBy_OpenMP(c, x);
     return;
   }
 
-  if (c == ONE) {
-    VCopy_OpenMP(x, z);
-  } else if (c == -ONE) {
-    VNeg_OpenMP(x, z);
-  } else {
+  if (c == ONE) { VCopy_OpenMP(x, z); }
+  else if (c == -ONE) { VNeg_OpenMP(x, z); }
+  else
+  {
     N  = NV_LENGTH_OMP(x);
     xd = NV_DATA_OMP(x);
     zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,c,xd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-    for (i = 0; i < N; i++)
-      zd[i] = c*xd[i];
+#pragma omp parallel for default(none) private(i) shared(N, c, xd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+    for (i = 0; i < N; i++) { zd[i] = c * xd[i]; }
   }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute absolute value of vector components z[i] = SUNRabs(x[i])
@@ -668,12 +655,10 @@ void N_VAbs_OpenMP(N_Vector x, N_Vector z)
   zd = NV_DATA_OMP(z);
 
 #pragma omp parallel for schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = SUNRabs(xd[i]);
+  for (i = 0; i < N; i++) { zd[i] = SUNRabs(xd[i]); }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute componentwise inverse z[i] = 1 / x[i]
@@ -691,14 +676,12 @@ void N_VInv_OpenMP(N_Vector x, N_Vector z)
   xd = NV_DATA_OMP(x);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = ONE/xd[i];
+#pragma omp parallel for default(none) private(i) shared(N, xd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = ONE / xd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute componentwise addition of a scaler to a vector z[i] = x[i] + b
@@ -716,14 +699,12 @@ void N_VAddConst_OpenMP(N_Vector x, realtype b, N_Vector z)
   xd = NV_DATA_OMP(x);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,b,xd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = xd[i]+b;
+#pragma omp parallel for default(none) private(i) shared(N, b, xd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = xd[i] + b; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes the dot product of two vectors, a = sum(x[i]*y[i])
@@ -736,21 +717,18 @@ realtype N_VDotProd_OpenMP(N_Vector x, N_Vector y)
 
   i   = 0; /* initialize to suppress clang warning */
   sum = ZERO;
-  xd  = yd = NULL;
+  xd = yd = NULL;
 
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
   yd = NV_DATA_OMP(y);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++) {
-    sum += xd[i]*yd[i];
-  }
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { sum += xd[i] * yd[i]; }
 
-  return(sum);
+  return (sum);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes max norm of a vector
@@ -768,23 +746,22 @@ realtype N_VMaxNorm_OpenMP(N_Vector x)
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
 
-#pragma omp parallel default(none) private(i,tmax) shared(N,max,xd) \
-   num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel default(none) private(i, tmax) shared(N, max, xd) \
+  num_threads(NV_NUM_THREADS_OMP(x))
   {
     tmax = ZERO;
 #pragma omp for schedule(static)
-    for (i = 0; i < N; i++) {
-      if (SUNRabs(xd[i]) > tmax) tmax = SUNRabs(xd[i]);
+    for (i = 0; i < N; i++)
+    {
+      if (SUNRabs(xd[i]) > tmax) { tmax = SUNRabs(xd[i]); }
     }
 #pragma omp critical
     {
-      if (tmax > max)
-	max = tmax;
+      if (tmax > max) { max = tmax; }
     }
   }
-  return(max);
+  return (max);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes weighted root mean square norm of a vector
@@ -792,9 +769,8 @@ realtype N_VMaxNorm_OpenMP(N_Vector x)
 
 realtype N_VWrmsNorm_OpenMP(N_Vector x, N_Vector w)
 {
-  return(SUNRsqrt(N_VWSqrSumLocal_OpenMP(x, w)/(NV_LENGTH_OMP(x))));
+  return (SUNRsqrt(N_VWSqrSumLocal_OpenMP(x, w) / (NV_LENGTH_OMP(x))));
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes weighted root mean square norm of a masked vector
@@ -802,9 +778,8 @@ realtype N_VWrmsNorm_OpenMP(N_Vector x, N_Vector w)
 
 realtype N_VWrmsNormMask_OpenMP(N_Vector x, N_Vector w, N_Vector id)
 {
-  return(SUNRsqrt(N_VWSqrSumMaskLocal_OpenMP(x, w, id)/(NV_LENGTH_OMP(x))));
+  return (SUNRsqrt(N_VWSqrSumMaskLocal_OpenMP(x, w, id) / (NV_LENGTH_OMP(x))));
 }
-
 
 /* ----------------------------------------------------------------------------
  * Finds the minimun component of a vector
@@ -824,25 +799,26 @@ realtype N_VMin_OpenMP(N_Vector x)
 
   min = xd[0];
 
-#pragma omp parallel default(none) private(i,tmin) shared(N,min,xd) \
-            num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel default(none) private(i, tmin) shared(N, min, xd) \
+  num_threads(NV_NUM_THREADS_OMP(x))
   {
     tmin = xd[0];
 #pragma omp for schedule(static)
-    for (i = 1; i < N; i++) {
-      if (xd[i] < tmin) tmin = xd[i];
+    for (i = 1; i < N; i++)
+    {
+      if (xd[i] < tmin) { tmin = xd[i]; }
     }
-    if (tmin < min) {
+    if (tmin < min)
+    {
 #pragma omp critical
       {
-	if (tmin < min) min = tmin;
+        if (tmin < min) { min = tmin; }
       }
     }
   }
 
-  return(min);
+  return (min);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes weighted L2 norm of a vector
@@ -855,21 +831,18 @@ realtype N_VWL2Norm_OpenMP(N_Vector x, N_Vector w)
 
   i   = 0; /* initialize to suppress clang warning */
   sum = ZERO;
-  xd  = wd = NULL;
+  xd = wd = NULL;
 
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
   wd = NV_DATA_OMP(w);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,wd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++) {
-    sum += SUNSQR(xd[i]*wd[i]);
-  }
+#pragma omp parallel for default(none) private(i) shared(N, xd, wd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { sum += SUNSQR(xd[i] * wd[i]); }
 
-  return(SUNRsqrt(sum));
+  return (SUNRsqrt(sum));
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes L1 norm of a vector
@@ -887,14 +860,12 @@ realtype N_VL1Norm_OpenMP(N_Vector x)
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i<N; i++)
-    sum += SUNRabs(xd[i]);
+#pragma omp parallel for default(none) private(i) shared(N, xd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { sum += SUNRabs(xd[i]); }
 
-  return(sum);
+  return (sum);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compare vector component values to a scaler
@@ -912,15 +883,12 @@ void N_VCompare_OpenMP(realtype c, N_Vector x, N_Vector z)
   xd = NV_DATA_OMP(x);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,c,xd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++) {
-    zd[i] = (SUNRabs(xd[i]) >= c) ? ONE : ZERO;
-  }
+#pragma omp parallel for default(none) private(i) shared(N, c, xd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = (SUNRabs(xd[i]) >= c) ? ONE : ZERO; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute componentwise inverse z[i] = ONE/x[i] and checks if x[i] == ZERO
@@ -940,21 +908,17 @@ booleantype N_VInvTest_OpenMP(N_Vector x, N_Vector z)
 
   val = ZERO;
 
-#pragma omp parallel for default(none) private(i) shared(N,val,xd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++) {
-    if (xd[i] == ZERO)
-      val = ONE;
-    else
-      zd[i] = ONE/xd[i];
+#pragma omp parallel for default(none) private(i) shared(N, val, xd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++)
+  {
+    if (xd[i] == ZERO) { val = ONE; }
+    else { zd[i] = ONE / xd[i]; }
   }
 
-  if (val > ZERO)
-    return (SUNFALSE);
-  else
-    return (SUNTRUE);
+  if (val > ZERO) { return (SUNFALSE); }
+  else { return (SUNTRUE); }
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute constraint mask of a vector
@@ -977,26 +941,24 @@ booleantype N_VConstrMask_OpenMP(N_Vector c, N_Vector x, N_Vector m)
 
   temp = ZERO;
 
-#pragma omp parallel for default(none) private(i,test) shared(N,xd,cd,md,temp) \
-  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++) {
+#pragma omp parallel for default(none) private(i, test) \
+  shared(N, xd, cd, md, temp) schedule(static)          \
+  num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++)
+  {
     md[i] = ZERO;
 
     /* Continue if no constraints were set for the variable */
-    if (cd[i] == ZERO)
-      continue;
+    if (cd[i] == ZERO) { continue; }
 
     /* Check if a set constraint has been violated */
-    test = (SUNRabs(cd[i]) > ONEPT5 && xd[i]*cd[i] <= ZERO) ||
-           (SUNRabs(cd[i]) > HALF   && xd[i]*cd[i] <  ZERO);
-    if (test) {
-      temp = md[i] = ONE; /* Here is a race to write to temp */
-    }
+    test = (SUNRabs(cd[i]) > ONEPT5 && xd[i] * cd[i] <= ZERO) ||
+           (SUNRabs(cd[i]) > HALF && xd[i] * cd[i] < ZERO);
+    if (test) { temp = md[i] = ONE; /* Here is a race to write to temp */ }
   }
   /* Return false if any constraint was violated */
   return (temp == ONE) ? SUNFALSE : SUNTRUE;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute minimum componentwise quotient
@@ -1016,28 +978,30 @@ realtype N_VMinQuotient_OpenMP(N_Vector num, N_Vector denom)
 
   min = BIG_REAL;
 
-#pragma omp parallel default(none) private(i,tmin,val) shared(N,min,nd,dd) \
-   num_threads(NV_NUM_THREADS_OMP(num))
+#pragma omp parallel default(none) private(i, tmin, val) \
+  shared(N, min, nd, dd) num_threads(NV_NUM_THREADS_OMP(num))
   {
     tmin = BIG_REAL;
 #pragma omp for schedule(static)
-    for (i = 0; i < N; i++) {
-      if (dd[i] != ZERO) {
-	val = nd[i]/dd[i];
-	if (val < tmin) tmin = val;
+    for (i = 0; i < N; i++)
+    {
+      if (dd[i] != ZERO)
+      {
+        val = nd[i] / dd[i];
+        if (val < tmin) { tmin = val; }
       }
     }
-    if (tmin < min) {
+    if (tmin < min)
+    {
 #pragma omp critical
       {
-	if (tmin < min) min = tmin;
+        if (tmin < min) { min = tmin; }
       }
     }
   }
 
-  return(min);
+  return (min);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes weighted square sum of a vector
@@ -1050,21 +1014,18 @@ realtype N_VWSqrSumLocal_OpenMP(N_Vector x, N_Vector w)
 
   i   = 0; /* initialize to suppress clang warning */
   sum = ZERO;
-  xd  = wd = NULL;
+  xd = wd = NULL;
 
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
   wd = NV_DATA_OMP(w);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,wd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++) {
-    sum += SUNSQR(xd[i]*wd[i]);
-  }
+#pragma omp parallel for default(none) private(i) shared(N, xd, wd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { sum += SUNSQR(xd[i] * wd[i]); }
 
-  return(sum);
+  return (sum);
 }
-
 
 /* ----------------------------------------------------------------------------
  * Computes weighted square sum of a masked vector
@@ -1077,24 +1038,22 @@ realtype N_VWSqrSumMaskLocal_OpenMP(N_Vector x, N_Vector w, N_Vector id)
 
   i   = 0; /* initialize to suppress clang warning */
   sum = ZERO;
-  xd  = wd = idd = NULL;
+  xd = wd = idd = NULL;
 
   N   = NV_LENGTH_OMP(x);
   xd  = NV_DATA_OMP(x);
   wd  = NV_DATA_OMP(w);
   idd = NV_DATA_OMP(id);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,wd,idd) \
-  reduction(+:sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++) {
-    if (idd[i] > ZERO) {
-      sum += SUNSQR(xd[i]*wd[i]);
-    }
+#pragma omp parallel for default(none) private(i) shared(N, xd, wd, idd) \
+  reduction(+ : sum) schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++)
+  {
+    if (idd[i] > ZERO) { sum += SUNSQR(xd[i] * wd[i]); }
   }
 
-  return(sum);
+  return (sum);
 }
-
 
 /*
  * -----------------------------------------------------------------
@@ -1102,14 +1061,15 @@ realtype N_VWSqrSumMaskLocal_OpenMP(N_Vector x, N_Vector w, N_Vector id)
  * -----------------------------------------------------------------
  */
 
-SUNErrCode N_VLinearCombination_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vector z) 
+SUNErrCode N_VLinearCombination_OpenMP(int nvec, realtype* c, N_Vector* X,
+                                       N_Vector z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    zd=NULL;
-  realtype*    xd=NULL;
+  realtype* zd = NULL;
+  realtype* xd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1118,13 +1078,15 @@ SUNErrCode N_VLinearCombination_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vec
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VScale */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     N_VScale_OpenMP(c[0], X[0], z);
     return SUN_SUCCESS;
   }
 
   /* should have called N_VLinearSum */
-  if (nvec == 2) {
+  if (nvec == 2)
+  {
     N_VLinearSum_OpenMP(c[0], X[0], c[1], X[1], z);
     return SUN_SUCCESS;
   }
@@ -1133,20 +1095,19 @@ SUNErrCode N_VLinearCombination_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vec
   N  = NV_LENGTH_OMP(z);
   zd = NV_DATA_OMP(z);
 
-
   /*
    * X[0] += c[i]*X[i], i = 1,...,nvec-1
    */
-  if ((X[0] == z) && (c[0] == ONE)) {
-#pragma omp parallel default(none) private(i,j,xd) shared(nvec,X,N,c,zd) \
+  if ((X[0] == z) && (c[0] == ONE))
+  {
+#pragma omp parallel default(none) private(i, j, xd) shared(nvec, X, N, c, zd) \
   num_threads(NV_NUM_THREADS_OMP(z))
     {
-      for (i=1; i<nvec; i++) {
+      for (i = 1; i < nvec; i++)
+      {
         xd = NV_DATA_OMP(X[i]);
 #pragma omp for schedule(static)
-        for (j=0; j<N; j++) {
-          zd[j] += c[i] * xd[j];
-        }
+        for (j = 0; j < N; j++) { zd[j] += c[i] * xd[j]; }
       }
     }
     return SUN_SUCCESS;
@@ -1155,21 +1116,19 @@ SUNErrCode N_VLinearCombination_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vec
   /*
    * X[0] = c[0] * X[0] + sum{ c[i] * X[i] }, i = 1,...,nvec-1
    */
-  if (X[0] == z) {
-#pragma omp parallel default(none) private(i,j,xd) shared(nvec,X,N,c,zd) \
+  if (X[0] == z)
+  {
+#pragma omp parallel default(none) private(i, j, xd) shared(nvec, X, N, c, zd) \
   num_threads(NV_NUM_THREADS_OMP(z))
     {
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        zd[j] *= c[0];
-      }
+      for (j = 0; j < N; j++) { zd[j] *= c[0]; }
 
-      for (i=1; i<nvec; i++) {
+      for (i = 1; i < nvec; i++)
+      {
         xd = NV_DATA_OMP(X[i]);
 #pragma omp for schedule(static)
-        for (j=0; j<N; j++) {
-          zd[j] += c[i] * xd[j];
-        }
+        for (j = 0; j < N; j++) { zd[j] += c[i] * xd[j]; }
       }
     }
     return SUN_SUCCESS;
@@ -1178,36 +1137,33 @@ SUNErrCode N_VLinearCombination_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vec
   /*
    * z = sum{ c[i] * X[i] }, i = 0,...,nvec-1
    */
-#pragma omp parallel default(none) private(i,j,xd) shared(nvec,X,N,c,zd) \
+#pragma omp parallel default(none) private(i, j, xd) shared(nvec, X, N, c, zd) \
   num_threads(NV_NUM_THREADS_OMP(z))
   {
     xd = NV_DATA_OMP(X[0]);
 #pragma omp for schedule(static)
-    for (j=0; j<N; j++) {
-      zd[j] = c[0] * xd[j];
-    }
+    for (j = 0; j < N; j++) { zd[j] = c[0] * xd[j]; }
 
-    for (i=1; i<nvec; i++) {
+    for (i = 1; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        zd[j] += c[i] * xd[j];
-      }
+      for (j = 0; j < N; j++) { zd[j] += c[i] * xd[j]; }
     }
   }
   return SUN_SUCCESS;
 }
 
-
-SUNErrCode N_VScaleAddMulti_OpenMP(int nvec, realtype* a, N_Vector x, N_Vector* Y, N_Vector* Z)
+SUNErrCode N_VScaleAddMulti_OpenMP(int nvec, realtype* a, N_Vector x,
+                                   N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1216,7 +1172,8 @@ SUNErrCode N_VScaleAddMulti_OpenMP(int nvec, realtype* a, N_Vector x, N_Vector* 
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VLinearSum */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     N_VLinearSum_OpenMP(a[0], x, ONE, Y[0], Z[0]);
     return SUN_SUCCESS;
   }
@@ -1228,16 +1185,16 @@ SUNErrCode N_VScaleAddMulti_OpenMP(int nvec, realtype* a, N_Vector x, N_Vector* 
   /*
    * Y[i][j] += a[i] * x[j]
    */
-  if (Y == Z) {
-#pragma omp parallel default(none) private(i,j,yd) shared(nvec,Y,N,a,xd) \
+  if (Y == Z)
+  {
+#pragma omp parallel default(none) private(i, j, yd) shared(nvec, Y, N, a, xd) \
   num_threads(NV_NUM_THREADS_OMP(x))
     {
-      for (i=0; i<nvec; i++) {
+      for (i = 0; i < nvec; i++)
+      {
         yd = NV_DATA_OMP(Y[i]);
 #pragma omp for schedule(static)
-        for (j=0; j<N; j++) {
-          yd[j] += a[i] * xd[j];
-        }
+        for (j = 0; j < N; j++) { yd[j] += a[i] * xd[j]; }
       }
     }
     return SUN_SUCCESS;
@@ -1246,31 +1203,30 @@ SUNErrCode N_VScaleAddMulti_OpenMP(int nvec, realtype* a, N_Vector x, N_Vector* 
   /*
    * Z[i][j] = Y[i][j] + a[i] * x[j]
    */
-#pragma omp parallel default(none) private(i,j,yd,zd) shared(nvec,Y,Z,N,a,xd) \
-  num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel default(none) private(i, j, yd, zd) \
+  shared(nvec, Y, Z, N, a, xd) num_threads(NV_NUM_THREADS_OMP(x))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        zd[j] = a[i] * xd[j] + yd[j];
-      }
+      for (j = 0; j < N; j++) { zd[j] = a[i] * xd[j] + yd[j]; }
     }
   }
   return SUN_SUCCESS;
 }
 
-
-SUNErrCode N_VDotProdMulti_OpenMP(int nvec, N_Vector x, N_Vector* Y, realtype* dotprods)
+SUNErrCode N_VDotProdMulti_OpenMP(int nvec, N_Vector x, N_Vector* Y,
+                                  realtype* dotprods)
 {
   SUNAssignSUNCTX(x->sunctx);
 
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype     sum;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
+  realtype sum;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1279,7 +1235,8 @@ SUNErrCode N_VDotProdMulti_OpenMP(int nvec, N_Vector x, N_Vector* Y, realtype* d
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VDotProd */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     dotprods[0] = N_VDotProd_OpenMP(x, Y[0]);
     return SUN_SUCCESS;
   }
@@ -1289,21 +1246,18 @@ SUNErrCode N_VDotProdMulti_OpenMP(int nvec, N_Vector x, N_Vector* Y, realtype* d
   xd = NV_DATA_OMP(x);
 
   /* initialize dot products */
-  for (i=0; i<nvec; i++) {
-    dotprods[i] = ZERO;
-  }
+  for (i = 0; i < nvec; i++) { dotprods[i] = ZERO; }
 
   /* compute multiple dot products */
-#pragma omp parallel default(none) private(i,j,yd,sum) shared(nvec,Y,N,xd,dotprods) \
-  num_threads(NV_NUM_THREADS_OMP(x))
+#pragma omp parallel default(none) private(i, j, yd, sum) \
+  shared(nvec, Y, N, xd, dotprods) num_threads(NV_NUM_THREADS_OMP(x))
   {
-    for (i=0; i<nvec; i++) {
-      yd = NV_DATA_OMP(Y[i]);
+    for (i = 0; i < nvec; i++)
+    {
+      yd  = NV_DATA_OMP(Y[i]);
       sum = ZERO;
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        sum += xd[j] * yd[j];
-      }
+      for (j = 0; j < N; j++) { sum += xd[j] * yd[j]; }
 #pragma omp critical
       {
         dotprods[i] += sum;
@@ -1314,29 +1268,26 @@ SUNErrCode N_VDotProdMulti_OpenMP(int nvec, N_Vector x, N_Vector* Y, realtype* d
   return SUN_SUCCESS;
 }
 
-
 /*
  * -----------------------------------------------------------------
  * vector array operations
  * -----------------------------------------------------------------
  */
 
-SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec,
-                                          realtype a, N_Vector* X,
-                                          realtype b, N_Vector* Y,
-                                          N_Vector* Z)
+SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec, realtype a, N_Vector* X,
+                                          realtype b, N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
-  
-  int          i;
+
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
-  realtype     c;
-  N_Vector*   V1;
-  N_Vector*   V2;
-  booleantype  test;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
+  realtype c;
+  N_Vector* V1;
+  N_Vector* V2;
+  booleantype test;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1345,25 +1296,29 @@ SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec,
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VLinearSum */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     N_VLinearSum_OpenMP(a, X[0], b, Y[0], Z[0]);
     return SUN_SUCCESS;
   }
 
   /* BLAS usage: axpy y <- ax+y */
-  if ((b == ONE) && (Z == Y)) {
+  if ((b == ONE) && (Z == Y))
+  {
     VaxpyVectorArray_OpenMP(nvec, a, X, Y);
-    return SUN_SUCCESS; 
+    return SUN_SUCCESS;
   }
 
   /* BLAS usage: axpy x <- by+x */
-  if ((a == ONE) && (Z == X)) {
+  if ((a == ONE) && (Z == X))
+  {
     VaxpyVectorArray_OpenMP(nvec, b, Y, X);
     return SUN_SUCCESS;
   }
 
   /* Case: a == b == 1.0 */
-  if ((a == ONE) && (b == ONE)) {
+  if ((a == ONE) && (b == ONE))
+  {
     VSumVectorArray_OpenMP(nvec, X, Y, Z);
     return SUN_SUCCESS;
   }
@@ -1371,7 +1326,8 @@ SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec,
   /* Cases:                    */
   /*   (1) a == 1.0, b = -1.0, */
   /*   (2) a == -1.0, b == 1.0 */
-  if ((test = ((a == ONE) && (b == -ONE))) || ((a == -ONE) && (b == ONE))) {
+  if ((test = ((a == ONE) && (b == -ONE))) || ((a == -ONE) && (b == ONE)))
+  {
     V1 = test ? Y : X;
     V2 = test ? X : Y;
     VDiffVectorArray_OpenMP(nvec, V2, V1, Z);
@@ -1382,7 +1338,8 @@ SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec,
   /*   (1) a == 1.0, b == other or 0.0,                      */
   /*   (2) a == other or 0.0, b == 1.0                       */
   /* if a or b is 0.0, then user should have called N_VScale */
-  if ((test = (a == ONE)) || (b == ONE)) {
+  if ((test = (a == ONE)) || (b == ONE))
+  {
     c  = test ? b : a;
     V1 = test ? Y : X;
     V2 = test ? X : Y;
@@ -1393,7 +1350,8 @@ SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec,
   /* Cases:                     */
   /*   (1) a == -1.0, b != 1.0, */
   /*   (2) a != 1.0, b == -1.0  */
-  if ((test = (a == -ONE)) || (b == -ONE)) {
+  if ((test = (a == -ONE)) || (b == -ONE))
+  {
     c  = test ? b : a;
     V1 = test ? Y : X;
     V2 = test ? X : Y;
@@ -1403,13 +1361,15 @@ SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec,
 
   /* Case: a == b                                                         */
   /* catches case both a and b are 0.0 - user should have called N_VConst */
-  if (a == b) {
+  if (a == b)
+  {
     VScaleSumVectorArray_OpenMP(nvec, a, X, Y, Z);
     return SUN_SUCCESS;
   }
 
   /* Case: a == -b */
-  if (a == -b) {
+  if (a == -b)
+  {
     VScaleDiffVectorArray_OpenMP(nvec, a, X, Y, Z);
     return SUN_SUCCESS;
   }
@@ -1423,32 +1383,31 @@ SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec,
   N = NV_LENGTH_OMP(Z[0]);
 
   /* compute linear sum for each vector pair in vector arrays */
-#pragma omp parallel default(none) private(i,j,xd,yd,zd) shared(nvec,X,Y,Z,N,a,b) \
-  num_threads(NV_NUM_THREADS_OMP(Z[0]))
+#pragma omp parallel default(none) private(i, j, xd, yd, zd) \
+  shared(nvec, X, Y, Z, N, a, b) num_threads(NV_NUM_THREADS_OMP(Z[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        zd[j] = a * xd[j] + b * yd[j];
-      }
+      for (j = 0; j < N; j++) { zd[j] = a * xd[j] + b * yd[j]; }
     }
   }
 
   return SUN_SUCCESS;
 }
 
-
-SUNErrCode N_VScaleVectorArray_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vector* Z)
+SUNErrCode N_VScaleVectorArray_OpenMP(int nvec, realtype* c, N_Vector* X,
+                                      N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1457,7 +1416,8 @@ SUNErrCode N_VScaleVectorArray_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vect
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VScale */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     N_VScale_OpenMP(c[0], X[0], Z[0]);
     return SUN_SUCCESS;
   }
@@ -1468,16 +1428,16 @@ SUNErrCode N_VScaleVectorArray_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vect
   /*
    * X[i] *= c[i]
    */
-  if (X == Z) {
-#pragma omp parallel default(none) private(i,j,xd) shared(nvec,X,N,c) \
+  if (X == Z)
+  {
+#pragma omp parallel default(none) private(i, j, xd) shared(nvec, X, N, c) \
   num_threads(NV_NUM_THREADS_OMP(Z[0]))
     {
-      for (i=0; i<nvec; i++) {
+      for (i = 0; i < nvec; i++)
+      {
         xd = NV_DATA_OMP(X[i]);
 #pragma omp for schedule(static)
-        for (j=0; j<N; j++) {
-          xd[j] *= c[i];
-        }
+        for (j = 0; j < N; j++) { xd[j] *= c[i]; }
       }
     }
     return SUN_SUCCESS;
@@ -1486,29 +1446,27 @@ SUNErrCode N_VScaleVectorArray_OpenMP(int nvec, realtype* c, N_Vector* X, N_Vect
   /*
    * Z[i] = c[i] * X[i]
    */
-#pragma omp parallel default(none) private(i,j,xd,zd) shared(nvec,X,Z,N,c) \
-  num_threads(NV_NUM_THREADS_OMP(Z[0]))
+#pragma omp parallel default(none) private(i, j, xd, zd) \
+  shared(nvec, X, Z, N, c) num_threads(NV_NUM_THREADS_OMP(Z[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        zd[j] = c[i] * xd[j];
-      }
+      for (j = 0; j < N; j++) { zd[j] = c[i] * xd[j]; }
     }
   }
   return SUN_SUCCESS;
 }
 
-
 SUNErrCode N_VConstVectorArray_OpenMP(int nvec, realtype c, N_Vector* Z)
 {
   SUNAssignSUNCTX(Z[0]->sunctx);
 
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    zd=NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1517,7 +1475,8 @@ SUNErrCode N_VConstVectorArray_OpenMP(int nvec, realtype c, N_Vector* Z)
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VConst */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     N_VConst_OpenMP(c, Z[0]);
     return SUN_SUCCESS;
   }
@@ -1526,31 +1485,30 @@ SUNErrCode N_VConstVectorArray_OpenMP(int nvec, realtype c, N_Vector* Z)
   N = NV_LENGTH_OMP(Z[0]);
 
   /* set each vector in the vector array to a constant */
-#pragma omp parallel default(none) private(i,j,zd) shared(nvec,Z,N,c) \
+#pragma omp parallel default(none) private(i, j, zd) shared(nvec, Z, N, c) \
   num_threads(NV_NUM_THREADS_OMP(Z[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        zd[j] = c;
-      }
+      for (j = 0; j < N; j++) { zd[j] = c; }
     }
   }
 
   return SUN_SUCCESS;
 }
 
-
-SUNErrCode N_VWrmsNormVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W, realtype* nrm)
+SUNErrCode N_VWrmsNormVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
+                                         realtype* nrm)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
-  
-  int          i;
+
+  int i;
   sunindextype j, N;
-  realtype     sum;
-  realtype*    wd=NULL;
-  realtype*    xd=NULL;
+  realtype sum;
+  realtype* wd = NULL;
+  realtype* xd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1559,31 +1517,29 @@ SUNErrCode N_VWrmsNormVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W, rea
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VWrmsNorm */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     nrm[0] = N_VWrmsNorm_OpenMP(X[0], W[0]);
     return SUN_SUCCESS;
   }
 
   /* get vector length */
-  N  = NV_LENGTH_OMP(X[0]);
+  N = NV_LENGTH_OMP(X[0]);
 
   /* initialize norms */
-  for (i=0; i<nvec; i++) {
-    nrm[i] = ZERO;
-  }
+  for (i = 0; i < nvec; i++) { nrm[i] = ZERO; }
 
   /* compute the WRMS norm for each vector in the vector array */
-#pragma omp parallel default(none) private(i,j,xd,wd,sum) shared(nvec,X,W,N,nrm) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, wd, sum) \
+  shared(nvec, X, W, N, nrm) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
-      xd = NV_DATA_OMP(X[i]);
-      wd = NV_DATA_OMP(W[i]);
+    for (i = 0; i < nvec; i++)
+    {
+      xd  = NV_DATA_OMP(X[i]);
+      wd  = NV_DATA_OMP(W[i]);
       sum = ZERO;
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        sum += SUNSQR(xd[j] * wd[j]);
-      }
+      for (j = 0; j < N; j++) { sum += SUNSQR(xd[j] * wd[j]); }
 #pragma omp critical
       {
         nrm[i] += sum;
@@ -1591,25 +1547,22 @@ SUNErrCode N_VWrmsNormVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W, rea
     }
   }
 
-  for (i=0; i<nvec; i++) {
-    nrm[i] = SUNRsqrt(nrm[i]/N);
-  }
+  for (i = 0; i < nvec; i++) { nrm[i] = SUNRsqrt(nrm[i] / N); }
 
   return SUN_SUCCESS;
 }
-
 
 SUNErrCode N_VWrmsNormMaskVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
                                              N_Vector id, realtype* nrm)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype     sum;
-  realtype*    wd=NULL;
-  realtype*    xd=NULL;
-  realtype*    idd=NULL;
+  realtype sum;
+  realtype* wd  = NULL;
+  realtype* xd  = NULL;
+  realtype* idd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
@@ -1618,7 +1571,8 @@ SUNErrCode N_VWrmsNormMaskVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
 
   /* should have called N_VWrmsNorm */
-  if (nvec == 1) {
+  if (nvec == 1)
+  {
     nrm[0] = N_VWrmsNormMask_OpenMP(X[0], W[0], id);
     return SUN_SUCCESS;
   }
@@ -1628,22 +1582,21 @@ SUNErrCode N_VWrmsNormMaskVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
   idd = NV_DATA_OMP(id);
 
   /* initialize norms */
-  for (i=0; i<nvec; i++) {
-    nrm[i] = ZERO;
-  }
+  for (i = 0; i < nvec; i++) { nrm[i] = ZERO; }
 
   /* compute the WRMS norm for each vector in the vector array */
-#pragma omp parallel default(none) private(i,j,xd,wd,sum) shared(nvec,X,W,N,idd,nrm) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, wd, sum) \
+  shared(nvec, X, W, N, idd, nrm) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
-      xd = NV_DATA_OMP(X[i]);
-      wd = NV_DATA_OMP(W[i]);
+    for (i = 0; i < nvec; i++)
+    {
+      xd  = NV_DATA_OMP(X[i]);
+      wd  = NV_DATA_OMP(W[i]);
       sum = ZERO;
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++) {
-        if (idd[j] > ZERO)
-          sum += SUNSQR(xd[j] * wd[j]);
+      for (j = 0; j < N; j++)
+      {
+        if (idd[j] > ZERO) { sum += SUNSQR(xd[j] * wd[j]); }
       }
 #pragma omp critical
       {
@@ -1652,28 +1605,26 @@ SUNErrCode N_VWrmsNormMaskVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
     }
   }
 
-  for (i=0; i<nvec; i++) {
-    nrm[i] = SUNRsqrt(nrm[i]/N);
-  }
+  for (i = 0; i < nvec; i++) { nrm[i] = SUNRsqrt(nrm[i] / N); }
 
   return SUN_SUCCESS;
 }
 
-
 SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, realtype* a,
-                                              N_Vector* X, N_Vector** Y, N_Vector** Z)
+                                              N_Vector* X, N_Vector** Y,
+                                              N_Vector** Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
-  int          i, j;
+  int i, j;
   sunindextype k, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
-  int          retval;
-  N_Vector*   YY;
-  N_Vector*   ZZ;
+  int retval;
+  N_Vector* YY;
+  N_Vector* ZZ;
 
   i = 0; /* initialize to suppress clang warning */
   k = 0;
@@ -1685,19 +1636,21 @@ SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, realtype* a,
    * Special cases for nvec == 1
    * --------------------------- */
 
-  if (nvec == 1) {
-
+  if (nvec == 1)
+  {
     /* should have called N_VLinearSum */
-    if (nsum == 1) {
+    if (nsum == 1)
+    {
       N_VLinearSum_OpenMP(a[0], X[0], ONE, Y[0][0], Z[0][0]);
       return SUN_SUCCESS;
     }
 
     /* should have called N_VScaleAddMulti */
-    YY = (N_Vector*) malloc(nsum * sizeof(N_Vector));
-    ZZ = (N_Vector*) malloc(nsum * sizeof(N_Vector));
+    YY = (N_Vector*)malloc(nsum * sizeof(N_Vector));
+    ZZ = (N_Vector*)malloc(nsum * sizeof(N_Vector));
 
-    for (j=0; j<nsum; j++) {
+    for (j = 0; j < nsum; j++)
+    {
       YY[j] = Y[j][0];
       ZZ[j] = Z[j][0];
     }
@@ -1706,7 +1659,7 @@ SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, realtype* a,
 
     free(YY);
     free(ZZ);
-    return(retval);
+    return (retval);
   }
 
   /* --------------------------
@@ -1714,9 +1667,10 @@ SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, realtype* a,
    * -------------------------- */
 
   /* should have called N_VLinearSumVectorArray */
-  if (nsum == 1) {
+  if (nsum == 1)
+  {
     retval = N_VLinearSumVectorArray_OpenMP(nvec, a[0], X, ONE, Y[0], Z[0]);
-    return(retval);
+    return (retval);
   }
 
   /* ----------------------------
@@ -1724,23 +1678,24 @@ SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, realtype* a,
    * ---------------------------- */
 
   /* get vector length */
-  N  = NV_LENGTH_OMP(X[0]);
+  N = NV_LENGTH_OMP(X[0]);
 
   /*
    * Y[i][j] += a[i] * x[j]
    */
-  if (Y == Z) {
-#pragma omp parallel default(none) private(i,j,k,xd,yd) shared(nvec,nsum,X,Y,N,a) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+  if (Y == Z)
+  {
+#pragma omp parallel default(none) private(i, j, k, xd, yd) \
+  shared(nvec, nsum, X, Y, N, a) num_threads(NV_NUM_THREADS_OMP(X[0]))
     {
-      for (i=0; i<nvec; i++) {
+      for (i = 0; i < nvec; i++)
+      {
         xd = NV_DATA_OMP(X[i]);
-        for (j=0; j<nsum; j++) {
+        for (j = 0; j < nsum; j++)
+        {
           yd = NV_DATA_OMP(Y[j][i]);
 #pragma omp for schedule(static)
-          for (k=0; k<N; k++) {
-            yd[k] += a[j] * xd[k];
-          }
+          for (k = 0; k < N; k++) { yd[k] += a[j] * xd[k]; }
         }
       }
     }
@@ -1750,41 +1705,38 @@ SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, realtype* a,
   /*
    * Z[i][j] = Y[i][j] + a[i] * x[j]
    */
-#pragma omp parallel default(none) private(i,j,k,xd,yd,zd) shared(nvec,nsum,X,Y,Z,N,a) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, k, xd, yd, zd) \
+  shared(nvec, nsum, X, Y, Z, N, a) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
-      for (j=0; j<nsum; j++) {
+      for (j = 0; j < nsum; j++)
+      {
         yd = NV_DATA_OMP(Y[j][i]);
         zd = NV_DATA_OMP(Z[j][i]);
 #pragma omp for schedule(static)
-        for (k=0; k<N; k++) {
-          zd[k] = a[j] * xd[k] + yd[k];
-        }
+        for (k = 0; k < N; k++) { zd[k] = a[j] * xd[k] + yd[k]; }
       }
     }
   }
   return SUN_SUCCESS;
 }
 
-
-SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
-                                                  realtype* c,
-                                                  N_Vector** X,
-                                                  N_Vector* Z)
+SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum, realtype* c,
+                                                  N_Vector** X, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0][0]->sunctx);
 
-  int          i; /* vector arrays index in summation [0,nsum) */
-  int          j; /* vector index in vector array     [0,nvec) */
+  int i;          /* vector arrays index in summation [0,nsum) */
+  int j;          /* vector index in vector array     [0,nvec) */
   sunindextype k; /* element index in vector          [0,N)    */
   sunindextype N;
-  realtype*    zd=NULL;
-  realtype*    xd=NULL;
+  realtype* zd = NULL;
+  realtype* xd = NULL;
 
-  realtype*    ctmp;
-  N_Vector*   Y;
+  realtype* ctmp;
+  N_Vector* Y;
 
   i = 0; /* initialize to suppress clang warning */
   k = 0;
@@ -1796,26 +1748,26 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
    * Special cases for nvec == 1
    * --------------------------- */
 
-  if (nvec == 1) {
-
+  if (nvec == 1)
+  {
     /* should have called N_VScale */
-    if (nsum == 1) {
+    if (nsum == 1)
+    {
       N_VScale_OpenMP(c[0], X[0][0], Z[0]);
       return SUN_SUCCESS;
     }
 
     /* should have called N_VLinearSum */
-    if (nsum == 2) {
+    if (nsum == 2)
+    {
       N_VLinearSum_OpenMP(c[0], X[0][0], c[1], X[1][0], Z[0]);
       return SUN_SUCCESS;
     }
 
     /* should have called N_VLinearCombination */
-    Y = (N_Vector*) malloc(nsum * sizeof(N_Vector));
+    Y = (N_Vector*)malloc(nsum * sizeof(N_Vector));
 
-    for (i=0; i<nsum; i++) {
-      Y[i] = X[i][0];
-    }
+    for (i = 0; i < nsum; i++) { Y[i] = X[i][0]; }
 
     N_VLinearCombination_OpenMP(nsum, c, Y, Z[0]);
 
@@ -1828,13 +1780,11 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
    * -------------------------- */
 
   /* should have called N_VScaleVectorArray */
-  if (nsum == 1) {
+  if (nsum == 1)
+  {
+    ctmp = (realtype*)malloc(nvec * sizeof(realtype));
 
-    ctmp = (realtype*) malloc(nvec * sizeof(realtype));
-
-    for (j=0; j<nvec; j++) {
-      ctmp[j] = c[0];
-    }
+    for (j = 0; j < nvec; j++) { ctmp[j] = c[0]; }
 
     N_VScaleVectorArray_OpenMP(nvec, ctmp, X[0], Z);
 
@@ -1843,7 +1793,8 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
   }
 
   /* should have called N_VLinearSumVectorArray */
-  if (nsum == 2) {
+  if (nsum == 2)
+  {
     N_VLinearSumVectorArray_OpenMP(nvec, c[0], X[0], c[1], X[1], Z);
     return SUN_SUCCESS;
   }
@@ -1858,18 +1809,19 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
   /*
    * X[0][j] += c[i]*X[i][j], i = 1,...,nvec-1
    */
-  if ((X[0] == Z) && (c[0] == ONE)) {
-#pragma omp parallel default(none) private(i,j,k,xd,zd) shared(nvec,nsum,X,Z,N,c) \
-  num_threads(NV_NUM_THREADS_OMP(Z[0]))
+  if ((X[0] == Z) && (c[0] == ONE))
+  {
+#pragma omp parallel default(none) private(i, j, k, xd, zd) \
+  shared(nvec, nsum, X, Z, N, c) num_threads(NV_NUM_THREADS_OMP(Z[0]))
     {
-      for (j=0; j<nvec; j++) {
+      for (j = 0; j < nvec; j++)
+      {
         zd = NV_DATA_OMP(Z[j]);
-        for (i=1; i<nsum; i++) {
+        for (i = 1; i < nsum; i++)
+        {
           xd = NV_DATA_OMP(X[i][j]);
 #pragma omp for schedule(static)
-          for (k=0; k<N; k++) {
-            zd[k] += c[i] * xd[k];
-          }
+          for (k = 0; k < N; k++) { zd[k] += c[i] * xd[k]; }
         }
       }
     }
@@ -1879,22 +1831,21 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
   /*
    * X[0][j] = c[0] * X[0][j] + sum{ c[i] * X[i][j] }, i = 1,...,nvec-1
    */
-  if (X[0] == Z) {
-#pragma omp parallel default(none) private(i,j,k,xd,zd) shared(nvec,nsum,X,Z,N,c) \
-  num_threads(NV_NUM_THREADS_OMP(Z[0]))
+  if (X[0] == Z)
+  {
+#pragma omp parallel default(none) private(i, j, k, xd, zd) \
+  shared(nvec, nsum, X, Z, N, c) num_threads(NV_NUM_THREADS_OMP(Z[0]))
     {
-      for (j=0; j<nvec; j++) {
+      for (j = 0; j < nvec; j++)
+      {
         zd = NV_DATA_OMP(Z[j]);
 #pragma omp for schedule(static)
-        for (k=0; k<N; k++) {
-          zd[k] *= c[0];
-        }
-        for (i=1; i<nsum; i++) {
+        for (k = 0; k < N; k++) { zd[k] *= c[0]; }
+        for (i = 1; i < nsum; i++)
+        {
           xd = NV_DATA_OMP(X[i][j]);
 #pragma omp for schedule(static)
-          for (k=0; k<N; k++) {
-            zd[k] += c[i] * xd[k];
-          }
+          for (k = 0; k < N; k++) { zd[k] += c[i] * xd[k]; }
         }
       }
     }
@@ -1904,30 +1855,27 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
   /*
    * Z[j] = sum{ c[i] * X[i][j] }, i = 0,...,nvec-1
    */
-#pragma omp parallel default(none) private(i,j,k,xd,zd) shared(nvec,nsum,X,Z,N,c) \
-  num_threads(NV_NUM_THREADS_OMP(Z[0]))
+#pragma omp parallel default(none) private(i, j, k, xd, zd) \
+  shared(nvec, nsum, X, Z, N, c) num_threads(NV_NUM_THREADS_OMP(Z[0]))
   {
-    for (j=0; j<nvec; j++) {
+    for (j = 0; j < nvec; j++)
+    {
       /* scale first vector in the sum into the output vector */
       xd = NV_DATA_OMP(X[0][j]);
       zd = NV_DATA_OMP(Z[j]);
 #pragma omp for schedule(static)
-      for (k=0; k<N; k++) {
-        zd[k] = c[0] * xd[k];
-      }
+      for (k = 0; k < N; k++) { zd[k] = c[0] * xd[k]; }
       /* scale and sum remaining vectors into the output vector */
-      for (i=1; i<nsum; i++) {
+      for (i = 1; i < nsum; i++)
+      {
         xd = NV_DATA_OMP(X[i][j]);
 #pragma omp for schedule(static)
-        for (k=0; k<N; k++) {
-          zd[k] += c[i] * xd[k];
-        }
+        for (k = 0; k < N; k++) { zd[k] += c[i] * xd[k]; }
       }
     }
   }
   return SUN_SUCCESS;
 }
-
 
 /*
  * -----------------------------------------------------------------
@@ -1935,64 +1883,57 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
  * -----------------------------------------------------------------
  */
 
-
-SUNErrCode N_VBufSize_OpenMP(N_Vector x, sunindextype *size)
+SUNErrCode N_VBufSize_OpenMP(N_Vector x, sunindextype* size)
 {
   *size = NV_LENGTH_OMP(x) * ((sunindextype)sizeof(realtype));
   return SUN_SUCCESS;
 }
 
-
-SUNErrCode N_VBufPack_OpenMP(N_Vector x, void *buf)
+SUNErrCode N_VBufPack_OpenMP(N_Vector x, void* buf)
 {
   SUNAssignSUNCTX(x->sunctx);
 
   sunindextype i, N;
-  realtype     *xd = NULL;
-  realtype     *bd = NULL;
+  realtype* xd = NULL;
+  realtype* bd = NULL;
 
   SUNAssert(buf, SUN_ERR_ARG_CORRUPT);
 
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
-  bd = (realtype*) buf;
+  bd = (realtype*)buf;
 
 #pragma omp for schedule(static)
-  for (i = 0; i < N; i++)
-    bd[i] = xd[i];
+  for (i = 0; i < N; i++) { bd[i] = xd[i]; }
 
   return SUN_SUCCESS;
 }
 
-
-SUNErrCode N_VBufUnpack_OpenMP(N_Vector x, void *buf)
+SUNErrCode N_VBufUnpack_OpenMP(N_Vector x, void* buf)
 {
   SUNAssignSUNCTX(x->sunctx);
 
   sunindextype i, N;
-  realtype     *xd = NULL;
-  realtype     *bd = NULL;
+  realtype* xd = NULL;
+  realtype* bd = NULL;
 
   SUNAssert(buf, SUN_ERR_ARG_CORRUPT);
 
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
-  bd = (realtype*) buf;
+  bd = (realtype*)buf;
 
 #pragma omp for schedule(static)
-  for (i = 0; i < N; i++)
-    xd[i] = bd[i];
+  for (i = 0; i < N; i++) { xd[i] = bd[i]; }
 
   return SUN_SUCCESS;
 }
-
 
 /*
  * -----------------------------------------------------------------
  * private functions for special cases of vector operations
  * -----------------------------------------------------------------
  */
-
 
 /* ----------------------------------------------------------------------------
  * Copy vector components into a second vector
@@ -2010,14 +1951,12 @@ static void VCopy_OpenMP(N_Vector x, N_Vector z)
   xd = NV_DATA_OMP(x);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = xd[i];
+#pragma omp parallel for default(none) private(i) shared(N, xd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = xd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute vector sum
@@ -2036,14 +1975,12 @@ static void VSum_OpenMP(N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd,zd) schedule(static) \
- num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = xd[i]+yd[i];
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = xd[i] + yd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute vector difference
@@ -2062,14 +1999,12 @@ static void VDiff_OpenMP(N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = xd[i]-yd[i];
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = xd[i] - yd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute the negative of a vector
@@ -2087,14 +2022,12 @@ static void VNeg_OpenMP(N_Vector x, N_Vector z)
   xd = NV_DATA_OMP(x);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,xd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = -xd[i];
+#pragma omp parallel for default(none) private(i) shared(N, xd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = -xd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute scaled vector sum
@@ -2113,14 +2046,12 @@ static void VScaleSum_OpenMP(realtype c, N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,c,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = c*(xd[i]+yd[i]);
+#pragma omp parallel for default(none) private(i) shared(N, c, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = c * (xd[i] + yd[i]); }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute scaled vector difference
@@ -2139,14 +2070,12 @@ static void VScaleDiff_OpenMP(realtype c, N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,c,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = c*(xd[i]-yd[i]);
+#pragma omp parallel for default(none) private(i) shared(N, c, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = c * (xd[i] - yd[i]); }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute vector sum z[i] = a*x[i]+y[i]
@@ -2165,14 +2094,12 @@ static void VLin1_OpenMP(realtype a, N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,a,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = (a*xd[i])+yd[i];
+#pragma omp parallel for default(none) private(i) shared(N, a, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = (a * xd[i]) + yd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute vector difference z[i] = a*x[i]-y[i]
@@ -2191,14 +2118,12 @@ static void VLin2_OpenMP(realtype a, N_Vector x, N_Vector y, N_Vector z)
   yd = NV_DATA_OMP(y);
   zd = NV_DATA_OMP(z);
 
-#pragma omp parallel for default(none) private(i) shared(N,a,xd,yd,zd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    zd[i] = (a*xd[i])-yd[i];
+#pragma omp parallel for default(none) private(i) shared(N, a, xd, yd, zd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { zd[i] = (a * xd[i]) - yd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute special cases of linear sum
@@ -2216,30 +2141,28 @@ static void Vaxpy_OpenMP(realtype a, N_Vector x, N_Vector y)
   xd = NV_DATA_OMP(x);
   yd = NV_DATA_OMP(y);
 
-  if (a == ONE) {
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-    for (i = 0; i < N; i++)
-      yd[i] += xd[i];
+  if (a == ONE)
+  {
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+    for (i = 0; i < N; i++) { yd[i] += xd[i]; }
     return;
   }
 
-  if (a == -ONE) {
-#pragma omp parallel for default(none) private(i) shared(N,xd,yd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-    for (i = 0; i < N; i++)
-      yd[i] -= xd[i];
+  if (a == -ONE)
+  {
+#pragma omp parallel for default(none) private(i) shared(N, xd, yd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+    for (i = 0; i < N; i++) { yd[i] -= xd[i]; }
     return;
   }
 
-#pragma omp parallel for default(none) private(i) shared(N,a,xd,yd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    yd[i] += a*xd[i];
+#pragma omp parallel for default(none) private(i) shared(N, a, xd, yd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { yd[i] += a * xd[i]; }
 
   return;
 }
-
 
 /* ----------------------------------------------------------------------------
  * Compute scaled vector x[i] = a*x[i]
@@ -2248,7 +2171,7 @@ static void Vaxpy_OpenMP(realtype a, N_Vector x, N_Vector y)
 static void VScaleBy_OpenMP(realtype a, N_Vector x)
 {
   sunindextype i, N;
-  realtype *xd;
+  realtype* xd;
 
   i  = 0; /* initialize to suppress clang warning */
   xd = NULL;
@@ -2256,14 +2179,12 @@ static void VScaleBy_OpenMP(realtype a, N_Vector x)
   N  = NV_LENGTH_OMP(x);
   xd = NV_DATA_OMP(x);
 
-#pragma omp parallel for default(none) private(i) shared(N,a,xd) schedule(static) \
-   num_threads(NV_NUM_THREADS_OMP(x))
-  for (i = 0; i < N; i++)
-    xd[i] *= a;
+#pragma omp parallel for default(none) private(i) shared(N, a, xd) \
+  schedule(static) num_threads(NV_NUM_THREADS_OMP(x))
+  for (i = 0; i < N; i++) { xd[i] *= a; }
 
   return;
 }
-
 
 /*
  * -----------------------------------------------------------------
@@ -2273,221 +2194,227 @@ static void VScaleBy_OpenMP(realtype a, N_Vector x)
 
 static void VSumVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* Y, N_Vector* Z)
 {
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
 
   N = NV_LENGTH_OMP(X[0]);
 
-#pragma omp parallel default(none) private(i,j,xd,yd,zd) shared(nvec,X,Y,Z,N) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, yd, zd) \
+  shared(nvec, X, Y, Z, N) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++)
-        zd[j] = xd[j] + yd[j];
+      for (j = 0; j < N; j++) { zd[j] = xd[j] + yd[j]; }
     }
   }
 }
 
-static void VDiffVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* Y, N_Vector* Z)
+static void VDiffVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* Y,
+                                    N_Vector* Z)
 {
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
 
   N = NV_LENGTH_OMP(X[0]);
 
-#pragma omp parallel default(none) private(i,j,xd,yd,zd) shared(nvec,X,Y,Z,N) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, yd, zd) \
+  shared(nvec, X, Y, Z, N) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++)
-        zd[j] = xd[j] - yd[j];
+      for (j = 0; j < N; j++) { zd[j] = xd[j] - yd[j]; }
     }
   }
 }
 
-static void VScaleSumVectorArray_OpenMP(int nvec, realtype c, N_Vector* X, N_Vector* Y, N_Vector* Z)
+static void VScaleSumVectorArray_OpenMP(int nvec, realtype c, N_Vector* X,
+                                        N_Vector* Y, N_Vector* Z)
 {
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
 
   N = NV_LENGTH_OMP(X[0]);
 
-#pragma omp parallel default(none) private(i,j,xd,yd,zd) shared(nvec,X,Y,Z,N,c) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, yd, zd) \
+  shared(nvec, X, Y, Z, N, c) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++)
-        zd[j] = c * (xd[j] + yd[j]);
+      for (j = 0; j < N; j++) { zd[j] = c * (xd[j] + yd[j]); }
     }
   }
 }
 
-static void VScaleDiffVectorArray_OpenMP(int nvec, realtype c, N_Vector* X, N_Vector* Y, N_Vector* Z)
+static void VScaleDiffVectorArray_OpenMP(int nvec, realtype c, N_Vector* X,
+                                         N_Vector* Y, N_Vector* Z)
 {
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
 
   N = NV_LENGTH_OMP(X[0]);
 
-#pragma omp parallel default(none) private(i,j,xd,yd,zd) shared(nvec,X,Y,Z,N,c) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, yd, zd) \
+  shared(nvec, X, Y, Z, N, c) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++)
-        zd[j] = c * (xd[j] - yd[j]);
+      for (j = 0; j < N; j++) { zd[j] = c * (xd[j] - yd[j]); }
     }
   }
 }
 
-static void VLin1VectorArray_OpenMP(int nvec, realtype a, N_Vector* X, N_Vector* Y, N_Vector* Z)
+static void VLin1VectorArray_OpenMP(int nvec, realtype a, N_Vector* X,
+                                    N_Vector* Y, N_Vector* Z)
 {
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
 
   N = NV_LENGTH_OMP(X[0]);
 
-#pragma omp parallel default(none) private(i,j,xd,yd,zd) shared(nvec,X,Y,Z,N,a) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, yd, zd) \
+  shared(nvec, X, Y, Z, N, a) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++)
-        zd[j] = (a * xd[j]) + yd[j];
+      for (j = 0; j < N; j++) { zd[j] = (a * xd[j]) + yd[j]; }
     }
   }
 }
 
-static void VLin2VectorArray_OpenMP(int nvec, realtype a, N_Vector* X, N_Vector* Y, N_Vector* Z)
+static void VLin2VectorArray_OpenMP(int nvec, realtype a, N_Vector* X,
+                                    N_Vector* Y, N_Vector* Z)
 {
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
-  realtype*    zd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
+  realtype* zd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
 
   N = NV_LENGTH_OMP(X[0]);
 
-#pragma omp parallel default(none) private(i,j,xd,yd,zd) shared(nvec,X,Y,Z,N,a) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+#pragma omp parallel default(none) private(i, j, xd, yd, zd) \
+  shared(nvec, X, Y, Z, N, a) num_threads(NV_NUM_THREADS_OMP(X[0]))
   {
-    for (i=0; i<nvec; i++) {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
       zd = NV_DATA_OMP(Z[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++)
-        zd[j] = (a * xd[j]) - yd[j];
+      for (j = 0; j < N; j++) { zd[j] = (a * xd[j]) - yd[j]; }
     }
   }
 }
 
 static void VaxpyVectorArray_OpenMP(int nvec, realtype a, N_Vector* X, N_Vector* Y)
 {
-  int          i;
+  int i;
   sunindextype j, N;
-  realtype*    xd=NULL;
-  realtype*    yd=NULL;
+  realtype* xd = NULL;
+  realtype* yd = NULL;
 
   i = 0; /* initialize to suppress clang warning */
   j = 0;
 
   N = NV_LENGTH_OMP(X[0]);
 
-  if (a == ONE) {
-#pragma omp parallel default(none) private(i,j,xd,yd) shared(nvec,X,Y,N,a) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
-    {
-      for (i=0; i<nvec; i++) {
-        xd = NV_DATA_OMP(X[i]);
-        yd = NV_DATA_OMP(Y[i]);
-#pragma omp for schedule(static)
-        for (j=0; j<N; j++)
-          yd[j] += xd[j];
-      }
-    }
-    return;
-  }
-
-  if (a == -ONE) {
-#pragma omp parallel default(none) private(i,j,xd,yd) shared(nvec,X,Y,N,a) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
-    {
-      for (i=0; i<nvec; i++) {
-        xd = NV_DATA_OMP(X[i]);
-        yd = NV_DATA_OMP(Y[i]);
-#pragma omp for schedule(static)
-        for (j=0; j<N; j++)
-          yd[j] -= xd[j];
-      }
-    }
-    return;
-  }
-
-#pragma omp parallel default(none) private(i,j,xd,yd) shared(nvec,X,Y,N,a) \
-  num_threads(NV_NUM_THREADS_OMP(X[0]))
+  if (a == ONE)
   {
-    for (i=0; i<nvec; i++) {
+#pragma omp parallel default(none) private(i, j, xd, yd) \
+  shared(nvec, X, Y, N, a) num_threads(NV_NUM_THREADS_OMP(X[0]))
+    {
+      for (i = 0; i < nvec; i++)
+      {
+        xd = NV_DATA_OMP(X[i]);
+        yd = NV_DATA_OMP(Y[i]);
+#pragma omp for schedule(static)
+        for (j = 0; j < N; j++) { yd[j] += xd[j]; }
+      }
+    }
+    return;
+  }
+
+  if (a == -ONE)
+  {
+#pragma omp parallel default(none) private(i, j, xd, yd) \
+  shared(nvec, X, Y, N, a) num_threads(NV_NUM_THREADS_OMP(X[0]))
+    {
+      for (i = 0; i < nvec; i++)
+      {
+        xd = NV_DATA_OMP(X[i]);
+        yd = NV_DATA_OMP(Y[i]);
+#pragma omp for schedule(static)
+        for (j = 0; j < N; j++) { yd[j] -= xd[j]; }
+      }
+    }
+    return;
+  }
+
+#pragma omp parallel default(none) private(i, j, xd, yd) \
+  shared(nvec, X, Y, N, a) num_threads(NV_NUM_THREADS_OMP(X[0]))
+  {
+    for (i = 0; i < nvec; i++)
+    {
       xd = NV_DATA_OMP(X[i]);
       yd = NV_DATA_OMP(Y[i]);
 #pragma omp for schedule(static)
-      for (j=0; j<N; j++)
-        yd[j] += a * xd[j];
+      for (j = 0; j < N; j++) { yd[j] += a * xd[j]; }
     }
   }
 }
-
 
 /*
  * -----------------------------------------------------------------
@@ -2497,22 +2424,26 @@ static void VaxpyVectorArray_OpenMP(int nvec, realtype a, N_Vector* X, N_Vector*
 
 SUNErrCode N_VEnableFusedOps_OpenMP(N_Vector v, booleantype tf)
 {
-  if (tf) {
+  if (tf)
+  {
     /* enable all fused vector operations */
     v->ops->nvlinearcombination = N_VLinearCombination_OpenMP;
     v->ops->nvscaleaddmulti     = N_VScaleAddMulti_OpenMP;
     v->ops->nvdotprodmulti      = N_VDotProdMulti_OpenMP;
     /* enable all vector array operations */
-    v->ops->nvlinearsumvectorarray         = N_VLinearSumVectorArray_OpenMP;
-    v->ops->nvscalevectorarray             = N_VScaleVectorArray_OpenMP;
-    v->ops->nvconstvectorarray             = N_VConstVectorArray_OpenMP;
-    v->ops->nvwrmsnormvectorarray          = N_VWrmsNormVectorArray_OpenMP;
-    v->ops->nvwrmsnormmaskvectorarray      = N_VWrmsNormMaskVectorArray_OpenMP;
-    v->ops->nvscaleaddmultivectorarray     = N_VScaleAddMultiVectorArray_OpenMP;
-    v->ops->nvlinearcombinationvectorarray = N_VLinearCombinationVectorArray_OpenMP;
+    v->ops->nvlinearsumvectorarray     = N_VLinearSumVectorArray_OpenMP;
+    v->ops->nvscalevectorarray         = N_VScaleVectorArray_OpenMP;
+    v->ops->nvconstvectorarray         = N_VConstVectorArray_OpenMP;
+    v->ops->nvwrmsnormvectorarray      = N_VWrmsNormVectorArray_OpenMP;
+    v->ops->nvwrmsnormmaskvectorarray  = N_VWrmsNormMaskVectorArray_OpenMP;
+    v->ops->nvscaleaddmultivectorarray = N_VScaleAddMultiVectorArray_OpenMP;
+    v->ops->nvlinearcombinationvectorarray =
+      N_VLinearCombinationVectorArray_OpenMP;
     /* enable single buffer reduction operations */
     v->ops->nvdotprodmultilocal = N_VDotProdMulti_OpenMP;
-  } else {
+  }
+  else
+  {
     /* disable all fused vector operations */
     v->ops->nvlinearcombination = NULL;
     v->ops->nvscaleaddmulti     = NULL;
@@ -2540,6 +2471,9 @@ NVECTOR_DEFINE_ENABLE_FUSEDOP(LinearSumVectorArray, linearsumvectorarray, OpenMP
 NVECTOR_DEFINE_ENABLE_FUSEDOP(ScaleVectorArray, scalevectorarray, OpenMP)
 NVECTOR_DEFINE_ENABLE_FUSEDOP(ConstVectorArray, constvectorarray, OpenMP)
 NVECTOR_DEFINE_ENABLE_FUSEDOP(WrmsNormVectorArray, wrmsnormvectorarray, OpenMP)
-NVECTOR_DEFINE_ENABLE_FUSEDOP(WrmsNormMaskVectorArray, wrmsnormmaskvectorarray, OpenMP)
-NVECTOR_DEFINE_ENABLE_FUSEDOP(ScaleAddMultiVectorArray, scaleaddmultivectorarray, OpenMP)
-NVECTOR_DEFINE_ENABLE_FUSEDOP(LinearCombinationVectorArray, linearcombinationvectorarray, OpenMP)
+NVECTOR_DEFINE_ENABLE_FUSEDOP(WrmsNormMaskVectorArray, wrmsnormmaskvectorarray,
+                              OpenMP)
+NVECTOR_DEFINE_ENABLE_FUSEDOP(ScaleAddMultiVectorArray,
+                              scaleaddmultivectorarray, OpenMP)
+NVECTOR_DEFINE_ENABLE_FUSEDOP(LinearCombinationVectorArray,
+                              linearcombinationvectorarray, OpenMP)

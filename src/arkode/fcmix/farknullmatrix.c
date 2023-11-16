@@ -19,8 +19,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "farkode.h"
+
 #include "arkode_impl.h"
+#include "farkode.h"
 
 /*=============================================================*/
 
@@ -35,7 +36,7 @@ SUNMatrix F2C_ARKODE_mass_matrix;
    when using matrix-free linear solvers */
 void FARKNullMatrix()
 {
-  F2C_ARKODE_matrix = NULL;
+  F2C_ARKODE_matrix      = NULL;
   F2C_ARKODE_mass_matrix = NULL;
 }
 

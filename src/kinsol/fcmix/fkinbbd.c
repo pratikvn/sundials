@@ -20,13 +20,13 @@
  * the C code of the KINBBDPRE package.
  * ----------------------------------------------------------------*/
 
+#include "fkinbbd.h" /* prototypes of interfaces to KINBBDPRE        */
+
+#include <kinsol/kinsol_bbdpre.h> /* prototypes of KINBBDPRE functions and macros */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fkinsol.h"               /* standard interfaces and global variables     */
-#include "fkinbbd.h"               /* prototypes of interfaces to KINBBDPRE        */
-
-#include <kinsol/kinsol_bbdpre.h>  /* prototypes of KINBBDPRE functions and macros */
+#include "fkinsol.h" /* standard interfaces and global variables     */
 
 /*
  * ----------------------------------------------------------------
@@ -42,7 +42,7 @@
  * ----------------------------------------------------------------
  */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
@@ -59,18 +59,13 @@ extern void FK_COMMFN(long int* NLOC, realtype* ULOC, int* IER);
  * ----------------------------------------------------------------
  */
 
-void FKIN_BBDINIT(long int *nlocal, long int *mudq, long int *mldq,
-		  long int *mu, long int *ml, int *ier)
+void FKIN_BBDINIT(long int* nlocal, long int* mudq, long int* mldq,
+                  long int* mu, long int* ml, int* ier)
 {
-  *ier = KINBBDPrecInit(KIN_kinmem,
-                        (sunindextype)(*nlocal),
-                        (sunindextype)(*mudq),
-                        (sunindextype)(*mldq),
-                        (sunindextype)(*mu),
-                        (sunindextype)(*ml),
-                        ZERO,
-                        (KINBBDLocalFn) FKINgloc,
-                        (KINBBDCommFn) FKINgcomm);
+  *ier = KINBBDPrecInit(KIN_kinmem, (sunindextype)(*nlocal),
+                        (sunindextype)(*mudq), (sunindextype)(*mldq),
+                        (sunindextype)(*mu), (sunindextype)(*ml), ZERO,
+                        (KINBBDLocalFn)FKINgloc, (KINBBDCommFn)FKINgcomm);
 
   return;
 }
@@ -84,7 +79,7 @@ void FKIN_BBDINIT(long int *nlocal, long int *mudq, long int *mldq,
  * ----------------------------------------------------------------
  */
 
-int FKINgloc(long int Nloc, N_Vector uu, N_Vector gval, void *user_data)
+int FKINgloc(long int Nloc, N_Vector uu, N_Vector gval, void* user_data)
 {
   realtype *uloc, *gloc;
   int ier;
@@ -105,7 +100,7 @@ int FKINgloc(long int Nloc, N_Vector uu, N_Vector gval, void *user_data)
   /* Call user-supplied routine */
   FK_LOCFN(&Nloc, uloc, gloc, &ier);
 
-  return(ier);
+  return (ier);
 }
 
 /*
@@ -117,9 +112,9 @@ int FKINgloc(long int Nloc, N_Vector uu, N_Vector gval, void *user_data)
  * ----------------------------------------------------------------
  */
 
-int FKINgcomm(long int Nloc, N_Vector uu, void *user_data)
+int FKINgcomm(long int Nloc, N_Vector uu, void* user_data)
 {
-  realtype *uloc;
+  realtype* uloc;
   int ier;
 
   /* Initialize all pointers to NULL */
@@ -137,7 +132,7 @@ int FKINgcomm(long int Nloc, N_Vector uu, void *user_data)
   /* Call user-supplied routine */
   FK_COMMFN(&Nloc, uloc, &ier);
 
-  return(ier);
+  return (ier);
 }
 
 /*
@@ -149,7 +144,7 @@ int FKINgcomm(long int Nloc, N_Vector uu, void *user_data)
  * ----------------------------------------------------------------
  */
 
-void FKIN_BBDOPT(long int *lenrpw, long int *lenipw, long int *nge)
+void FKIN_BBDOPT(long int* lenrpw, long int* lenipw, long int* nge)
 {
   KINBBDPrecGetWorkSpace(KIN_kinmem, lenrpw, lenipw);
   KINBBDPrecGetNumGfnEvals(KIN_kinmem, nge);

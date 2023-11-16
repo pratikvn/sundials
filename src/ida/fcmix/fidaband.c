@@ -16,41 +16,41 @@
  * a user-supplied Jacobian approximation routine.
  *-----------------------------------------------------------------*/
 
+#include <ida/ida_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sunmatrix/sunmatrix_band.h>
 
 #include "fida.h"     /* function names, prototypes, global vars.*/
 #include "ida_impl.h" /* definition of IDAMem type               */
 
-#include <ida/ida_ls.h>
-#include <sunmatrix/sunmatrix_band.h>
-
 /*************************************************/
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FIDA_BJAC(long int* N, long int* MU, long int* ML,
-                        long int* EBAND, realtype* T, realtype* Y,
-                        realtype* YP, realtype* R, realtype* CJ,
-                        realtype* J, realtype* EWT, realtype* H,
-                        long int* IPAR, realtype* RPAR, realtype* V1, 
-                        realtype* V2, realtype* V3, int* IER);
+extern void FIDA_BJAC(long int* N, long int* MU, long int* ML, long int* EBAND,
+                      realtype* T, realtype* Y, realtype* YP, realtype* R,
+                      realtype* CJ, realtype* J, realtype* EWT, realtype* H,
+                      long int* IPAR, realtype* RPAR, realtype* V1,
+                      realtype* V2, realtype* V3, int* IER);
 #ifdef __cplusplus
 }
 #endif
 
 /*************************************************/
 
-void FIDA_BANDSETJAC(int *flag, int *ier)
+void FIDA_BANDSETJAC(int* flag, int* ier)
 {
-  if (*flag == 0) {
-    *ier = IDASetJacFn(IDA_idamem, NULL);
-  } else {
-    if (F2C_IDA_ewtvec == NULL) {
+  if (*flag == 0) { *ier = IDASetJacFn(IDA_idamem, NULL); }
+  else
+  {
+    if (F2C_IDA_ewtvec == NULL)
+    {
       F2C_IDA_ewtvec = N_VClone(F2C_IDA_vec);
-      if (F2C_IDA_ewtvec == NULL) {
+      if (F2C_IDA_ewtvec == NULL)
+      {
         *ier = -1;
         return;
       }
@@ -62,12 +62,12 @@ void FIDA_BANDSETJAC(int *flag, int *ier)
 
 /*************************************************/
 
-int FIDABandJac(realtype t, realtype c_j, N_Vector yy,  
-		N_Vector yp, N_Vector rr, SUNMatrix J,
-		void *user_data, N_Vector vtemp1,
-                N_Vector vtemp2, N_Vector vtemp3)
+int FIDABandJac(realtype t, realtype c_j, N_Vector yy, N_Vector yp, N_Vector rr,
+                SUNMatrix J, void* user_data, N_Vector vtemp1, N_Vector vtemp2,
+                N_Vector vtemp3)
 {
-  realtype *yy_data, *yp_data, *rr_data, *jacdata, *ewtdata, *v1data, *v2data, *v3data;
+  realtype *yy_data, *yp_data, *rr_data, *jacdata, *ewtdata, *v1data, *v2data,
+    *v3data;
   realtype h;
   long int N, mupper, mlower, smu, eband;
   int ier;
@@ -100,15 +100,14 @@ int FIDABandJac(realtype t, realtype c_j, N_Vector yy,
   mlower  = SUNBandMatrix_LowerBandwidth(J);
   smu     = SUNBandMatrix_StoredUpperBandwidth(J);
   eband   = smu + mlower + 1;
-  jacdata = SUNBandMatrix_Column(J,0) - mupper;
+  jacdata = SUNBandMatrix_Column(J, 0) - mupper;
 
-  IDA_userdata = (FIDAUserData) user_data;
+  IDA_userdata = (FIDAUserData)user_data;
 
   /* Call user-supplied routine */
-  FIDA_BJAC(&N, &mupper, &mlower, &eband, &t, yy_data, yp_data,
-            rr_data, &c_j, jacdata, ewtdata, &h, 
-            IDA_userdata->ipar, IDA_userdata->rpar,
+  FIDA_BJAC(&N, &mupper, &mlower, &eband, &t, yy_data, yp_data, rr_data, &c_j,
+            jacdata, ewtdata, &h, IDA_userdata->ipar, IDA_userdata->rpar,
             v1data, v2data, v3data, &ier);
 
-  return(ier);
+  return (ier);
 }

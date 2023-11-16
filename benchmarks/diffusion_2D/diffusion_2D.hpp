@@ -17,24 +17,24 @@
 #ifndef DIFFUSION_2D_HPP
 #define DIFFUSION_2D_HPP
 
-#include <cstdio>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <limits>
-#include <cmath>
-#include <vector>
 #include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <limits>
+#include <sstream>
+#include <vector>
 
 #include "mpi.h"
 
 #if defined(USE_HIP)
-#include "nvector/nvector_mpiplusx.h"
 #include "nvector/nvector_hip.h"
-#elif defined(USE_CUDA)
 #include "nvector/nvector_mpiplusx.h"
+#elif defined(USE_CUDA)
 #include "nvector/nvector_cuda.h"
+#include "nvector/nvector_mpiplusx.h"
 #else
 #include "nvector/nvector_parallel.h"
 #endif
@@ -42,8 +42,8 @@
 #include "sunlinsol/sunlinsol_pcg.h"
 #include "sunlinsol/sunlinsol_spgmr.h"
 #if defined(USE_SUPERLU_DIST)
-#include "sunmatrix/sunmatrix_slunrloc.h"
 #include "sunlinsol/sunlinsol_superludist.h"
+#include "sunmatrix/sunmatrix_slunrloc.h"
 #endif
 
 // Macros for problem constants
@@ -54,10 +54,10 @@
 #define EIGHT RCONST(8.0)
 
 // Macro to access (x,y) location in 1D NVector array
-#define IDX(x,y,n) ((n)*(y)+(x))
+#define IDX(x, y, n) ((n) * (y) + (x))
 
 // Ceiling for integers ceil(a/b) = ceil((a + b - 1) / b)
-#define ICEIL(a,b) (((a) + (b) - 1) / (b))
+#define ICEIL(a, b) (((a) + (b)-1) / (b))
 
 using namespace std;
 
@@ -112,10 +112,10 @@ struct UserData
   sunindextype nodes_loc = 0;
 
   // Global x and y indices of this subdomain
-  sunindextype is = 0;  // x starting index
-  sunindextype ie = 0;  // x ending index
-  sunindextype js = 0;  // y starting index
-  sunindextype je = 0;  // y ending index
+  sunindextype is = 0; // x starting index
+  sunindextype ie = 0; // x ending index
+  sunindextype js = 0; // y starting index
+  sunindextype je = 0; // y ending index
 
   // MPI variables
   MPI_Comm comm_c = MPI_COMM_NULL; // Cartesian communicator in space
@@ -141,10 +141,10 @@ struct UserData
   int ipN = -1;
 
   // Receive buffers for neighbor exchange
-  realtype *Wrecv = NULL;
-  realtype *Erecv = NULL;
-  realtype *Srecv = NULL;
-  realtype *Nrecv = NULL;
+  realtype* Wrecv = NULL;
+  realtype* Erecv = NULL;
+  realtype* Srecv = NULL;
+  realtype* Nrecv = NULL;
 
   // Receive requests for neighbor exchange
   MPI_Request reqRW;
@@ -153,10 +153,10 @@ struct UserData
   MPI_Request reqRN;
 
   // Send buffers for neighbor exchange
-  realtype *Wsend = NULL;
-  realtype *Esend = NULL;
-  realtype *Ssend = NULL;
-  realtype *Nsend = NULL;
+  realtype* Wsend = NULL;
+  realtype* Esend = NULL;
+  realtype* Ssend = NULL;
+  realtype* Nsend = NULL;
 
   // Send requests for neighor exchange
   MPI_Request reqSW;
@@ -168,10 +168,11 @@ struct UserData
   N_Vector diag = NULL;
 
   UserData(SUNProfiler prof) : prof(prof) {}
+
   ~UserData();
 
   // Helper functions
-  int parse_args(vector<string> &args, bool outproc);
+  int parse_args(vector<string>& args, bool outproc);
   void help();
   void print();
   int setup();
@@ -191,20 +192,20 @@ private:
 struct UserOutput
 {
   // Ouput variables
-  int      output = 1;    // 0 = no output, 1 = stats output, 2 = output to disk
-  int      nout   = 20;   // number of output times
-  N_Vector error  = NULL; // error vector
-  ofstream uoutstream;    // output file stream
-  ofstream eoutstream;    // error file stream
+  int output     = 1;    // 0 = no output, 1 = stats output, 2 = output to disk
+  int nout       = 20;   // number of output times
+  N_Vector error = NULL; // error vector
+  ofstream uoutstream;   // output file stream
+  ofstream eoutstream;   // error file stream
 
   // Helper functions
-  int parse_args(vector<string> &args, bool outproc);
+  int parse_args(vector<string>& args, bool outproc);
   void help();
   void print();
 
   // Output functions
   int open(UserData* udata);
-  int write(realtype t, N_Vector u, UserData *udata);
+  int write(realtype t, N_Vector u, UserData* udata);
   int close(UserData* udata);
 };
 
@@ -222,18 +223,17 @@ int laplacian_matrix_sludist(N_Vector u, SUNMatrix L, UserData* udata);
 #endif
 
 // ODE right hand side function
-int diffusion(realtype t, N_Vector u, N_Vector f, void *user_data);
+int diffusion(realtype t, N_Vector u, N_Vector f, void* user_data);
 
 int diffusion_jac(realtype t, N_Vector u, N_Vector f, SUNMatrix Jac,
                   void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 // Preconditioner setup and solve functions
 int PSetup(realtype t, N_Vector u, N_Vector f, booleantype jok,
-           booleantype *jcurPtr, realtype gamma, void *user_data);
+           booleantype* jcurPtr, realtype gamma, void* user_data);
 
-int PSolve(realtype t, N_Vector u, N_Vector f, N_Vector r,
-           N_Vector z, realtype gamma, realtype delta, int lr,
-           void *user_data);
+int PSolve(realtype t, N_Vector u, N_Vector f, N_Vector r, N_Vector z,
+           realtype gamma, realtype delta, int lr, void* user_data);
 
 #elif defined(BENCHMARK_DAE)
 
@@ -243,8 +243,7 @@ int laplacian_matrix_sludist(N_Vector u, sunrealtype cj, SUNMatrix L,
 #endif
 
 // DAE residual function
-int diffusion(realtype t, N_Vector u, N_Vector up, N_Vector res,
-              void *user_data);
+int diffusion(realtype t, N_Vector u, N_Vector up, N_Vector res, void* user_data);
 
 int diffusion_jac(realtype t, realtype cj, N_Vector u, N_Vector up,
                   N_Vector res, SUNMatrix Jac, void* user_data, N_Vector tmp1,
@@ -252,10 +251,10 @@ int diffusion_jac(realtype t, realtype cj, N_Vector u, N_Vector up,
 
 // Preconditioner setup and solve functions
 int PSetup(realtype t, N_Vector u, N_Vector up, N_Vector res, realtype cj,
-           void *user_data);
+           void* user_data);
 
 int PSolve(realtype t, N_Vector u, N_Vector up, N_Vector res, N_Vector r,
-           N_Vector z, realtype cj, realtype delta, void *user_data);
+           N_Vector z, realtype cj, realtype delta, void* user_data);
 
 #else
 #error "Missing ODE/DAE preprocessor directive"
@@ -272,13 +271,13 @@ int DeviceSynchronize();
 int CopyDataFromDevice(N_Vector y);
 
 // Compute the true solution and its derivative
-int Solution(realtype t, N_Vector u, UserData *udata);
-int SolutionDerivative(realtype t, N_Vector up, UserData *udata);
+int Solution(realtype t, N_Vector u, UserData* udata);
+int SolutionDerivative(realtype t, N_Vector up, UserData* udata);
 
 // Compute the solution error
-int SolutionError(realtype t, N_Vector u, N_Vector e, UserData *udata);
+int SolutionError(realtype t, N_Vector u, N_Vector e, UserData* udata);
 
 // Check function return values
-int check_flag(void *flagvalue, const string funcname, int opt);
+int check_flag(void* flagvalue, const string funcname, int opt);
 
 #endif

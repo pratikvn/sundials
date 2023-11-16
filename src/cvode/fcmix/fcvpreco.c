@@ -20,32 +20,28 @@
  * -----------------------------------------------------------------
  */
 
+#include <cvode/cvode_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fcvode.h"     /* actual fn. names, prototypes and global vars.*/
 #include "cvode_impl.h" /* definition of CVodeMem type                  */
-
-#include <cvode/cvode_ls.h>
+#include "fcvode.h"     /* actual fn. names, prototypes and global vars.*/
 
 /*********************************************************************/
 
 /* Prototype of the Fortran routines */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FCV_PSET(realtype *T, realtype *Y, realtype *FY,
-			booleantype *JOK, booleantype *JCUR,
-			realtype *GAMMA, realtype *H,
-			long int *IPAR, realtype *RPAR, int *IER);
+extern void FCV_PSET(realtype* T, realtype* Y, realtype* FY, booleantype* JOK,
+                     booleantype* JCUR, realtype* GAMMA, realtype* H,
+                     long int* IPAR, realtype* RPAR, int* IER);
 
-  extern void FCV_PSOL(realtype *T, realtype *Y, realtype *FY,
-			realtype *R, realtype *Z, 
-			realtype *GAMMA, realtype *DELTA,
-			int *LR, long int *IPAR, realtype *RPAR, 
-                        int *IER);
+extern void FCV_PSOL(realtype* T, realtype* Y, realtype* FY, realtype* R,
+                     realtype* Z, realtype* GAMMA, realtype* DELTA, int* LR,
+                     long int* IPAR, realtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -54,16 +50,12 @@ extern "C" {
 /***************************************************************************/
 
 /* ---DEPRECATED--- */
-void FCV_SPILSSETPREC(int *flag, int *ier)
-{ FCV_LSSETPREC(flag, ier); }
+void FCV_SPILSSETPREC(int* flag, int* ier) { FCV_LSSETPREC(flag, ier); }
 
-void FCV_LSSETPREC(int *flag, int *ier)
+void FCV_LSSETPREC(int* flag, int* ier)
 {
-  if (*flag == 0) {
-    *ier = CVodeSetPreconditioner(CV_cvodemem, NULL, NULL);
-  } else {
-    *ier = CVodeSetPreconditioner(CV_cvodemem, FCVPSet, FCVPSol);
-  }
+  if (*flag == 0) { *ier = CVodeSetPreconditioner(CV_cvodemem, NULL, NULL); }
+  else { *ier = CVodeSetPreconditioner(CV_cvodemem, FCVPSet, FCVPSol); }
 }
 
 /***************************************************************************/
@@ -77,8 +69,7 @@ void FCV_LSSETPREC(int *flag, int *ier)
    Auxiliary data is assumed to be communicated by common blocks. */
 
 int FCVPSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-            booleantype *jcurPtr, realtype gamma,
-            void *user_data)
+            booleantype* jcurPtr, realtype gamma, void* user_data)
 {
   int ier = 0;
   realtype *ydata, *fydata;
@@ -87,15 +78,15 @@ int FCVPSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
 
   CVodeGetLastStep(CV_cvodemem, &h);
 
-  ydata   = N_VGetArrayPointer(y);
-  fydata  = N_VGetArrayPointer(fy);
+  ydata  = N_VGetArrayPointer(y);
+  fydata = N_VGetArrayPointer(fy);
 
-  CV_userdata = (FCVUserData) user_data;
+  CV_userdata = (FCVUserData)user_data;
 
-  FCV_PSET(&t, ydata, fydata, &jok, jcurPtr, &gamma, &h,
-           CV_userdata->ipar, CV_userdata->rpar, &ier);
+  FCV_PSET(&t, ydata, fydata, &jok, jcurPtr, &gamma, &h, CV_userdata->ipar,
+           CV_userdata->rpar, &ier);
 
-  return(ier);
+  return (ier);
 }
 
 /***************************************************************************/
@@ -107,24 +98,22 @@ int FCVPSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
    A return flag ier from FCVPSOL is returned by FCVPSol.
    Auxiliary data is assumed to be communicated by Common blocks. */
 
-int FCVPSol(realtype t, N_Vector y, N_Vector fy, 
-            N_Vector r, N_Vector z,
-            realtype gamma, realtype delta,
-            int lr, void *user_data)
+int FCVPSol(realtype t, N_Vector y, N_Vector fy, N_Vector r, N_Vector z,
+            realtype gamma, realtype delta, int lr, void* user_data)
 {
   int ier = 0;
   realtype *ydata, *fydata, *rdata, *zdata;
   FCVUserData CV_userdata;
 
-  ydata   = N_VGetArrayPointer(y);
-  fydata  = N_VGetArrayPointer(fy);
-  rdata   = N_VGetArrayPointer(r);
-  zdata   = N_VGetArrayPointer(z);
+  ydata  = N_VGetArrayPointer(y);
+  fydata = N_VGetArrayPointer(fy);
+  rdata  = N_VGetArrayPointer(r);
+  zdata  = N_VGetArrayPointer(z);
 
-  CV_userdata = (FCVUserData) user_data;
+  CV_userdata = (FCVUserData)user_data;
 
-  FCV_PSOL(&t, ydata, fydata, rdata, zdata, &gamma, &delta, &lr, 
+  FCV_PSOL(&t, ydata, fydata, rdata, zdata, &gamma, &delta, &lr,
            CV_userdata->ipar, CV_userdata->rpar, &ier);
 
-  return(ier);
+  return (ier);
 }

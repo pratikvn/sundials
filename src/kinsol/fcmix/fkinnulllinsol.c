@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "fkinsol.h"
 #include "kinsol_impl.h"
 
@@ -31,10 +32,7 @@ SUNLinearSolver F2C_KINSOL_linsol;
 /*=============================================================*/
 
 /* C routine that is called when using fixed-point solver */
-void FKINNullLinsol()
-{
-  F2C_KINSOL_linsol = NULL;
-}
+void FKINNullLinsol() { F2C_KINSOL_linsol = NULL; }
 
 /*===============================================================
    EOF

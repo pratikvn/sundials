@@ -18,39 +18,34 @@
  * -----------------------------------------------------------------
  */
 
+#include <cvode/cvode_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "fcvode.h"     /* actual fn. names, prototypes and global vars.*/
-#include "cvode_impl.h" /* definition of CVodeMem type                  */
-
-#include <cvode/cvode_ls.h>
 #include <sunmatrix/sunmatrix_dense.h>
+
+#include "cvode_impl.h" /* definition of CVodeMem type                  */
+#include "fcvode.h"     /* actual fn. names, prototypes and global vars.*/
 
 /***************************************************************************/
 
 /* Prototype of the Fortran routine */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-  extern void FCV_DJAC(long int *N, realtype *T, realtype *Y,
-                       realtype *FY, realtype *DJAC, realtype *H,
-                       long int *IPAR, realtype *RPAR, realtype *V1, 
-                       realtype *V2, realtype *V3, int *ier);
+extern void FCV_DJAC(long int* N, realtype* T, realtype* Y, realtype* FY,
+                     realtype* DJAC, realtype* H, long int* IPAR, realtype* RPAR,
+                     realtype* V1, realtype* V2, realtype* V3, int* ier);
 #ifdef __cplusplus
 }
 #endif
 
 /***************************************************************************/
 
-void FCV_DENSESETJAC(int *flag, int *ier)
+void FCV_DENSESETJAC(int* flag, int* ier)
 {
-  if (*flag == 0) {
-    *ier = CVodeSetJacFn(CV_cvodemem, NULL);
-  } else {
-    *ier = CVodeSetJacFn(CV_cvodemem, FCVDenseJac);
-  }
+  if (*flag == 0) { *ier = CVodeSetJacFn(CV_cvodemem, NULL); }
+  else { *ier = CVodeSetJacFn(CV_cvodemem, FCVDenseJac); }
 }
 
 /***************************************************************************/
@@ -60,9 +55,8 @@ void FCV_DENSESETJAC(int *flag, int *ier)
    Addresses of arguments are passed to FCVDJAC, using accessor functions 
    from the SUNDenseMatrix and N_Vector modules. */
 
-int FCVDenseJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
-                void *user_data, N_Vector vtemp1, N_Vector vtemp2,
-                N_Vector vtemp3)
+int FCVDenseJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
+                N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
 {
   int ier;
   realtype *ydata, *fydata, *jacdata, *v1data, *v2data, *v3data;
@@ -72,20 +66,18 @@ int FCVDenseJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 
   CVodeGetLastStep(CV_cvodemem, &h);
 
-  ydata   = N_VGetArrayPointer(y);
-  fydata  = N_VGetArrayPointer(fy);
-  v1data  = N_VGetArrayPointer(vtemp1);
-  v2data  = N_VGetArrayPointer(vtemp2);
-  v3data  = N_VGetArrayPointer(vtemp3);
+  ydata  = N_VGetArrayPointer(y);
+  fydata = N_VGetArrayPointer(fy);
+  v1data = N_VGetArrayPointer(vtemp1);
+  v2data = N_VGetArrayPointer(vtemp2);
+  v3data = N_VGetArrayPointer(vtemp3);
 
-  N = SUNDenseMatrix_Columns(J);
-  jacdata = SUNDenseMatrix_Column(J,0);
+  N       = SUNDenseMatrix_Columns(J);
+  jacdata = SUNDenseMatrix_Column(J, 0);
 
-  CV_userdata = (FCVUserData) user_data;
+  CV_userdata = (FCVUserData)user_data;
 
-  FCV_DJAC(&N, &t, ydata, fydata, jacdata, &h, 
-           CV_userdata->ipar, CV_userdata->rpar, v1data,
-           v2data, v3data, &ier); 
-  return(ier);
+  FCV_DJAC(&N, &t, ydata, fydata, jacdata, &h, CV_userdata->ipar,
+           CV_userdata->rpar, v1data, v2data, v3data, &ier);
+  return (ier);
 }
-

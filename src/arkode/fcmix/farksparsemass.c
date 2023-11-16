@@ -15,27 +15,26 @@
  * of a user-supplied mass-matrix approximation routine.
  *--------------------------------------------------------------*/
 
+#include <arkode/arkode_arkstep.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "farkode.h"
-#include "arkode_impl.h"
-#include <arkode/arkode_arkstep.h>
 #include <sunmatrix/sunmatrix_sparse.h>
+
+#include "arkode_impl.h"
+#include "farkode.h"
 
 /*=============================================================*/
 
 /* Prototype of the Fortran routine */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FARK_SPMASS(realtype *T, long int *N, 
-                          long int *NNZ, realtype *MDATA, 
-                          sunindextype *MRVALS, sunindextype *MCPTRS, 
-                          long int *IPAR, realtype *RPAR, 
-                          realtype *V1, realtype *V2, realtype *V3, 
-                          int *ier);
+extern void FARK_SPMASS(realtype* T, long int* N, long int* NNZ,
+                        realtype* MDATA, sunindextype* MRVALS,
+                        sunindextype* MCPTRS, long int* IPAR, realtype* RPAR,
+                        realtype* V1, realtype* V2, realtype* V3, int* ier);
 
 #ifdef __cplusplus
 }
@@ -45,7 +44,7 @@ extern "C" {
 
 /* Fortran interface to C routine ARKSlsSetMassFn; see 
    farkode.h for further information */
-void FARK_SPARSESETMASS(int *ier)
+void FARK_SPARSESETMASS(int* ier)
 {
   *ier = ARKStepSetMassFn(ARK_arkodemem, FARKSparseMass);
 }
@@ -54,7 +53,7 @@ void FARK_SPARSESETMASS(int *ier)
 
 /* C interface to user-supplied Fortran routine FARKSPMASS; see 
    farkode.h for additional information  */
-int FARKSparseMass(realtype t, SUNMatrix MassMat, void *user_data, 
+int FARKSparseMass(realtype t, SUNMatrix MassMat, void* user_data,
                    N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
 {
   int ier;
@@ -62,21 +61,20 @@ int FARKSparseMass(realtype t, SUNMatrix MassMat, void *user_data,
   FARKUserData ARK_userdata;
   long int NP, NNZ;
   sunindextype *indexvals, *indexptrs;
-  
-  v1data = N_VGetArrayPointer(vtemp1);
-  v2data = N_VGetArrayPointer(vtemp2);
-  v3data = N_VGetArrayPointer(vtemp3);
-  NP = SUNSparseMatrix_NP(MassMat);
-  NNZ = SUNSparseMatrix_NNZ(MassMat);
-  Mdata = SUNSparseMatrix_Data(MassMat);
-  indexvals = SUNSparseMatrix_IndexValues(MassMat);
-  indexptrs = SUNSparseMatrix_IndexPointers(MassMat);
-  ARK_userdata = (FARKUserData) user_data;
 
-  FARK_SPMASS(&t, &NP, &NNZ, Mdata, indexvals, indexptrs, 
-              ARK_userdata->ipar, ARK_userdata->rpar, v1data, 
-              v2data, v3data, &ier); 
-  return(ier);
+  v1data       = N_VGetArrayPointer(vtemp1);
+  v2data       = N_VGetArrayPointer(vtemp2);
+  v3data       = N_VGetArrayPointer(vtemp3);
+  NP           = SUNSparseMatrix_NP(MassMat);
+  NNZ          = SUNSparseMatrix_NNZ(MassMat);
+  Mdata        = SUNSparseMatrix_Data(MassMat);
+  indexvals    = SUNSparseMatrix_IndexValues(MassMat);
+  indexptrs    = SUNSparseMatrix_IndexPointers(MassMat);
+  ARK_userdata = (FARKUserData)user_data;
+
+  FARK_SPMASS(&t, &NP, &NNZ, Mdata, indexvals, indexptrs, ARK_userdata->ipar,
+              ARK_userdata->rpar, v1data, v2data, v3data, &ier);
+  return (ier);
 }
 
 /*===============================================================

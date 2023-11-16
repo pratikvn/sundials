@@ -17,25 +17,24 @@
  * the generic names FARK_PSET and  FARK_PSOL in the code below.
  *--------------------------------------------------------------*/
 
+#include <arkode/arkode_arkstep.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "farkode.h"
+
 #include "arkode_impl.h"
-#include <arkode/arkode_arkstep.h>
+#include "farkode.h"
 
 /*=============================================================*/
 
 /* Prototype of the Fortran routines */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FARK_MASSPSET(realtype *T, long int *IPAR, 
-                            realtype *RPAR, int *IER);
-  extern void FARK_MASSPSOL(realtype *T, realtype *R, realtype *Z, 
-                            realtype *DELTA, int *LR, long int *IPAR, 
-                            realtype *RPAR, int *IER);
+extern void FARK_MASSPSET(realtype* T, long int* IPAR, realtype* RPAR, int* IER);
+extern void FARK_MASSPSOL(realtype* T, realtype* R, realtype* Z, realtype* DELTA,
+                          int* LR, long int* IPAR, realtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -46,18 +45,23 @@ extern "C" {
 /* ---DEPRECATED---
    Fortran interface to C routine ARKStepSetMassPreconditioner; see 
    farkode.h for further details */
-void FARK_SPILSSETMASSPREC(int *flag, int *ier)
-{ FARK_LSSETMASSPREC(flag, ier); }
+void FARK_SPILSSETMASSPREC(int* flag, int* ier)
+{
+  FARK_LSSETMASSPREC(flag, ier);
+}
 
 /* Fortran interface to C routine ARKStepSetMassPreconditioner; see 
    farkode.h for further details */
-void FARK_LSSETMASSPREC(int *flag, int *ier)
+void FARK_LSSETMASSPREC(int* flag, int* ier)
 {
-  if (*flag == 0) {
+  if (*flag == 0)
+  {
     *ier = ARKStepSetMassPreconditioner(ARK_arkodemem, NULL, NULL);
-  } else {
-    *ier = ARKStepSetMassPreconditioner(ARK_arkodemem, 
-                                        FARKMassPSet, FARKMassPSol);
+  }
+  else
+  {
+    *ier = ARKStepSetMassPreconditioner(ARK_arkodemem, FARKMassPSet,
+                                        FARKMassPSol);
   }
   return;
 }
@@ -66,36 +70,34 @@ void FARK_LSSETMASSPREC(int *flag, int *ier)
 
 /* C interface to user-supplied Fortran routine FARKMASSPSET; see 
    farkode.h for further details */
-int FARKMassPSet(realtype t, void *user_data)
+int FARKMassPSet(realtype t, void* user_data)
 {
   int ier = 0;
   FARKUserData ARK_userdata;
-  ARK_userdata = (FARKUserData) user_data;
+  ARK_userdata = (FARKUserData)user_data;
   FARK_MASSPSET(&t, ARK_userdata->ipar, ARK_userdata->rpar, &ier);
-  return(ier);
+  return (ier);
 }
-
 
 /*=============================================================*/
 
 /* C interface to user-supplied Fortran routine FARKMASSPSOL; see 
    farkode.h for further details */
-int FARKMassPSol(realtype t, N_Vector r, N_Vector z, realtype delta,
-                 int lr, void *user_data)
+int FARKMassPSol(realtype t, N_Vector r, N_Vector z, realtype delta, int lr,
+                 void* user_data)
 {
   int ier = 0;
   realtype *rdata, *zdata;
   FARKUserData ARK_userdata;
 
-  rdata  = N_VGetArrayPointer(r);
-  zdata  = N_VGetArrayPointer(z);
-  ARK_userdata = (FARKUserData) user_data;
+  rdata        = N_VGetArrayPointer(r);
+  zdata        = N_VGetArrayPointer(z);
+  ARK_userdata = (FARKUserData)user_data;
 
-  FARK_MASSPSOL(&t, rdata, zdata, &delta, &lr, ARK_userdata->ipar, 
+  FARK_MASSPSOL(&t, rdata, zdata, &delta, &lr, ARK_userdata->ipar,
                 ARK_userdata->rpar, &ier);
-  return(ier);
+  return (ier);
 }
-
 
 /*===============================================================
    EOF

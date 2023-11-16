@@ -18,7 +18,9 @@ class SUNErrHandlerFnTest : public testing::Test
 {
 protected:
   SUNErrHandlerFnTest() { SUNContext_Create(nullptr, &sunctx); }
+
   ~SUNErrHandlerFnTest() { SUNContext_Free(&sunctx); }
+
   SUNContext sunctx;
 };
 
@@ -26,10 +28,13 @@ TEST_F(SUNErrHandlerFnTest, SUNLogErrHandlerFnLogsWhenCalled)
 {
   testing::internal::CaptureStderr();
   std::string message = "Test log handler";
-  SUNLogErrHandlerFn(__LINE__, __func__, __FILE__, message.c_str(), -1,
-                     nullptr, sunctx);
+  SUNLogErrHandlerFn(__LINE__, __func__, __FILE__, message.c_str(), -1, nullptr,
+                     sunctx);
   std::string output = testing::internal::GetCapturedStderr();
-  EXPECT_THAT(output, testing::AllOf(testing::StartsWith("[ERROR]"), testing::HasSubstr("[rank 0]"), testing::HasSubstr(__func__), testing::HasSubstr("Test log handler")));
+  EXPECT_THAT(output, testing::AllOf(testing::StartsWith("[ERROR]"),
+                                     testing::HasSubstr("[rank 0]"),
+                                     testing::HasSubstr(__func__),
+                                     testing::HasSubstr("Test log handler")));
 }
 
 TEST_F(SUNErrHandlerFnTest, SUNAbortErrHandlerFnAbortsWhenCalled)
@@ -57,31 +62,30 @@ class SUNContextErrFunctionTests : public testing::Test
 {
 protected:
   SUNContextErrFunctionTests() { SUNContext_Create(nullptr, &sunctx); }
+
   ~SUNContextErrFunctionTests() { SUNContext_Free(&sunctx); }
+
   SUNContext sunctx;
 };
 
-int firstHandler(int line, const char *func, const char *file, const char *msg,
-                 SUNErrCode err_code, void *err_user_data,
-                 SUNContext sunctx)
+int firstHandler(int line, const char* func, const char* file, const char* msg,
+                 SUNErrCode err_code, void* err_user_data, SUNContext sunctx)
 {
   std::vector<int>* order = static_cast<std::vector<int>*>(err_user_data);
   order->push_back(0);
   return 0;
 }
 
-int secondHandler(int line, const char *func, const char *file, const char *msg,
-                  SUNErrCode err_code, void *err_user_data,
-                  SUNContext sunctx)
+int secondHandler(int line, const char* func, const char* file, const char* msg,
+                  SUNErrCode err_code, void* err_user_data, SUNContext sunctx)
 {
   std::vector<int>* order = static_cast<std::vector<int>*>(err_user_data);
   order->push_back(1);
   return 0;
 }
 
-int thirdHandler(int line, const char *func, const char *file, const char *msg,
-                 SUNErrCode err_code, void *err_user_data,
-                 SUNContext sunctx)
+int thirdHandler(int line, const char* func, const char* file, const char* msg,
+                 SUNErrCode err_code, void* err_user_data, SUNContext sunctx)
 {
   std::vector<int>* order = static_cast<std::vector<int>*>(err_user_data);
   order->push_back(2);

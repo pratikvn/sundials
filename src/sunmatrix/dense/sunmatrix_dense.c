@@ -20,8 +20,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <sunmatrix/sunmatrix_dense.h>
+
 #include "sundials_matrix_impl.h"
 
 #define ZERO RCONST(0.0)
@@ -29,7 +29,8 @@
 
 /* Private function prototypes */
 static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
-static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y);
+static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
+                                              N_Vector y);
 
 /*
  * -----------------------------------------------------------------
@@ -87,8 +88,7 @@ SUNMatrix SUNDenseMatrix(sunindextype M, sunindextype N, SUNContext sunctx)
 
   content->cols = (realtype**)malloc(N * sizeof(realtype*));
   SUNAssert(content->cols, SUN_ERR_MALLOC_FAIL);
-  for (j = 0; j < N; j++)
-    content->cols[j] = content->data + j * M;
+  for (j = 0; j < N; j++) { content->cols[j] = content->data + j * M; }
 
   return (A);
 }
@@ -106,8 +106,10 @@ void SUNDenseMatrix_Print(SUNMatrix A, FILE* outfile)
 
   /* perform operation */
   fprintf(outfile, "\n");
-  for (i = 0; i < SM_ROWS_D(A); i++) {
-    for (j = 0; j < SM_COLUMNS_D(A); j++) {
+  for (i = 0; i < SM_ROWS_D(A); i++)
+  {
+    for (j = 0; j < SM_COLUMNS_D(A); j++)
+    {
 #if defined(SUNDIALS_EXTENDED_PRECISION)
       fprintf(outfile, "%12Lg  ", SM_ELEMENT_D(A, i, j));
 #elif defined(SUNDIALS_DOUBLE_PRECISION)
@@ -179,26 +181,27 @@ SUNMatrix_ID SUNMatGetID_Dense(SUNMatrix A) { return SUNMATRIX_DENSE; }
 SUNMatrix SUNMatClone_Dense(SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
-  SUNMatrix B =
-    SUNCheckCallLastErrNull(SUNDenseMatrix(SM_ROWS_D(A), SM_COLUMNS_D(A),
-                                           A->sunctx));
+  SUNMatrix B = SUNCheckCallLastErrNull(
+    SUNDenseMatrix(SM_ROWS_D(A), SM_COLUMNS_D(A), A->sunctx));
   return (B);
 }
 
 void SUNMatDestroy_Dense(SUNMatrix A)
 {
-  if (A == NULL)
-    return;
+  if (A == NULL) { return; }
 
   /* free content */
-  if (A->content != NULL) {
+  if (A->content != NULL)
+  {
     /* free data array */
-    if (SM_DATA_D(A) != NULL) {
+    if (SM_DATA_D(A) != NULL)
+    {
       free(SM_DATA_D(A));
       SM_DATA_D(A) = NULL;
     }
     /* free column pointers */
-    if (SM_CONTENT_D(A)->cols != NULL) {
+    if (SM_CONTENT_D(A)->cols != NULL)
+    {
       free(SM_CONTENT_D(A)->cols);
       SM_CONTENT_D(A)->cols = NULL;
     }
@@ -208,7 +211,8 @@ void SUNMatDestroy_Dense(SUNMatrix A)
   }
 
   /* free ops and matrix */
-  if (A->ops) {
+  if (A->ops)
+  {
     free(A->ops);
     A->ops = NULL;
   }
@@ -228,8 +232,7 @@ SUNErrCode SUNMatZero_Dense(SUNMatrix A)
 
   /* Perform operation A_ij = 0 */
   Adata = SM_DATA_D(A);
-  for (i = 0; i < SM_LDATA_D(A); i++)
-    Adata[i] = ZERO;
+  for (i = 0; i < SM_LDATA_D(A); i++) { Adata[i] = ZERO; }
 
   return SUN_SUCCESS;
 }
@@ -245,8 +248,12 @@ SUNErrCode SUNMatCopy_Dense(SUNMatrix A, SUNMatrix B)
 
   /* Perform operation B_ij = A_ij */
   for (j = 0; j < SM_COLUMNS_D(A); j++)
+  {
     for (i = 0; i < SM_ROWS_D(A); i++)
+    {
       SM_ELEMENT_D(B, i, j) = SM_ELEMENT_D(A, i, j);
+    }
+  }
 
   return SUN_SUCCESS;
 }
@@ -259,11 +266,12 @@ SUNErrCode SUNMatScaleAddI_Dense(realtype c, SUNMatrix A)
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
 
   /* Perform operation A = c*A + I */
-  for (j = 0; j < SM_COLUMNS_D(A); j++) {
-    for (i = 0; i < SM_ROWS_D(A); i++) {
+  for (j = 0; j < SM_COLUMNS_D(A); j++)
+  {
+    for (i = 0; i < SM_ROWS_D(A); i++)
+    {
       SM_ELEMENT_D(A, i, j) *= c;
-      if (i == j)
-        SM_ELEMENT_D(A, i, j) += ONE;
+      if (i == j) { SM_ELEMENT_D(A, i, j) += ONE; }
     }
   }
 
@@ -280,8 +288,12 @@ SUNErrCode SUNMatScaleAdd_Dense(realtype c, SUNMatrix A, SUNMatrix B)
 
   /* Perform operation A = c*A + B */
   for (j = 0; j < SM_COLUMNS_D(A); j++)
+  {
     for (i = 0; i < SM_ROWS_D(A); i++)
+    {
       SM_ELEMENT_D(A, i, j) = c * SM_ELEMENT_D(A, i, j) + SM_ELEMENT_D(B, i, j);
+    }
+  }
 
   return SUN_SUCCESS;
 }
@@ -299,12 +311,11 @@ SUNErrCode SUNMatMatvec_Dense(SUNMatrix A, N_Vector x, N_Vector y)
   yd = SUNCheckCallLastErr(N_VGetArrayPointer(y));
 
   /* Perform operation y = Ax */
-  for (i = 0; i < SM_ROWS_D(A); i++)
-    yd[i] = ZERO;
-  for (j = 0; j < SM_COLUMNS_D(A); j++) {
+  for (i = 0; i < SM_ROWS_D(A); i++) { yd[i] = ZERO; }
+  for (j = 0; j < SM_COLUMNS_D(A); j++)
+  {
     col_j = SM_COLUMN_D(A, j);
-    for (i = 0; i < SM_ROWS_D(A); i++)
-      yd[i] += col_j[i] * xd[j];
+    for (i = 0; i < SM_ROWS_D(A); i++) { yd[i] += col_j[i] * xd[j]; }
   }
   return SUN_SUCCESS;
 }
@@ -327,7 +338,8 @@ SUNErrCode SUNMatSpace_Dense(SUNMatrix A, long int* lenrw, long int* leniw)
 static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
 {
   /* both matrices must have the same shape */
-  if ((SM_ROWS_D(A) != SM_ROWS_D(B)) || (SM_COLUMNS_D(A) != SM_COLUMNS_D(B))) {
+  if ((SM_ROWS_D(A) != SM_ROWS_D(B)) || (SM_COLUMNS_D(A) != SM_COLUMNS_D(B)))
+  {
     return SUNFALSE;
   }
 
@@ -337,12 +349,14 @@ static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
 static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
 {
   /* Vectors must provide nvgetarraypointer and cannot be a parallel vector */
-  if (!x->ops->nvgetarraypointer || !y->ops->nvgetarraypointer) {
+  if (!x->ops->nvgetarraypointer || !y->ops->nvgetarraypointer)
+  {
     return SUNFALSE;
   }
 
   /* Check that the dimensions agree */
-  if ((N_VGetLength(x) != SM_COLUMNS_D(A)) || (N_VGetLength(y) != SM_ROWS_D(A))) {
+  if ((N_VGetLength(x) != SM_COLUMNS_D(A)) || (N_VGetLength(y) != SM_ROWS_D(A)))
+  {
     return SUNFALSE;
   }
 

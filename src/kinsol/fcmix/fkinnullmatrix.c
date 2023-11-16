@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "fkinsol.h"
 #include "kinsol_impl.h"
 
@@ -32,10 +33,7 @@ SUNMatrix F2C_KINSOL_matrix;
 
 /* C routine that is called when using matrix-free linear solvers 
    or fixed-point nonlinear solver */
-void FKINNullMatrix()
-{
-  F2C_KINSOL_matrix = NULL;
-}
+void FKINNullMatrix() { F2C_KINSOL_matrix = NULL; }
 
 /*===============================================================
    EOF

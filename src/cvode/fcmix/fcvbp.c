@@ -20,17 +20,17 @@
  * -----------------------------------------------------------------
  */
 
+#include "fcvbp.h" /* prototypes of interfaces to CVBANDPRE        */
+
+#include <cvode/cvode_bandpre.h> /* prototypes of CVBANDPRE functions and macros */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fcvode.h"                 /* actual fn. names, prototypes and global vars.*/
-#include "fcvbp.h"                  /* prototypes of interfaces to CVBANDPRE        */
-
-#include <cvode/cvode_bandpre.h>    /* prototypes of CVBANDPRE functions and macros */
+#include "fcvode.h" /* actual fn. names, prototypes and global vars.*/
 
 /***************************************************************************/
 
-void FCV_BPINIT(long int *N, long int *mu, long int *ml, int *ier)
+void FCV_BPINIT(long int* N, long int* mu, long int* ml, int* ier)
 {
   /*
      Call CVBandPrecInit to initialize the CVBANDPRE module:
@@ -38,9 +38,7 @@ void FCV_BPINIT(long int *N, long int *mu, long int *ml, int *ier)
      mu, ml are the half-bandwidths of the retained preconditioner blocks
   */
 
-  *ier = CVBandPrecInit(CV_cvodemem,
-                        (sunindextype)(*N),
-                        (sunindextype)(*mu),
+  *ier = CVBandPrecInit(CV_cvodemem, (sunindextype)(*N), (sunindextype)(*mu),
                         (sunindextype)(*ml));
 
   return;
@@ -50,7 +48,7 @@ void FCV_BPINIT(long int *N, long int *mu, long int *ml, int *ier)
 
 /* C function FCVBPOPT to access optional outputs from CVBANDPRE_Data */
 
-void FCV_BPOPT(long int *lenrwbp, long int *leniwbp, long int *nfebp)
+void FCV_BPOPT(long int* lenrwbp, long int* leniwbp, long int* nfebp)
 {
   CVBandPrecGetWorkSpace(CV_cvodemem, lenrwbp, leniwbp);
   CVBandPrecGetNumRhsEvals(CV_cvodemem, nfebp);

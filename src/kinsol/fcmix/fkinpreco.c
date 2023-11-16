@@ -24,29 +24,26 @@
  * Note: The use of the generic names FK_PSET and FK_PSOL below.
  * -----------------------------------------------------------------*/
 
+#include <kinsol/kinsol_ls.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "fkinsol.h"
 #include "kinsol_impl.h"
 
-#include <kinsol/kinsol_ls.h>
-
 /*------------------------------------------------------------------
   prototype of the user-supplied fortran routine
   ------------------------------------------------------------------*/
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-extern void FK_PSET(realtype* uudata,     realtype* uscaledata,
-                    realtype* fvaldata,   realtype* fscaledata,
-                    int* ier);
+extern void FK_PSET(realtype* uudata, realtype* uscaledata, realtype* fvaldata,
+                    realtype* fscaledata, int* ier);
 
-extern void FK_PSOL(realtype* uudata,   realtype* uscaledata,
-                    realtype* fvaldata, realtype* fscaledata,
-                    realtype* vvdata,   int* ier);
+extern void FK_PSOL(realtype* uudata, realtype* uscaledata, realtype* fvaldata,
+                    realtype* fscaledata, realtype* vvdata, int* ier);
 
 #ifdef __cplusplus
 }
@@ -55,13 +52,10 @@ extern void FK_PSOL(realtype* uudata,   realtype* uscaledata,
 /*------------------------------------------------------------------
   Function : FKIN_LSSETPREC
   ------------------------------------------------------------------*/
-void FKIN_LSSETPREC(int *flag, int *ier)
+void FKIN_LSSETPREC(int* flag, int* ier)
 {
-  if ((*flag) == 0) {
-    *ier = KINSetPreconditioner(KIN_kinmem, NULL, NULL);
-  } else {
-    *ier = KINSetPreconditioner(KIN_kinmem, FKINPSet, FKINPSol);
-  }
+  if ((*flag) == 0) { *ier = KINSetPreconditioner(KIN_kinmem, NULL, NULL); }
+  else { *ier = KINSetPreconditioner(KIN_kinmem, FKINPSet, FKINPSol); }
 
   return;
 }
@@ -69,8 +63,7 @@ void FKIN_LSSETPREC(int *flag, int *ier)
 /*------------------------------------------------------------------
   Function : FKIN_SPILSSETPREC -- DEPRECATED
   ------------------------------------------------------------------*/
-void FKIN_SPILSSETPREC(int *flag, int *ier)
-{ FKIN_LSSETPREC(flag,ier); }
+void FKIN_SPILSSETPREC(int* flag, int* ier) { FKIN_LSSETPREC(flag, ier); }
 
 /*------------------------------------------------------------------
   Function : FKINPSet
@@ -78,9 +71,8 @@ void FKIN_SPILSSETPREC(int *flag, int *ier)
   C function FKINPSet is used to interface between FK_PSET and
   the user-supplied Fortran preconditioner setup routine.
   ------------------------------------------------------------------*/
-int FKINPSet(N_Vector uu, N_Vector uscale,
-             N_Vector fval, N_Vector fscale,
-             void *user_data)
+int FKINPSet(N_Vector uu, N_Vector uscale, N_Vector fval, N_Vector fscale,
+             void* user_data)
 {
   realtype *udata, *uscaledata, *fdata, *fscaledata;
   int ier;
@@ -103,7 +95,7 @@ int FKINPSet(N_Vector uu, N_Vector uscale,
   /* Call user-supplied routine */
   FK_PSET(udata, uscaledata, fdata, fscaledata, &ier);
 
-  return(ier);
+  return (ier);
 }
 
 /*------------------------------------------------------------------
@@ -112,9 +104,8 @@ int FKINPSet(N_Vector uu, N_Vector uscale,
   C function FKINPSol is used to interface between FK_PSOL and
   the user-supplied Fortran preconditioner solve routine.
   ------------------------------------------------------------------*/
-int FKINPSol(N_Vector uu, N_Vector uscale, 
-             N_Vector fval, N_Vector fscale, 
-             N_Vector vv, void *user_data)
+int FKINPSol(N_Vector uu, N_Vector uscale, N_Vector fval, N_Vector fscale,
+             N_Vector vv, void* user_data)
 {
   realtype *udata, *uscaledata, *fdata, *fscaledata, *vvdata;
   int ier;
@@ -138,5 +129,5 @@ int FKINPSol(N_Vector uu, N_Vector uscale,
   /* Call user-supplied routine */
   FK_PSOL(udata, uscaledata, fdata, fscaledata, vvdata, &ier);
 
-  return(ier);
+  return (ier);
 }

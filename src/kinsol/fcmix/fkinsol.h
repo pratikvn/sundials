@@ -762,8 +762,8 @@ int FKINPSol(N_Vector uu, N_Vector uscale,
              N_Vector fval, N_Vector fscale, 
              N_Vector vv, void *user_data);
 
-void FKINNullMatrix();
-void FKINNullLinsol();
+void FKINNullMatrix(void);
+void FKINNullLinsol(void);
   
 /*------------------------------------------------------------------
   declarations for global variables shared amongst various routines

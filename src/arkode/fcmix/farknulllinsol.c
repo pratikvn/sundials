@@ -19,22 +19,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "farkode.h"
+
 #include "arkode_impl.h"
+#include "farkode.h"
 
 /*=============================================================*/
 
 /* Define global matrix variables */
 
 SUNLinearSolver F2C_ARKODE_linsol;
-SUNLinearSolver F2C_ARKODE_mass_sol; 
+SUNLinearSolver F2C_ARKODE_mass_sol;
 
 /*=============================================================*/
 
 /* C routine that is called when solving an explicit problem */
 void FARKNullLinsol()
 {
-  F2C_ARKODE_linsol = NULL;
+  F2C_ARKODE_linsol   = NULL;
   F2C_ARKODE_mass_sol = NULL;
 }
 

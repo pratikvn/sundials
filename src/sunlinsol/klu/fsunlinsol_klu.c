@@ -18,10 +18,10 @@
  * -----------------------------------------------------------------
  */
 
+#include "fsunlinsol_klu.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "fsunlinsol_klu.h"
 
 /* Define global linsol variables */
 
@@ -46,46 +46,46 @@ extern N_Vector F2C_ARKODE_vec;
 
 /* Fortran callable interfaces */
 
-void FSUNKLU_INIT(int *code, int *ier)
+void FSUNKLU_INIT(int* code, int* ier)
 {
   *ier = 0;
 
-  switch(*code) {
+  switch (*code)
+  {
   case FCMIX_CVODE:
-    if (F2C_CVODE_linsol)  SUNLinSolFree(F2C_CVODE_linsol);
+    if (F2C_CVODE_linsol) { SUNLinSolFree(F2C_CVODE_linsol); }
     F2C_CVODE_linsol = NULL;
     F2C_CVODE_linsol = SUNLinSol_KLU(F2C_CVODE_vec, F2C_CVODE_matrix);
-    if (F2C_CVODE_linsol == NULL) *ier = -1;
+    if (F2C_CVODE_linsol == NULL) { *ier = -1; }
     break;
   case FCMIX_IDA:
-    if (F2C_IDA_linsol)  SUNLinSolFree(F2C_IDA_linsol);
+    if (F2C_IDA_linsol) { SUNLinSolFree(F2C_IDA_linsol); }
     F2C_IDA_linsol = NULL;
     F2C_IDA_linsol = SUNLinSol_KLU(F2C_IDA_vec, F2C_IDA_matrix);
-    if (F2C_IDA_linsol == NULL) *ier = -1;
+    if (F2C_IDA_linsol == NULL) { *ier = -1; }
     break;
   case FCMIX_KINSOL:
-    if (F2C_KINSOL_linsol)  SUNLinSolFree(F2C_KINSOL_linsol);
+    if (F2C_KINSOL_linsol) { SUNLinSolFree(F2C_KINSOL_linsol); }
     F2C_KINSOL_linsol = NULL;
     F2C_KINSOL_linsol = SUNLinSol_KLU(F2C_KINSOL_vec, F2C_KINSOL_matrix);
-    if (F2C_KINSOL_linsol == NULL) *ier = -1;
+    if (F2C_KINSOL_linsol == NULL) { *ier = -1; }
     break;
   case FCMIX_ARKODE:
-    if (F2C_ARKODE_linsol)  SUNLinSolFree(F2C_ARKODE_linsol);
+    if (F2C_ARKODE_linsol) { SUNLinSolFree(F2C_ARKODE_linsol); }
     F2C_ARKODE_linsol = NULL;
     F2C_ARKODE_linsol = SUNLinSol_KLU(F2C_ARKODE_vec, F2C_ARKODE_matrix);
-    if (F2C_ARKODE_linsol == NULL) *ier = -1;
+    if (F2C_ARKODE_linsol == NULL) { *ier = -1; }
     break;
-  default:
-    *ier = -1;
+  default: *ier = -1;
   }
 }
 
-
-void FSUNKLU_REINIT(int *code, long int *NNZ, int *reinit_type, int *ier)
+void FSUNKLU_REINIT(int* code, long int* NNZ, int* reinit_type, int* ier)
 {
   *ier = 0;
 
-  switch(*code) {
+  switch (*code)
+  {
   case FCMIX_CVODE:
     *ier = SUNLinSol_KLUReInit(F2C_CVODE_linsol, F2C_CVODE_matrix,
                                (sunindextype)(*NNZ), *reinit_type);
@@ -102,17 +102,16 @@ void FSUNKLU_REINIT(int *code, long int *NNZ, int *reinit_type, int *ier)
     *ier = SUNLinSol_KLUReInit(F2C_ARKODE_linsol, F2C_ARKODE_matrix,
                                (sunindextype)(*NNZ), *reinit_type);
     break;
-  default:
-    *ier = -1;
+  default: *ier = -1;
   }
 }
 
-
-void FSUNKLU_SETORDERING(int *code, int *ordering_choice, int *ier)
+void FSUNKLU_SETORDERING(int* code, int* ordering_choice, int* ier)
 {
   *ier = 0;
 
-  switch(*code) {
+  switch (*code)
+  {
   case FCMIX_CVODE:
     *ier = SUNLinSol_KLUSetOrdering(F2C_CVODE_linsol, *ordering_choice);
     break;
@@ -125,32 +124,27 @@ void FSUNKLU_SETORDERING(int *code, int *ordering_choice, int *ier)
   case FCMIX_ARKODE:
     *ier = SUNLinSol_KLUSetOrdering(F2C_ARKODE_linsol, *ordering_choice);
     break;
-  default:
-    *ier = -1;
+  default: *ier = -1;
   }
 }
 
-
-void FSUNMASSKLU_INIT(int *ier)
+void FSUNMASSKLU_INIT(int* ier)
 {
   *ier = 0;
-  if (F2C_ARKODE_mass_sol)  SUNLinSolFree(F2C_ARKODE_mass_sol);
+  if (F2C_ARKODE_mass_sol) { SUNLinSolFree(F2C_ARKODE_mass_sol); }
   F2C_ARKODE_mass_sol = NULL;
-  F2C_ARKODE_mass_sol = SUNLinSol_KLU(F2C_ARKODE_vec,
-                                      F2C_ARKODE_mass_matrix);
-  if (F2C_ARKODE_mass_sol == NULL) *ier = -1;
+  F2C_ARKODE_mass_sol = SUNLinSol_KLU(F2C_ARKODE_vec, F2C_ARKODE_mass_matrix);
+  if (F2C_ARKODE_mass_sol == NULL) { *ier = -1; }
 }
 
-
-void FSUNMASSKLU_REINIT(long int *NNZ, int *reinit_type, int *ier)
+void FSUNMASSKLU_REINIT(long int* NNZ, int* reinit_type, int* ier)
 {
   *ier = 0;
   *ier = SUNLinSol_KLUReInit(F2C_ARKODE_mass_sol, F2C_ARKODE_mass_matrix,
                              (sunindextype)(*NNZ), *reinit_type);
 }
 
-
-void FSUNMASSKLU_SETORDERING(int *ordering_choice, int *ier)
+void FSUNMASSKLU_SETORDERING(int* ordering_choice, int* ier)
 {
   *ier = 0;
   *ier = SUNLinSol_KLUSetOrdering(F2C_ARKODE_mass_sol, *ordering_choice);

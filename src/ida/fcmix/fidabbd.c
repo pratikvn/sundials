@@ -18,13 +18,13 @@
  * a standard interface to the C code of the IDABBDPRE package.
  *-----------------------------------------------------------------*/
 
+#include "fidabbd.h" /* prototypes of interfaces to IDABBD           */
+
+#include <ida/ida_bbdpre.h> /* prototypes of IDABBDPRE functions and macros */
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "fida.h"            /* function names, prototypes, global variables */
-#include "fidabbd.h"         /* prototypes of interfaces to IDABBD           */
-
-#include <ida/ida_bbdpre.h>  /* prototypes of IDABBDPRE functions and macros */
+#include "fida.h" /* function names, prototypes, global variables */
 
 /*************************************************/
 
@@ -34,18 +34,15 @@
 
 /*************************************************/
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FIDA_GLOCFN(long int* NLOC, realtype* Y,
-                          realtype* YLOC, realtype* YPLOC,
-                          realtype* GLOC, long int* IPAR,
-                          realtype* RPAR, int* IER);
-  extern void FIDA_COMMFN(long int* NLOC, realtype* T,
-                          realtype* Y, realtype* YP,
-                          long int* IPAR, realtype* RPAR,
-                          int* IER);
+extern void FIDA_GLOCFN(long int* NLOC, realtype* Y, realtype* YLOC,
+                        realtype* YPLOC, realtype* GLOC, long int* IPAR,
+                        realtype* RPAR, int* IER);
+extern void FIDA_COMMFN(long int* NLOC, realtype* T, realtype* Y, realtype* YP,
+                        long int* IPAR, realtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -53,40 +50,30 @@ extern "C" {
 
 /*************************************************/
 
-void FIDA_BBDINIT(long int *Nloc, long int *mudq,
-                  long int *mldq, long int *mu,
-                  long int *ml, realtype *dqrely,
-                  int *ier)
+void FIDA_BBDINIT(long int* Nloc, long int* mudq, long int* mldq, long int* mu,
+                  long int* ml, realtype* dqrely, int* ier)
 {
-  *ier = IDABBDPrecInit(IDA_idamem,
-                        (sunindextype)(*Nloc),
-                        (sunindextype)(*mudq),
-                        (sunindextype)(*mldq),
-                        (sunindextype)(*mu),
-                        (sunindextype)(*ml),
-                        *dqrely,
-                        (IDABBDLocalFn) FIDAgloc,
-                        (IDABBDCommFn) FIDAcfn);
+  *ier = IDABBDPrecInit(IDA_idamem, (sunindextype)(*Nloc),
+                        (sunindextype)(*mudq), (sunindextype)(*mldq),
+                        (sunindextype)(*mu), (sunindextype)(*ml), *dqrely,
+                        (IDABBDLocalFn)FIDAgloc, (IDABBDCommFn)FIDAcfn);
   return;
 }
 
 /*************************************************/
 
-void FIDA_BBDREINIT(long int *Nloc, long int *mudq,
-                    long int *mldq, realtype *dqrely,
-                    int *ier)
+void FIDA_BBDREINIT(long int* Nloc, long int* mudq, long int* mldq,
+                    realtype* dqrely, int* ier)
 {
-  *ier = IDABBDPrecReInit(IDA_idamem,
-                          (sunindextype)(*mudq),
-                          (sunindextype)(*mldq),
-                          *dqrely);
+  *ier = IDABBDPrecReInit(IDA_idamem, (sunindextype)(*mudq),
+                          (sunindextype)(*mldq), *dqrely);
   return;
 }
 
 /*************************************************/
 
-int FIDAgloc(long int Nloc, realtype t, N_Vector yy,
-             N_Vector yp, N_Vector gval, void *user_data)
+int FIDAgloc(long int Nloc, realtype t, N_Vector yy, N_Vector yp, N_Vector gval,
+             void* user_data)
 {
   realtype *yy_data, *yp_data, *gval_data;
   int ier;
@@ -106,18 +93,17 @@ int FIDAgloc(long int Nloc, realtype t, N_Vector yy,
   yp_data   = N_VGetArrayPointer(yp);
   gval_data = N_VGetArrayPointer(gval);
 
-  IDA_userdata = (FIDAUserData) user_data;
+  IDA_userdata = (FIDAUserData)user_data;
 
   /* Call user-supplied routine */
-  FIDA_GLOCFN(&Nloc, &t, yy_data, yp_data, gval_data,
-              IDA_userdata->ipar, IDA_userdata->rpar, &ier);
-  return(ier);
+  FIDA_GLOCFN(&Nloc, &t, yy_data, yp_data, gval_data, IDA_userdata->ipar,
+              IDA_userdata->rpar, &ier);
+  return (ier);
 }
 
 /*************************************************/
 
-int FIDAcfn(long int Nloc, realtype t, N_Vector yy, N_Vector yp,
-	    void *user_data)
+int FIDAcfn(long int Nloc, realtype t, N_Vector yy, N_Vector yp, void* user_data)
 {
   realtype *yy_data, *yp_data;
   int ier;
@@ -136,18 +122,17 @@ int FIDAcfn(long int Nloc, realtype t, N_Vector yy, N_Vector yp,
   yy_data = N_VGetArrayPointer(yy);
   yp_data = N_VGetArrayPointer(yp);
 
-  IDA_userdata = (FIDAUserData) user_data;
+  IDA_userdata = (FIDAUserData)user_data;
 
   /* Call user-supplied routine */
-  FIDA_COMMFN(&Nloc, &t, yy_data, yp_data,
-              IDA_userdata->ipar, IDA_userdata->rpar, &ier);
-  return(ier);
+  FIDA_COMMFN(&Nloc, &t, yy_data, yp_data, IDA_userdata->ipar,
+              IDA_userdata->rpar, &ier);
+  return (ier);
 }
 
 /*************************************************/
 
-void FIDA_BBDOPT(long int *lenrwbbd, long int *leniwbbd,
-                 long int *ngebbd)
+void FIDA_BBDOPT(long int* lenrwbbd, long int* leniwbbd, long int* ngebbd)
 {
   IDABBDPrecGetWorkSpace(IDA_idamem, lenrwbbd, leniwbbd);
   IDABBDPrecGetNumGfnEvals(IDA_idamem, ngebbd);

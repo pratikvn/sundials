@@ -18,24 +18,24 @@
  * and FARK_MTIMES in the code below.
  *--------------------------------------------------------------*/
 
+#include <arkode/arkode_arkstep.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "farkode.h"
+
 #include "arkode_impl.h"
-#include <arkode/arkode_arkstep.h>
+#include "farkode.h"
 
 /*=============================================================*/
 
 /* Prototype of the Fortran routine */
 
-#ifdef __cplusplus  /* wrapper to enable C++ usage */
+#ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
-  extern void FARK_MTSETUP(realtype *T, long int *IPAR, 
-                           realtype *RPAR, int *IER);
-  extern void FARK_MTIMES(realtype *V, realtype *MV, realtype *T, 
-                          long int *IPAR, realtype *RPAR, int *IER);
+extern void FARK_MTSETUP(realtype* T, long int* IPAR, realtype* RPAR, int* IER);
+extern void FARK_MTIMES(realtype* V, realtype* MV, realtype* T, long int* IPAR,
+                        realtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -46,46 +46,44 @@ extern "C" {
 /* ---DEPRECATED---
    Fortran interface to C routine ARKStepSetMassTimes; see 
    farkode.h for further information */
-void FARK_SPILSSETMASS(int *ier)
-{ FARK_LSSETMASS(ier); }
+void FARK_SPILSSETMASS(int* ier) { FARK_LSSETMASS(ier); }
 
 /* Fortran interface to C routine ARKStepSetMassTimes; see 
    farkode.h for further information */
-void FARK_LSSETMASS(int *ier)
+void FARK_LSSETMASS(int* ier)
 {
   ARKodeMem ark_mem;
-  ark_mem = (ARKodeMem) ARK_arkodemem;
-  *ier = ARKStepSetMassTimes(ARK_arkodemem, FARKMTSetup, 
-                             FARKMtimes, ark_mem->user_data);
+  ark_mem = (ARKodeMem)ARK_arkodemem;
+  *ier    = ARKStepSetMassTimes(ARK_arkodemem, FARKMTSetup, FARKMtimes,
+                                ark_mem->user_data);
 }
 
 /*=============================================================*/
 
 /* C interface to user-supplied Fortran routine FARKMTSETUP; see
    farkode.h for further information */
-int FARKMTSetup(realtype t, void *user_data)
+int FARKMTSetup(realtype t, void* user_data)
 {
   FARKUserData ARK_userdata;
-  int ier = 0;
-  ARK_userdata = (FARKUserData) user_data;
+  int ier      = 0;
+  ARK_userdata = (FARKUserData)user_data;
   FARK_MTSETUP(&t, ARK_userdata->ipar, ARK_userdata->rpar, &ier);
-  return(ier);
+  return (ier);
 }
 
 /* C interface to user-supplied Fortran routine FARKMTIMES; see
    farkode.h for further information */
-int FARKMtimes(N_Vector v, N_Vector Mv, realtype t, void *user_data)
+int FARKMtimes(N_Vector v, N_Vector Mv, realtype t, void* user_data)
 {
   realtype *vdata, *Mvdata;
   FARKUserData ARK_userdata;
   int ier = 0;
-  
-  vdata  = N_VGetArrayPointer(v);
-  Mvdata = N_VGetArrayPointer(Mv);
-  ARK_userdata = (FARKUserData) user_data;
-  FARK_MTIMES(vdata, Mvdata, &t, ARK_userdata->ipar, 
-              ARK_userdata->rpar, &ier);
-  return(ier);
+
+  vdata        = N_VGetArrayPointer(v);
+  Mvdata       = N_VGetArrayPointer(Mv);
+  ARK_userdata = (FARKUserData)user_data;
+  FARK_MTIMES(vdata, Mvdata, &t, ARK_userdata->ipar, ARK_userdata->rpar, &ier);
+  return (ier);
 }
 
 /*===============================================================

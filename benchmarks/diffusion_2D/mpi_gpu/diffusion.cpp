@@ -30,12 +30,10 @@
 #error Define USE_CUDA or USE_HIP
 #endif
 
-
 // Forcing device function
-__device__ void add_forcing(const realtype t,
-                            const realtype x, const realtype y,
+__device__ void add_forcing(const realtype t, const realtype x, const realtype y,
                             const realtype kx, const realtype ky,
-                            const sunindextype c, realtype *udot)
+                            const sunindextype c, realtype* udot)
 {
   realtype sin_sqr_x = sin(PI * x) * sin(PI * x);
   realtype sin_sqr_y = sin(PI * y) * sin(PI * y);
@@ -49,33 +47,24 @@ __device__ void add_forcing(const realtype t,
   realtype bx = kx * TWO * PI * PI;
   realtype by = ky * TWO * PI * PI;
 
-  udot[c] += -TWO * PI * sin_sqr_x * sin_sqr_y * sin_t_cos_t
-    -bx * (cos_sqr_x - sin_sqr_x) * sin_sqr_y * cos_sqr_t
-    -by * (cos_sqr_y - sin_sqr_y) * sin_sqr_x * cos_sqr_t;
+  udot[c] += -TWO * PI * sin_sqr_x * sin_sqr_y * sin_t_cos_t -
+             bx * (cos_sqr_x - sin_sqr_x) * sin_sqr_y * cos_sqr_t -
+             by * (cos_sqr_y - sin_sqr_y) * sin_sqr_x * cos_sqr_t;
 }
 
-
 // Interior diffusion kernel
-__global__ void diffusion_interior_kernel(const realtype t,
-                                          const realtype *u,
-                                          realtype *udot,
-                                          const sunindextype is,
-                                          const sunindextype js,
-                                          const sunindextype nx_loc,
-                                          const sunindextype ny_loc,
-                                          const realtype dx,
-                                          const realtype dy,
-                                          const realtype kx,
-                                          const realtype ky,
-                                          const bool forcing)
+__global__ void diffusion_interior_kernel(
+  const realtype t, const realtype* u, realtype* udot, const sunindextype is,
+  const sunindextype js, const sunindextype nx_loc, const sunindextype ny_loc,
+  const realtype dx, const realtype dy, const realtype kx, const realtype ky,
+  const bool forcing)
 {
   // Thread location in the local grid
   int i = blockIdx.x * blockDim.x + threadIdx.x;
   int j = blockIdx.y * blockDim.y + threadIdx.y;
 
   // Only update the interior points
-  bool interior = (i > 0 && i < nx_loc - 1 &&
-                   j > 0 && j < ny_loc - 1);
+  bool interior = (i > 0 && i < nx_loc - 1 && j > 0 && j < ny_loc - 1);
   if (interior)
   {
     // 1D array index for center, west, east, south, and north nodes
@@ -102,24 +91,13 @@ __global__ void diffusion_interior_kernel(const realtype t,
   }
 }
 
-
 // Interior boundary kernel
-__global__ void diffusion_boundary_kernel(const realtype t,
-                                          const realtype *u,
-                                          realtype *udot,
-                                          const sunindextype is,
-                                          const sunindextype js,
-                                          const sunindextype nx_loc,
-                                          const sunindextype ny_loc,
-                                          const realtype dx,
-                                          const realtype dy,
-                                          const realtype kx,
-                                          const realtype ky,
-                                          const bool forcing,
-                                          const realtype *wbuf,
-                                          const realtype *ebuf,
-                                          const realtype *sbuf,
-                                          const realtype *nbuf)
+__global__ void diffusion_boundary_kernel(
+  const realtype t, const realtype* u, realtype* udot, const sunindextype is,
+  const sunindextype js, const sunindextype nx_loc, const sunindextype ny_loc,
+  const realtype dx, const realtype dy, const realtype kx, const realtype ky,
+  const bool forcing, const realtype* wbuf, const realtype* ebuf,
+  const realtype* sbuf, const realtype* nbuf)
 {
   // Thread ID
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -354,7 +332,6 @@ __global__ void diffusion_boundary_kernel(const realtype t,
   }
 }
 
-
 // Diffusion function
 int laplacian(realtype t, N_Vector u, N_Vector f, UserData* udata)
 {
@@ -364,52 +341,50 @@ int laplacian(realtype t, N_Vector u, N_Vector f, UserData* udata)
 
   // Start exchange
   flag = udata->start_exchange(u);
-  if (check_flag(&flag, "UserData::start_exchange", 1)) return -1;
+  if (check_flag(&flag, "UserData::start_exchange", 1)) { return -1; }
 
   // Extract needed constants from user data
-  const sunindextype is      = udata->is;
-  const sunindextype js      = udata->js;
-  const sunindextype nx_loc  = udata->nx_loc;
-  const sunindextype ny_loc  = udata->ny_loc;
-  const realtype     dx      = udata->dx;
-  const realtype     dy      = udata->dy;
-  const realtype     kx      = udata->kx;
-  const realtype     ky      = udata->ky;
-  const bool         forcing = udata->forcing;
+  const sunindextype is     = udata->is;
+  const sunindextype js     = udata->js;
+  const sunindextype nx_loc = udata->nx_loc;
+  const sunindextype ny_loc = udata->ny_loc;
+  const realtype dx         = udata->dx;
+  const realtype dy         = udata->dy;
+  const realtype kx         = udata->kx;
+  const realtype ky         = udata->ky;
+  const bool forcing        = udata->forcing;
 
   // Access data arrays
-  const realtype *uarray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
-  if (check_flag((void *) uarray, "N_VGetDeviceArrayPointer", 0)) return -1;
+  const realtype* uarray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
+  if (check_flag((void*)uarray, "N_VGetDeviceArrayPointer", 0)) { return -1; }
 
-  realtype *farray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(f));
-  if (check_flag((void *) farray, "N_VGetDeviceArrayPointer", 0)) return -1;
+  realtype* farray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(f));
+  if (check_flag((void*)farray, "N_VGetDeviceArrayPointer", 0)) { return -1; }
 
   // Update subdomain interior
   dim3 iblock(BLOCK_SIZE_X, BLOCK_SIZE_Y);
   dim3 igrid(ICEIL(nx_loc, BLOCK_SIZE_X), ICEIL(ny_loc, BLOCK_SIZE_Y));
 
-  diffusion_interior_kernel<<<igrid,iblock>>>(t, uarray, farray, is, js,
-                                              nx_loc, ny_loc, dx, dy, kx, ky,
-                                              forcing);
+  diffusion_interior_kernel<<<igrid, iblock>>>(t, uarray, farray, is, js, nx_loc,
+                                               ny_loc, dx, dy, kx, ky, forcing);
 
   // Wait for exchange receives
   flag = udata->end_exchange();
-  if (check_flag(&flag, "UserData::end_exchagne", 1)) return -1;
+  if (check_flag(&flag, "UserData::end_exchagne", 1)) { return -1; }
 
   // Update subdomain boundary
-  const realtype *Warray = (udata->HaveNbrW) ? udata->Wrecv : NULL;
-  const realtype *Earray = (udata->HaveNbrE) ? udata->Erecv : NULL;
-  const realtype *Sarray = (udata->HaveNbrS) ? udata->Srecv : NULL;
-  const realtype *Narray = (udata->HaveNbrN) ? udata->Nrecv : NULL;
+  const realtype* Warray = (udata->HaveNbrW) ? udata->Wrecv : NULL;
+  const realtype* Earray = (udata->HaveNbrE) ? udata->Erecv : NULL;
+  const realtype* Sarray = (udata->HaveNbrS) ? udata->Srecv : NULL;
+  const realtype* Narray = (udata->HaveNbrN) ? udata->Nrecv : NULL;
 
   sunindextype maxdim = max(nx_loc, ny_loc);
   dim3 bblock(BLOCK_SIZE);
   dim3 bgrid(ICEIL(maxdim, BLOCK_SIZE));
 
-  diffusion_boundary_kernel<<<bgrid,bblock>>>(t, uarray, farray, is, js,
-                                              nx_loc, ny_loc, dx, dy, kx, ky,
-                                              forcing, Warray, Earray, Sarray,
-                                              Narray);
+  diffusion_boundary_kernel<<<bgrid, bblock>>>(t, uarray, farray, is, js, nx_loc,
+                                               ny_loc, dx, dy, kx, ky, forcing,
+                                               Warray, Earray, Sarray, Narray);
 
   // Return success
   return 0;

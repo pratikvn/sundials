@@ -38,28 +38,19 @@ public:
 
   /* disallow copy, but allow move operators */
   Context& operator=(const Context&) = delete;
-  Context& operator=(Context&&) = default;
+  Context& operator=(Context&&)      = default;
 
-  SUNContext Convert() override
-  {
-    return *sunctx_.get();
-  }
-  SUNContext Convert() const override
-  {
-    return *sunctx_.get();
-  }
-  operator SUNContext() override
-  {
-    return *sunctx_.get();
-  }
-  operator SUNContext() const override
-  {
-    return *sunctx_.get();
-  }
+  SUNContext Convert() override { return *sunctx_.get(); }
+
+  SUNContext Convert() const override { return *sunctx_.get(); }
+
+  operator SUNContext() override { return *sunctx_.get(); }
+
+  operator SUNContext() const override { return *sunctx_.get(); }
 
   ~Context()
   {
-    if (sunctx_) SUNContext_Free(sunctx_.get());
+    if (sunctx_) { SUNContext_Free(sunctx_.get()); }
   }
 
 private:

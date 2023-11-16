@@ -17,22 +17,21 @@
  * a standard interface to the C code of the ARKBANDPRE package.
  *--------------------------------------------------------------*/
 
+#include "farkbp.h"
+
+#include <arkode/arkode_bandpre.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "farkode.h"
-#include "farkbp.h"
-#include <arkode/arkode_bandpre.h>
 
 /*=============================================================*/
 
 /* Fortran interface to C routine ARKBandPrecInit; see farkbp.h
    for additional information */
-void FARK_BPINIT(long int *N, long int *mu,
-                 long int *ml, int *ier)
+void FARK_BPINIT(long int* N, long int* mu, long int* ml, int* ier)
 {
-  *ier = ARKBandPrecInit(ARK_arkodemem,
-                         (sunindextype)(*N),
-                         (sunindextype)(*mu),
+  *ier = ARKBandPrecInit(ARK_arkodemem, (sunindextype)(*N), (sunindextype)(*mu),
                          (sunindextype)(*ml));
   return;
 }
@@ -42,7 +41,7 @@ void FARK_BPINIT(long int *N, long int *mu,
 /* Fortran interface to C routines ARKBandPrecGetWorkSpace and
    ARKBandPrecGetNumRhsEvals; see farkbp.h for additional
    information */
-void FARK_BPOPT(long int *lenrwbp, long int *leniwbp, long int *nfebp)
+void FARK_BPOPT(long int* lenrwbp, long int* leniwbp, long int* nfebp)
 {
   ARKBandPrecGetWorkSpace(ARK_arkodemem, lenrwbp, leniwbp);
   ARKBandPrecGetNumRhsEvals(ARK_arkodemem, nfebp);
