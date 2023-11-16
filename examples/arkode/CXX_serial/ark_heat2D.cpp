@@ -1008,10 +1008,13 @@ static int OpenOutput(UserData* udata)
 static int WriteOutput(realtype t, N_Vector u, UserData* udata)
 {
   int flag;
-  realtype max;
 
   if (udata->output > 0)
   {
+    // Compute rms norm of the state
+    realtype urms = sqrt(N_VDotProd(u, u) / udata->nx / udata->ny);
+
+    // Output current status
     if (udata->forcing)
     {
       // Compute the error
@@ -1019,15 +1022,8 @@ static int WriteOutput(realtype t, N_Vector u, UserData* udata)
       if (check_flag(&flag, "SolutionError", 1)) { return 1; }
 
       // Compute max error
-      max = N_VMaxNorm(udata->e);
-    }
+      realtype max = N_VMaxNorm(udata->e);
 
-    // Compute rms norm of the state
-    realtype urms = sqrt(N_VDotProd(u, u) / udata->nx / udata->ny);
-
-    // Output current status
-    if (udata->forcing)
-    {
       cout << setw(22) << t << setw(25) << urms << setw(25) << max << endl;
     }
     else { cout << setw(22) << t << setw(25) << urms << endl; }

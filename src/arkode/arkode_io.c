@@ -49,62 +49,63 @@ int arkSetDefaults(void* arkode_mem)
   ark_mem = (ARKodeMem)arkode_mem;
 
   /* Set default values for integrator optional inputs */
-  ark_mem->fixedstep = SUNFALSE;      /* default to use adaptive steps */
-  ark_mem->reltol    = RCONST(1.e-4); /* relative tolerance */
-  ark_mem->itol      = ARK_SS;        /* scalar-scalar solution tolerances */
-  ark_mem->ritol     = ARK_SS;        /* scalar-scalar residual tolerances */
-  ark_mem->Sabstol   = RCONST(1.e-9); /* solution absolute tolerance */
-  ark_mem->atolmin0  = SUNFALSE;      /* min(abstol) > 0 */
-  ark_mem->SRabstol  = RCONST(1.e-9); /* residual absolute tolerance */
-  ark_mem->Ratolmin0 = SUNFALSE;      /* min(Rabstol) > 0 */
-  ark_mem->user_efun = SUNFALSE;      /* no user-supplied ewt function */
-  ark_mem->efun      = arkEwtSetSS;   /* built-in scalar-scalar ewt function */
-  ark_mem->e_data    = ark_mem;       /* ewt function data */
-  ark_mem->user_rfun = SUNFALSE;      /* no user-supplied rwt function */
-  ark_mem->rfun      = arkRwtSet;     /* built-in rwt function */
-  ark_mem->r_data    = ark_mem;       /* rwt function data */
-  ark_mem->ehfun     = NULL;
-  ark_mem->eh_data   = ark_mem; /* error handler data */
-  ark_mem->errfp     = stderr;  /* output stream for errors */
+  ark_mem->use_compensated_sums    = SUNFALSE; 
+  ark_mem->fixedstep               = SUNFALSE;       /* default to use adaptive steps */
+  ark_mem->reltol                  = RCONST(1.e-4);  /* relative tolerance */
+  ark_mem->itol                    = ARK_SS;         /* scalar-scalar solution tolerances */
+  ark_mem->ritol                   = ARK_SS;         /* scalar-scalar residual tolerances */
+  ark_mem->Sabstol                 = RCONST(1.e-9);  /* solution absolute tolerance */
+  ark_mem->atolmin0                = SUNFALSE;       /* min(abstol) > 0 */
+  ark_mem->SRabstol                = RCONST(1.e-9);  /* residual absolute tolerance */
+  ark_mem->Ratolmin0               = SUNFALSE;       /* min(Rabstol) > 0 */
+  ark_mem->user_efun               = SUNFALSE;       /* no user-supplied ewt function */
+  ark_mem->efun                    = arkEwtSetSS;    /* built-in scalar-scalar ewt function */
+  ark_mem->e_data                  = ark_mem;        /* ewt function data */
+  ark_mem->user_rfun               = SUNFALSE;       /* no user-supplied rwt function */
+  ark_mem->rfun                    = arkRwtSet;      /* built-in rwt function */
+  ark_mem->r_data                  = ark_mem;        /* rwt function data */
+  ark_mem->ehfun                   = arkErrHandler;  /* default error handler fn */
+  ark_mem->eh_data                 = ark_mem;        /* error handler data */
+  ark_mem->errfp                   = stderr;         /* output stream for errors */
 #if SUNDIALS_LOGGING_LEVEL > 0
   ark_mem->errfp = (ark_mem->sunctx->logger->error_fp)
                      ? ark_mem->sunctx->logger->error_fp
                      : stderr;
 #endif
-  ark_mem->mxstep         = MXSTEP_DEFAULT; /* max number of steps */
-  ark_mem->mxhnil         = MXHNIL;         /* max warns of t+h==t */
-  ark_mem->maxnef         = MAXNEF;         /* max error test fails */
-  ark_mem->maxncf         = MAXNCF;         /* max convergence fails */
-  ark_mem->maxconstrfails = MAXCONSTRFAILS; /* max number of constraint fails */
-  ark_mem->hin            = ZERO;       /* determine initial step on-the-fly */
-  ark_mem->hmin           = ZERO;       /* no minimum step size */
-  ark_mem->hmax_inv       = ZERO;       /* no maximum step size */
-  ark_mem->tstopset       = SUNFALSE;   /* no stop time set */
-  ark_mem->tstop          = ZERO;       /* no fixed stop time */
-  ark_mem->diagfp         = NULL;       /* no solver diagnostics file */
-  ark_mem->report         = SUNFALSE;   /* don't report solver diagnostics */
-  ark_mem->hadapt_mem->etamx1 = ETAMX1; /* max change on first step */
-  ark_mem->hadapt_mem->etamxf = ETAMXF; /* max change on error-failed step */
-  ark_mem->hadapt_mem->etamin = ETAMIN; /* min bound on time step reduction */
-  ark_mem->hadapt_mem->small_nef =
-    SMALL_NEF; /* num error fails before ETAMXF enforced */
-  ark_mem->hadapt_mem->etacf  = ETACF; /* max change on convergence failure */
-  ark_mem->hadapt_mem->HAdapt = NULL;  /* step adaptivity fn */
-  ark_mem->hadapt_mem->HAdapt_data = NULL;          /* step adaptivity data */
-  ark_mem->hadapt_mem->imethod     = ARK_ADAPT_PID; /* PID controller */
-  ark_mem->hadapt_mem->cfl         = CFLFAC; /* explicit stability factor */
-  ark_mem->hadapt_mem->safety = SAFETY; /* step adaptivity safety factor  */
-  ark_mem->hadapt_mem->bias   = BIAS;   /* step adaptivity error bias */
-  ark_mem->hadapt_mem->growth = GROWTH; /* step adaptivity growth factor */
-  ark_mem->hadapt_mem->lbound = HFIXED_LB; /* step adaptivity no-change lower bound */
-  ark_mem->hadapt_mem->ubound = HFIXED_UB; /* step adaptivity no-change upper bound */
-  ark_mem->hadapt_mem->k1 = AD0_K1;        /* step adaptivity parameter */
-  ark_mem->hadapt_mem->k2 = AD0_K2;        /* step adaptivity parameter */
-  ark_mem->hadapt_mem->k3 = AD0_K3;        /* step adaptivity parameter */
-  ark_mem->hadapt_mem->pq = SUNFALSE;        /* use embedding order */
-  ark_mem->hadapt_mem->expstab = arkExpStab; /* internal explicit stability fn */
-  ark_mem->hadapt_mem->estab_data = NULL;    /* no explicit stability fn data */
-  return (ARK_SUCCESS);
+  ark_mem->mxstep                  = MXSTEP_DEFAULT; /* max number of steps */
+  ark_mem->mxhnil                  = MXHNIL;         /* max warns of t+h==t */
+  ark_mem->maxnef                  = MAXNEF;         /* max error test fails */
+  ark_mem->maxncf                  = MAXNCF;         /* max convergence fails */
+  ark_mem->maxconstrfails          = MAXCONSTRFAILS; /* max number of constraint fails */
+  ark_mem->hin                     = ZERO;           /* determine initial step on-the-fly */
+  ark_mem->hmin                    = ZERO;           /* no minimum step size */
+  ark_mem->hmax_inv                = ZERO;           /* no maximum step size */
+  ark_mem->tstopset                = SUNFALSE;       /* no stop time set */
+  ark_mem->tstopinterp             = SUNFALSE;       /* copy at stop time */
+  ark_mem->tstop                   = ZERO;           /* no fixed stop time */
+  ark_mem->diagfp                  = NULL;           /* no solver diagnostics file */
+  ark_mem->report                  = SUNFALSE;       /* don't report solver diagnostics */
+  ark_mem->hadapt_mem->etamx1      = ETAMX1;         /* max change on first step */
+  ark_mem->hadapt_mem->etamxf      = ETAMXF;         /* max change on error-failed step */
+  ark_mem->hadapt_mem->etamin      = ETAMIN;         /* min bound on time step reduction */
+  ark_mem->hadapt_mem->small_nef   = SMALL_NEF;      /* num error fails before ETAMXF enforced */
+  ark_mem->hadapt_mem->etacf       = ETACF;          /* max change on convergence failure */
+  ark_mem->hadapt_mem->HAdapt      = NULL;           /* step adaptivity fn */
+  ark_mem->hadapt_mem->HAdapt_data = NULL;           /* step adaptivity data */
+  ark_mem->hadapt_mem->imethod     = ARK_ADAPT_PID;  /* PID controller */
+  ark_mem->hadapt_mem->cfl         = CFLFAC;         /* explicit stability factor */
+  ark_mem->hadapt_mem->safety      = SAFETY;         /* step adaptivity safety factor  */
+  ark_mem->hadapt_mem->bias        = BIAS;           /* step adaptivity error bias */
+  ark_mem->hadapt_mem->growth      = GROWTH;         /* step adaptivity growth factor */
+  ark_mem->hadapt_mem->lbound      = HFIXED_LB;      /* step adaptivity no-change lower bound */
+  ark_mem->hadapt_mem->ubound      = HFIXED_UB;      /* step adaptivity no-change upper bound */
+  ark_mem->hadapt_mem->k1          = AD0_K1;         /* step adaptivity parameter */
+  ark_mem->hadapt_mem->k2          = AD0_K2;         /* step adaptivity parameter */
+  ark_mem->hadapt_mem->k3          = AD0_K3;         /* step adaptivity parameter */
+  ark_mem->hadapt_mem->pq          = SUNFALSE;       /* use embedding order */
+  ark_mem->hadapt_mem->expstab     = arkExpStab;     /* internal explicit stability fn */
+  ark_mem->hadapt_mem->estab_data  = NULL;           /* no explicit stability fn data */
+  return(ARK_SUCCESS);
 }
 
 /*---------------------------------------------------------------
@@ -161,10 +162,10 @@ int arkSetInterpolantType(void* arkode_mem, int itype)
   if (itype == ARK_INTERP_HERMITE)
   {
     ark_mem->interp = arkInterpCreate_Hermite(arkode_mem, ARK_INTERP_MAX_DEGREE);
-  }
-  else
-  {
+  } else if (itype == ARK_INTERP_LAGRANGE) {
     ark_mem->interp = arkInterpCreate_Lagrange(arkode_mem, ARK_INTERP_MAX_DEGREE);
+  } else {
+    ark_mem->interp = NULL;
   }
   if (ark_mem->interp == NULL)
   {
@@ -517,6 +518,26 @@ int arkSetStopTime(void* arkode_mem, realtype tstop)
 
   return (ARK_SUCCESS);
 }
+
+/*---------------------------------------------------------------
+  arkSetInterpolateStopTime:
+
+  Specifies to use interpolation to fill the solution output at
+  the stop time (instead of a copy).
+  ---------------------------------------------------------------*/
+int arkSetInterpolateStopTime(void *arkode_mem, booleantype interp)
+{
+  ARKodeMem ark_mem;
+  if (arkode_mem==NULL) {
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE",
+                    "arkSetInterpolateStopTime", MSG_ARK_NO_MEM);
+    return (ARK_MEM_NULL);
+  }
+  ark_mem = (ARKodeMem) arkode_mem;
+  ark_mem->tstopinterp = interp;
+  return(ARK_SUCCESS);
+}
+
 
 /*---------------------------------------------------------------
   arkClearStopTime:
@@ -1247,6 +1268,32 @@ int arkSetMaxConvFails(void* arkode_mem, int maxncf)
   return (ARK_SUCCESS);
 }
 
+/*---------------------------------------------------------------
+  arkSetUseCompensatedSums:
+
+  Specifies that ARKODE should use compensated (Kahan) summation
+  where relevant to mitigate roundoff error.
+  ---------------------------------------------------------------*/
+int arkSetUseCompensatedSums(void *arkode_mem, sunbooleantype onoff)
+{
+  ARKodeMem ark_mem;
+  if (arkode_mem==NULL) {
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE",
+                    "arkSetUseCompensatedSums", MSG_ARK_NO_MEM);
+    return(ARK_MEM_NULL);
+  }
+  ark_mem = (ARKodeMem) arkode_mem;
+
+  if (onoff) {
+    ark_mem->use_compensated_sums = SUNTRUE;
+  } else {
+    ark_mem->use_compensated_sums = SUNFALSE;
+  }
+
+  return(ARK_SUCCESS);
+}
+
+
 /*===============================================================
   ARKODE optional output utility functions
   ===============================================================*/
@@ -1692,6 +1739,7 @@ int arkGetUserData(void* arkode_mem, void** user_data)
 
 int arkPrintAllStats(void* arkode_mem, FILE* outfile, SUNOutputFormat fmt)
 {
+  int retval;
   ARKodeMem ark_mem;
   ARKodeRootMem ark_root_mem;
 
@@ -1753,7 +1801,14 @@ int arkPrintAllStats(void* arkode_mem, FILE* outfile, SUNOutputFormat fmt)
     return (ARK_ILL_INPUT);
   }
 
-  return (ARK_SUCCESS);
+  /* Print relaxation stats */
+  if (ark_mem->relax_enabled)
+  {
+    retval = arkRelaxPrintAllStats(arkode_mem, outfile, fmt);
+    if (retval != ARK_SUCCESS) return(retval);
+  }
+
+  return(ARK_SUCCESS);
 }
 
 /*-----------------------------------------------------------------*/

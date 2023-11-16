@@ -39,31 +39,33 @@
 /*               Private Functions Prototypes                      */
 /*=================================================================*/
 
-static CkpntMem IDAAckpntInit(IDAMem IDA_mem);
-static CkpntMem IDAAckpntNew(IDAMem IDA_mem);
-static void IDAAckpntCopyVectors(IDAMem IDA_mem, CkpntMem ck_mem);
-static booleantype IDAAckpntAllocVectors(IDAMem IDA_mem, CkpntMem ck_mem);
-static void IDAAckpntDelete(CkpntMem* ck_memPtr);
+static IDAckpntMem IDAAckpntInit(IDAMem IDA_mem);
+static IDAckpntMem IDAAckpntNew(IDAMem IDA_mem);
+static void IDAAckpntCopyVectors(IDAMem IDA_mem, IDAckpntMem ck_mem);
+static booleantype IDAAckpntAllocVectors(IDAMem IDA_mem, IDAckpntMem ck_mem);
+static void IDAAckpntDelete(IDAckpntMem *ck_memPtr);
 
 static void IDAAbckpbDelete(IDABMem* IDAB_memPtr);
 
 static booleantype IDAAdataMalloc(IDAMem IDA_mem);
 static void IDAAdataFree(IDAMem IDA_mem);
-static int IDAAdataStore(IDAMem IDA_mem, CkpntMem ck_mem);
+static int  IDAAdataStore(IDAMem IDA_mem, IDAckpntMem ck_mem);
 
-static int IDAAckpntGet(IDAMem IDA_mem, CkpntMem ck_mem);
+static int  IDAAckpntGet(IDAMem IDA_mem, IDAckpntMem ck_mem);
 
 static booleantype IDAAhermiteMalloc(IDAMem IDA_mem);
-static void IDAAhermiteFree(IDAMem IDA_mem);
-static int IDAAhermiteStorePnt(IDAMem IDA_mem, DtpntMem d);
-static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
-                           N_Vector* yyS, N_Vector* ypS);
+static void        IDAAhermiteFree(IDAMem IDA_mem);
+static int         IDAAhermiteStorePnt(IDAMem IDA_mem, IDAdtpntMem d);
+static int         IDAAhermiteGetY(IDAMem IDA_mem, realtype t,
+                                   N_Vector yy, N_Vector yp,
+                                   N_Vector *yyS, N_Vector *ypS);
 
 static booleantype IDAApolynomialMalloc(IDAMem IDA_mem);
-static void IDAApolynomialFree(IDAMem IDA_mem);
-static int IDAApolynomialStorePnt(IDAMem IDA_mem, DtpntMem d);
-static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
-                              N_Vector yp, N_Vector* yyS, N_Vector* ypS);
+static void        IDAApolynomialFree(IDAMem IDA_mem);
+static int         IDAApolynomialStorePnt(IDAMem IDA_mem, IDAdtpntMem d);
+static int         IDAApolynomialGetY(IDAMem IDA_mem, realtype t,
+                                      N_Vector yy, N_Vector yp,
+                                      N_Vector *yyS, N_Vector *ypS);
 
 static int IDAAfindIndex(IDAMem ida_mem, realtype t, long int* indx,
                          booleantype* newpoint);
@@ -366,8 +368,8 @@ int IDASolveF(void* ida_mem, realtype tout, realtype* tret, N_Vector yret,
 {
   IDAadjMem IDAADJ_mem;
   IDAMem IDA_mem;
-  CkpntMem tmp;
-  DtpntMem* dt_mem;
+  IDAckpntMem tmp;
+  IDAdtpntMem *dt_mem;
   long int nstloc;
   int flag, i;
   booleantype allocOK, earlyret;
@@ -1586,7 +1588,7 @@ int IDASolveB(void* ida_mem, realtype tBout, int itaskB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
-  CkpntMem ck_mem;
+  IDAckpntMem ck_mem;
   IDABMem IDAB_mem, tmp_IDAB_mem;
   int flag = 0, sign;
   realtype tfuzz, tBret, tBn;
@@ -1984,13 +1986,13 @@ int IDAGetQuadB(void* ida_mem, int which, realtype* tret, N_Vector qB)
  * information from the initial time.
 */
 
-static CkpntMem IDAAckpntInit(IDAMem IDA_mem)
+static IDAckpntMem IDAAckpntInit(IDAMem IDA_mem)
 {
-  CkpntMem ck_mem;
+  IDAckpntMem ck_mem;
 
   /* Allocate space for ckdata */
-  ck_mem = (CkpntMem)malloc(sizeof(struct CkpntMemRec));
-  if (NULL == ck_mem) { return (NULL); }
+  ck_mem = (IDAckpntMem) malloc(sizeof(struct IDAckpntMemRec));
+  if (NULL==ck_mem) return(NULL);
 
   ck_mem->ck_t0  = IDA_mem->ida_tn;
   ck_mem->ck_nst = 0;
@@ -2032,14 +2034,14 @@ static CkpntMem IDAAckpntInit(IDAMem IDA_mem)
  * its data from current values in IDA_mem.
 */
 
-static CkpntMem IDAAckpntNew(IDAMem IDA_mem)
+static IDAckpntMem IDAAckpntNew(IDAMem IDA_mem)
 {
-  CkpntMem ck_mem;
+  IDAckpntMem ck_mem;
   int j;
 
   /* Allocate space for ckdata */
-  ck_mem = (CkpntMem)malloc(sizeof(struct CkpntMemRec));
-  if (ck_mem == NULL) { return (NULL); }
+  ck_mem = (IDAckpntMem) malloc(sizeof(struct IDAckpntMemRec));
+  if (ck_mem == NULL) return(NULL);
 
   ck_mem->ck_nst      = IDA_mem->ida_nst;
   ck_mem->ck_tretlast = IDA_mem->ida_tretlast;
@@ -2099,9 +2101,9 @@ static CkpntMem IDAAckpntNew(IDAMem IDA_mem)
  * This routine deletes the first check point in list.
 */
 
-static void IDAAckpntDelete(CkpntMem* ck_memPtr)
+static void IDAAckpntDelete(IDAckpntMem *ck_memPtr)
 {
-  CkpntMem tmp;
+  IDAckpntMem tmp;
   int j;
 
   if (*ck_memPtr != NULL)
@@ -2160,7 +2162,7 @@ static void IDAAckpntDelete(CkpntMem* ck_memPtr)
  * current state of IDAMem.
  *
  */
-static booleantype IDAAckpntAllocVectors(IDAMem IDA_mem, CkpntMem ck_mem)
+static booleantype IDAAckpntAllocVectors(IDAMem IDA_mem, IDAckpntMem ck_mem)
 {
   int j, jj;
 
@@ -2262,7 +2264,7 @@ static booleantype IDAAckpntAllocVectors(IDAMem IDA_mem, CkpntMem ck_mem)
  * Copy phi* vectors from IDAMem in the corresponding vectors from checkpoint
  *
  */
-static void IDAAckpntCopyVectors(IDAMem IDA_mem, CkpntMem ck_mem)
+static void IDAAckpntCopyVectors(IDAMem IDA_mem, IDAckpntMem ck_mem)
 {
   int j, is;
 
@@ -2335,19 +2337,18 @@ static void IDAAckpntCopyVectors(IDAMem IDA_mem, CkpntMem ck_mem)
 static booleantype IDAAdataMalloc(IDAMem IDA_mem)
 {
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
+  IDAdtpntMem *dt_mem;
   long int i, j;
 
   IDAADJ_mem         = IDA_mem->ida_adj_mem;
   IDAADJ_mem->dt_mem = NULL;
 
-  dt_mem = (DtpntMem*)malloc((IDAADJ_mem->ia_nsteps + 1) *
-                             sizeof(struct DtpntMemRec*));
-  if (dt_mem == NULL) { return (SUNFALSE); }
+  dt_mem = (IDAdtpntMem *)malloc((IDAADJ_mem->ia_nsteps+1)*sizeof(struct IDAdtpntMemRec *));
+  if (dt_mem==NULL) return(SUNFALSE);
 
-  for (i = 0; i <= IDAADJ_mem->ia_nsteps; i++)
-  {
-    dt_mem[i] = (DtpntMem)malloc(sizeof(struct DtpntMemRec));
+  for (i=0; i<=IDAADJ_mem->ia_nsteps; i++) {
+
+    dt_mem[i] = (IDAdtpntMem)malloc(sizeof(struct IDAdtpntMemRec));
 
     /* On failure, free any allocated memory and return NULL. */
     if (dt_mem[i] == NULL)
@@ -2405,10 +2406,10 @@ static void IDAAdataFree(IDAMem IDA_mem)
  *   - IDA_SUCCESS
  */
 
-static int IDAAdataStore(IDAMem IDA_mem, CkpntMem ck_mem)
+static int IDAAdataStore(IDAMem IDA_mem, IDAckpntMem ck_mem)
 {
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
+  IDAdtpntMem *dt_mem;
   realtype t;
   long int i;
   int flag, sign;
@@ -2461,7 +2462,7 @@ static int IDAAdataStore(IDAMem IDA_mem, CkpntMem ck_mem)
  * the check point ck_mem
  */
 
-static int IDAAckpntGet(IDAMem IDA_mem, CkpntMem ck_mem)
+static int IDAAckpntGet(IDAMem IDA_mem, IDAckpntMem ck_mem)
 {
   int flag, j, is;
 
@@ -2587,9 +2588,9 @@ static booleantype IDAAhermiteMalloc(IDAMem IDA_mem)
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
-  HermiteDataMem content;
-  long int i, ii = 0;
+  IDAdtpntMem *dt_mem;
+  IDAhermiteDataMem content;
+  long int i, ii=0;
   booleantype allocOK;
 
   allocOK = SUNTRUE;
@@ -2633,10 +2634,9 @@ static booleantype IDAAhermiteMalloc(IDAMem IDA_mem)
   for (i = 0; i <= IDAADJ_mem->ia_nsteps; i++)
   {
     content = NULL;
-    content = (HermiteDataMem)malloc(sizeof(struct HermiteDataMemRec));
-    if (content == NULL)
-    {
-      ii      = i;
+    content = (IDAhermiteDataMem) malloc(sizeof(struct IDAhermiteDataMemRec));
+    if (content == NULL) {
+      ii = i;
       allocOK = SUNFALSE;
       break;
     }
@@ -2711,11 +2711,10 @@ static booleantype IDAAhermiteMalloc(IDAMem IDA_mem)
         N_VDestroyVectorArray(IDAADJ_mem->ia_ypSTmp, IDA_mem->ida_Ns));
     }
 
-    for (i = 0; i < ii; i++)
-    {
-      content = (HermiteDataMem)(dt_mem[i]->content);
-      SUNCheckCallLastErrNoRet(N_VDestroy(content->y));
-      SUNCheckCallLastErrNoRet(N_VDestroy(content->yd));
+    for (i=0; i<ii; i++) {
+      content = (IDAhermiteDataMem) (dt_mem[i]->content);
+      N_VDestroy(content->y);
+      N_VDestroy(content->yd);
 
       if (IDAADJ_mem->ia_storeSensi)
       {
@@ -2744,8 +2743,8 @@ static void IDAAhermiteFree(IDAMem IDA_mem)
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
-  HermiteDataMem content;
+  IDAdtpntMem *dt_mem;
+  IDAhermiteDataMem content;
   long int i;
 
   IDAADJ_mem = IDA_mem->ida_adj_mem;
@@ -2763,9 +2762,9 @@ static void IDAAhermiteFree(IDAMem IDA_mem)
 
   dt_mem = IDAADJ_mem->dt_mem;
 
-  for (i = 0; i <= IDAADJ_mem->ia_nsteps; i++)
-  {
-    content = (HermiteDataMem)(dt_mem[i]->content);
+  for (i=0; i<=IDAADJ_mem->ia_nsteps; i++) {
+
+    content = (IDAhermiteDataMem) (dt_mem[i]->content);
     /* content might be NULL, if IDAAdjInit was called but IDASolveF was not. */
     if (content)
     {
@@ -2793,17 +2792,17 @@ static void IDAAhermiteFree(IDAMem IDA_mem)
  * Note that the time is already stored.
  */
 
-static int IDAAhermiteStorePnt(IDAMem IDA_mem, DtpntMem d)
+static int IDAAhermiteStorePnt(IDAMem IDA_mem, IDAdtpntMem d)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  HermiteDataMem content;
+  IDAhermiteDataMem content;
   int is, retval;
 
   IDAADJ_mem = IDA_mem->ida_adj_mem;
 
-  content = (HermiteDataMem)d->content;
+  content = (IDAhermiteDataMem) d->content;
 
   /* Load solution(s) */
   SUNCheckCallLastErrNoRet(N_VScale(ONE, IDA_mem->ida_phi[0], content->y));
@@ -2844,8 +2843,8 @@ static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
-  HermiteDataMem content0, content1;
+  IDAdtpntMem *dt_mem;
+  IDAhermiteDataMem content0, content1;
 
   realtype t0, t1, delta;
   realtype factor1, factor2, factor3;
@@ -2876,11 +2875,10 @@ static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
   /* If we are beyond the left limit but close enough,
      then return y at the left limit. */
 
-  if (indx == 0)
-  {
-    content0 = (HermiteDataMem)(dt_mem[0]->content);
-    SUNCheckCallLastErrNoRet(N_VScale(ONE, content0->y, yy));
-    SUNCheckCallLastErrNoRet(N_VScale(ONE, content0->yd, yp));
+  if (indx == 0) {
+    content0 = (IDAhermiteDataMem) (dt_mem[0]->content);
+    N_VScale(ONE, content0->y,  yy);
+    N_VScale(ONE, content0->yd, yp);
 
     if (NS > 0)
     {
@@ -2903,11 +2901,10 @@ static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
   t1    = dt_mem[indx]->t;
   delta = t1 - t0;
 
-  content0 = (HermiteDataMem)(dt_mem[indx - 1]->content);
-  y0       = content0->y;
-  yd0      = content0->yd;
-  if (IDAADJ_mem->ia_interpSensi)
-  {
+  content0 = (IDAhermiteDataMem) (dt_mem[indx-1]->content);
+  y0  = content0->y;
+  yd0 = content0->yd;
+  if (IDAADJ_mem->ia_interpSensi) {
     yS0  = content0->yS;
     ySd0 = content0->ySd;
   }
@@ -2915,7 +2912,7 @@ static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
   if (newpoint)
   {
     /* Recompute Y0 and Y1 */
-    content1 = (HermiteDataMem)(dt_mem[indx]->content);
+    content1 = (IDAhermiteDataMem) (dt_mem[indx]->content);
 
     y1  = content1->y;
     yd1 = content1->yd;
@@ -3082,9 +3079,9 @@ static booleantype IDAApolynomialMalloc(IDAMem IDA_mem)
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
-  PolynomialDataMem content;
-  long int i, ii = 0;
+  IDAdtpntMem *dt_mem;
+  IDApolynomialDataMem content;
+  long int i, ii=0;
   booleantype allocOK;
 
   allocOK = SUNTRUE;
@@ -3126,10 +3123,9 @@ static booleantype IDAApolynomialMalloc(IDAMem IDA_mem)
   for (i = 0; i <= IDAADJ_mem->ia_nsteps; i++)
   {
     content = NULL;
-    content = (PolynomialDataMem)malloc(sizeof(struct PolynomialDataMemRec));
-    if (content == NULL)
-    {
-      ii      = i;
+    content = (IDApolynomialDataMem) malloc(sizeof(struct IDApolynomialDataMemRec));
+    if (content == NULL) {
+      ii = i;
       allocOK = SUNFALSE;
       break;
     }
@@ -3218,10 +3214,9 @@ static booleantype IDAApolynomialMalloc(IDAMem IDA_mem)
         N_VDestroyVectorArray(IDAADJ_mem->ia_ypSTmp, IDA_mem->ida_Ns));
     }
 
-    for (i = 0; i < ii; i++)
-    {
-      content = (PolynomialDataMem)(dt_mem[i]->content);
-      SUNCheckCallLastErrNoRet(N_VDestroy(content->y));
+    for (i=0; i<ii; i++) {
+      content = (IDApolynomialDataMem) (dt_mem[i]->content);
+      N_VDestroy(content->y);
 
       if (content->yd) { SUNCheckCallLastErrNoRet(N_VDestroy(content->yd)); }
 
@@ -3252,8 +3247,8 @@ static void IDAApolynomialFree(IDAMem IDA_mem)
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
-  PolynomialDataMem content;
+  IDAdtpntMem *dt_mem;
+  IDApolynomialDataMem content;
   long int i;
 
   IDAADJ_mem = IDA_mem->ida_adj_mem;
@@ -3271,9 +3266,9 @@ static void IDAApolynomialFree(IDAMem IDA_mem)
 
   dt_mem = IDAADJ_mem->dt_mem;
 
-  for (i = 0; i <= IDAADJ_mem->ia_nsteps; i++)
-  {
-    content = (PolynomialDataMem)(dt_mem[i]->content);
+  for (i=0; i<=IDAADJ_mem->ia_nsteps; i++) {
+
+    content = (IDApolynomialDataMem) (dt_mem[i]->content);
 
     /* content might be NULL, if IDAAdjInit was called but IDASolveF was not. */
     if (content)
@@ -3308,16 +3303,16 @@ static void IDAApolynomialFree(IDAMem IDA_mem)
  * in which case content->yp is non-null.
  */
 
-static int IDAApolynomialStorePnt(IDAMem IDA_mem, DtpntMem d)
+static int IDAApolynomialStorePnt(IDAMem IDA_mem, IDAdtpntMem d)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  PolynomialDataMem content;
+  IDApolynomialDataMem content;
   int is, retval;
 
   IDAADJ_mem = IDA_mem->ida_adj_mem;
-  content    = (PolynomialDataMem)d->content;
+  content = (IDApolynomialDataMem) d->content;
 
   SUNCheckCallLastErrNoRet(N_VScale(ONE, IDA_mem->ida_phi[0], content->y));
 
@@ -3357,8 +3352,8 @@ static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   IDAadjMem IDAADJ_mem;
-  DtpntMem* dt_mem;
-  PolynomialDataMem content;
+  IDAdtpntMem *dt_mem;
+  IDApolynomialDataMem content;
 
   int flag, dir, order, i, j, is, NS, retval;
   long int indx, base;
@@ -3378,11 +3373,10 @@ static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
   /* If we are beyond the left limit but close enough,
      then return y at the left limit. */
 
-  if (indx == 0)
-  {
-    content = (PolynomialDataMem)(dt_mem[0]->content);
-    SUNCheckCallLastErrNoRet(N_VScale(ONE, content->y, yy));
-    SUNCheckCallLastErrNoRet(N_VScale(ONE, content->yd, yp));
+  if (indx == 0) {
+    content = (IDApolynomialDataMem) (dt_mem[0]->content);
+    N_VScale(ONE, content->y,  yy);
+    N_VScale(ONE, content->yd, yp);
 
     if (NS > 0)
     {
@@ -3409,22 +3403,16 @@ static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
   /* Establish the base point depending on the integration direction.
      Modify the base if there are not enough points for the current order */
 
-  if (dir == 1)
-  {
-    base    = indx;
-    content = (PolynomialDataMem)(dt_mem[base]->content);
-    order   = content->order;
-    if (indx < order) { base += order - indx; }
-  }
-  else
-  {
-    base    = indx - 1;
-    content = (PolynomialDataMem)(dt_mem[base]->content);
-    order   = content->order;
-    if (IDAADJ_mem->ia_np - indx > order)
-    {
-      base -= indx + order - IDAADJ_mem->ia_np;
-    }
+  if (dir == 1) {
+    base = indx;
+    content = (IDApolynomialDataMem) (dt_mem[base]->content);
+    order = content->order;
+    if(indx < order) base += order-indx;
+  } else {
+    base = indx-1;
+    content = (IDApolynomialDataMem) (dt_mem[base]->content);
+    order = content->order;
+    if (IDAADJ_mem->ia_np-indx > order) base -= indx+order-IDAADJ_mem->ia_np;
   }
 
   /* Recompute Y (divided differences for Newton polynomial) if needed */
@@ -3432,13 +3420,11 @@ static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
   if (newpoint)
   {
     /* Store 0-th order DD */
-    if (dir == 1)
-    {
-      for (j = 0; j <= order; j++)
-      {
-        IDAADJ_mem->ia_T[j] = dt_mem[base - j]->t;
-        content             = (PolynomialDataMem)(dt_mem[base - j]->content);
-        SUNCheckCallLastErrNoRet(N_VScale(ONE, content->y, IDAADJ_mem->ia_Y[j]));
+    if (dir == 1) {
+      for(j=0;j<=order;j++) {
+        IDAADJ_mem->ia_T[j] = dt_mem[base-j]->t;
+        content = (IDApolynomialDataMem) (dt_mem[base-j]->content);
+        N_VScale(ONE, content->y, IDAADJ_mem->ia_Y[j]);
 
         if (NS > 0)
         {
@@ -3448,14 +3434,11 @@ static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
           if (retval != IDA_SUCCESS) { return (IDA_VECTOROP_ERR); }
         }
       }
-    }
-    else
-    {
-      for (j = 0; j <= order; j++)
-      {
-        IDAADJ_mem->ia_T[j] = dt_mem[base - 1 + j]->t;
-        content = (PolynomialDataMem)(dt_mem[base - 1 + j]->content);
-        SUNCheckCallLastErrNoRet(N_VScale(ONE, content->y, IDAADJ_mem->ia_Y[j]));
+    } else {
+      for(j=0;j<=order;j++) {
+        IDAADJ_mem->ia_T[j] = dt_mem[base-1+j]->t;
+        content = (IDApolynomialDataMem) (dt_mem[base-1+j]->content);
+        N_VScale(ONE, content->y, IDAADJ_mem->ia_Y[j]);
 
         if (NS > 0)
         {
@@ -3668,7 +3651,7 @@ static int IDAAfindIndex(IDAMem ida_mem, realtype t, long int* indx,
 {
   IDAadjMem IDAADJ_mem;
   IDAMem IDA_mem;
-  DtpntMem* dt_mem;
+  IDAdtpntMem *dt_mem;
   int sign;
   booleantype to_left, to_right;
 

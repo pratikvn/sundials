@@ -18,6 +18,7 @@
 #define _ARKODE_IMPL_H
 
 #include <stdarg.h>
+
 #include <arkode/arkode.h>
 #include <arkode/arkode_butcher.h>
 #include <arkode/arkode_butcher_dirk.h>
@@ -42,6 +43,21 @@ extern "C" {
 #endif
 
 /*===============================================================
+  SHORTCUTS
+  ===============================================================*/
+
+#define ARK_PROFILER ark_mem->sunctx->profiler
+#define ARK_LOGGER ark_mem->sunctx->logger
+
+/*===============================================================
+  MACROS
+  ===============================================================*/
+
+/* TODO(DJG): replace with signbit when C99+ is required */
+#define DIFFERENT_SIGN(a,b) ( ( (a) < 0 && (b) > 0 ) || ( (a) > 0 && (b) < 0 ) )
+#define SAME_SIGN(a,b) ( ( (a) > 0 && (b) > 0 ) || ( (a) < 0 && (b) < 0 ) )
+
+/*===============================================================
   ARKODE Private Constants
   ===============================================================*/
 
@@ -60,6 +76,7 @@ extern "C" {
 #define HALF   RCONST(0.5)      /* real 0.5     */
 #define ONE    RCONST(1.0)      /* real 1.0     */
 #define TWO    RCONST(2.0)      /* real 2.0     */
+#define THREE  RCONST(3.0)      /* real 3.0     */
 #define FOUR   RCONST(4.0)      /* real 4.0     */
 #define FIVE   RCONST(5.0)      /* real 5.0     */
 
@@ -265,8 +282,8 @@ typedef struct ARKodeMassMemRec {
   The type ARKodeMem is type pointer to struct ARKodeMemRec.
   This structure contains fields to keep track of problem state.
   ---------------------------------------------------------------*/
-typedef struct ARKodeMemRec {
-
+struct ARKodeMemRec
+{
   SUNContext sunctx;
 
   realtype uround;             /* machine unit roundoff */
@@ -329,6 +346,7 @@ typedef struct ARKodeMemRec {
 
   /* Tstop information */
   booleantype tstopset;
+  booleantype tstopinterp;
   realtype    tstop;
 
   /* Time step data */
@@ -338,7 +356,7 @@ typedef struct ARKodeMemRec {
   realtype hmax_inv;           /* |h| <= 1/hmax_inv                        */
   realtype hprime;             /* next actual step size to be used         */
   realtype next_h;             /* next dynamical step size (only used in
-                                  getCurrenStep); note that this could
+                                  getCurrentStep); note that this could
                                   overtake tstop */
   realtype eta;                /* eta = hprime / h                         */
   realtype tcur;               /* current internal value of t
@@ -378,6 +396,7 @@ typedef struct ARKodeMemRec {
   /* Saved Values */
   realtype    h0u;          /* actual initial stepsize                     */
   realtype    tn;           /* time of last successful step                */
+  realtype    terr;         /* error in tn for compensated sums            */
   realtype    hold;         /* last successful h value used                */
   realtype    tolsf;        /* tolerance scale factor (suggestion to user) */
   booleantype VabstolMallocDone;
@@ -397,12 +416,18 @@ typedef struct ARKodeMemRec {
   /* Rootfinding Data */
   ARKodeRootMem root_mem;          /* root-finding structure */
 
+  /* Relaxation Data */
+  sunbooleantype relax_enabled;    /* is relaxation enabled?    */
+  ARKodeRelaxMem relax_mem;        /* relaxation data structure */
+
   /* User-supplied step solution post-processing function */
   ARKPostProcessFn ProcessStep;
   void*                ps_data; /* pointer to user_data */
 
   /* User-supplied stage solution post-processing function */
   ARKPostProcessFn ProcessStage;
+
+  sunbooleantype use_compensated_sums;
 
   /* XBraid interface variables */
   booleantype force_pass;  /* when true the step attempt loop will ignore the
@@ -415,7 +440,7 @@ typedef struct ARKodeMemRec {
                               force_pass is true and is used by the XBraid
                               interface to determine if a time step passed or
                               failed the time step error test.  */
-} *ARKodeMem;
+};
 
 
 
@@ -967,6 +992,7 @@ int arkSetInitStep(void *arkode_mem, realtype hin);
 int arkSetMinStep(void *arkode_mem, realtype hmin);
 int arkSetMaxStep(void *arkode_mem, realtype hmax);
 int arkSetStopTime(void *arkode_mem, realtype tstop);
+int arkSetInterpolateStopTime(void *arkode_mem, booleantype interp);
 int arkClearStopTime(void *arkode_mem);
 int arkSetFixedStep(void *arkode_mem, realtype hfixed);
 int arkSetRootDirection(void *arkode_mem, int *rootdir);
@@ -993,6 +1019,7 @@ int arkSetMaxCFailGrowth(void *arkode_mem, realtype etacf);
 int arkSetStabilityFn(void *arkode_mem, ARKExpStabFn EStab, void *estab_data);
 int arkSetMaxErrTestFails(void *arkode_mem, int maxnef);
 int arkSetMaxConvFails(void *arkode_mem, int maxncf);
+int arkSetUseCompensatedSums(void *arkode_mem, sunbooleantype onoff);
 int arkGetWorkSpace(void *arkode_mem, long int *lenrw, long int *leniw);
 int arkGetNumStepAttempts(void *arkode_mem, long int *nstep_attempts);
 int arkGetNumSteps(void *arkode_mem, long int *nsteps);

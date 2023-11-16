@@ -93,13 +93,17 @@ ARKodeMem arkCreate(SUNContext sunctx)
   ark_mem->constraintsSet = SUNFALSE;
   ark_mem->constraints    = NULL;
 
+  /* Initialize relaxation variables */
+  ark_mem->relax_enabled = SUNFALSE;
+  ark_mem->relax_mem     = NULL;
+
   /* Initialize diagnostics reporting variables */
   ark_mem->report = SUNFALSE;
   ark_mem->diagfp = NULL;
 
   /* Initialize lrw and liw */
   ark_mem->lrw = 18;
-  ark_mem->liw = 39; /* fcn/data ptr, int, long int, sunindextype, booleantype */
+  ark_mem->liw = 41;  /* fcn/data ptr, int, long int, sunindextype, booleantype */
 
   /* No mallocs have been done yet */
   ark_mem->VabstolMallocDone  = SUNFALSE;
@@ -682,6 +686,7 @@ int arkEvolve(ARKodeMem ark_mem, realtype tout, N_Vector yout, realtype* tret,
   booleantype inactive_roots;
   realtype dsm;
   int nflag, attempts, ncf, nef, constrfails;
+  int relax_fails;
 
   /* Check and process inputs */
 
@@ -891,9 +896,10 @@ int arkEvolve(ARKodeMem ark_mem, realtype tout, N_Vector yout, realtype* tret,
     /* Looping point for step attempts */
     dsm      = ZERO;
     attempts = ncf = nef = constrfails = ark_mem->last_kflag = 0;
-    nflag                                                    = FIRST_CALL;
-    for (;;)
-    {
+    relax_fails = 0;
+    nflag = FIRST_CALL;
+    for(;;) {
+
       /* increment attempt counters */
       attempts++;
       ark_mem->nst_attempts++;
@@ -916,6 +922,17 @@ int arkEvolve(ARKodeMem ark_mem, realtype tout, N_Vector yout, realtype* tret,
       /* handle solver convergence failures */
       kflag = arkCheckConvergence(ark_mem, &nflag, &ncf);
       if (kflag < 0) { break; }
+
+      /* Perform relaxation:
+           - computes relaxation parameter
+           - on success, updates ycur, h, and dsm
+           - on recoverable failure, updates eta and signals to retry step
+           - on fatal error, returns negative error flag */
+      if (ark_mem->relax_enabled && (kflag == ARK_SUCCESS))
+      {
+        kflag = arkRelax(ark_mem, &relax_fails, &dsm, &nflag);
+        if (kflag < 0) break;
+      }
 
       /* perform constraint-handling (if selected, and if solver check passed) */
       if (ark_mem->constraintsSet && (kflag == ARK_SUCCESS))
@@ -1031,6 +1048,38 @@ int arkEvolve(ARKodeMem ark_mem, realtype tout, N_Vector yout, realtype* tret,
       }
     }
 
+    /* Check if tn is at tstop or near tstop */
+    if ( ark_mem->tstopset )
+    {
+      troundoff = FUZZ_FACTOR*ark_mem->uround *
+        (SUNRabs(ark_mem->tcur) + SUNRabs(ark_mem->h));
+
+      if ( SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
+      {
+        /* Ensure tout >= tstop, otherwise check for tout return below */
+        if ((tout - ark_mem->tstop) * ark_mem->h >= ZERO ||
+            SUNRabs(tout - ark_mem->tstop) <= troundoff)
+        {
+          if (ark_mem->tstopinterp) {
+            (void) arkGetDky(ark_mem, ark_mem->tstop, 0, yout);
+          } else {
+            N_VScale(ONE, ark_mem->yn, yout);
+          }
+          ark_mem->tretlast = *tret = ark_mem->tstop;
+          ark_mem->tstopset = SUNFALSE;
+          istate = ARK_TSTOP_RETURN;
+          break;
+        }
+      }
+      /* limit upcoming step if it will overcome tstop */
+      else if ( (ark_mem->tcur + ark_mem->hprime - ark_mem->tstop)*ark_mem->h > ZERO )
+      {
+        ark_mem->hprime = (ark_mem->tstop - ark_mem->tcur) *
+          (ONE-FOUR*ark_mem->uround);
+        ark_mem->eta = ark_mem->hprime/ark_mem->h;
+      }
+    }
+
     /* In NORMAL mode, check if tout reached */
     if ((itask == ARK_NORMAL) && (ark_mem->tcur - tout) * ark_mem->h >= ZERO)
     {
@@ -1039,28 +1088,6 @@ int arkEvolve(ARKodeMem ark_mem, realtype tout, N_Vector yout, realtype* tret,
       (void)arkGetDky(ark_mem, tout, 0, yout);
       ark_mem->next_h = ark_mem->hprime;
       break;
-    }
-
-    /* Check if tn is at tstop or near tstop */
-    if (ark_mem->tstopset)
-    {
-      troundoff = FUZZ_FACTOR * ark_mem->uround *
-                  (SUNRabs(ark_mem->tcur) + SUNRabs(ark_mem->h));
-      if (SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
-      {
-        (void)arkGetDky(ark_mem, ark_mem->tstop, 0, yout);
-        ark_mem->tretlast = *tret = ark_mem->tstop;
-        ark_mem->tstopset         = SUNFALSE;
-        istate                    = ARK_TSTOP_RETURN;
-        break;
-      }
-      /* limit upcoming step if it will overcome tstop */
-      if ((ark_mem->tcur + ark_mem->hprime - ark_mem->tstop) * ark_mem->h > ZERO)
-      {
-        ark_mem->hprime = (ark_mem->tstop - ark_mem->tcur) *
-                          (ONE - FOUR * ark_mem->uround);
-        ark_mem->eta = ark_mem->hprime / ark_mem->h;
-      }
     }
 
     /* In ONE_STEP mode, copy y and exit loop */
@@ -1185,6 +1212,13 @@ void arkFree(void** arkode_mem)
   {
     (void)arkRootFree(*arkode_mem);
     ark_mem->root_mem = NULL;
+  }
+
+  /* free the relaxation module */
+  if (ark_mem->relax_mem)
+  {
+    (void) arkRelaxDestroy(ark_mem->relax_mem);
+    ark_mem->relax_mem = NULL;
   }
 
   free(*arkode_mem);
@@ -1455,7 +1489,8 @@ void arkPrintMem(ARKodeMem ark_mem, FILE* outfile)
   fprintf(outfile, "liw = %li\n", (long int)ark_mem->liw);
   fprintf(outfile, "user_efun = %i\n", ark_mem->user_efun);
   fprintf(outfile, "tstopset = %i\n", ark_mem->tstopset);
-  fprintf(outfile, "tstop = %" RSYM "\n", ark_mem->tstop);
+  fprintf(outfile, "tstopinterp = %i\n", ark_mem->tstopinterp);
+  fprintf(outfile, "tstop = %" RSYM"\n", ark_mem->tstop);
   fprintf(outfile, "report = %i\n", ark_mem->report);
   fprintf(outfile, "VabstolMallocDone = %i\n", ark_mem->VabstolMallocDone);
   fprintf(outfile, "MallocDone = %i\n", ark_mem->MallocDone);
@@ -2269,6 +2304,41 @@ int arkStopTests(ARKodeMem ark_mem, realtype tout, N_Vector yout,
     } /* end of root stop check */
   }
 
+  /* Test for tn at tstop or near tstop */
+  if ( ark_mem->tstopset )
+  {
+    if ( SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
+    {
+      /* Ensure tout >= tstop, otherwise check for tout return below */
+      if ((tout - ark_mem->tstop) * ark_mem->h >= ZERO ||
+          SUNRabs(tout - ark_mem->tstop) <= troundoff)
+      {
+        if (ark_mem->tstopinterp)
+        {
+          *ier = arkGetDky(ark_mem, ark_mem->tstop, 0, yout);
+          if (*ier != ARK_SUCCESS) {
+            arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE", "arkStopTests",
+                            MSG_ARK_BAD_TSTOP, ark_mem->tstop, ark_mem->tcur);
+            *ier = ARK_ILL_INPUT;
+            return(1);
+          }
+        } else {
+          N_VScale(ONE, ark_mem->yn, yout);
+        }
+        ark_mem->tretlast = *tret = ark_mem->tstop;
+        ark_mem->tstopset = SUNFALSE;
+        *ier = ARK_TSTOP_RETURN;
+        return(1);
+      }
+    }
+    /* If next step would overtake tstop, adjust stepsize */
+    else if ( (ark_mem->tcur + ark_mem->hprime - ark_mem->tstop)*ark_mem->h > ZERO )
+    {
+      ark_mem->hprime = (ark_mem->tstop - ark_mem->tcur)*(ONE-FOUR*ark_mem->uround);
+      ark_mem->eta = ark_mem->hprime/ark_mem->h;
+    }
+  }
+
   /* In ARK_NORMAL mode, test if tout was reached */
   if ((itask == ARK_NORMAL) && ((ark_mem->tcur - tout) * ark_mem->h >= ZERO))
   {
@@ -2295,35 +2365,7 @@ int arkStopTests(ARKodeMem ark_mem, realtype tout, N_Vector yout,
     return (1);
   }
 
-  /* Test for tn at tstop or near tstop */
-  if (ark_mem->tstopset)
-  {
-    if (SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
-    {
-      *ier = arkGetDky(ark_mem, ark_mem->tstop, 0, yout);
-      if (*ier != ARK_SUCCESS)
-      {
-        arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
-                        MSG_ARK_BAD_TSTOP, ark_mem->tstop, ark_mem->tcur);
-        *ier = ARK_ILL_INPUT;
-        return (1);
-      }
-      ark_mem->tretlast = *tret = ark_mem->tstop;
-      ark_mem->tstopset         = SUNFALSE;
-      *ier                      = ARK_TSTOP_RETURN;
-      return (1);
-    }
-
-    /* If next step would overtake tstop, adjust stepsize */
-    if ((ark_mem->tcur + ark_mem->hprime - ark_mem->tstop) * ark_mem->h > ZERO)
-    {
-      ark_mem->hprime = (ark_mem->tstop - ark_mem->tcur) *
-                        (ONE - FOUR * ark_mem->uround);
-      ark_mem->eta = ark_mem->hprime / ark_mem->h;
-    }
-  }
-
-  return (0);
+  return(0);
 }
 
 /*---------------------------------------------------------------
@@ -2572,9 +2614,16 @@ int arkCompleteStep(ARKodeMem ark_mem, realtype dsm)
      If tstop is enabled, it is possible for tn + h to be past
      tstop by roundoff, and in that case, we reset tn (after
      incrementing by h) to tstop. */
-  ark_mem->tcur = ark_mem->tn + ark_mem->h;
-  if (ark_mem->tstopset)
-  {
+
+  /* During long-time integration, roundoff can creep into tcur. 
+     Compensated summation fixes this but with increased cost, so it is optional. */
+  if (ark_mem->use_compensated_sums) {
+    sunCompensatedSum(ark_mem->tn, ark_mem->h, &ark_mem->tcur, &ark_mem->terr); 
+  } else {
+    ark_mem->tcur = ark_mem->tn + ark_mem->h;
+  }
+
+  if ( ark_mem->tstopset ) {
     troundoff = FUZZ_FACTOR * ark_mem->uround *
                 (SUNRabs(ark_mem->tcur) + SUNRabs(ark_mem->h));
     if (SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
@@ -2731,6 +2780,23 @@ int arkHandleFailure(ARKodeMem ark_mem, int flag)
   case ARK_INVALID_TABLE:
     arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
                     "ARKODE was provided an invalid method table");
+    break;
+  case ARK_RELAX_FAIL:
+    arkProcessError(ark_mem, ARK_RELAX_FAIL, "ARKODE", "ARKODE",
+                    "At t = %Lg the relaxation module failed",
+                    (long double) ark_mem->tcur);
+    break;
+  case ARK_RELAX_MEM_NULL:
+    arkProcessError(ark_mem, ARK_RELAX_MEM_NULL, "ARKODE", "ARKODE",
+                    "The ARKODE relaxation module memory is NULL");
+    break;
+  case ARK_RELAX_FUNC_FAIL:
+    arkProcessError(ark_mem, ARK_RELAX_FUNC_FAIL, "ARKODE", "ARKODE",
+                    "The relaxation function failed unrecoverably");
+    break;
+  case ARK_RELAX_JAC_FAIL:
+    arkProcessError(ark_mem, ARK_RELAX_JAC_FAIL, "ARKODE", "ARKODE",
+                    "The relaxation Jacobian failed unrecoverably");
     break;
   default:
     /* This return should never happen */
@@ -3120,7 +3186,7 @@ int arkCheckConstraints(ARKodeMem ark_mem, int* constrfails, int* nflag)
 
   booleantype constraintsPassed;
   N_Vector mm  = ark_mem->tempv4;
-  N_Vector tmp = ark_mem->tempv1;
+  N_Vector tmp = ark_mem->tempv3;
 
   /* Check constraints and get mask vector mm for where constraints failed */
   constraintsPassed = SUNCheckCallLastErrNoRet(

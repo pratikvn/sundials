@@ -298,33 +298,34 @@ void* CVodeCreate(int lmm, SUNContext sunctx)
                        ? cv_mem->cv_sunctx->logger->error_fp
                        : stderr;
 #endif
-  cv_mem->cv_qmax           = maxord;
-  cv_mem->cv_mxstep         = MXSTEP_DEFAULT;
-  cv_mem->cv_mxhnil         = MXHNIL_DEFAULT;
-  cv_mem->cv_sldeton        = SUNFALSE;
-  cv_mem->cv_hin            = ZERO;
-  cv_mem->cv_hmin           = HMIN_DEFAULT;
-  cv_mem->cv_hmax_inv       = HMAX_INV_DEFAULT;
-  cv_mem->cv_eta_min_fx     = ETA_MIN_FX_DEFAULT;
-  cv_mem->cv_eta_max_fx     = ETA_MAX_FX_DEFAULT;
-  cv_mem->cv_eta_max_fs     = ETA_MAX_FS_DEFAULT;
-  cv_mem->cv_eta_max_es     = ETA_MAX_ES_DEFAULT;
-  cv_mem->cv_eta_max_gs     = ETA_MAX_GS_DEFAULT;
-  cv_mem->cv_eta_min        = ETA_MIN_DEFAULT;
-  cv_mem->cv_eta_min_ef     = ETA_MIN_EF_DEFAULT;
-  cv_mem->cv_eta_max_ef     = ETA_MAX_EF_DEFAULT;
-  cv_mem->cv_eta_cf         = ETA_CF_DEFAULT;
-  cv_mem->cv_small_nst      = SMALL_NST_DEFAULT;
-  cv_mem->cv_small_nef      = SMALL_NEF_DEFAULT;
-  cv_mem->cv_tstopset       = SUNFALSE;
-  cv_mem->cv_maxnef         = MXNEF;
-  cv_mem->cv_maxncf         = MXNCF;
-  cv_mem->cv_nlscoef        = CORTES;
-  cv_mem->cv_msbp           = MSBP_DEFAULT;
-  cv_mem->cv_dgmax_lsetup   = DGMAX_LSETUP_DEFAULT;
-  cv_mem->convfail          = CV_NO_FAILURES;
-  cv_mem->cv_constraints    = NULL;
-  cv_mem->cv_constraintsSet = SUNFALSE;
+  cv_mem->cv_qmax             = maxord;
+  cv_mem->cv_mxstep           = MXSTEP_DEFAULT;
+  cv_mem->cv_mxhnil           = MXHNIL_DEFAULT;
+  cv_mem->cv_sldeton          = SUNFALSE;
+  cv_mem->cv_hin              = ZERO;
+  cv_mem->cv_hmin             = HMIN_DEFAULT;
+  cv_mem->cv_hmax_inv         = HMAX_INV_DEFAULT;
+  cv_mem->cv_eta_min_fx       = ETA_MIN_FX_DEFAULT;
+  cv_mem->cv_eta_max_fx       = ETA_MAX_FX_DEFAULT;
+  cv_mem->cv_eta_max_fs       = ETA_MAX_FS_DEFAULT;
+  cv_mem->cv_eta_max_es       = ETA_MAX_ES_DEFAULT;
+  cv_mem->cv_eta_max_gs       = ETA_MAX_GS_DEFAULT;
+  cv_mem->cv_eta_min          = ETA_MIN_DEFAULT;
+  cv_mem->cv_eta_min_ef       = ETA_MIN_EF_DEFAULT;
+  cv_mem->cv_eta_max_ef       = ETA_MAX_EF_DEFAULT;
+  cv_mem->cv_eta_cf           = ETA_CF_DEFAULT;
+  cv_mem->cv_small_nst        = SMALL_NST_DEFAULT;
+  cv_mem->cv_small_nef        = SMALL_NEF_DEFAULT;
+  cv_mem->cv_tstopset         = SUNFALSE;
+  cv_mem->cv_tstopinterp      = SUNFALSE;
+  cv_mem->cv_maxnef           = MXNEF;
+  cv_mem->cv_maxncf           = MXNCF;
+  cv_mem->cv_nlscoef          = CORTES;
+  cv_mem->cv_msbp             = MSBP_DEFAULT;
+  cv_mem->cv_dgmax_lsetup     = DGMAX_LSETUP_DEFAULT;
+  cv_mem->convfail            = CV_NO_FAILURES;
+  cv_mem->cv_constraints      = NULL;
+  cv_mem->cv_constraintsSet   = SUNFALSE;
 
   /* Initialize root finding variables */
 
@@ -1336,6 +1337,41 @@ int CVode(void* cvode_mem, realtype tout, N_Vector yout, realtype* tret, int ita
 
     } /* end of root stop check */
 
+    /* Test for tn at tstop or near tstop */
+    if ( cv_mem->cv_tstopset )
+    {
+      /* Test for tn at tstop */
+      if ( SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff )
+      {
+        /* Ensure tout >= tstop, otherwise check for tout return below */
+        if ((tout - cv_mem->cv_tstop) * cv_mem->cv_h >= ZERO ||
+            SUNRabs(tout - cv_mem->cv_tstop) <= troundoff)
+        {
+          if (cv_mem->cv_tstopinterp) {
+            ier =  CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
+            if (ier != CV_SUCCESS) {
+              cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVode",
+                             MSGCV_BAD_TSTOP, cv_mem->cv_tstop, cv_mem->cv_tn);
+              SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
+              return(CV_ILL_INPUT);
+            }
+          } else {
+            N_VScale(ONE, cv_mem->cv_zn[0], yout);
+          }
+          cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
+          cv_mem->cv_tstopset = SUNFALSE;
+          SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
+          return(CV_TSTOP_RETURN);
+        }
+      }
+      /* If next step would overtake tstop, adjust stepsize */
+      else if ( (cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop)*cv_mem->cv_h > ZERO )
+      {
+        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn)*(ONE-FOUR*cv_mem->cv_uround);
+        cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
+      }
+    }
+
     /* In CV_NORMAL mode, test if tout was reached */
     if ((itask == CV_NORMAL) && ((cv_mem->cv_tn - tout) * cv_mem->cv_h >= ZERO))
     {
@@ -1360,35 +1396,6 @@ int CVode(void* cvode_mem, realtype tout, N_Vector yout, realtype* tret, int ita
       SUNCheckCallLastErrNoRet(N_VScale(ONE, cv_mem->cv_zn[0], yout));
       SUNDIALS_MARK_FUNCTION_END(cv_mem->cv_sunctx->profiler);
       return (CV_SUCCESS);
-    }
-
-    /* Test for tn at tstop or near tstop */
-    if (cv_mem->cv_tstopset)
-    {
-      if (SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
-      {
-        ier = CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
-        if (ier != CV_SUCCESS)
-        {
-          cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
-                         MSGCV_BAD_TSTOP, cv_mem->cv_tstop, cv_mem->cv_tn);
-          SUNDIALS_MARK_FUNCTION_END(cv_mem->cv_sunctx->profiler);
-          return (CV_ILL_INPUT);
-        }
-        cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
-        cv_mem->cv_tstopset         = SUNFALSE;
-        SUNDIALS_MARK_FUNCTION_END(cv_mem->cv_sunctx->profiler);
-        return (CV_TSTOP_RETURN);
-      }
-
-      /* If next step would overtake tstop, adjust stepsize */
-      if ((cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop) * cv_mem->cv_h >
-          ZERO)
-      {
-        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn) *
-                            (ONE - FOUR * cv_mem->cv_uround);
-        cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
-      }
     }
 
   } /* end stopping tests block */
@@ -1552,6 +1559,38 @@ int CVode(void* cvode_mem, realtype tout, N_Vector yout, realtype* tret, int ita
       }
     }
 
+    /* Check if tn is at tstop or near tstop */
+    if ( cv_mem->cv_tstopset )
+    {
+      troundoff = FUZZ_FACTOR * cv_mem->cv_uround *
+        (SUNRabs(cv_mem->cv_tn) + SUNRabs(cv_mem->cv_h));
+
+      /* Test for tn at tstop */
+      if ( SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
+      {
+        /* Ensure tout >= tstop, otherwise check for tout return below */
+        if ((tout - cv_mem->cv_tstop) * cv_mem->cv_h >= ZERO ||
+            SUNRabs(tout - cv_mem->cv_tstop) <= troundoff)
+        {
+          if (cv_mem->cv_tstopinterp) {
+            (void) CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
+          } else {
+            N_VScale(ONE, cv_mem->cv_zn[0], yout);
+          }
+          cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
+          cv_mem->cv_tstopset = SUNFALSE;
+          istate = CV_TSTOP_RETURN;
+          break;
+        }
+      }
+      /* If next step would overtake tstop, adjust stepsize */
+      else if ( (cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop)*cv_mem->cv_h > ZERO )
+      {
+        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn)*(ONE-FOUR*cv_mem->cv_uround);
+        cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
+      }
+    }
+
     /* In NORMAL mode, check if tout reached */
     if ((itask == CV_NORMAL) && (cv_mem->cv_tn - tout) * cv_mem->cv_h >= ZERO)
     {
@@ -1561,29 +1600,6 @@ int CVode(void* cvode_mem, realtype tout, N_Vector yout, realtype* tret, int ita
       cv_mem->cv_next_q = cv_mem->cv_qprime;
       cv_mem->cv_next_h = cv_mem->cv_hprime;
       break;
-    }
-
-    /* Check if tn is at tstop or near tstop */
-    if (cv_mem->cv_tstopset)
-    {
-      troundoff = FUZZ_FACTOR * cv_mem->cv_uround *
-                  (SUNRabs(cv_mem->cv_tn) + SUNRabs(cv_mem->cv_h));
-      if (SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
-      {
-        (void)CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
-        cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
-        cv_mem->cv_tstopset         = SUNFALSE;
-        istate                      = CV_TSTOP_RETURN;
-        break;
-      }
-
-      if ((cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop) * cv_mem->cv_h >
-          ZERO)
-      {
-        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn) *
-                            (ONE - FOUR * cv_mem->cv_uround);
-        cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
-      }
     }
 
     /* In ONE_STEP mode, copy y and exit loop */

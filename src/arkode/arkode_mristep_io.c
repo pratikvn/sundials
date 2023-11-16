@@ -25,10 +25,41 @@
   MRIStep Optional input functions (wrappers for generic ARKODE
   utility routines).  All are documented in arkode_io.c.
   ===============================================================*/
-int MRIStepSetDenseOrder(void* arkode_mem, int dord)
-{
-  return (MRIStepSetInterpolantDegree(arkode_mem, dord));
-}
+int MRIStepSetDenseOrder(void *arkode_mem, int dord) {
+  return(MRIStepSetInterpolantDegree(arkode_mem, dord)); }
+int MRIStepSetInterpolantDegree(void *arkode_mem, int degree) {
+  if (degree < 0) degree = ARK_INTERP_MAX_DEGREE;
+  return(arkSetInterpolantDegree(arkode_mem, degree)); }
+int MRIStepSetInterpolantType(void *arkode_mem, int itype) {
+  return(arkSetInterpolantType(arkode_mem, itype)); }
+int MRIStepSetErrHandlerFn(void *arkode_mem, ARKErrHandlerFn ehfun,
+                           void *eh_data) {
+  return(arkSetErrHandlerFn(arkode_mem, ehfun, eh_data)); }
+int MRIStepSetErrFile(void *arkode_mem, FILE *errfp) {
+  return(arkSetErrFile(arkode_mem, errfp)); }
+int MRIStepSetDiagnostics(void *arkode_mem, FILE *diagfp) {
+  return(arkSetDiagnostics(arkode_mem, diagfp)); }
+int MRIStepSetMaxNumSteps(void *arkode_mem, long int mxsteps) {
+  return(arkSetMaxNumSteps(arkode_mem, mxsteps)); }
+int MRIStepSetMaxHnilWarns(void *arkode_mem, int mxhnil) {
+  return(arkSetMaxHnilWarns(arkode_mem, mxhnil)); }
+int MRIStepSetStopTime(void *arkode_mem, realtype tstop) {
+  return(arkSetStopTime(arkode_mem, tstop)); }
+int MRIStepSetInterpolateStopTime(void *arkode_mem,
+                                  booleantype interp) {
+  return(arkSetInterpolateStopTime(arkode_mem, interp)); }
+int MRIStepClearStopTime(void *arkode_mem) {
+  return(arkClearStopTime(arkode_mem)); }
+int MRIStepSetRootDirection(void *arkode_mem, int *rootdir) {
+  return(arkSetRootDirection(arkode_mem, rootdir)); }
+int MRIStepSetNoInactiveRootWarn(void *arkode_mem) {
+  return(arkSetNoInactiveRootWarn(arkode_mem)); }
+int MRIStepSetPostprocessStepFn(void *arkode_mem,
+                                ARKPostProcessFn ProcessStep) {
+  return(arkSetPostprocessStepFn(arkode_mem, ProcessStep)); }
+int MRIStepSetPostprocessStageFn(void *arkode_mem,
+                                 ARKPostProcessFn ProcessStage) {
+  return(arkSetPostprocessStageFn(arkode_mem, ProcessStage)); }
 
 int MRIStepSetInterpolantDegree(void* arkode_mem, int degree)
 {

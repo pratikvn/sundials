@@ -28,10 +28,82 @@
   ERKStep Optional input functions (wrappers for generic ARKODE
   utility routines).  All are documented in arkode_io.c.
   ===============================================================*/
-int ERKStepSetDenseOrder(void* arkode_mem, int dord)
-{
-  return (ERKStepSetInterpolantDegree(arkode_mem, dord));
-}
+int ERKStepSetDenseOrder(void *arkode_mem, int dord) {
+  return(ERKStepSetInterpolantDegree(arkode_mem, dord)); }
+int ERKStepSetInterpolantDegree(void *arkode_mem, int degree) {
+  if (degree < 0) degree = ARK_INTERP_MAX_DEGREE;
+  return(arkSetInterpolantDegree(arkode_mem, degree)); }
+int ERKStepSetInterpolantType(void *arkode_mem, int itype) {
+  return(arkSetInterpolantType(arkode_mem, itype)); }
+int ERKStepSetErrHandlerFn(void *arkode_mem, ARKErrHandlerFn ehfun,
+                           void *eh_data) {
+  return(arkSetErrHandlerFn(arkode_mem, ehfun, eh_data)); }
+int ERKStepSetErrFile(void *arkode_mem, FILE *errfp) {
+  return(arkSetErrFile(arkode_mem, errfp)); }
+int ERKStepSetUserData(void *arkode_mem, void *user_data) {
+  return(arkSetUserData(arkode_mem, user_data)); }
+int ERKStepSetDiagnostics(void *arkode_mem, FILE *diagfp) {
+  return(arkSetDiagnostics(arkode_mem, diagfp)); }
+int ERKStepSetMaxNumSteps(void *arkode_mem, long int mxsteps) {
+  return(arkSetMaxNumSteps(arkode_mem, mxsteps)); }
+int ERKStepSetMaxHnilWarns(void *arkode_mem, int mxhnil) {
+  return(arkSetMaxHnilWarns(arkode_mem, mxhnil)); }
+int ERKStepSetInitStep(void *arkode_mem, realtype hin) {
+  return(arkSetInitStep(arkode_mem, hin)); }
+int ERKStepSetMinStep(void *arkode_mem, realtype hmin) {
+  return(arkSetMinStep(arkode_mem, hmin)); }
+int ERKStepSetMaxStep(void *arkode_mem, realtype hmax) {
+  return(arkSetMaxStep(arkode_mem, hmax)); }
+int ERKStepSetStopTime(void *arkode_mem, realtype tstop) {
+  return(arkSetStopTime(arkode_mem, tstop)); }
+int ERKStepSetInterpolateStopTime(void *arkode_mem,
+                                  booleantype interp) {
+  return(arkSetInterpolateStopTime(arkode_mem, interp)); }
+int ERKStepClearStopTime(void *arkode_mem) {
+  return(arkClearStopTime(arkode_mem)); }
+int ERKStepSetRootDirection(void *arkode_mem, int *rootdir) {
+  return(arkSetRootDirection(arkode_mem, rootdir)); }
+int ERKStepSetNoInactiveRootWarn(void *arkode_mem) {
+  return(arkSetNoInactiveRootWarn(arkode_mem)); }
+int ERKStepSetConstraints(void *arkode_mem, N_Vector constraints) {
+  return(arkSetConstraints(arkode_mem, constraints)); }
+int ERKStepSetMaxNumConstrFails(void *arkode_mem, int maxfails) {
+  return(arkSetMaxNumConstrFails(arkode_mem, maxfails)); }
+int ERKStepSetPostprocessStepFn(void *arkode_mem,
+                                ARKPostProcessFn ProcessStep) {
+  return(arkSetPostprocessStepFn(arkode_mem, ProcessStep)); }
+int ERKStepSetPostprocessStageFn(void *arkode_mem,
+                                ARKPostProcessFn ProcessStage) {
+  return(arkSetPostprocessStageFn(arkode_mem, ProcessStage)); }
+int ERKStepSetCFLFraction(void *arkode_mem, realtype cfl_frac) {
+  return(arkSetCFLFraction(arkode_mem, cfl_frac)); }
+int ERKStepSetSafetyFactor(void *arkode_mem, realtype safety) {
+  return(arkSetSafetyFactor(arkode_mem, safety)); }
+int ERKStepSetErrorBias(void *arkode_mem, realtype bias) {
+  return(arkSetErrorBias(arkode_mem, bias)); }
+int ERKStepSetMaxGrowth(void *arkode_mem, realtype mx_growth) {
+  return(arkSetMaxGrowth(arkode_mem, mx_growth)); }
+int ERKStepSetMinReduction(void *arkode_mem, realtype eta_min) {
+  return(arkSetMinReduction(arkode_mem, eta_min)); }
+int ERKStepSetFixedStepBounds(void *arkode_mem, realtype lb, realtype ub) {
+  return(arkSetFixedStepBounds(arkode_mem, lb, ub)); }
+int ERKStepSetAdaptivityMethod(void *arkode_mem, int imethod, int idefault,
+                               int pq, realtype adapt_params[3]) {
+  return(arkSetAdaptivityMethod(arkode_mem, imethod, idefault, pq, adapt_params)); }
+int ERKStepSetAdaptivityFn(void *arkode_mem, ARKAdaptFn hfun, void *h_data) {
+  return(arkSetAdaptivityFn(arkode_mem, hfun, h_data)); }
+int ERKStepSetMaxFirstGrowth(void *arkode_mem, realtype etamx1) {
+  return(arkSetMaxFirstGrowth(arkode_mem, etamx1)); }
+int ERKStepSetMaxEFailGrowth(void *arkode_mem, realtype etamxf) {
+  return(arkSetMaxEFailGrowth(arkode_mem, etamxf)); }
+int ERKStepSetSmallNumEFails(void *arkode_mem, int small_nef) {
+  return(arkSetSmallNumEFails(arkode_mem, small_nef)); }
+int ERKStepSetStabilityFn(void *arkode_mem, ARKExpStabFn EStab, void *estab_data) {
+  return(arkSetStabilityFn(arkode_mem, EStab, estab_data)); }
+int ERKStepSetMaxErrTestFails(void *arkode_mem, int maxnef) {
+  return(arkSetMaxErrTestFails(arkode_mem, maxnef)); }
+int ERKStepSetFixedStep(void *arkode_mem, realtype hfixed) {
+  return(arkSetFixedStep(arkode_mem, hfixed)); }
 
 int ERKStepSetInterpolantDegree(void* arkode_mem, int degree)
 {
@@ -210,90 +282,85 @@ int ERKStepGetNumStepAttempts(void* arkode_mem, long int* nstep_attempts)
   return (arkGetNumStepAttempts(arkode_mem, nstep_attempts));
 }
 
-int ERKStepGetNumSteps(void* arkode_mem, long int* nsteps)
+/* -----------------------------------------------------------------------------
+ * Wrappers for the ARKODE relaxation module
+ * ---------------------------------------------------------------------------*/
+
+int ERKStepSetRelaxFn(void* arkode_mem, ARKRelaxFn rfn, ARKRelaxJacFn rjac)
 {
-  return (arkGetNumSteps(arkode_mem, nsteps));
+  return arkRelaxCreate(arkode_mem, rfn, rjac, erkStep_RelaxDeltaY,
+                        erkStep_RelaxDeltaE, erkStep_GetOrder);
 }
 
-int ERKStepGetActualInitStep(void* arkode_mem, realtype* hinused)
+int ERKStepSetRelaxEtaFail(void* arkode_mem, sunrealtype eta_rf)
 {
-  return (arkGetActualInitStep(arkode_mem, hinused));
+  return arkRelaxSetEtaFail(arkode_mem, eta_rf);
 }
 
-int ERKStepGetLastStep(void* arkode_mem, realtype* hlast)
+int ERKStepSetRelaxLowerBound(void* arkode_mem, sunrealtype lower)
 {
-  return (arkGetLastStep(arkode_mem, hlast));
+  return arkRelaxSetLowerBound(arkode_mem, lower);
 }
 
-int ERKStepGetCurrentStep(void* arkode_mem, realtype* hcur)
+int ERKStepSetRelaxMaxFails(void* arkode_mem, int max_fails)
 {
-  return (arkGetCurrentStep(arkode_mem, hcur));
+  return arkRelaxSetMaxFails(arkode_mem, max_fails);
 }
 
-int ERKStepGetCurrentTime(void* arkode_mem, realtype* tcur)
+int ERKStepSetRelaxMaxIters(void* arkode_mem, int max_iters)
 {
-  return (arkGetCurrentTime(arkode_mem, tcur));
+  return arkRelaxSetMaxIters(arkode_mem, max_iters);
 }
 
-int ERKStepGetTolScaleFactor(void* arkode_mem, realtype* tolsfact)
+int ERKStepSetRelaxSolver(void* arkode_mem, ARKRelaxSolver solver)
 {
-  return (arkGetTolScaleFactor(arkode_mem, tolsfact));
+  return arkRelaxSetSolver(arkode_mem, solver);
 }
 
-int ERKStepGetErrWeights(void* arkode_mem, N_Vector eweight)
+int ERKStepSetRelaxResTol(void* arkode_mem, sunrealtype res_tol)
 {
-  return (arkGetErrWeights(arkode_mem, eweight));
+  return arkRelaxSetResTol(arkode_mem, res_tol);
 }
 
-int ERKStepGetWorkSpace(void* arkode_mem, long int* lenrw, long int* leniw)
+int ERKStepSetRelaxTol(void* arkode_mem, sunrealtype rel_tol,
+                       sunrealtype abs_tol)
 {
-  return (arkGetWorkSpace(arkode_mem, lenrw, leniw));
+  return arkRelaxSetTol(arkode_mem, rel_tol, abs_tol);
 }
 
-int ERKStepGetNumGEvals(void* arkode_mem, long int* ngevals)
+int ERKStepSetRelaxUpperBound(void* arkode_mem, sunrealtype upper)
 {
-  return (arkGetNumGEvals(arkode_mem, ngevals));
+  return arkRelaxSetUpperBound(arkode_mem, upper);
 }
 
-int ERKStepGetRootInfo(void* arkode_mem, int* rootsfound)
+int ERKStepGetNumRelaxFnEvals(void* arkode_mem, long int* r_evals)
 {
-  return (arkGetRootInfo(arkode_mem, rootsfound));
+  return arkRelaxGetNumRelaxFnEvals(arkode_mem, r_evals);
 }
 
-int ERKStepGetStepStats(void* arkode_mem, long int* nsteps, realtype* hinused,
-                        realtype* hlast, realtype* hcur, realtype* tcur)
+int ERKStepGetNumRelaxJacEvals(void* arkode_mem, long int* J_evals)
 {
-  return (arkGetStepStats(arkode_mem, nsteps, hinused, hlast, hcur, tcur));
+  return arkRelaxGetNumRelaxJacEvals(arkode_mem, J_evals);
 }
 
-int ERKStepGetNumConstrFails(void* arkode_mem, long int* nconstrfails)
+int ERKStepGetNumRelaxFails(void* arkode_mem, long int* relax_fails)
 {
-  return (arkGetNumConstrFails(arkode_mem, nconstrfails));
+  return arkRelaxGetNumRelaxFails(arkode_mem, relax_fails);
 }
 
-int ERKStepGetNumExpSteps(void* arkode_mem, long int* nsteps)
+int ERKStepGetNumRelaxBoundFails(void* arkode_mem, long int* fails)
 {
-  return (arkGetNumExpSteps(arkode_mem, nsteps));
+  return arkRelaxGetNumRelaxBoundFails(arkode_mem, fails);
 }
 
-int ERKStepGetNumAccSteps(void* arkode_mem, long int* nsteps)
+int ERKStepGetNumRelaxSolveFails(void* arkode_mem, long int* fails)
 {
-  return (arkGetNumAccSteps(arkode_mem, nsteps));
+  return arkRelaxGetNumRelaxSolveFails(arkode_mem, fails);
 }
 
-int ERKStepGetNumErrTestFails(void* arkode_mem, long int* netfails)
+int ERKStepGetNumRelaxSolveIters(void* arkode_mem, long int* iters)
 {
-  return (arkGetNumErrTestFails(arkode_mem, netfails));
-}
-
-int ERKStepGetUserData(void* arkode_mem, void** user_data)
-{
-  return (arkGetUserData(arkode_mem, user_data));
-}
-
-char* ERKStepGetReturnFlagName(long int flag)
-{
-  return (arkGetReturnFlagName(flag));
+  return arkRelaxGetNumRelaxSolveIters(arkode_mem, iters);
 }
 
 /*===============================================================

@@ -1687,11 +1687,10 @@ int cvLsSetup(CVodeMem cv_mem, int convfail, N_Vector ypred, N_Vector fpred,
 int cvLsSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vector ynow,
               N_Vector fnow)
 {
-  SUNAssignSUNCTX(cv_mem->cv_sunctx);
-  CVLsMem cvls_mem;
-  realtype bnorm, deltar, delta, w_mean;
-  int curiter, nli_inc, retval;
-  int ls_status;
+  CVLsMem  cvls_mem;
+  realtype bnorm = ZERO;
+  realtype deltar, delta, w_mean;
+  int      curiter, nli_inc, retval;
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
   realtype resnorm;
   long int nps_inc;
