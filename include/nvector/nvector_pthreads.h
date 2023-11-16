@@ -325,24 +325,6 @@ SUNDIALS_EXPORT
 SUNErrCode N_VEnableLinearCombinationVectorArray_Pthreads(N_Vector v,
                                                           booleantype tf);
 
-/*
- * -----------------------------------------------------------------
- * Deprecated functions
- * -----------------------------------------------------------------
- */
-
-/* use N_VCloneVectorArray */
-SUNDIALS_DEPRECATED_EXPORT
-N_Vector* N_VCloneVectorArray_Pthreads(int count, N_Vector w);
-
-/* use N_VCloneVectorArrayEmpty */
-SUNDIALS_DEPRECATED_EXPORT
-N_Vector* N_VCloneVectorArrayEmpty_Pthreads(int count, N_Vector w);
-
-/* use N_VDestroyVectorArray */
-SUNDIALS_DEPRECATED_EXPORT
-void N_VDestroyVectorArray_Pthreads(N_Vector* vs, int count);
-
 #ifdef __cplusplus
 }
 #endif

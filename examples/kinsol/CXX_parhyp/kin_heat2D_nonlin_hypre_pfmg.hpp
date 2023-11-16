@@ -139,10 +139,9 @@ struct UserData
   int maxits;       // max number of fixed point iterations
 
   // Linear solver and preconditioner settings
-  bool lsinfo;     // output residual history
-  int liniters;    // number of linear iterations
-  int msbp;        // max number of steps between preconditioner setups
-  realtype epslin; // linear solver tolerance factor
+  int      liniters;  // number of linear iterations
+  int      msbp;      // max number of steps between preconditioner setups
+  realtype epslin;    // linear solver tolerance factor
 
   // Linear solver object
   SUNLinearSolver LS; // linear solver memory structure

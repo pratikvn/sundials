@@ -393,10 +393,9 @@ int Test_N_VGetArrayPointer(N_Vector W, sunindextype local_length, int myid)
 
   /* get vector data, time it and set it to NULL */
   start_time = get_time();
-  Wdata      = N_VGetArrayPointer(W);
-  stop_time  = get_time();
-  Wdata++;
-  Wdata = NULL; /* Do something with pointer to surpress warning */
+  Wdata = N_VGetArrayPointer(W);
+  stop_time = get_time();
+  Wdata[0] = ONE; /* Do something with pointer to surpress warning */
 
   /* check vector data */
   if (!has_data(W))

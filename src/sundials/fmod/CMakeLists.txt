@@ -17,6 +17,7 @@
 set(sundials_SOURCES
   fsundials_context_mod.c
   fsundials_context_mod.f90
+<<<<<<< HEAD
   fsundials_errors_mod.c
   fsundials_errors_mod.f90
   fsundials_futils_mod.c
@@ -33,6 +34,11 @@ set(sundials_SOURCES
   fsundials_nvector_mod.f90
   fsundials_types_mod.c
   fsundials_types_mod.f90)
+=======
+  fsundials_context_mod.c
+  fsundials_adaptcontroller_mod.f90
+  fsundials_adaptcontroller_mod.c)
+>>>>>>> origin/develop
 
 if(SUNDIALS_BUILD_WITH_PROFILING)
   list(APPEND sundials_SOURCES

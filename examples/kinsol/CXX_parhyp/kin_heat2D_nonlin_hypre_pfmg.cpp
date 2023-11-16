@@ -687,7 +687,7 @@ static int SetupLS(N_Vector u, void* user_data, SUNContext sunctx)
   // Access problem data
   UserData* udata = (UserData*)user_data;
 
-  int prectype = PREC_RIGHT;
+  int prectype = SUN_PREC_RIGHT;
 
   // Create linear solver
   udata->LS = SUNLinSol_PCG(u, prectype, udata->liniters, sunctx);
@@ -1497,9 +1497,8 @@ static int InitUserData(UserData* udata)
   udata->maxits  = 100;           // max number of fixed point iterations
 
   // Linear solver and preconditioner options
-  udata->lsinfo   = false;         // output residual history
-  udata->liniters = 20;            // max linear iterations
-  udata->epslin   = RCONST(1.e-8); // use default (0.05)
+  udata->liniters  = 20;            // max linear iterations
+  udata->epslin    = RCONST(1.e-8); // use default (0.05)
 
   // Linear solver object
   udata->LS = NULL;
@@ -1655,7 +1654,6 @@ static int ReadInputs(int* argc, char*** argv, UserData* udata, bool outproc)
     // RHS settings
     else if (arg == "--c") { udata->c_int = stoi((*argv)[arg_idx++]); }
     // Linear solver settings
-    else if (arg == "--lsinfo") { udata->lsinfo = true; }
     else if (arg == "--liniters")
     {
       udata->liniters = stoi((*argv)[arg_idx++]);
@@ -1780,7 +1778,6 @@ static void InputHelp()
           "Anderson Acceleration "
        << endl;
   cout << "  --c <c_int>             : nonlinear function parameter" << endl;
-  cout << "  --lsinfo                : output residual history" << endl;
   cout << "  --liniters <iters>      : max number of iterations" << endl;
   cout << "  --epslin <factor>       : linear tolerance factor" << endl;
   cout << "  --pfmg_relax <types>    : relaxtion type in PFMG" << endl;

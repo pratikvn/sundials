@@ -254,6 +254,10 @@ int main(int argc, char* argv[])
                         flocal, NULL);
   if (check_flag(&flag, "ARKBBDPrecInit", 1, my_pe)) { MPI_Abort(comm, 1); }
 
+  /* Tighten nonlinear solver tolerance */
+  flag = ARKStepSetNonlinConvCoef(arkode_mem, SUN_RCONST(0.01));
+  if(check_flag(&flag, "ARKStepSetNonlinConvCoef", 1, my_pe)) MPI_Abort(comm, 1);
+
   /* Print heading */
   if (my_pe == 0) { PrintIntro(npes, mudq, mldq, mukeep, mlkeep); }
 

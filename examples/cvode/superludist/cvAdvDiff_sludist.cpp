@@ -52,6 +52,14 @@
 
 #include "superlu_ddefs.h"
 
+#include <cvode/cvode.h>                          /* prototypes for CVODE fcts., consts.          */
+#include <nvector/nvector_parallel.h>             /* access to MPI-parallel N_Vector              */
+#include <sunlinsol/sunlinsol_superludist.h>      /* access to the SuperLU-DIST SUNLinearSolver   */
+#include <sunmatrix/sunmatrix_slunrloc.h>         /* access to the SuperLU SLU_NR_loc SUNMatrix   */
+#include <sundials/sundials_types.h>              /* definition of type realtype                  */
+
+#include <mpi.h> /* MPI constants and types */
+
 /* Problem Constants */
 
 #define XMAX  RCONST(2.0)    /* domain boundary           */

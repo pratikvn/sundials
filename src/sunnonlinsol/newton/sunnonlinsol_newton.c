@@ -431,21 +431,3 @@ SUNErrCode SUNNonlinSolGetSysFn_Newton(SUNNonlinearSolver NLS,
   *SysFn = NEWTON_CONTENT(NLS)->Sys;
   return SUN_SUCCESS;
 }
-
-SUNErrCode SUNNonlinSolSetInfoFile_Newton(SUNNonlinearSolver NLS, FILE* info_file)
-{
-  NEWTON_CONTENT(NLS)->info_file = info_file;
-  return SUN_SUCCESS;
-}
-
-SUNErrCode SUNNonlinSolSetPrintLevel_Newton(SUNNonlinearSolver NLS,
-                                            int print_level)
-{
-  SUNAssignSUNCTX(NLS->sunctx);
-  /* check for valid print level */
-  SUNAssert(print_level >= 0 && print_level <= 1, SUN_ERR_ARG_OUTOFRANGE);
-
-  NEWTON_CONTENT(NLS)->print_level = print_level;
-
-  return SUN_SUCCESS;
-}

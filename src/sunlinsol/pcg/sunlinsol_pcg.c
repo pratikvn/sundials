@@ -537,18 +537,3 @@ SUNErrCode SUNLinSolFree_PCG(SUNLinearSolver S)
   S = NULL;
   return SUN_SUCCESS;
 }
-
-SUNErrCode SUNLinSolSetInfoFile_PCG(SUNLinearSolver S, FILE* info_file)
-{
-  PCG_CONTENT(S)->info_file = info_file;
-  return SUN_SUCCESS;
-}
-
-SUNErrCode SUNLinSolSetPrintLevel_PCG(SUNLinearSolver S, int print_level)
-{
-  SUNAssignSUNCTX(S->sunctx);
-  /* check for valid print level */
-  SUNAssert(print_level >= 0 && print_level <= 1, SUN_ERR_ARG_OUTOFRANGE);
-  PCG_CONTENT(S)->print_level = print_level;
-  return SUN_SUCCESS;
-}

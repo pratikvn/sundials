@@ -23,8 +23,11 @@
 #include <arkode/arkode_butcher.h>
 #include <arkode/arkode_butcher_dirk.h>
 #include <arkode/arkode_butcher_erk.h>
-#include <sundials/sundials_core.h>
-#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/sundials_context.h>
+#include <sundials/sundials_linearsolver.h>
+#include <sundials/sundials_adaptcontroller.h>
+
+#include "arkode_types_impl.h"
 #include "arkode_adapt_impl.h"
 #include "arkode_root_impl.h"
 #include <sundials/impl/sundials_context_impl.h>
@@ -327,15 +330,17 @@ struct ARKodeMemRec
   void                       *step_mem;
 
   /* N_Vector storage */
-  N_Vector ewt;           /* error weight vector                             */
-  N_Vector rwt;           /* residual weight vector                          */
-  booleantype rwt_is_ewt; /* SUNTRUE if rwt is a pointer to ewt              */
-  N_Vector ycur;          /* pointer to user-provided solution memory; used
-                             as evolving solution by the timestepper modules */
-  N_Vector yn;            /* solution from the last successful step          */
-  N_Vector fn;            /* full IVP right-hand side from last step         */
-  N_Vector tempv1;        /* temporary storage vectors (for local use and by */
-  N_Vector tempv2;        /* time-stepping modules)                          */
+  N_Vector ewt;                 /* error weight vector                        */
+  N_Vector rwt;                 /* residual weight vector                     */
+  booleantype rwt_is_ewt;       /* SUNTRUE if rwt is a pointer to ewt         */
+  N_Vector ycur;                /* pointer to user-provided solution memory;
+                                   used as evolving solution by the time stepper
+                                   modules */
+  N_Vector yn;                  /* solution from the last successful step     */
+  N_Vector fn;                  /* full IVP right-hand side from last step    */
+  sunbooleantype fn_is_current; /* SUNTRUE if fn has been evaluated at yn     */
+  N_Vector tempv1;              /* temporary storage vectors (for local use   */
+  N_Vector tempv2;              /* and by time-stepping modules)              */
   N_Vector tempv3;
   N_Vector tempv4;
 
@@ -343,6 +348,7 @@ struct ARKodeMemRec
 
   /* Temporal interpolation module */
   ARKInterp interp;
+  int interp_type;
 
   /* Tstop information */
   booleantype tstopset;
@@ -383,10 +389,6 @@ struct ARKodeMemRec
   long int netf;          /* num error test failures                    */
   long int nconstrfails;  /* number of constraint failures              */
 
-  /* Diagnostic output */
-  booleantype report;   /* flag to enable/disable diagnostic output    */
-  FILE       *diagfp;   /* diagnostic outputs are sent to diagfp   */
-
   /* Space requirements for ARKODE */
   sunindextype lrw1;        /* no. of realtype words in 1 N_Vector          */
   sunindextype liw1;        /* no. of integer words in 1 N_Vector           */
@@ -406,7 +408,7 @@ struct ARKodeMemRec
   int         init_type;    /* initialization type (see constants above)  */
   booleantype firststage;   /* denotes first stage in simulation          */
   booleantype initialized;  /* denotes arkInitialSetup has been done      */
-  booleantype call_fullrhs; /* denotes fn needs updating after each step  */
+  booleantype call_fullrhs; /* denotes the full RHS fn will be called     */
 
   /* Error handler function and error ouput file */
   ARKErrHandlerFn ehfun;    /* error messages are handled by ehfun        */
@@ -801,12 +803,28 @@ struct ARKodeMemRec
   ODE RHS function supplied (e.g. ERK, DIRK, IRK), or it may be
   the sum of many ODE RHS functions (e.g. ARK, MRI).  The 'mode'
   indicates where this routine is called:
+
      ARK_FULLRHS_START -> called at the beginning of a simulation
-     ARK_FULLRHS_END   -> called at the end of a successful step
+                          i.e., at (tn, yn) = (t0, y0) or (tR, yR)
+
+     ARK_FULLRHS_END   -> called at the end of a successful step i.e,
+                          at (tcur, ycur) or the start of the subsequent
+                          step i.e., at (tn, yn) = (tcur, ycur) from
+                          the end of the last step
+
      ARK_FULLRHS_OTHER -> called elsewhere (e.g. for dense output)
+
   It is recommended that the stepper use the mode information to
   maximize reuse between calls to this function and RHS
   evaluations inside the stepper itself.
+
+  This routine is only required to be supplied to ARKODE if:
+  * ARKODE's initial time step selection algorithm is used,
+  * the user requests temporal root-finding,
+  * the Hermite interpolation module is used, or
+  * the user requests the "bootstrap" implicit predictor.
+  Note that any stepper can itself require that this routine
+  exist for its own internal business (e.g., ERKStep).
 
   This routine should return 0 if successful, and a negative value
   otherwise.  If an error does occur, an appropriate message
@@ -976,6 +994,7 @@ int arkCheckTemporalError(ARKodeMem ark_mem, int *nflagPtr, int *nefPtr,
 int arkAccessHAdaptMem(void* arkode_mem, const char *fname,
                        ARKodeMem *ark_mem, ARKodeHAdaptMem *hadapt_mem);
 
+int arkSetAdaptController(void *arkode_mem, SUNAdaptController C);
 int arkSetDefaults(void *arkode_mem);
 int arkSetDenseOrder(void *arkode_mem, int dord);
 int arkSetInterpolantType(void *arkode_mem, int itype);
@@ -985,7 +1004,6 @@ int arkSetErrHandlerFn(void *arkode_mem,
                        void *eh_data);
 int arkSetErrFile(void *arkode_mem, FILE *errfp);
 int arkSetUserData(void *arkode_mem, void *user_data);
-int arkSetDiagnostics(void *arkode_mem, FILE *diagfp);
 int arkSetMaxNumSteps(void *arkode_mem, long int mxsteps);
 int arkSetMaxHnilWarns(void *arkode_mem, int mxhnil);
 int arkSetInitStep(void *arkode_mem, realtype hin);
@@ -1003,6 +1021,7 @@ int arkSetPostprocessStageFn(void *arkode_mem,
                              ARKPostProcessFn ProcessStage);
 int arkSetConstraints(void *arkode_mem, N_Vector constraints);
 int arkSetMaxNumConstrFails(void *arkode_mem, int maxfails);
+int arkSetAdaptivityAdjustment(void *arkode_mem, int adjust);
 int arkSetCFLFraction(void *arkode_mem, realtype cfl_frac);
 int arkSetSafetyFactor(void *arkode_mem, realtype safety);
 int arkSetErrorBias(void *arkode_mem, realtype bias);
@@ -1150,6 +1169,8 @@ int arkGetLastKFlag(void *arkode_mem, int *last_kflag);
 #define MSG_ARK_POSTPROCESS_STAGE_FAIL "At " MSG_TIME ", the stage postprocessing routine failed in an unrecoverable manner."
 #define MSG_ARK_NULL_SUNCTX "sunctx = NULL illegal."
 #define MSG_ARK_CONTEXT_MISMATCH "Outer and inner steppers have different contexts."
+#define MSG_ARK_MISSING_FULLRHS "Time-stepping module missing fullrhs routine (required by requested solver configuration)."
+#define MSG_ARK_INTERPOLATION_FAIL "At " MSG_TIME ", interpolating the solution failed."
 
 #ifdef __cplusplus
 }

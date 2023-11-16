@@ -310,10 +310,11 @@ static int check_flag(void* flagvalue, const string funcname, int opt);
 
 int main(int argc, char* argv[])
 {
-  int flag;                  // reusable error-checking flag
-  N_Vector u         = NULL; // vector for storing solution
-  SUNLinearSolver LS = NULL; // linear solver memory structure
-  void* arkode_mem   = NULL; // ARKode memory structure
+  int flag;                      // reusable error-checking flag
+  N_Vector u         = NULL;     // vector for storing solution
+  SUNLinearSolver LS = NULL;     // linear solver memory structure
+  void *arkode_mem   = NULL;     // ARKode memory structure
+  SUNAdaptController C = NULL;   // Time adaptivity controller
 
   // Timing variables
   double t1 = 0.0;
@@ -440,9 +441,16 @@ int main(int argc, char* argv[])
     }
     else
     {
-      flag = ARKStepSetAdaptivityMethod(arkode_mem, udata.controller, SUNTRUE,
-                                        SUNFALSE, NULL);
-      if (check_flag(&flag, "ARKStepSetAdaptivityMethod", 1)) { return 1; }
+      switch (udata.controller) {
+      case (ARK_ADAPT_PID):      C = SUNAdaptController_PID(sunctx);     break;
+      case (ARK_ADAPT_PI):       C = SUNAdaptController_PI(sunctx);      break;
+      case (ARK_ADAPT_I):        C = SUNAdaptController_I(sunctx);       break;
+      case (ARK_ADAPT_EXP_GUS):  C = SUNAdaptController_ExpGus(sunctx);  break;
+      case (ARK_ADAPT_IMP_GUS):  C = SUNAdaptController_ImpGus(sunctx);  break;
+      case (ARK_ADAPT_IMEX_GUS): C = SUNAdaptController_ImExGus(sunctx); break;
+      }
+      flag = ARKStepSetAdaptController(arkode_mem, C);
+      if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
     }
 
     // Specify linearly implicit non-time-dependent RHS
@@ -530,10 +538,11 @@ int main(int argc, char* argv[])
     // Clean up and return
     // --------------------
 
-    ARKStepFree(&arkode_mem); // Free integrator memory
-    SUNLinSolFree(LS);        // Free linear solver
-    N_VDestroy(u);            // Free vectors
-    FreeUserData(&udata);     // Free user data
+    ARKStepFree(&arkode_mem);       // Free integrator memory
+    SUNLinSolFree(LS);              // Free linear solver
+    N_VDestroy(u);                  // Free vectors
+    FreeUserData(&udata);           // Free user data
+    (void) SUNAdaptController_Destroy(C);  // Free time adaptivity controller
   }
 
   // Finalize MPI

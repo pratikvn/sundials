@@ -103,7 +103,9 @@ static int SetupDecomp(UserData* udata);
 //    performs neighbor exchange
 static int Exchange(N_Vector y, UserData* udata);
 //    frees memory allocated within UserData
-static int FreeUserData(UserData* udata);
+static int FreeUserData(UserData *udata);
+//    check if relative difference is within tolerance
+static bool Compare(long int a, long int b, sunrealtype tol);
 
 // Main Program
 int main(int argc, char* argv[])
@@ -403,9 +405,53 @@ int main(int argc, char* argv[])
   {
     numfails += 1;
     if (outproc)
-    {
-      cout << "  Internal solver steps error: " << ark_nst << " vs " << mri_nst
-           << "\n";
+      cout << "  Internal solver steps error: " << ark_nst << " vs " << mri_nst << "\n";
+  }
+  if (ark_nfi != mri_nfsi) {
+    numfails += 1;
+    if (outproc)
+      cout << "  RHS evals error: " << ark_nfi << " vs " << mri_nfsi << "\n";
+  }
+  if (ark_nsetups != mri_nsetups) {
+    numfails += 1;
+    if (outproc)
+      cout << "  Linear solver setups error: " << ark_nsetups << " vs " << mri_nsetups << "\n";
+  }
+  if (!Compare(ark_nli, mri_nli, ONE)) {
+    numfails += 1;
+    if (outproc)
+      cout << "  Linear iterations error: " << ark_nli << " vs " << mri_nli << "\n";
+  }
+  if (!Compare(ark_nJv, mri_nJv, ONE)) {
+    numfails += 1;
+    if (outproc)
+      cout << "  Jacobian-vector products error: " << ark_nJv << " vs " << mri_nJv << "\n";
+  }
+  if (!Compare(ark_nps, mri_nps, ONE)) {
+    numfails += 1;
+    if (outproc)
+      cout << "  Preconditioner solves error: " << ark_nps << " vs " << mri_nps << "\n";
+  }
+  if (ark_nlcf != mri_nlcf) {
+    numfails += 1;
+    if (outproc)
+      cout << "  Linear convergence failures error: " << ark_nlcf << " vs " << mri_nlcf << "\n";
+  }
+  if (ark_nni != mri_nni) {
+    numfails += 1;
+    if (outproc)
+      cout << "  Newton iterations error: " << ark_nni << " vs " << mri_nni << "\n";
+  }
+  if (ark_ncfn != mri_ncfn) {
+    numfails += 1;
+    if (outproc)
+      cout << "  Nonlinear convergence failures error: " << ark_ncfn << " vs " << mri_ncfn << "\n";
+  }
+  if (outproc) {
+    if (numfails) {
+      cout << "Failed " << numfails << " tests\n";
+    } else {
+      cout << "All tests pass!\n";
     }
   }
   if ((ark_nfi - ark_nst) != mri_nfsi)
@@ -1066,6 +1112,15 @@ static int FreeUserData(UserData* udata)
   if (udata->comm != MPI_COMM_WORLD) { MPI_Comm_free(&(udata->comm)); }
 
   return 0; // return with success flag
+}
+
+// Check if relative difference of a and b is less than tolerance
+static bool Compare(long int a, long int b, sunrealtype tol)
+{
+  sunrealtype rel_diff = SUN_RCONST(100.0) *
+    abs(static_cast<sunrealtype>(a - b) / static_cast<sunrealtype>(a));
+
+  return (rel_diff > tol) ? false : true;
 }
 
 //---- end of file ----

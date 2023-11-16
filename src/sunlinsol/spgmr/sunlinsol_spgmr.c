@@ -806,18 +806,3 @@ SUNErrCode SUNLinSolFree_SPGMR(SUNLinearSolver S)
   S = NULL;
   return SUN_SUCCESS;
 }
-
-SUNErrCode SUNLinSolSetInfoFile_SPGMR(SUNLinearSolver S, FILE* info_file)
-{
-  SPGMR_CONTENT(S)->info_file = info_file;
-  return SUN_SUCCESS;
-}
-
-SUNErrCode SUNLinSolSetPrintLevel_SPGMR(SUNLinearSolver S, int print_level)
-{
-  /* check for valid print level */
-  SUNAssignSUNCTX(S->sunctx);
-  SUNAssert(print_level >= 0 && print_level <= 1, SUN_ERR_ARG_OUTOFRANGE);
-  SPGMR_CONTENT(S)->print_level = print_level;
-  return SUN_SUCCESS;
-}

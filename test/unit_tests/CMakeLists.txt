@@ -44,4 +44,7 @@ endif()
 
 if(CXX_FOUND)
   add_subdirectory(sunmemory)
+  if(SUNDIALS_BUILD_WITH_PROFILING)
+    add_subdirectory(profiling)
+  endif()
 endif()

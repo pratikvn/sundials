@@ -133,14 +133,6 @@ SUNDIALS_EXPORT
 SUNErrCode SUNNonlinSolGetSysFn_FixedPoint(SUNNonlinearSolver NLS,
                                            SUNNonlinSolSysFn* SysFn);
 
-SUNDIALS_DEPRECATED_EXPORT_MSG("Use SUNLogger_SetInfoFilename instead")
-SUNErrCode SUNNonlinSolSetInfoFile_FixedPoint(SUNNonlinearSolver NLS,
-                                              FILE* info_file);
-
-SUNDIALS_DEPRECATED_EXPORT_MSG("Use SUNLogger interface instead")
-SUNErrCode SUNNonlinSolSetPrintLevel_FixedPoint(SUNNonlinearSolver NLS,
-                                                int print_level);
-
 #ifdef __cplusplus
 }
 #endif

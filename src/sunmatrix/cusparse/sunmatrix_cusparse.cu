@@ -24,6 +24,7 @@
 
 #include "cusparse_kernels.cuh"
 #include "sundials_cuda.h"
+#include "sundials_cusparse.h"
 #include "sundials_debug.h"
 
 /* Use the namespace for the kernels */

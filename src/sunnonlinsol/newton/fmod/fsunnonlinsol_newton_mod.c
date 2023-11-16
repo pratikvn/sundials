@@ -426,32 +426,4 @@ SWIGEXPORT int _wrap_FSUNNonlinSolGetSysFn_Newton(SUNNonlinearSolver farg1, void
 }
 
 
-SWIGEXPORT int _wrap_FSUNNonlinSolSetInfoFile_Newton(SUNNonlinearSolver farg1, void *farg2) {
-  int fresult ;
-  SUNNonlinearSolver arg1 = (SUNNonlinearSolver) 0 ;
-  FILE *arg2 = (FILE *) 0 ;
-  SUNErrCode result;
-  
-  arg1 = (SUNNonlinearSolver)(farg1);
-  arg2 = (FILE *)(farg2);
-  result = (SUNErrCode)SUNNonlinSolSetInfoFile_Newton(arg1,arg2);
-  fresult = (SUNErrCode)(result);
-  return fresult;
-}
-
-
-SWIGEXPORT int _wrap_FSUNNonlinSolSetPrintLevel_Newton(SUNNonlinearSolver farg1, int const *farg2) {
-  int fresult ;
-  SUNNonlinearSolver arg1 = (SUNNonlinearSolver) 0 ;
-  int arg2 ;
-  SUNErrCode result;
-  
-  arg1 = (SUNNonlinearSolver)(farg1);
-  arg2 = (int)(*farg2);
-  result = (SUNErrCode)SUNNonlinSolSetPrintLevel_Newton(arg1,arg2);
-  fresult = (SUNErrCode)(result);
-  return fresult;
-}
-
-
 

@@ -216,34 +216,6 @@ N_Vector* N_VCloneVectorArray_Serial(int count, N_Vector w)
 }
 
 /* ----------------------------------------------------------------------------
- * Function to create an array of new serial vectors with NULL data array.
- */
-
-N_Vector* N_VCloneVectorArrayEmpty_Serial(int count, N_Vector w)
-{
-  SUNAssignSUNCTX(w->sunctx);
-  N_Vector* result = SUNCheckCallLastErrNull(N_VCloneEmptyVectorArray(count, w));
-  return result;
-}
-
-/* ----------------------------------------------------------------------------
- * Function to free an array created with N_VCloneVectorArray_Serial
- */
-
-void N_VDestroyVectorArray_Serial(N_Vector* vs, int count)
-{
-  SUNAssignSUNCTX(vs[0]->sunctx);
-  SUNCheckCallLastErrNoRet(N_VDestroyVectorArray(vs, count));
-  return;
-}
-
-/* ----------------------------------------------------------------
- * Returns vector type ID. Used to identify vector implementation
- * from abstract N_Vector interface.
- */
-N_Vector_ID N_VGetVectorID_Serial(N_Vector v) { return SUNDIALS_NVEC_SERIAL; }
-
-/* ----------------------------------------------------------------------------
  * Function to return number of vector elements
  */
 sunindextype N_VGetLength_Serial(N_Vector v) { return NV_LENGTH_S(v); }

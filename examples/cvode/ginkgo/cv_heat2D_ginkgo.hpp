@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <string>
 
 // SUNDIALS types
@@ -31,7 +32,12 @@
 #include <nvector/nvector_cuda.h>
 #elif defined(USE_HIP)
 #include <nvector/nvector_hip.h>
+#elif defined(USE_DPCPP)
+#include <nvector/nvector_sycl.h>
 #endif
+
+// Ginkgo Type
+#include <ginkgo/ginkgo.hpp>
 
 // Common utility functions
 #include <example_utilities.hpp>
@@ -85,6 +91,9 @@ struct UserData
   int nout    = 20;    // number of output times
   std::ofstream uout;  // output file stream
   std::ofstream eout;  // error file stream
+
+  // Ginkgo executor for synchronization on sycl
+  std::shared_ptr<const gko::Executor> exec;
 };
 
 // -----------------------------------------------------------------------------
@@ -143,11 +152,38 @@ int Solution(sunrealtype t, N_Vector u, UserData& udata)
 
   solution_kernel<<<num_blocks, threads_per_block>>>(nx, ny, dx, dy, cos_sqr_t,
                                                      uarray);
+#elif defined(USE_DPCPP)
+  sunrealtype* uarray = N_VGetDeviceArrayPointer(u);
+  if (check_ptr(uarray, "N_VGetDeviceArrayPointer")) return -1;
+  std::dynamic_pointer_cast<const gko::DpcppExecutor>(udata.exec)
+    ->get_queue()
+    ->submit(
+      [&](sycl::handler& cgh)
+      {
+        cgh.parallel_for(sycl::range<2>(ny, nx),
+                         [=](sycl::id<2> id)
+                         {
+                           const sunindextype i = id[1];
+                           const sunindextype j = id[0];
 
+                           if (i > 0 && i < nx - 1 && j > 0 && j < ny - 1)
+                           {
+                             auto x = i * dx;
+                             auto y = j * dy;
+
+                             auto sin_sqr_x = sin(PI * x) * sin(PI * x);
+                             auto sin_sqr_y = sin(PI * y) * sin(PI * y);
+
+                             auto idx    = i + j * nx;
+                             uarray[idx] = sin_sqr_x * sin_sqr_y * cos_sqr_t +
+                                           ONE;
+                           }
+                         });
+      });
 #else
 
   sunrealtype* uarray = N_VGetArrayPointer(u);
-  if (check_ptr(uarray, "N_VGetArrayPointer")) { return -1; }
+  if (check_ptr(uarray, "N_VGetArrayPointer")) return -1;
 
   for (sunindextype j = 1; j < ny - 1; j++)
   {
@@ -165,7 +201,7 @@ int Solution(sunrealtype t, N_Vector u, UserData& udata)
   }
 
 #endif
-
+  udata.exec->synchronize();
   return 0;
 }
 
@@ -189,7 +225,7 @@ void InputHelp()
   std::cout << std::endl
             << "Command line options:\n"
             << "  --nx <nx>          : number of x mesh points\n"
-            << "  --nx <nx>          : number of y mesh points\n"
+            << "  --ny <ny>          : number of y mesh points\n"
             << "  --xu <xu>          : x upper bound\n"
             << "  --yu <yu>          : y upper bound\n"
             << "  --kx <kx>          : x diffusion coefficient\n"
@@ -330,11 +366,14 @@ int WriteOutput(sunrealtype t, N_Vector u, N_Vector e, UserData& udata)
 #elif defined(USE_HIP)
     N_VCopyFromDevice_Hip(u);
     N_VCopyFromDevice_Hip(e);
+#elif defined(USE_DPCPP)
+    N_VCopyFromDevice_Sycl(u);
+    N_VCopyFromDevice_Sycl(e);
 #endif
 
     // Access host data array
     sunrealtype* uarray = N_VGetArrayPointer(u);
-    if (check_ptr(uarray, "N_VGetArrayPointer")) { return -1; }
+    if (check_ptr(uarray, "N_VGetArrayPointer")) return -1;
 
     udata.uout << t << " ";
     for (sunindextype i = 0; i < udata.nodes; i++)
@@ -345,7 +384,7 @@ int WriteOutput(sunrealtype t, N_Vector u, N_Vector e, UserData& udata)
 
     // Access host data array
     sunrealtype* earray = N_VGetArrayPointer(e);
-    if (check_ptr(earray, "N_VGetArrayPointer")) { return -1; }
+    if (check_ptr(earray, "N_VGetArrayPointer")) return -1;
 
     udata.eout << t << " ";
     for (sunindextype i = 0; i < udata.nodes; i++)

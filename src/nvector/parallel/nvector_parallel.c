@@ -236,29 +236,6 @@ N_Vector* N_VCloneVectorArray_Parallel(int count, N_Vector w)
 }
 
 /* ----------------------------------------------------------------
- * Function to create an array of new parallel vectors with empty
- * (NULL) data array.
- */
-
-N_Vector* N_VCloneVectorArrayEmpty_Parallel(int count, N_Vector w)
-{
-  SUNAssignSUNCTX(w->sunctx);
-  N_Vector* result = SUNCheckCallLastErrNull(N_VCloneEmptyVectorArray(count, w));
-  return result;
-}
-
-/* ----------------------------------------------------------------
- * Function to free an array created with N_VCloneVectorArray_Parallel
- */
-
-void N_VDestroyVectorArray_Parallel(N_Vector* vs, int count)
-{
-  SUNAssignSUNCTX((*vs)->sunctx);
-  SUNCheckCallLastErrNoRet(N_VDestroyVectorArray(vs, count));
-  return;
-}
-
-/* ----------------------------------------------------------------
  * Function to return global vector length
  */
 

@@ -235,28 +235,6 @@ N_Vector* N_VCloneVectorArray_OpenMP(int count, N_Vector w)
 }
 
 /* ----------------------------------------------------------------------------
- * Function to create an array of new vectors with NULL data array.
- */
-
-N_Vector* N_VCloneVectorArrayEmpty_OpenMP(int count, N_Vector w)
-{
-  SUNAssignSUNCTX(w->sunctx);
-  N_Vector* result = SUNCheckCallLastErrNull(N_VCloneEmptyVectorArray(count, w));
-  return result;
-}
-
-/* ----------------------------------------------------------------------------
- * Function to free an array created with N_VCloneVectorArray_OpenMP
- */
-
-void N_VDestroyVectorArray_OpenMP(N_Vector* vs, int count)
-{
-  SUNAssignSUNCTX(vs[0]->sunctx);
-  SUNCheckCallLastErrVoid(N_VDestroyVectorArray(vs, count));
-  return;
-}
-
-/* ----------------------------------------------------------------------------
  * Function to return number of vector elements
  */
 sunindextype N_VGetLength_OpenMP(N_Vector v) { return NV_LENGTH_OMP(v); }

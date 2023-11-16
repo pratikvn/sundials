@@ -709,22 +709,3 @@ static void FreeContent(SUNNonlinearSolver NLS)
 
   return;
 }
-
-SUNErrCode SUNNonlinSolSetInfoFile_FixedPoint(SUNNonlinearSolver NLS,
-                                              FILE* info_file)
-{
-  FP_CONTENT(NLS)->info_file = info_file;
-  return SUN_SUCCESS;
-}
-
-SUNErrCode SUNNonlinSolSetPrintLevel_FixedPoint(SUNNonlinearSolver NLS,
-                                                int print_level)
-{
-  SUNAssignSUNCTX(NLS->sunctx);
-  /* check for valid print level */
-  SUNAssert(print_level >= 0 && print_level <= 1, SUN_ERR_ARG_OUTOFRANGE);
-
-  FP_CONTENT(NLS)->print_level = print_level;
-
-  return SUN_SUCCESS;
-}

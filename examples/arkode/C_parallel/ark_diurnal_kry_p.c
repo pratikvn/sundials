@@ -268,6 +268,10 @@ int main(int argc, char* argv[])
     MPI_Abort(comm, 1);
   }
 
+  /* Tighten nonlinear solver tolerance */
+  flag = ARKStepSetNonlinConvCoef(arkode_mem, SUN_RCONST(0.01));
+  if(check_flag(&flag, "ARKStepSetNonlinConvCoef", 1, my_pe)) MPI_Abort(comm, 1);
+
   /* Print heading */
   if (my_pe == 0)
   {
@@ -881,10 +885,7 @@ static int Precond(realtype tn, N_Vector u, N_Vector fu, booleantype jok,
     for (ly = 0; ly < MYSUB; ly++)
     {
       for (lx = 0; lx < MXSUB; lx++)
-      {
-        denseCopy(Jbd[lx][ly], P[lx][ly], NVARS, NVARS);
-      }
-    }
+        SUNDlsMat_denseCopy(Jbd[lx][ly], P[lx][ly], NVARS, NVARS);
 
     *jcurPtr = SUNFALSE;
   }
@@ -901,26 +902,24 @@ static int Precond(realtype tn, N_Vector u, N_Vector fu, booleantype jok,
 
     /* Compute 2x2 diagonal Jacobian blocks (using q4 values
      computed on the last f call).  Load into P. */
-    for (ly = 0; ly < MYSUB; ly++)
-    {
-      jy   = ly + isuby * MYSUB;
-      ydn  = YMIN + (jy - RCONST(0.5)) * dely;
-      yup  = ydn + dely;
-      cydn = verdco * exp(RCONST(0.2) * ydn);
-      cyup = verdco * exp(RCONST(0.2) * yup);
-      diag = -(cydn + cyup + RCONST(2.0) * hordco);
-      for (lx = 0; lx < MXSUB; lx++)
-      {
-        offset        = lx * NVARS + ly * nvmxsub;
-        c1            = udata[offset];
-        c2            = udata[offset + 1];
-        j             = Jbd[lx][ly];
-        a             = P[lx][ly];
-        IJth(j, 1, 1) = (-Q1 * C3 - Q2 * c2) + diag;
-        IJth(j, 1, 2) = -Q2 * c1 + q4coef;
-        IJth(j, 2, 1) = Q1 * C3 - Q2 * c2;
-        IJth(j, 2, 2) = (-Q2 * c1 - q4coef) + diag;
-        denseCopy(j, a, NVARS, NVARS);
+    for (ly = 0; ly < MYSUB; ly++) {
+      jy = ly + isuby*MYSUB;
+      ydn = YMIN + (jy - RCONST(0.5))*dely;
+      yup = ydn + dely;
+      cydn = verdco*exp(RCONST(0.2)*ydn);
+      cyup = verdco*exp(RCONST(0.2)*yup);
+      diag = -(cydn + cyup + RCONST(2.0)*hordco);
+      for (lx = 0; lx < MXSUB; lx++) {
+        offset = lx*NVARS + ly*nvmxsub;
+        c1 = udata[offset];
+        c2 = udata[offset+1];
+        j = Jbd[lx][ly];
+        a = P[lx][ly];
+        IJth(j,1,1) = (-Q1*C3 - Q2*c2) + diag;
+        IJth(j,1,2) = -Q2*c1 + q4coef;
+        IJth(j,2,1) = Q1*C3 - Q2*c2;
+        IJth(j,2,2) = (-Q2*c1 - q4coef) + diag;
+        SUNDlsMat_denseCopy(j, a, NVARS, NVARS);
       }
     }
 
@@ -931,8 +930,14 @@ static int Precond(realtype tn, N_Vector u, N_Vector fu, booleantype jok,
   for (ly = 0; ly < MYSUB; ly++)
   {
     for (lx = 0; lx < MXSUB; lx++)
-    {
-      denseScale(-gamma, P[lx][ly], NVARS, NVARS);
+      SUNDlsMat_denseScale(-gamma, P[lx][ly], NVARS, NVARS);
+
+  /* Add identity matrix and do LU decompositions on blocks in place */
+  for (lx = 0; lx < MXSUB; lx++) {
+    for (ly = 0; ly < MYSUB; ly++) {
+      SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
+      ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
+      if (ier != 0) return(1);
     }
   }
 

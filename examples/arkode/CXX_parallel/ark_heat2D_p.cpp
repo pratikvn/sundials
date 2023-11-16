@@ -271,12 +271,12 @@ static int check_flag(void* flagvalue, const string funcname, int opt);
 
 int main(int argc, char* argv[])
 {
-  int flag;                  // reusable error-checking flag
-  UserData* udata    = NULL; // user data structure
-  N_Vector u         = NULL; // vector for storing solution
-  SUNLinearSolver LS = NULL; // linear solver memory structure
-  void* arkode_mem   = NULL; // ARKODE memory structure
-  FILE* diagfp       = NULL; // diagnostics output file
+  int flag;                   // reusable error-checking flag
+  UserData *udata    = NULL;  // user data structure
+  N_Vector u         = NULL;  // vector for storing solution
+  SUNLinearSolver LS = NULL;  // linear solver memory structure
+  void *arkode_mem   = NULL;  // ARKODE memory structure
+  SUNAdaptController C = NULL;  // timestep adaptivity controller
 
   // Timing variables
   double t1 = 0.0;
@@ -323,14 +323,21 @@ int main(int argc, char* argv[])
   if (outproc)
   {
     flag = PrintUserData(udata);
-    if (check_flag(&flag, "PrintUserData", 1)) { return 1; }
+    if (check_flag(&flag, "PrintUserData", 1)) return 1;
+  }
 
-    // Open diagnostics output file
-    if (udata->diagnostics || udata->lsinfo)
-    {
-      diagfp = fopen("diagnostics.txt", "w");
-      if (check_flag((void*)diagfp, "fopen", 0)) { return 1; }
-    }
+  if (udata->diagnostics || udata->lsinfo)
+  {
+    SUNLogger logger = NULL;
+  
+    flag = SUNContext_GetLogger(ctx, &logger);
+    if (check_flag(&flag, "SUNContext_GetLogger", 1)) return 1;
+
+    flag = SUNLogger_SetInfoFilename(logger, "diagnostics.txt");
+    if (check_flag(&flag, "SUNLogger_SetInfoFilename", 1)) return 1;
+
+    flag = SUNLogger_SetDebugFilename(logger, "diagnostics.txt");
+    if (check_flag(&flag, "SUNLogger_SetDebugFilename", 1)) return 1;
   }
 
   // ------------------------
@@ -359,30 +366,12 @@ int main(int argc, char* argv[])
   if (udata->pcg)
   {
     LS = SUNLinSol_PCG(u, prectype, udata->liniters, ctx);
-    if (check_flag((void*)LS, "SUNLinSol_PCG", 0)) { return 1; }
-
-    if (udata->lsinfo && outproc)
-    {
-      flag = SUNLinSolSetPrintLevel_PCG(LS, 1);
-      if (check_flag(&flag, "SUNLinSolSetPrintLevel_PCG", 1)) { return (1); }
-
-      flag = SUNLinSolSetInfoFile_PCG(LS, diagfp);
-      if (check_flag(&flag, "SUNLinSolSetInfoFile_PCG", 1)) { return (1); }
-    }
+    if (check_flag((void *) LS, "SUNLinSol_PCG", 0)) return 1;
   }
   else
   {
     LS = SUNLinSol_SPGMR(u, prectype, udata->liniters, ctx);
-    if (check_flag((void*)LS, "SUNLinSol_SPGMR", 0)) { return 1; }
-
-    if (udata->lsinfo && outproc)
-    {
-      flag = SUNLinSolSetPrintLevel_SPGMR(LS, 1);
-      if (check_flag(&flag, "SUNLinSolSetPrintLevel_SPGMR", 1)) { return (1); }
-
-      flag = SUNLinSolSetInfoFile_SPGMR(LS, diagfp);
-      if (check_flag(&flag, "SUNLinSolSetInfoFile_SPGMR", 1)) { return (1); }
-    }
+    if (check_flag((void *) LS, "SUNLinSol_SPGMR", 0)) return 1;
   }
 
   // Allocate preconditioner workspace
@@ -461,9 +450,16 @@ int main(int argc, char* argv[])
   }
   else
   {
-    flag = ARKStepSetAdaptivityMethod(arkode_mem, udata->controller, SUNTRUE,
-                                      SUNFALSE, NULL);
-    if (check_flag(&flag, "ARKStepSetAdaptivityMethod", 1)) { return 1; }
+    switch (udata->controller) {
+    case (ARK_ADAPT_PID):      C = SUNAdaptController_PID(ctx);     break;
+    case (ARK_ADAPT_PI):       C = SUNAdaptController_PI(ctx);      break;
+    case (ARK_ADAPT_I):        C = SUNAdaptController_I(ctx);       break;
+    case (ARK_ADAPT_EXP_GUS):  C = SUNAdaptController_ExpGus(ctx);  break;
+    case (ARK_ADAPT_IMP_GUS):  C = SUNAdaptController_ImpGus(ctx);  break;
+    case (ARK_ADAPT_IMEX_GUS): C = SUNAdaptController_ImExGus(ctx); break;
+    }
+    flag = ARKStepSetAdaptController(arkode_mem, C);
+    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
   }
 
   // Specify linearly implicit non-time-dependent RHS
@@ -480,13 +476,6 @@ int main(int argc, char* argv[])
   // Set stopping time
   flag = ARKStepSetStopTime(arkode_mem, udata->tf);
   if (check_flag(&flag, "ARKStepSetStopTime", 1)) { return 1; }
-
-  // Set diagnostics output file
-  if (udata->diagnostics && outproc)
-  {
-    flag = ARKStepSetDiagnostics(arkode_mem, diagfp);
-    if (check_flag(&flag, "ARKStepSetDiagnostics", 1)) { return 1; }
-  }
 
   // -----------------------
   // Loop over output times
@@ -570,15 +559,14 @@ int main(int argc, char* argv[])
   // Clean up and return
   // --------------------
 
-  if ((udata->diagnostics || udata->lsinfo) && outproc) { fclose(diagfp); }
-
-  ARKStepFree(&arkode_mem); // Free integrator memory
-  SUNLinSolFree(LS);        // Free linear solver
-  N_VDestroy(u);            // Free vectors
-  FreeUserData(udata);      // Free user data
+  ARKStepFree(&arkode_mem);  // Free integrator memory
+  SUNLinSolFree(LS);         // Free linear solver
+  N_VDestroy(u);             // Free vectors
+  FreeUserData(udata);       // Free user data
   delete udata;
-  SUNContext_Free(&ctx); // Free context
-  flag = MPI_Finalize(); // Finalize MPI
+  (void) SUNAdaptController_Destroy(C);  // Free timestep adaptivity controller
+  SUNContext_Free(&ctx);     // Free context
+  flag = MPI_Finalize();     // Finalize MPI
   return 0;
 }
 
@@ -1347,12 +1335,12 @@ static int InitUserData(UserData* udata)
   udata->diagnostics = false;          // output diagnostics
 
   // Linear solver and preconditioner options
-  udata->pcg      = true;  // use PCG (true) or GMRES (false)
-  udata->prec     = true;  // enable preconditioning
-  udata->lsinfo   = false; // output residual history
-  udata->liniters = 20;    // max linear iterations
-  udata->msbp     = 0;     // use default (20 steps)
-  udata->epslin   = ZERO;  // use default (0.05)
+  udata->pcg       = true;       // use PCG (true) or GMRES (false)
+  udata->prec      = true;       // enable preconditioning
+  udata->lsinfo    = false;      // output residual history
+  udata->liniters  = 40;         // max linear iterations
+  udata->msbp      = 0;          // use default (20 steps)
+  udata->epslin    = ZERO;       // use default (0.05)
 
   // Inverse of Jacobian diagonal for preconditioner
   udata->d = NULL;

@@ -25,13 +25,15 @@
 #include "test_sunmatrix.h"
 
 #if defined(USE_HIP)
-#define REF_OR_OMP_OR_HIP_OR_CUDA(a, b, c, d) c
+#define REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(a, b, c, d, e) c
 #elif defined(USE_CUDA)
-#define REF_OR_OMP_OR_HIP_OR_CUDA(a, b, c, d) d
+#define REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(a, b, c, d, e) d
+#elif defined(USE_DPCPP)
+#define REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(a, b, c, d, e) e
 #elif defined(USE_OMP)
-#define REF_OR_OMP_OR_HIP_OR_CUDA(a, b, c, d) b
+#define REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(a, b, c, d, e) b
 #else
-#define REF_OR_OMP_OR_HIP_OR_CUDA(a, b, c, d) a
+#define REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(a, b, c, d, e) a
 #endif
 
 #if defined(USE_CUDA)
@@ -40,6 +42,8 @@
 #include <nvector/nvector_hip.h>
 #elif defined(USE_OMP)
 #include <nvector/nvector_openmp.h>
+#elif defined(USE_DPCPP)
+#include <nvector/nvector_sycl.h>
 #else
 #include <nvector/nvector_serial.h>
 #endif
@@ -93,14 +97,17 @@ int main(int argc, char* argv[])
   sundials::Context sunctx;
 
   auto gko_exec{
-    REF_OR_OMP_OR_HIP_OR_CUDA(gko::ReferenceExecutor::create(),
-                              gko::OmpExecutor::create(),
-                              gko::HipExecutor::create(0,
-                                                       gko::OmpExecutor::create(),
-                                                       true),
-                              gko::CudaExecutor::create(0,
-                                                        gko::OmpExecutor::create(),
-                                                        true))};
+    REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(gko::ReferenceExecutor::create(),
+                                      gko::OmpExecutor::create(),
+                                      gko::HipExecutor::create(0,
+                                                               gko::OmpExecutor::create(),
+                                                               true),
+                                      gko::CudaExecutor::create(0,
+                                                                gko::OmpExecutor::create(),
+                                                                true),
+                                      gko::DpcppExecutor::
+                                        create(0,
+                                               gko::ReferenceExecutor::create()))};
 
   /* check input and set vector length */
   if (argc < 4)
@@ -155,14 +162,20 @@ int main(int argc, char* argv[])
   std::uniform_real_distribution<sunrealtype>
     distribution{0.0, static_cast<sunrealtype>(matrows)};
 
-  N_Vector x{REF_OR_OMP_OR_HIP_OR_CUDA(N_VNew_Serial(matcols, sunctx),
-                                       N_VNew_OpenMP(matcols, num_threads, sunctx),
-                                       N_VNew_Hip(matcols, sunctx),
-                                       N_VNew_Cuda(matcols, sunctx))};
-  N_Vector y{REF_OR_OMP_OR_HIP_OR_CUDA(N_VNew_Serial(matrows, sunctx),
-                                       N_VNew_OpenMP(matrows, num_threads, sunctx),
-                                       N_VNew_Hip(matrows, sunctx),
-                                       N_VNew_Cuda(matrows, sunctx))};
+  N_Vector x{
+    REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(N_VNew_Serial(matcols, sunctx),
+                                      N_VNew_OpenMP(matcols, num_threads, sunctx),
+                                      N_VNew_Hip(matcols, sunctx),
+                                      N_VNew_Cuda(matcols, sunctx),
+                                      N_VNew_Sycl(matcols, gko_exec->get_queue(),
+                                                  sunctx))};
+  N_Vector y{
+    REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(N_VNew_Serial(matrows, sunctx),
+                                      N_VNew_OpenMP(matrows, num_threads, sunctx),
+                                      N_VNew_Hip(matrows, sunctx),
+                                      N_VNew_Cuda(matrows, sunctx),
+                                      N_VNew_Sycl(matrows, gko_exec->get_queue(),
+                                                  sunctx))};
 
   auto matrix_dim{gko::dim<2>(matrows, matcols)};
   auto gko_matdata{gko::matrix_data<sunrealtype, sunindextype>(matrix_dim,
@@ -180,7 +193,9 @@ int main(int argc, char* argv[])
   {
     xdata[i] = distribution(generator);
   }
-  REF_OR_OMP_OR_HIP_OR_CUDA(, , N_VCopyToDevice_Hip(x), N_VCopyToDevice_Cuda(x));
+  REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(, , N_VCopyToDevice_Hip(x),
+                                    N_VCopyToDevice_Cuda(x),
+                                    N_VCopyToDevice_Sycl(x));
 
   /* Compute true solution */
   SUNMatrix Aref{SUNDenseMatrix(matrows, matcols, sunctx)};
@@ -200,9 +215,11 @@ int main(int argc, char* argv[])
     auto Avalues{gko_matrix->get_const_values()};
     for (auto irow = 0; irow < gko_matrix->get_size()[0]; irow++)
     {
-      for (auto inz = Arowptrs[irow]; inz < Arowptrs[irow + 1]; inz++)
+      for (auto inz = gko_exec->copy_val_to_host(Arowptrs + irow);
+           inz < gko_exec->copy_val_to_host(Arowptrs + irow + 1); inz++)
       {
-        SM_ELEMENT_D(Aref, irow, Acolidxs[inz]) = Avalues[inz];
+        SM_ELEMENT_D(Aref, irow, gko_exec->copy_val_to_host(Acolidxs + inz)) =
+          gko_exec->copy_val_to_host(Avalues + inz);
       }
     }
 
@@ -224,11 +241,13 @@ int main(int argc, char* argv[])
         gko::matrix_data<sunrealtype, sunindextype>::diag(matrix_dim, 1.0));
     }
 
+    auto Avalues{gko_matrix->get_const_values()};
     for (sunindextype j = 0; j < matcols; j++)
     {
       for (sunindextype i = 0; i < matrows; i++)
       {
-        SM_ELEMENT_D(Aref, i, j) = gko_matrix->at(i, j);
+        SM_ELEMENT_D(Aref, i, j) =
+          gko_exec->copy_val_to_host(Avalues + i * gko_matrix->get_stride() + j);
       }
     }
 
@@ -243,9 +262,9 @@ int main(int argc, char* argv[])
   }
   SUNMatMatvec_Dense(Aref, x, y);
   SUNMatDestroy(Aref);
-
-  REF_OR_OMP_OR_HIP_OR_CUDA(, , N_VCopyToDevice_Hip(y), N_VCopyToDevice_Cuda(y));
-
+  REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(, , N_VCopyToDevice_Hip(y),
+                                    N_VCopyToDevice_Cuda(y),
+                                    N_VCopyToDevice_Sycl(y));
   /* SUNMatrix Tests */
   fails += Test_SUNMatGetID(*A, SUNMATRIX_GINKGO, 0);
   fails += Test_SUNMatClone(*A, 0);
@@ -287,22 +306,24 @@ int check_matrix_csr(SUNMatrix A, SUNMatrix B, realtype tol)
     static_cast<sundials::ginkgo::Matrix<GkoCsrMat>*>(A->content)->GkoMtx()};
   auto Bmat{
     static_cast<sundials::ginkgo::Matrix<GkoCsrMat>*>(B->content)->GkoMtx()};
-  auto Arowptrs{Amat->get_const_row_ptrs()};
-  auto Acolidxs{Amat->get_const_col_idxs()};
-  auto Avalues{Amat->get_const_values()};
-  auto Browptrs{Bmat->get_const_row_ptrs()};
-  auto Bcolidxs{Bmat->get_const_col_idxs()};
-  auto Bvalues{Bmat->get_const_values()};
+  auto Amat_ref = Amat->clone(Amat->get_executor()->get_master());
+  auto Bmat_ref = Bmat->clone(Bmat->get_executor()->get_master());
+  auto Arowptrs{Amat_ref->get_const_row_ptrs()};
+  auto Acolidxs{Amat_ref->get_const_col_idxs()};
+  auto Avalues{Amat_ref->get_const_values()};
+  auto Browptrs{Bmat_ref->get_const_row_ptrs()};
+  auto Bcolidxs{Bmat_ref->get_const_col_idxs()};
+  auto Bvalues{Bmat_ref->get_const_values()};
 
   /* check lengths */
-  if (Amat->get_size() != Bmat->get_size())
+  if (Amat_ref->get_size() != Bmat_ref->get_size())
   {
     std::cerr << ">>> ERROR: check_matrix: Different data array lengths \n";
     return 1;
   }
 
   /* compare data */
-  for (sunindextype irow = 0; irow < Amat->get_size()[0]; irow++)
+  for (sunindextype irow = 0; irow < Amat_ref->get_size()[0]; irow++)
   {
     for (sunindextype inz = Arowptrs[irow]; inz < Arowptrs[irow + 1]; inz++)
     {
@@ -320,6 +341,8 @@ int check_matrix_dense(SUNMatrix A, SUNMatrix B, realtype tol)
     static_cast<sundials::ginkgo::Matrix<GkoDenseMat>*>(A->content)->GkoMtx()};
   auto Bmat{
     static_cast<sundials::ginkgo::Matrix<GkoDenseMat>*>(B->content)->GkoMtx()};
+  auto Amat_ref = Amat->clone(Amat->get_executor()->get_master());
+  auto Bmat_ref = Bmat->clone(Bmat->get_executor()->get_master());
   auto rows{Amat->get_size()[0]};
   auto cols{Amat->get_size()[1]};
 
@@ -335,7 +358,7 @@ int check_matrix_dense(SUNMatrix A, SUNMatrix B, realtype tol)
   {
     for (sunindextype j = 0; j < cols; j++)
     {
-      failure += SUNRCompareTol(Amat->at(i, j), Bmat->at(i, j), tol);
+      failure += SUNRCompareTol(Amat_ref->at(i, j), Bmat_ref->at(i, j), tol);
     }
   }
 
@@ -354,12 +377,13 @@ int check_matrix_entry_csr(SUNMatrix A, realtype val, realtype tol)
   int failure{0};
   auto Amat{
     static_cast<sundials::ginkgo::Matrix<GkoCsrMat>*>(A->content)->GkoMtx()};
-  auto Arowptrs{Amat->get_const_row_ptrs()};
-  auto Acolidxs{Amat->get_const_col_idxs()};
-  auto Avalues{Amat->get_const_values()};
+  auto Amat_ref = Amat->clone(Amat->get_executor()->get_master());
+  auto Arowptrs{Amat_ref->get_const_row_ptrs()};
+  auto Acolidxs{Amat_ref->get_const_col_idxs()};
+  auto Avalues{Amat_ref->get_const_values()};
 
   /* compare data */
-  for (sunindextype irow = 0; irow < Amat->get_size()[0]; irow++)
+  for (sunindextype irow = 0; irow < Amat_ref->get_size()[0]; irow++)
   {
     for (sunindextype inz = Arowptrs[irow]; inz < Arowptrs[irow + 1]; inz++)
     {
@@ -384,17 +408,18 @@ int check_matrix_entry_dense(SUNMatrix A, realtype val, realtype tol)
   auto rows{Amat->get_size()[0]};
   auto cols{Amat->get_size()[1]};
 
+  auto Amat_ref = Amat->clone(Amat->get_executor()->get_master());
   /* compare data */
   for (sunindextype i = 0; i < rows; i++)
   {
     for (sunindextype j = 0; j < cols; j++)
     {
-      int check = SUNRCompareTol(Amat->at(i, j), val, tol);
+      int check = SUNRCompareTol(Amat_ref->at(i, j), val, tol);
       if (check)
       {
-        std::cerr << "  actual[" << i << "," << j << "] = " << Amat->at(i, j)
-                  << " != " << val
-                  << " (err = " << SUNRabs(Amat->at(i, j) - val) << ")\n";
+        std::cerr << "  actual[" << i << "," << j
+                  << "] = " << Amat_ref->at(i, j) << " != " << val
+                  << " (err = " << SUNRabs(Amat_ref->at(i, j) - val) << ")\n";
         failure += check;
       }
     }
@@ -418,10 +443,12 @@ extern "C" int check_vector(N_Vector expected, N_Vector computed, realtype tol)
   int failure{0};
 
   /* copy vectors to host */
-  REF_OR_OMP_OR_HIP_OR_CUDA(, , N_VCopyFromDevice_Hip(computed),
-                            N_VCopyFromDevice_Cuda(computed));
-  REF_OR_OMP_OR_HIP_OR_CUDA(, , N_VCopyFromDevice_Hip(expected),
-                            N_VCopyFromDevice_Cuda(expected));
+  REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(, , N_VCopyFromDevice_Hip(computed),
+                                    N_VCopyFromDevice_Cuda(computed),
+                                    N_VCopyFromDevice_Sycl(computed));
+  REF_OR_OMP_OR_HIP_OR_CUDA_OR_SYCL(, , N_VCopyFromDevice_Hip(expected),
+                                    N_VCopyFromDevice_Cuda(expected),
+                                    N_VCopyFromDevice_Sycl(expected));
 
   /* get vector data */
   auto xdata{N_VGetArrayPointer(computed)};
@@ -439,9 +466,7 @@ extern "C" int check_vector(N_Vector expected, N_Vector computed, realtype tol)
 
   /* check vector data */
   for (sunindextype i = 0; i < xldata; i++)
-  {
     failure += SUNRCompareTol(xdata[i], ydata[i], tol);
-  }
 
   if (failure > ZERO)
   {
@@ -449,7 +474,6 @@ extern "C" int check_vector(N_Vector expected, N_Vector computed, realtype tol)
     for (sunindextype i = 0; i < xldata; i++)
     {
       if (SUNRCompareTol(xdata[i], ydata[i], tol) != 0)
-      {
         std::cerr << "  computed[" << i << "] = " << xdata[i]
                   << " != " << ydata[i]
                   << " (err = " << SUNRabs(xdata[i] - ydata[i]) << ")\n";
@@ -498,5 +522,16 @@ extern "C" booleantype is_square(SUNMatrix A)
 
 extern "C" void sync_device(SUNMatrix A)
 {
-  REF_OR_OMP_OR_HIP_OR_CUDA(, , hipDeviceSynchronize(), cudaDeviceSynchronize());
+  if (using_csr_matrix_type)
+  {
+    static_cast<sundials::ginkgo::Matrix<GkoCsrMat>*>(A->content)
+      ->GkoExec()
+      ->synchronize();
+  }
+  else if (using_dense_matrix_type)
+  {
+    static_cast<sundials::ginkgo::Matrix<GkoDenseMat>*>(A->content)
+      ->GkoExec()
+      ->synchronize();
+  }
 }

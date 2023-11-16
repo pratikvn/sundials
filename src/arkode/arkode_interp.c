@@ -149,10 +149,6 @@ ARKInterp arkInterpCreate_Hermite(void* arkode_mem, int degree)
   /* set maximum interpolant degree */
   content->degree = SUNMIN(ARK_INTERP_MAX_DEGREE, degree);
 
-  /* set ynew and fnew pointers to ark_mem->yn and ark_mem->fn, respectively */
-  content->ynew = ark_mem->yn;
-  content->fnew = ark_mem->fn;
-
   /* update workspace sizes */
   ark_mem->lrw += 2;
   ark_mem->liw += 5;
@@ -207,10 +203,6 @@ int arkInterpResize_Hermite(void* arkode_mem, ARKInterp interp,
   {
     return (ARK_MEM_FAIL);
   }
-
-  /* update ynew and fnew pointers */
-  HINT_YNEW(interp) = ark_mem->yn;
-  HINT_FNEW(interp) = ark_mem->fn;
 
   /* reinitialize time values */
   HINT_TOLD(interp) = ark_mem->tcur;
@@ -299,13 +291,9 @@ void arkInterpPrintMem_Hermite(ARKInterp interp, FILE* outfile)
     fprintf(outfile, "arkode_interp (Hermite): h = %" RSYM "\n", HINT_H(interp));
 #ifdef SUNDIALS_DEBUG_PRINTVEC
     fprintf(outfile, "arkode_interp (Hermite): fold:\n");
-    SUNCheckCallLastErrNoRet(N_VPrintFile(HINT_FOLD(interp), outfile));
-    fprintf(outfile, "arkode_interp (Hermite): fnew:\n");
-    SUNCheckCallLastErrNoRet(N_VPrintFile(HINT_FNEW(interp), outfile));
+    N_VPrintFile(HINT_FOLD(interp), outfile);
     fprintf(outfile, "arkode_interp (Hermite): yold:\n");
-    SUNCheckCallLastErrNoRet(N_VPrintFile(HINT_YOLD(interp), outfile));
-    fprintf(outfile, "arkode_interp (Hermite): ynew:\n");
-    SUNCheckCallLastErrNoRet(N_VPrintFile(HINT_YNEW(interp), outfile));
+    N_VPrintFile(HINT_YOLD(interp), outfile);
     fprintf(outfile, "arkode_interp (Hermite): fa:\n");
     SUNCheckCallLastErrNoRet(N_VPrintFile(HINT_FA(interp), outfile));
     fprintf(outfile, "arkode_interp (Hermite): fb:\n");
@@ -429,13 +417,7 @@ int arkInterpInit_Hermite(void* arkode_mem, ARKInterp interp, realtype tnew)
     }
   }
 
-  /* copy current solution into yold */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, ark_mem->yn, HINT_YOLD(interp)));
-
-  /* copy fnew into fold */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, HINT_FNEW(interp), HINT_FOLD(interp)));
-
-  /* signal that fullrhs is required after each step */
+  /* signal that a full RHS data is required for interpolation */
   ark_mem->call_fullrhs = SUNTRUE;
 
   /* return with success */
@@ -450,6 +432,7 @@ int arkInterpInit_Hermite(void* arkode_mem, ARKInterp interp, realtype tnew)
   ---------------------------------------------------------------*/
 int arkInterpUpdate_Hermite(void* arkode_mem, ARKInterp interp, realtype tnew)
 {
+  int retval;
   ARKodeMem ark_mem;
 
   /* access ARKodeMem structure */
@@ -458,9 +441,19 @@ int arkInterpUpdate_Hermite(void* arkode_mem, ARKInterp interp, realtype tnew)
 
   SUNAssignSUNCTX(ark_mem->sunctx);
 
+  /* call full RHS if needed -- called just BEFORE the end of a step, so yn has
+     NOT been updated to ycur yet */
+  if (!(ark_mem->fn_is_current))
+  {
+    retval = ark_mem->step_fullrhs(ark_mem, ark_mem->tn, ark_mem->yn,
+                                   ark_mem->fn, ARK_FULLRHS_START);
+    if (retval) { return ARK_RHSFUNC_FAIL; }
+    ark_mem->fn_is_current = SUNTRUE;
+  }
+
   /* copy ynew and fnew into yold and fold, respectively */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, HINT_YNEW(interp), HINT_YOLD(interp)));
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, HINT_FNEW(interp), HINT_FOLD(interp)));
+  N_VScale(ONE, ark_mem->yn, HINT_YOLD(interp));
+  N_VScale(ONE, ark_mem->fn, HINT_FOLD(interp));
 
   /* update time values */
   HINT_TOLD(interp) = HINT_TNEW(interp);
@@ -533,11 +526,21 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp, realtype tau,
   q = SUNMAX(order, 0);               /* respect lower bound  */
   q = SUNMIN(q, HINT_DEGREE(interp)); /* respect max possible */
 
-#if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_INFO
-  SUNLogger_QueueMsg(ark_mem->sunctx->logger, SUN_LOGLEVEL_INFO,
+#if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
                      "ARKODE::arkInterpEvaluate_Hermite", "interp-eval",
                      "tau = %" RSYM ", d = %i, q = %i", tau, d, q);
 #endif
+
+  /* call full RHS if needed -- called just AFTER the end of a step, so yn has
+     been updated to ycur */
+  if (!(ark_mem->fn_is_current))
+  {
+    retval = ark_mem->step_fullrhs(ark_mem, ark_mem->tn, ark_mem->yn,
+                                   ark_mem->fn, ARK_FULLRHS_END);
+    if (retval) { return ARK_RHSFUNC_FAIL; }
+    ark_mem->fn_is_current = SUNTRUE;
+  }
 
   /* error on illegal d */
   if (d < 0)
@@ -555,11 +558,10 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp, realtype tau,
   }
 
   /* build polynomial based on order */
-  switch (q)
-  {
-  case (0): /* constant interpolant, yout = 0.5*(yn+yp) */
-    SUNCheckCallLastErrNoRet(
-      N_VLinearSum(HALF, HINT_YOLD(interp), HALF, HINT_YNEW(interp), yout));
+  switch (q) {
+
+  case(0):    /* constant interpolant, yout = 0.5*(yn+yp) */
+    N_VLinearSum(HALF, HINT_YOLD(interp), HALF, ark_mem->yn, yout);
     break;
 
   case (1): /* linear interpolant */
@@ -568,13 +570,7 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp, realtype tau,
       a0 = -tau;
       a1 = ONE + tau;
     }
-    else
-    { /* d=1 */
-      a0 = -ONE / h;
-      a1 = ONE / h;
-    }
-    SUNCheckCallLastErrNoRet(
-      N_VLinearSum(a0, HINT_YOLD(interp), a1, HINT_YNEW(interp), yout));
+    N_VLinearSum(a0, HINT_YOLD(interp), a1, ark_mem->yn, yout);
     break;
 
   case (2): /* quadratic interpolant */
@@ -584,21 +580,9 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp, realtype tau,
       a[1] = ONE - tau2;
       a[2] = h * (tau2 + tau);
     }
-    else if (d == 1)
-    {
-      a[0] = TWO * tau / h;
-      a[1] = -TWO * tau / h;
-      a[2] = (ONE + TWO * tau);
-    }
-    else
-    { /* d == 2 */
-      a[0] = TWO / h / h;
-      a[1] = -TWO / h / h;
-      a[2] = TWO / h;
-    }
-    X[0]   = HINT_YOLD(interp);
-    X[1]   = HINT_YNEW(interp);
-    X[2]   = HINT_FNEW(interp);
+    X[0] = HINT_YOLD(interp);
+    X[1] = ark_mem->yn;
+    X[2] = ark_mem->fn;
     retval = N_VLinearCombination(3, a, X, yout);
     SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
@@ -612,31 +596,10 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp, realtype tau,
       a[2] = h * (tau2 + tau3);
       a[3] = h * (tau + TWO * tau2 + tau3);
     }
-    else if (d == 1)
-    {
-      a[0] = SIX * (tau + tau2) / h;
-      a[1] = -SIX * (tau + tau2) / h;
-      a[2] = TWO * tau + THREE * tau2;
-      a[3] = ONE + FOUR * tau + THREE * tau2;
-    }
-    else if (d == 2)
-    {
-      a[0] = SIX * (ONE + TWO * tau) / h2;
-      a[1] = -SIX * (ONE + TWO * tau) / h2;
-      a[2] = (TWO + SIX * tau) / h;
-      a[3] = (FOUR + SIX * tau) / h;
-    }
-    else
-    { /* d == 3 */
-      a[0] = TWELVE / h3;
-      a[1] = -TWELVE / h3;
-      a[2] = SIX / h2;
-      a[3] = SIX / h2;
-    }
-    X[0]   = HINT_YOLD(interp);
-    X[1]   = HINT_YNEW(interp);
-    X[2]   = HINT_FOLD(interp);
-    X[3]   = HINT_FNEW(interp);
+    X[0] = HINT_YOLD(interp);
+    X[1] = ark_mem->yn;
+    X[2] = HINT_FOLD(interp);
+    X[3] = ark_mem->fn;
     retval = N_VLinearCombination(4, a, X, yout);
     SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
@@ -665,44 +628,11 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp, realtype tau,
       a[3] = h * (tau + TWO * tau2 + tau3);
       a[4] = h * RCONST(27.0) * FOURTH * (-tau4 - TWO * tau3 - tau2);
     }
-    else if (d == 1)
-    {
-      a[0] = (-TWELVE * tau - RCONST(48.0) * tau2 - RCONST(36.0) * tau3) / h;
-      a[1] = (TWELVE * tau + RCONST(48.0) * tau2 + RCONST(36.0) * tau3) / h;
-      a[2] = HALF * (-FIVE * tau - RCONST(21.0) * tau2 - RCONST(18.0) * tau3);
-      a[3] = (ONE + FOUR * tau + THREE * tau2);
-      a[4] = -RCONST(27.0) * HALF * (TWO * tau3 + THREE * tau2 + tau);
-    }
-    else if (d == 2)
-    {
-      a[0] = (-TWELVE - RCONST(96.0) * tau - RCONST(108.0) * tau2) / h2;
-      a[1] = (TWELVE + RCONST(96.0) * tau + RCONST(108.0) * tau2) / h2;
-      a[2] = (-FIVE * HALF - RCONST(21.0) * tau - RCONST(27.0) * tau2) / h;
-      a[3] = (FOUR + SIX * tau) / h;
-      a[4] = (-RCONST(27.0) * HALF - RCONST(81.0) * tau - RCONST(81.0) * tau2) /
-             h;
-    }
-    else if (d == 3)
-    {
-      a[0] = (-RCONST(96.0) - RCONST(216.0) * tau) / h3;
-      a[1] = (RCONST(96.0) + RCONST(216.0) * tau) / h3;
-      a[2] = (-RCONST(21.0) - RCONST(54.0) * tau) / h2;
-      a[3] = SIX / h2;
-      a[4] = (-RCONST(81.0) - RCONST(162.0) * tau) / h2;
-    }
-    else
-    { /* d == 4 */
-      a[0] = -RCONST(216.0) / h4;
-      a[1] = RCONST(216.0) / h4;
-      a[2] = -RCONST(54.0) / h3;
-      a[3] = ZERO;
-      a[4] = -RCONST(162.0) / h3;
-    }
-    X[0]   = HINT_YOLD(interp);
-    X[1]   = HINT_YNEW(interp);
-    X[2]   = HINT_FOLD(interp);
-    X[3]   = HINT_FNEW(interp);
-    X[4]   = HINT_FA(interp);
+    X[0] = HINT_YOLD(interp);
+    X[1] = ark_mem->yn;
+    X[2] = HINT_FOLD(interp);
+    X[3] = ark_mem->fn;
+    X[4] = HINT_FA(interp);
     retval = N_VLinearCombination(5, a, X, yout);
     SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
@@ -820,12 +750,12 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp, realtype tau,
       a[4] = RCONST(2430.0) / h4;
       a[5] = a[4];
     }
-    X[0]   = HINT_YOLD(interp);
-    X[1]   = HINT_YNEW(interp);
-    X[2]   = HINT_FOLD(interp);
-    X[3]   = HINT_FNEW(interp);
-    X[4]   = HINT_FA(interp);
-    X[5]   = HINT_FB(interp);
+    X[0] = HINT_YOLD(interp);
+    X[1] = ark_mem->yn;
+    X[2] = HINT_FOLD(interp);
+    X[3] = ark_mem->fn;
+    X[4] = HINT_FA(interp);
+    X[5] = HINT_FB(interp);
     retval = N_VLinearCombination(6, a, X, yout);
     SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
@@ -1192,8 +1122,9 @@ int arkInterpInit_Lagrange(void* arkode_mem, ARKInterp I, realtype tnew)
     }
   }
 
-  /* update allocated size if necesary */
-  if (LINT_NMAX(I) > LINT_NMAXALLOC(I)) { LINT_NMAXALLOC(I) = LINT_NMAX(I); }
+  /* update allocated size if necessary */
+  if (LINT_NMAX(I) > LINT_NMAXALLOC(I))
+    LINT_NMAXALLOC(I) = LINT_NMAX(I);
 
   /* zero out history (to be safe) */
   for (i = 0; i < LINT_NMAXALLOC(I); i++) { LINT_TJ(I, i) = RCONST(0.0); }
@@ -1326,8 +1257,8 @@ int arkInterpEvaluate_Lagrange(void* arkode_mem, ARKInterp I, realtype tau,
   q = SUNMAX(degree, 0);    /* respect lower bound */
   q = SUNMIN(q, nhist - 1); /* respect max possible */
 
-#if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_INFO
-  SUNLogger_QueueMsg(ark_mem->sunctx->logger, SUN_LOGLEVEL_INFO,
+#if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
                      "ARKODE::arkInterpEvaluate_Lagrange", "interp-eval",
                      "tau = %" RSYM ", d = %i, q = %i", tau, deriv, q);
 #endif

@@ -172,13 +172,12 @@ struct UserData
   int maxsteps;  // max number of steps between outputs
 
   // Linear solver and preconditioner settings
-  bool pcg;        // use PCG (true) or GMRES (false)
-  bool prec;       // preconditioner on/off
-  bool matvec;     // use hypre matrix-vector product
-  bool lsinfo;     // output residual history
-  int liniters;    // number of linear iterations
-  int msbp;        // max number of steps between preconditioner setups
-  realtype epslin; // linear solver tolerance factor
+  bool     pcg;       // use PCG (true) or GMRES (false)
+  bool     prec;      // preconditioner on/off
+  bool     matvec;    // use hypre matrix-vector product
+  int      liniters;  // number of linear iterations
+  int      msbp;      // max number of steps between preconditioner setups
+  realtype epslin;    // linear solver tolerance factor
 
   // hypre objects
   HYPRE_StructGrid grid;
@@ -328,11 +327,10 @@ int main(int argc, char* argv[])
   // Create a new scope so that sundials::Context is deleted
   // prior to the MPI_Finalize() call.
   {
-    UserData* udata    = NULL; // user data structure
-    N_Vector u         = NULL; // vector for storing solution
-    SUNLinearSolver LS = NULL; // linear solver memory structure
-    void* cvode_mem    = NULL; // CVODE memory structure
-    FILE* diagfp       = NULL; // diagnostics output file
+    UserData *udata    = NULL;  // user data structure
+    N_Vector u         = NULL;  // vector for storing solution
+    SUNLinearSolver LS = NULL;  // linear solver memory structure
+    void *cvode_mem    = NULL;  // CVODE memory structure
 
     // SUNDIALS context
     sundials::Context sunctx(&comm_w);
@@ -360,14 +358,7 @@ int main(int argc, char* argv[])
     if (outproc)
     {
       flag = PrintUserData(udata);
-      if (check_flag(&flag, "PrintUserData", 1)) { return 1; }
-
-      // Open diagnostics output file
-      if (udata->lsinfo)
-      {
-        diagfp = fopen("diagnostics.txt", "w");
-        if (check_flag((void*)diagfp, "fopen", 0)) { return 1; }
-      }
+      if (check_flag(&flag, "PrintUserData", 1)) return 1;
     }
 
     // ------------------------
@@ -396,33 +387,12 @@ int main(int argc, char* argv[])
     if (udata->pcg)
     {
       LS = SUNLinSol_PCG(u, prectype, udata->liniters, sunctx);
-      if (check_flag((void*)LS, "SUNLinSol_PCG", 0)) { return 1; }
-
-      if (udata->lsinfo && outproc)
-      {
-        flag = SUNLinSolSetPrintLevel_PCG(LS, 1);
-        if (check_flag(&flag, "SUNLinSolSetPrintLevel_PCG", 1)) { return (1); }
-
-        flag = SUNLinSolSetInfoFile_PCG(LS, diagfp);
-        if (check_flag(&flag, "SUNLinSolSetInfoFile_PCG", 1)) { return (1); }
-      }
+      if (check_flag((void *) LS, "SUNLinSol_PCG", 0)) return 1;
     }
     else
     {
       LS = SUNLinSol_SPGMR(u, prectype, udata->liniters, sunctx);
-      if (check_flag((void*)LS, "SUNLinSol_SPGMR", 0)) { return 1; }
-
-      if (udata->lsinfo && outproc)
-      {
-        flag = SUNLinSolSetPrintLevel_SPGMR(LS, 1);
-        if (check_flag(&flag, "SUNLinSolSetPrintLevel_SPGMR", 1))
-        {
-          return (1);
-        }
-
-        flag = SUNLinSolSetInfoFile_SPGMR(LS, diagfp);
-        if (check_flag(&flag, "SUNLinSolSetInfoFile_SPGMR", 1)) { return (1); }
-      }
+      if (check_flag((void *) LS, "SUNLinSol_SPGMR", 0)) return 1;
     }
 
     // ---------------------
@@ -571,11 +541,9 @@ int main(int argc, char* argv[])
     // Clean up and return
     // --------------------
 
-    if (udata->lsinfo && outproc) { fclose(diagfp); }
-
-    CVodeFree(&cvode_mem); // Free integrator memory
-    SUNLinSolFree(LS);     // Free linear solver
-    N_VDestroy(u);         // Free vectors
+    CVodeFree(&cvode_mem);     // Free integrator memory
+    SUNLinSolFree(LS);         // Free linear solver
+    N_VDestroy(u);             // Free vectors
     delete udata;
   }
 
@@ -2076,13 +2044,12 @@ UserData::UserData(sundials::Context& sunctx) : sunctx(sunctx)
   maxsteps = 0;              // use default
 
   // Linear solver and preconditioner options
-  pcg      = true;  // use PCG (true) or GMRES (false)
-  prec     = true;  // enable preconditioning
-  matvec   = false; // use hypre matrix-vector product
-  lsinfo   = false; // output residual history
-  liniters = 10;    // max linear iterations
-  msbp     = 0;     // use default (20 steps)
-  epslin   = ZERO;  // use default (0.05)
+  pcg       = true;       // use PCG (true) or GMRES (false)
+  prec      = true;       // enable preconditioning
+  matvec    = false;      // use hypre matrix-vector product
+  liniters  = 10;         // max linear iterations
+  msbp      = 0;          // use default (20 steps)
+  epslin    = ZERO;       // use default (0.05)
 
   // hypre objects
   grid    = NULL;
@@ -2207,9 +2174,14 @@ static int ReadInputs(int* argc, char*** argv, UserData* udata, bool outproc)
     else if (arg == "--rtol") { udata->rtol = stod((*argv)[arg_idx++]); }
     else if (arg == "--atol") { udata->atol = stod((*argv)[arg_idx++]); }
     // Linear solver settings
-    else if (arg == "--gmres") { udata->pcg = false; }
-    else if (arg == "--matvec") { udata->matvec = true; }
-    else if (arg == "--lsinfo") { udata->lsinfo = true; }
+    else if (arg == "--gmres")
+    {
+      udata->pcg = false;
+    }
+    else if (arg == "--matvec")
+    {
+      udata->matvec = true;
+    }
     else if (arg == "--liniters")
     {
       udata->liniters = stoi((*argv)[arg_idx++]);
@@ -2342,7 +2314,6 @@ static void InputHelp()
   cout << "  --atol <atol>           : absoltue tolerance" << endl;
   cout << "  --gmres                 : use GMRES linear solver" << endl;
   cout << "  --matvec                : use hypre matrix-vector product" << endl;
-  cout << "  --lsinfo                : output residual history" << endl;
   cout << "  --liniters <iters>      : max number of iterations" << endl;
   cout << "  --epslin <factor>       : linear tolerance factor" << endl;
   cout << "  --noprec                : disable preconditioner" << endl;

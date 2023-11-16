@@ -22,6 +22,7 @@
 #include <sunmatrix/sunmatrix_cusparse.h>
 
 #include "sundials_cuda.h"
+#include "sundials_cusolver.h"
 #include "sundials_debug.h"
 
 #define ZERO RCONST(0.0)

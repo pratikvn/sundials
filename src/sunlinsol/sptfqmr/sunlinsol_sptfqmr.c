@@ -904,21 +904,3 @@ SUNErrCode SUNLinSolFree_SPTFQMR(SUNLinearSolver S)
   S = NULL;
   return SUN_SUCCESS;
 }
-
-SUNErrCode SUNLinSolSetInfoFile_SPTFQMR(SUNLinearSolver S, FILE* info_file)
-{
-  SPTFQMR_CONTENT(S)->info_file = info_file;
-  return SUN_SUCCESS;
-}
-
-SUNErrCode SUNLinSolSetPrintLevel_SPTFQMR(SUNLinearSolver S, int print_level)
-{
-  SUNAssignSUNCTX(S->sunctx);
-
-  /* check for valid print level */
-  SUNAssert(print_level >= 0 && print_level <= 1, SUN_ERR_ARG_OUTOFRANGE);
-
-  SPTFQMR_CONTENT(S)->print_level = print_level;
-
-  return SUN_SUCCESS;
-}

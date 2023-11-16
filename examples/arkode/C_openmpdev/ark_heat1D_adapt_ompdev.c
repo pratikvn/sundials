@@ -116,12 +116,13 @@ int main(void)
   int iout = 0;
 
   /* general problem variables */
-  int flag;                  /* reusable error-checking flag */
-  N_Vector y         = NULL; /* empty vector for storing solution */
-  N_Vector y2        = NULL; /* empty vector for storing solution */
-  N_Vector yt        = NULL; /* empty vector for swapping */
-  SUNLinearSolver LS = NULL; /* empty linear solver object */
-  void* arkode_mem   = NULL; /* empty ARKode memory structure */
+  int flag;                    /* reusable error-checking flag */
+  N_Vector y  = NULL;          /* empty vector for storing solution */
+  N_Vector y2 = NULL;          /* empty vector for storing solution */
+  N_Vector yt = NULL;          /* empty vector for swapping */
+  SUNLinearSolver LS = NULL;   /* empty linear solver object */
+  void *arkode_mem = NULL;     /* empty ARKode memory structure */
+  SUNAdaptController C = NULL; /* empty controller object */
   FILE *XFID, *UFID;
   realtype t, olddt, newdt;
   realtype* xnew_host = NULL;
@@ -195,6 +196,12 @@ int main(void)
   if (check_flag(&flag, "ARKStepSetAdaptivityMethod", 1)) { return 1; }
   flag = ARKStepSetPredictorMethod(arkode_mem, 0); /* Set predictor method */
   if (check_flag(&flag, "ARKStepSetPredictorMethod", 1)) { return 1; }
+
+  /* Specify I-controller with default parameters */
+  C = SUNAdaptController_I(ctx);
+  if (check_flag((void *)C, "SUNAdaptController_I", 0)) return 1;
+  flag = ARKStepSetAdaptController(arkode_mem, C);
+  if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
 
   /* Specify linearly implicit RHS, with time-dependent Jacobian */
   flag = ARKStepSetLinear(arkode_mem, 1);
@@ -329,9 +336,10 @@ int main(void)
   free(udata->x_host); /* Free user data */
   omp_target_free(udata->x_dev, dev);
   free(udata);
-  ARKStepFree(&arkode_mem); /* Free integrator memory */
-  SUNLinSolFree(LS);        /* Free linear solver */
-  SUNContext_Free(&ctx);    /* Free context */
+  ARKStepFree(&arkode_mem);    /* Free integrator memory */
+  SUNLinSolFree(LS);           /* Free linear solver */
+  (void) SUNAdaptController_Destroy(C);  /* Free time adaptivity controller */
+  SUNContext_Free(&ctx);       /* Free context */
 
   return 0;
 }

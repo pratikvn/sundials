@@ -20,15 +20,20 @@
 #if SUNDIALS_MPI_ENABLED
 #include <mpi.h>
 #include <sundials/sundials_mpi_types.h>
-#elif defined(SUNDIALS_HAVE_POSIX_TIMERS)
-#if !defined(_POSIX_C_SOURCE) || (_POSIX_C_SOURCE < 200112L)
-#define _POSIX_C_SOURCE 200112L
+#endif
+
+#if defined(SUNDIALS_HAVE_POSIX_TIMERS)
+/* Minimum POSIX version needed for struct timespec and clock_monotonic */
+#if !defined(_POSIX_C_SOURCE) || (_POSIX_C_SOURCE < 199309L)
+#define _POSIX_C_SOURCE 199309L
 #endif
 #include <stddef.h>
 #include <time.h>
 #include <unistd.h>
+#elif defined(WIN32) || defined(_WIN32)
+#include <windows.h>
 #else
-#error Either MPI_Wtime or clock_getttime is required but neither were found
+#error SUNProfiler needs POSIX or Windows timers
 #endif
 
 #include <stdio.h>
@@ -41,12 +46,23 @@
 
 #define SUNDIALS_ROOT_TIMER ((const char*)"From profiler epoch")
 
+#if defined(SUNDIALS_HAVE_POSIX_TIMERS)
+typedef struct timespec sunTimespec;
+#else
+typedef struct _sunTimespec
+{
+  long int tv_sec;
+  long int tv_nsec;
+} sunTimespec;
+#endif
+
 /* Private functions */
 #if SUNDIALS_MPI_ENABLED
 static SUNErrCode sunCollectTimers(SUNProfiler p);
 #endif
 static void sunPrintTimers(int idx, SUNHashMapKeyValue kv, FILE* fp, void* pvoid);
 static int sunCompareTimes(const void* l, const void* r);
+static int sunclock_gettime_monotonic(sunTimespec* tp);
 
 /*
   sunTimerStruct.
@@ -55,13 +71,8 @@ static int sunCompareTimes(const void* l, const void* r);
 
 struct _sunTimerStruct
 {
-#if SUNDIALS_MPI_ENABLED
-  double tic;
-  double toc;
-#else
-  struct timespec* tic;
-  struct timespec* toc;
-#endif
+  sunTimespec* tic;
+  sunTimespec* toc;
   double average;
   double maximum;
   double elapsed;
@@ -73,19 +84,14 @@ typedef struct _sunTimerStruct sunTimerStruct;
 static sunTimerStruct* sunTimerStructNew(void)
 {
   sunTimerStruct* ts = (sunTimerStruct*)malloc(sizeof(sunTimerStruct));
-#if SUNDIALS_MPI_ENABLED
-  ts->tic = 0.0;
-  ts->toc = 0.0;
-#else
-  ts->tic          = (struct timespec*)malloc(sizeof(struct timespec));
-  ts->toc          = (struct timespec*)malloc(sizeof(struct timespec));
-  ts->tic->tv_sec  = 0;
-  ts->tic->tv_nsec = 0;
-#endif
-  ts->elapsed = 0.0;
-  ts->average = 0.0;
-  ts->maximum = 0.0;
-  ts->count   = 0;
+  ts->tic            = (sunTimespec*)malloc(sizeof(sunTimespec));
+  ts->toc            = (sunTimespec*)malloc(sizeof(sunTimespec));
+  ts->tic->tv_sec    = 0;
+  ts->tic->tv_nsec   = 0;
+  ts->elapsed        = 0.0;
+  ts->average        = 0.0;
+  ts->maximum        = 0.0;
+  ts->count          = 0;
   return ts;
 }
 
@@ -94,53 +100,47 @@ static void sunTimerStructFree(void* TS)
   sunTimerStruct* ts = (sunTimerStruct*)TS;
   if (ts)
   {
-#if !SUNDIALS_MPI_ENABLED
     if (ts->tic) free(ts->tic);
     if (ts->toc) free(ts->toc);
-#endif
     free(ts);
   }
 }
 
 static void sunStartTiming(sunTimerStruct* entry)
 {
-#if SUNDIALS_MPI_ENABLED
-  entry->tic = MPI_Wtime();
-#else
-  clock_gettime(CLOCK_MONOTONIC, entry->tic);
-#endif
+  sunclock_gettime_monotonic(entry->tic);
 }
 
 static void sunStopTiming(sunTimerStruct* entry)
 {
-#if SUNDIALS_MPI_ENABLED
-  entry->toc = MPI_Wtime();
-  entry->elapsed += entry->toc - entry->tic;
-#else
-  clock_gettime(CLOCK_MONOTONIC, entry->toc);
-  entry->elapsed += ((double)(entry->toc->tv_sec - entry->tic->tv_sec) +
-                     (double)(entry->toc->tv_nsec - entry->tic->tv_nsec) * 1e-9);
-#endif
-  /* Initialize to total value */
+  long s_difference  = 0;
+  long ns_difference = 0;
+
+  sunclock_gettime_monotonic(entry->toc);
+
+  s_difference  = entry->toc->tv_sec - entry->tic->tv_sec;
+  ns_difference = entry->toc->tv_nsec - entry->tic->tv_nsec;
+  if (ns_difference < 0)
+  {
+    s_difference--;
+    ns_difference = 1000000000 + entry->toc->tv_nsec - entry->tic->tv_nsec;
+  }
+
+  entry->elapsed += ((double)s_difference) + ((double)ns_difference) * 1e-9;
   entry->average = entry->elapsed;
   entry->maximum = entry->elapsed;
 }
 
 static void sunResetTiming(sunTimerStruct* entry)
 {
-#if SUNDIALS_MPI_ENABLED
-  entry->tic = 0.0;
-  entry->toc = 0.0;
-#else
   entry->tic->tv_sec  = 0;
   entry->tic->tv_nsec = 0;
   entry->toc->tv_sec  = 0;
   entry->toc->tv_nsec = 0;
-#endif
-  entry->elapsed = 0.0;
-  entry->average = 0.0;
-  entry->maximum = 0.0;
-  entry->count   = 0;
+  entry->elapsed      = 0.0;
+  entry->average      = 0.0;
+  entry->maximum      = 0.0;
+  entry->count        = 0;
 }
 
 /*
@@ -165,14 +165,15 @@ SUNErrCode SUNProfiler_Create(void* comm, const char* title, SUNProfiler* p)
   char* max_entries_env;
 
   *p = profiler = (SUNProfiler)malloc(sizeof(struct _SUNProfiler));
-  if (!profiler) { return SUN_ERR_MALLOC_FAIL; }
+
+  if (profiler == NULL) return (-1);
 
   profiler->overhead = sunTimerStructNew();
   if (!profiler->overhead)
   {
     free(profiler);
     *p = profiler = NULL;
-    return SUN_ERR_MALLOC_FAIL;
+    return (-1);
   }
 
   sunStartTiming(profiler->overhead);
@@ -189,7 +190,7 @@ SUNErrCode SUNProfiler_Create(void* comm, const char* title, SUNProfiler* p)
     sunTimerStructFree((void*)profiler->overhead);
     free(profiler);
     *p = profiler = NULL;
-    return SUN_ERR_MALLOC_FAIL;
+    return (-1);
   }
 
   /* Attach the comm, duplicating it if MPI is used. */
@@ -215,11 +216,13 @@ SUNErrCode SUNProfiler_Create(void* comm, const char* title, SUNProfiler* p)
   SUNDIALS_MARK_BEGIN(profiler, SUNDIALS_ROOT_TIMER);
   sunStopTiming(profiler->overhead);
 
-  return SUN_SUCCESS;
+  return (0);
 }
 
 SUNErrCode SUNProfiler_Free(SUNProfiler* p)
 {
+  if (p == NULL) return (-1);
+
   SUNDIALS_MARK_END(*p, SUNDIALS_ROOT_TIMER);
 
   if (*p)
@@ -238,7 +241,7 @@ SUNErrCode SUNProfiler_Free(SUNProfiler* p)
   }
   *p = NULL;
 
-  return SUN_SUCCESS;
+  return (0);
 }
 
 SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
@@ -246,6 +249,7 @@ SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
   SUNErrCode ier;
   sunTimerStruct* timer = NULL;
 
+  if (p == NULL) return (-1);
   sunStartTiming(p->overhead);
 
   if (SUNHashMap_GetValue(p->map, name, (void**)&timer))
@@ -254,10 +258,18 @@ SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
     ier   = SUNHashMap_Insert(p->map, name, (void*)timer);
     if (ier)
     {
+#ifdef SUNDIALS_DEBUG
+      slen   = strlen(name);
+      errmsg = malloc(slen * sizeof(char));
+      snprintf(errmsg,
+               128 + slen, "(((( [ERROR] in SUNProfilerBegin: SUNHashMapInsert failed with code %d while inserting %s))))\n",
+               ier, name);
+      SUNDIALS_DEBUG_PRINT(errmsg);
+      free(errmsg);
+#endif
       sunTimerStructFree(timer);
       sunStopTiming(p->overhead);
-      if (ier == -1) { return SUN_ERR_PROFILER_MAPINSERT; }
-      if (ier == -2) { return SUN_ERR_PROFILER_MAPFULL; }
+      return (-1);
     }
   }
 
@@ -265,7 +277,7 @@ SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
   sunStartTiming(timer);
 
   sunStopTiming(p->overhead);
-  return SUN_SUCCESS;
+  return (0);
 }
 
 SUNErrCode SUNProfiler_End(SUNProfiler p, const char* name)
@@ -273,20 +285,55 @@ SUNErrCode SUNProfiler_End(SUNProfiler p, const char* name)
   SUNErrCode ier;
   sunTimerStruct* timer;
 
+  if (p == NULL) return (-1);
   sunStartTiming(p->overhead);
 
-  ier = SUNHashMap_GetValue(p->map, name, (void**)&timer);
-  if (ier)
+  if (SUNHashMap_GetValue(p->map, name, (void**)&timer))
   {
     sunStopTiming(p->overhead);
-    if (ier == -1) { return SUN_ERR_PROFILER_MAPGET; }
-    if (ier == -2) { return SUN_ERR_PROFILER_MAPKEYNOTFOUND; }
+    return (-1);
   }
 
   sunStopTiming(timer);
 
   sunStopTiming(p->overhead);
-  return SUN_SUCCESS;
+  return (0);
+}
+
+int SUNProfiler_GetTimerResolution(SUNProfiler p, double* resolution)
+{
+#if defined(SUNDIALS_HAVE_POSIX_TIMERS)
+  sunTimespec spec;
+  clock_getres(CLOCK_MONOTONIC, &spec);
+  *resolution = 1e-9 * ((double)spec.tv_nsec);
+
+  return (0);
+#elif (defined(WIN32) || defined(_WIN32))
+  static LARGE_INTEGER ticks_per_sec;
+
+  if (!ticks_per_sec.QuadPart)
+  {
+    QueryPerformanceFrequency(&ticks_per_sec);
+    if (!ticks_per_sec.QuadPart) { return -1; }
+  }
+
+  *resolution = (double) ticks_per_sec.QuadPart;
+
+  return (0);
+#else
+#error SUNProfiler needs POSIX or Windows timers
+#endif
+}
+
+int SUNProfiler_GetElapsedTime(SUNProfiler p, const char* name, double* time)
+{
+  sunTimerStruct* timer;
+
+  if (SUNHashMap_GetValue(p->map, name, (void**)&timer)) { return (-1); }
+
+  *time = timer->elapsed;
+
+  return (0);
 }
 
 SUNErrCode SUNProfiler_Reset(SUNProfiler p)
@@ -317,22 +364,20 @@ SUNErrCode SUNProfiler_Reset(SUNProfiler p)
 
 SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
 {
-  SUNErrCode ier             = 0;
   int i                      = 0;
   int rank                   = 0;
   sunTimerStruct* timer      = NULL;
   SUNHashMapKeyValue* sorted = NULL;
 
-  if (p == NULL) { return (-1); }
+  if (p == NULL) return (-1);
   sunStartTiming(p->overhead);
 
   /* Get the total SUNDIALS time up to this point */
   SUNDIALS_MARK_END(p, SUNDIALS_ROOT_TIMER);
   SUNDIALS_MARK_BEGIN(p, SUNDIALS_ROOT_TIMER);
 
-  ier = SUNHashMap_GetValue(p->map, SUNDIALS_ROOT_TIMER, (void**)&timer);
-  if (ier == -1) { return SUN_ERR_PROFILER_MAPGET; }
-  if (ier == -2) { return SUN_ERR_PROFILER_MAPKEYNOTFOUND; }
+  if (SUNHashMap_GetValue(p->map, SUNDIALS_ROOT_TIMER, (void**)&timer))
+    return (-1);
   p->sundials_time = timer->elapsed;
 
 #if SUNDIALS_MPI_ENABLED
@@ -346,31 +391,29 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
 
   if (rank == 0)
   {
+    double resolution;
     /* Sort the timers in descending order */
-    ier = SUNHashMap_Sort(p->map, &sorted, sunCompareTimes);
-    if (ier) { return SUN_ERR_PROFILER_MAPSORT; }
+    if (SUNHashMap_Sort(p->map, &sorted, sunCompareTimes)) return (-1);
+    SUNProfiler_GetTimerResolution(p, &resolution);
     fprintf(fp, "\n============================================================"
                 "====================================================\n");
     fprintf(fp, "SUNDIALS GIT VERSION: %s\n", SUNDIALS_GIT_VERSION);
     fprintf(fp, "SUNDIALS PROFILER: %s\n", p->title);
+    fprintf(fp, "TIMER RESOLUTION: %gs\n", resolution);
     fprintf(fp, "%-40s\t %% time (inclusive) \t max/rank \t average/rank \t count \n",
-            "Results:");
+            "RESULTS:");
     fprintf(fp, "=============================================================="
                 "==================================================\n");
 
 #if SUNDIALS_MPI_ENABLED
     if (p->comm == NULL)
-    {
       printf(
         "WARNING: no MPI communicator provided, times shown are for rank 0\n");
-    }
 #endif
 
     /* Print all the other timers out */
     for (i = 0; i < p->map->size; i++)
-    {
-      if (sorted[i]) { sunPrintTimers(i, sorted[i], fp, (void*)p); }
-    }
+      if (sorted[i]) sunPrintTimers(i, sorted[i], fp, (void*)p);
     free(sorted);
   }
 
@@ -387,7 +430,7 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
     fprintf(fp, "\n");
   }
 
-  return SUN_SUCCESS;
+  return (0);
 }
 
 #if SUNDIALS_MPI_ENABLED
@@ -419,7 +462,7 @@ SUNErrCode sunCollectTimers(SUNProfiler p)
   SUNHashMap_Values(p->map, (void***)&values, sizeof(sunTimerStruct));
   sunTimerStruct* reduced =
     (sunTimerStruct*)malloc(p->map->size * sizeof(sunTimerStruct));
-  for (i = 0; i < p->map->size; ++i) { reduced[i] = *values[i]; }
+  for (i = 0; i < p->map->size; ++i) reduced[i] = *values[i];
 
   /* Register MPI datatype for sunTimerStruct */
   MPI_Datatype tmp_type, MPI_sunTimerStruct;
@@ -459,14 +502,14 @@ SUNErrCode sunCollectTimers(SUNProfiler p)
   /* Update the values that are in this rank's hash map. */
   for (i = 0; i < p->map->size; ++i)
   {
-    values[i]->average = reduced[i].average / (realtype)nranks;
+    values[i]->average = reduced[i].average / (double)nranks;
     values[i]->maximum = reduced[i].maximum;
   }
 
   free(reduced);
   free(values);
 
-  return SUN_SUCCESS;
+  return (0);
 }
 #endif
 
@@ -495,14 +538,42 @@ int sunCompareTimes(const void* l, const void* r)
   const SUNHashMapKeyValue left  = *((SUNHashMapKeyValue*)l);
   const SUNHashMapKeyValue right = *((SUNHashMapKeyValue*)r);
 
-  if (left == NULL && right == NULL) { return SUN_SUCCESS; }
-  if (left == NULL) { return (1); }
-  if (right == NULL) { return (-1); }
+  if (left == NULL && right == NULL) return (0);
+  if (left == NULL) return (1);
+  if (right == NULL) return (-1);
 
   left_max  = ((sunTimerStruct*)left->value)->maximum;
   right_max = ((sunTimerStruct*)right->value)->maximum;
 
-  if (left_max < right_max) { return (1); }
-  if (left_max > right_max) { return (-1); }
-  return SUN_SUCCESS;
+  if (left_max < right_max) return (1);
+  if (left_max > right_max) return (-1);
+  return (0);
+}
+
+int sunclock_gettime_monotonic(sunTimespec* ts)
+{
+#if defined(SUNDIALS_HAVE_POSIX_TIMERS)
+  return clock_gettime(CLOCK_MONOTONIC, ts);
+#elif (defined(WIN32) || defined(_WIN32))
+  static LARGE_INTEGER ticks_per_sec;
+  LARGE_INTEGER ticks;
+
+  if (!ticks_per_sec.QuadPart)
+  {
+    QueryPerformanceFrequency(&ticks_per_sec);
+    if (!ticks_per_sec.QuadPart) { return -1; }
+  }
+
+  QueryPerformanceCounter(&ticks);
+
+  /* QueryPerformanceCounter is ticks in microseconds */
+
+  ts->tv_sec  = (long)(ticks.QuadPart / ticks_per_sec.QuadPart);
+  ts->tv_nsec = (long)(((ticks.QuadPart % ticks_per_sec.QuadPart) * 1000000) /
+                       ticks_per_sec.QuadPart);
+
+  return 0;
+#else 
+#error SUNProfiler needs POSIX or Windows timers
+#endif
 }
