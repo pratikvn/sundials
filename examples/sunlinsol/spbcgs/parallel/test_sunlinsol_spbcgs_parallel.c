@@ -60,11 +60,11 @@ int ATimes(void* ProbData, N_Vector v, N_Vector z);
 /*    preconditioner setup */
 int PSetup(void* ProbData);
 /*    preconditioner solve */
-int PSolve(void* ProbData, N_Vector r, N_Vector z, realtype tol, int lr);
+int PSolve(void* ProbData, N_Vector r, N_Vector z, sunrealtype tol, int lr);
 /*    checks function return values  */
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 /*    uniform random number generator in [0,1] */
-static realtype urand(void);
+static sunrealtype urand(void);
 
 /* global copy of Nloc (for check_vector routine) */
 sunindextype local_problem_size;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
   UserData ProbData;   /* problem data structure    */
   int pretype, maxl, print_timing;
   sunindextype i;
-  realtype* vecdata;
+  sunrealtype* vecdata;
   double tol;
   SUNContext sunctx;
 
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
   fails = MPI_Comm_rank(ProbData.comm, &(ProbData.myid));
   if (check_flag(&fails, "MPI_Comm_rank", 1)) { return 1; }
 
-  if (SUNContext_Create(&ProbData.comm, &sunctx))
+  if (SUNContext_Create(ProbData.comm, &sunctx))
   {
     printf("ERROR: SUNContext_Create failed\n");
     return (-1);
@@ -478,7 +478,7 @@ int main(int argc, char* argv[])
 int ATimes(void* Data, N_Vector v_vec, N_Vector z_vec)
 {
   /* local variables */
-  realtype *v, *z, *s1, *s2, vL, vR, vsL, vsR;
+  sunrealtype *v, *z, *s1, *s2, vL, vR, vsL, vsR;
   sunindextype i, Nloc;
   int ierr;
   UserData* ProbData;
@@ -553,10 +553,10 @@ int ATimes(void* Data, N_Vector v_vec, N_Vector z_vec)
 int PSetup(void* Data) { return 0; }
 
 /* preconditioner solve */
-int PSolve(void* Data, N_Vector r_vec, N_Vector z_vec, realtype tol, int lr)
+int PSolve(void* Data, N_Vector r_vec, N_Vector z_vec, sunrealtype tol, int lr)
 {
   /* local variables */
-  realtype *r, *z, *d;
+  sunrealtype *r, *z, *d;
   sunindextype i;
   UserData* ProbData;
 
@@ -577,7 +577,10 @@ int PSolve(void* Data, N_Vector r_vec, N_Vector z_vec, realtype tol, int lr)
 }
 
 /* uniform random number generator */
-static realtype urand(void) { return ((realtype)rand() / (realtype)RAND_MAX); }
+static sunrealtype urand(void)
+{
+  return ((sunrealtype)rand() / (sunrealtype)RAND_MAX);
+}
 
 /* Check function return value based on "opt" input:
      0:  function allocates memory so check for NULL pointer
@@ -611,11 +614,11 @@ static int check_flag(void* flagvalue, const char* funcname, int opt)
 /* ----------------------------------------------------------------------
  * Implementation-specific 'check' routines
  * --------------------------------------------------------------------*/
-int check_vector(N_Vector X, N_Vector Y, realtype tol)
+int check_vector(N_Vector X, N_Vector Y, sunrealtype tol)
 {
   int failure = 0;
   sunindextype i;
-  realtype *Xdata, *Ydata, maxerr;
+  sunrealtype *Xdata, *Ydata, maxerr;
 
   Xdata = N_VGetArrayPointer(X);
   Ydata = N_VGetArrayPointer(Y);

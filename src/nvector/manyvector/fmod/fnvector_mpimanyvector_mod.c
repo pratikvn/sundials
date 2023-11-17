@@ -216,8 +216,14 @@ SWIGEXPORT N_Vector _wrap_FN_VMake_MPIManyVector(int const *farg1, int64_t const
   SUNContext arg4 = (SUNContext) 0 ;
   N_Vector result;
   
-#ifdef SUNDIALS_MPI_ENABLED
-  arg1 = MPI_Comm_f2c((MPI_Fint)(*farg1));
+#if SUNDIALS_MPI_ENABLED
+  int flag = 0;
+  MPI_Initialized(&flag);
+  if(flag) {
+    arg1 = MPI_Comm_f2c((MPI_Fint)(*farg1));
+  } else {
+    arg1 = 0;
+  }
 #else
   arg1 = *farg1;
 #endif

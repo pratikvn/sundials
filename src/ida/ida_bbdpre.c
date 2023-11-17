@@ -27,6 +27,7 @@
 #include <nvector/nvector_serial.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/sundials_math.h>
 
 #include "ida_bbdpre_impl.h"
 #include "ida_impl.h"
@@ -67,18 +68,16 @@ int IDABBDPrecInit(void* ida_mem, sunindextype Nlocal, sunindextype mudq,
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDALS_MEM_NULL, __LINE__, __func__, __FILE__,
+    IDAProcessError(NULL, IDALS_MEM_NULL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_NULL);
     return (IDALS_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
 
-  SUNAssignSUNCTX(IDA_mem->ida_sunctx);
-
   /* Test if the LS linear solver interface has been created */
   if (IDA_mem->ida_lmem == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_LMEM_NULL);
     return (IDALS_LMEM_NULL);
   }
@@ -87,7 +86,7 @@ int IDABBDPrecInit(void* ida_mem, sunindextype Nlocal, sunindextype mudq,
   /* Test compatibility of NVECTOR package with the BBD preconditioner */
   if (IDA_mem->ida_tempv1->ops->nvgetarraypointer == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_ILL_INPUT, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_BAD_NVECTOR);
     return (IDALS_ILL_INPUT);
   }
@@ -97,7 +96,7 @@ int IDABBDPrecInit(void* ida_mem, sunindextype Nlocal, sunindextype mudq,
   pdata = (IBBDPrecData)malloc(sizeof *pdata);
   if (pdata == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
@@ -124,92 +123,90 @@ int IDABBDPrecInit(void* ida_mem, sunindextype Nlocal, sunindextype mudq,
   {
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
 
   /* Allocate memory for temporary N_Vectors */
   pdata->zlocal = NULL;
-  pdata->zlocal =
-    SUNCheckCallLastErrNoRet(N_VNewEmpty_Serial(Nlocal, IDA_mem->ida_sunctx));
+  pdata->zlocal = N_VNewEmpty_Serial(Nlocal, IDA_mem->ida_sunctx);
   if (pdata->zlocal == NULL)
   {
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+    SUNMatDestroy(pdata->PP);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
   pdata->rlocal = NULL;
-  pdata->rlocal =
-    SUNCheckCallLastErrNoRet(N_VNewEmpty_Serial(Nlocal, IDA_mem->ida_sunctx));
+  pdata->rlocal = N_VNewEmpty_Serial(Nlocal, IDA_mem->ida_sunctx);
   if (pdata->rlocal == NULL)
   {
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+    N_VDestroy(pdata->zlocal);
+    SUNMatDestroy(pdata->PP);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
   pdata->tempv1 = NULL;
-  pdata->tempv1 = SUNCheckCallLastErrNoRet(N_VClone(IDA_mem->ida_tempv1));
+  pdata->tempv1 = N_VClone(IDA_mem->ida_tempv1);
   if (pdata->tempv1 == NULL)
   {
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->rlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+    N_VDestroy(pdata->rlocal);
+    N_VDestroy(pdata->zlocal);
+    SUNMatDestroy(pdata->PP);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
   pdata->tempv2 = NULL;
-  pdata->tempv2 = SUNCheckCallLastErrNoRet(N_VClone(IDA_mem->ida_tempv1));
+  pdata->tempv2 = N_VClone(IDA_mem->ida_tempv1);
   if (pdata->tempv2 == NULL)
   {
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->rlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv1));
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+    N_VDestroy(pdata->rlocal);
+    N_VDestroy(pdata->zlocal);
+    N_VDestroy(pdata->tempv1);
+    SUNMatDestroy(pdata->PP);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
   pdata->tempv3 = NULL;
-  pdata->tempv3 = SUNCheckCallLastErrNoRet(N_VClone(IDA_mem->ida_tempv1));
+  pdata->tempv3 = N_VClone(IDA_mem->ida_tempv1);
   if (pdata->tempv3 == NULL)
   {
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->rlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv1));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv2));
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+    N_VDestroy(pdata->rlocal);
+    N_VDestroy(pdata->zlocal);
+    N_VDestroy(pdata->tempv1);
+    N_VDestroy(pdata->tempv2);
+    SUNMatDestroy(pdata->PP);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
   pdata->tempv4 = NULL;
-  pdata->tempv4 = SUNCheckCallLastErrNoRet(N_VClone(IDA_mem->ida_tempv1));
+  pdata->tempv4 = N_VClone(IDA_mem->ida_tempv1);
   if (pdata->tempv4 == NULL)
   {
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->rlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv1));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv2));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv3));
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+    N_VDestroy(pdata->rlocal);
+    N_VDestroy(pdata->zlocal);
+    N_VDestroy(pdata->tempv1);
+    N_VDestroy(pdata->tempv2);
+    N_VDestroy(pdata->tempv3);
+    SUNMatDestroy(pdata->PP);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
@@ -219,36 +216,35 @@ int IDABBDPrecInit(void* ida_mem, sunindextype Nlocal, sunindextype mudq,
   pdata->LS = SUNLinSol_Band(pdata->rlocal, pdata->PP, IDA_mem->ida_sunctx);
   if (pdata->LS == NULL)
   {
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->rlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv1));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv2));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv3));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv4));
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+    N_VDestroy(pdata->zlocal);
+    N_VDestroy(pdata->rlocal);
+    N_VDestroy(pdata->tempv1);
+    N_VDestroy(pdata->tempv2);
+    N_VDestroy(pdata->tempv3);
+    N_VDestroy(pdata->tempv4);
+    SUNMatDestroy(pdata->PP);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_MEM_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_MEM_FAIL);
     return (IDALS_MEM_FAIL);
   }
 
   /* initialize band linear solver object */
   flag = SUNLinSolInitialize(pdata->LS);
-  SUNCheckCallNoRet(flag);
   if (flag != SUNLS_SUCCESS)
   {
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->rlocal));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv1));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv2));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv3));
-    SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv4));
-    SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
-    SUNCheckCallNoRet(SUNLinSolFree(pdata->LS));
+    N_VDestroy(pdata->zlocal);
+    N_VDestroy(pdata->rlocal);
+    N_VDestroy(pdata->tempv1);
+    N_VDestroy(pdata->tempv2);
+    N_VDestroy(pdata->tempv3);
+    N_VDestroy(pdata->tempv4);
+    SUNMatDestroy(pdata->PP);
+    SUNLinSolFree(pdata->LS);
     free(pdata);
     pdata = NULL;
-    IDAProcessError(IDA_mem, IDALS_SUNLS_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_SUNLS_FAIL, "IDABBDPRE", "IDABBDPrecInit",
                     MSGBBD_SUNLS_FAIL);
     return (IDALS_SUNLS_FAIL);
   }
@@ -264,27 +260,25 @@ int IDABBDPrecInit(void* ida_mem, sunindextype Nlocal, sunindextype mudq,
   pdata->ipwsize = 0;
   if (IDA_mem->ida_tempv1->ops->nvspace)
   {
-    SUNCheckCallLastErrNoRet(N_VSpace(IDA_mem->ida_tempv1, &lrw1, &liw1));
+    N_VSpace(IDA_mem->ida_tempv1, &lrw1, &liw1);
     pdata->rpwsize += 4 * lrw1;
     pdata->ipwsize += 4 * liw1;
   }
   if (pdata->rlocal->ops->nvspace)
   {
-    SUNCheckCallLastErrNoRet(N_VSpace(pdata->rlocal, &lrw1, &liw1));
+    N_VSpace(pdata->rlocal, &lrw1, &liw1);
     pdata->rpwsize += 2 * lrw1;
     pdata->ipwsize += 2 * liw1;
   }
   if (pdata->PP->ops->space)
   {
     flag = SUNMatSpace(pdata->PP, &lrw, &liw);
-    SUNCheckCallNoRet(flag);
     pdata->rpwsize += lrw;
     pdata->ipwsize += liw;
   }
   if (pdata->LS->ops->space)
   {
     flag = SUNLinSolSpace(pdata->LS, &lrw, &liw);
-    SUNCheckCallNoRet(flag);
     pdata->rpwsize += lrw;
     pdata->ipwsize += liw;
   }
@@ -316,7 +310,7 @@ int IDABBDPrecReInit(void* ida_mem, sunindextype mudq, sunindextype mldq,
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDALS_MEM_NULL, __LINE__, __func__, __FILE__,
+    IDAProcessError(NULL, IDALS_MEM_NULL, "IDABBDPRE", "IDABBDPrecReInit",
                     MSGBBD_MEM_NULL);
     return (IDALS_MEM_NULL);
   }
@@ -325,7 +319,7 @@ int IDABBDPrecReInit(void* ida_mem, sunindextype mudq, sunindextype mldq,
   /* Test if the LS linear solver interface has been created */
   if (IDA_mem->ida_lmem == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, "IDABBDPRE", "IDABBDPrecReInit",
                     MSGBBD_LMEM_NULL);
     return (IDALS_LMEM_NULL);
   }
@@ -334,7 +328,7 @@ int IDABBDPrecReInit(void* ida_mem, sunindextype mudq, sunindextype mldq,
   /* Test if the preconditioner data is non-NULL */
   if (idals_mem->pdata == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_PMEM_NULL, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDALS_PMEM_NULL, "IDABBDPRE", "IDABBDPrecReInit",
                     MSGBBD_PMEM_NULL);
     return (IDALS_PMEM_NULL);
   }
@@ -363,7 +357,7 @@ int IDABBDPrecGetWorkSpace(void* ida_mem, long int* lenrwBBDP, long int* leniwBB
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDALS_MEM_NULL, __LINE__, __func__, __FILE__,
+    IDAProcessError(NULL, IDALS_MEM_NULL, "IDABBDPRE", "IDABBDPrecGetWorkSpace",
                     MSGBBD_MEM_NULL);
     return (IDALS_MEM_NULL);
   }
@@ -371,16 +365,16 @@ int IDABBDPrecGetWorkSpace(void* ida_mem, long int* lenrwBBDP, long int* leniwBB
 
   if (IDA_mem->ida_lmem == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, __LINE__, __func__, __FILE__,
-                    MSGBBD_LMEM_NULL);
+    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, "IDABBDPRE",
+                    "IDABBDPrecGetWorkSpace", MSGBBD_LMEM_NULL);
     return (IDALS_LMEM_NULL);
   }
   idals_mem = (IDALsMem)IDA_mem->ida_lmem;
 
   if (idals_mem->pdata == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_PMEM_NULL, __LINE__, __func__, __FILE__,
-                    MSGBBD_PMEM_NULL);
+    IDAProcessError(IDA_mem, IDALS_PMEM_NULL, "IDABBDPRE",
+                    "IDABBDPrecGetWorkSpace", MSGBBD_PMEM_NULL);
     return (IDALS_PMEM_NULL);
   }
   pdata = (IBBDPrecData)idals_mem->pdata;
@@ -400,24 +394,24 @@ int IDABBDPrecGetNumGfnEvals(void* ida_mem, long int* ngevalsBBDP)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDALS_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSGBBD_MEM_NULL);
+    IDAProcessError(NULL, IDALS_MEM_NULL, "IDABBDPRE",
+                    "IDABBDPrecGetNumGfnEvals", MSGBBD_MEM_NULL);
     return (IDALS_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
 
   if (IDA_mem->ida_lmem == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, __LINE__, __func__, __FILE__,
-                    MSGBBD_LMEM_NULL);
+    IDAProcessError(IDA_mem, IDALS_LMEM_NULL, "IDABBDPRE",
+                    "IDABBDPrecGetNumGfnEvals", MSGBBD_LMEM_NULL);
     return (IDALS_LMEM_NULL);
   }
   idals_mem = (IDALsMem)IDA_mem->ida_lmem;
 
   if (idals_mem->pdata == NULL)
   {
-    IDAProcessError(IDA_mem, IDALS_PMEM_NULL, __LINE__, __func__, __FILE__,
-                    MSGBBD_PMEM_NULL);
+    IDAProcessError(IDA_mem, IDALS_PMEM_NULL, "IDABBDPRE",
+                    "IDABBDPrecGetNumGfnEvals", MSGBBD_PMEM_NULL);
     return (IDALS_PMEM_NULL);
   }
   pdata = (IBBDPrecData)idals_mem->pdata;
@@ -466,30 +460,26 @@ static int IDABBDPrecSetup(sunrealtype tt, N_Vector yy, N_Vector yp,
   IBBDPrecData pdata;
   IDAMem IDA_mem;
   int retval;
-  int ls_status;
 
   pdata = (IBBDPrecData)bbd_data;
 
   IDA_mem = (IDAMem)pdata->ida_mem;
 
-  SUNAssignSUNCTX(IDA_mem->ida_sunctx);
-
   /* Call IBBDDQJac for a new Jacobian calculation and store in PP. */
-  SUNCheckCallNoRet(SUNMatZero(pdata->PP));
+  retval = SUNMatZero(pdata->PP);
   retval = IBBDDQJac(pdata, tt, c_j, yy, yp, pdata->tempv1, pdata->tempv2,
                      pdata->tempv3, pdata->tempv4);
   if (retval < 0)
   {
-    IDAProcessError(IDA_mem, -1, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, -1, "IDABBDPRE", "IDABBDPrecSetup",
                     MSGBBD_FUNC_FAILED);
-    return (SUNLS_UNRECOV_FAILURE);
+    return (-1);
   }
-  if (retval > 0) { return (SUNLS_RECOV_FAILURE); }
+  if (retval > 0) { return (1); }
 
   /* Do LU factorization of matrix and return error flag */
-  ls_status = SUNCheckCallLastErrNoRet(SUNLinSolSetup_Band(pdata->LS, pdata->PP));
-
-  return (ls_status);
+  retval = SUNLinSolSetup_Band(pdata->LS, pdata->PP);
+  return (retval);
 }
 
 /*---------------------------------------------------------------
@@ -516,36 +506,29 @@ static int IDABBDPrecSolve(sunrealtype tt, N_Vector yy, N_Vector yp,
                            N_Vector rr, N_Vector rvec, N_Vector zvec,
                            sunrealtype c_j, sunrealtype delta, void* bbd_data)
 {
-  int ls_status;
   IBBDPrecData pdata;
-  sunrealtype *rdata, *zdata;
+  int retval;
 
   pdata = (IBBDPrecData)bbd_data;
 
-  SUNAssignSUNCTX(((IDAMem)pdata->ida_mem)->ida_sunctx);
-
-  /* Attach local data arrays for r and z to rlocal and zlocal */
-  rdata = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(rvec));
-  SUNCheckCallLastErrNoRet(N_VSetArrayPointer(rdata, pdata->rlocal));
-  zdata = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(zvec));
-  SUNCheckCallLastErrNoRet(N_VSetArrayPointer(zdata, pdata->zlocal));
+  /* Attach local data arrays for rvec and zvec to rlocal and zlocal */
+  N_VSetArrayPointer(N_VGetArrayPointer(rvec), pdata->rlocal);
+  N_VSetArrayPointer(N_VGetArrayPointer(zvec), pdata->zlocal);
 
   /* Call banded solver object to do the work */
-  ls_status = SUNCheckCallLastErrNoRet(
-    SUNLinSolSolve(pdata->LS, pdata->PP, pdata->zlocal, pdata->rlocal, ZERO));
+  retval = SUNLinSolSolve(pdata->LS, pdata->PP, pdata->zlocal, pdata->rlocal,
+                          ZERO);
 
   /* Detach local data arrays from rlocal and zlocal */
-  SUNCheckCallLastErrNoRet(N_VSetArrayPointer(NULL, pdata->rlocal));
-  SUNCheckCallLastErrNoRet(N_VSetArrayPointer(NULL, pdata->zlocal));
+  N_VSetArrayPointer(NULL, pdata->rlocal);
+  N_VSetArrayPointer(NULL, pdata->zlocal);
 
-  return (ls_status);
+  return (retval);
 }
 
 /*-------------------------------------------------------------*/
 static int IDABBDPrecFree(IDAMem IDA_mem)
 {
-  SUNAssignSUNCTX(IDA_mem->ida_sunctx);
-
   IDALsMem idals_mem;
   IBBDPrecData pdata;
 
@@ -555,14 +538,14 @@ static int IDABBDPrecFree(IDAMem IDA_mem)
   if (idals_mem->pdata == NULL) { return (0); }
   pdata = (IBBDPrecData)idals_mem->pdata;
 
-  SUNCheckCallNoRet(SUNLinSolFree(pdata->LS));
-  SUNCheckCallLastErrNoRet(N_VDestroy(pdata->rlocal));
-  SUNCheckCallLastErrNoRet(N_VDestroy(pdata->zlocal));
-  SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv1));
-  SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv2));
-  SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv3));
-  SUNCheckCallLastErrNoRet(N_VDestroy(pdata->tempv4));
-  SUNCheckCallLastErrNoRet(SUNMatDestroy(pdata->PP));
+  SUNLinSolFree(pdata->LS);
+  N_VDestroy(pdata->rlocal);
+  N_VDestroy(pdata->zlocal);
+  N_VDestroy(pdata->tempv1);
+  N_VDestroy(pdata->tempv2);
+  N_VDestroy(pdata->tempv3);
+  N_VDestroy(pdata->tempv4);
+  SUNMatDestroy(pdata->PP);
 
   free(pdata);
   pdata = NULL;
@@ -602,25 +585,22 @@ static int IBBDDQJac(IBBDPrecData pdata, sunrealtype tt, sunrealtype cj,
 
   IDA_mem = (IDAMem)pdata->ida_mem;
 
-  SUNAssignSUNCTX(IDA_mem->ida_sunctx);
-
   /* Initialize ytemp and yptemp. */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, yy, ytemp));
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, yp, yptemp));
+  N_VScale(ONE, yy, ytemp);
+  N_VScale(ONE, yp, yptemp);
 
   /* Obtain pointers as required to the data array of vectors. */
-  ydata     = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(yy));
-  ypdata    = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(yp));
-  gtempdata = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(gtemp));
-  ewtdata   = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(IDA_mem->ida_ewt));
+  ydata     = N_VGetArrayPointer(yy);
+  ypdata    = N_VGetArrayPointer(yp);
+  gtempdata = N_VGetArrayPointer(gtemp);
+  ewtdata   = N_VGetArrayPointer(IDA_mem->ida_ewt);
   if (IDA_mem->ida_constraintsSet)
   {
-    cnsdata =
-      SUNCheckCallLastErrNoRet(N_VGetArrayPointer(IDA_mem->ida_constraints));
+    cnsdata = N_VGetArrayPointer(IDA_mem->ida_constraints);
   }
-  ytempdata  = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(ytemp));
-  yptempdata = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(yptemp));
-  grefdata   = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(gref));
+  ytempdata  = N_VGetArrayPointer(ytemp);
+  yptempdata = N_VGetArrayPointer(yptemp);
+  grefdata   = N_VGetArrayPointer(gref);
 
   /* Call gcomm and glocal to get base value of G(t,y,y'). */
   if (pdata->gcomm != NULL)

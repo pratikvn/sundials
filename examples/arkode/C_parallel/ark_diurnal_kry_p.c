@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
   }
 
   /* Create the SUNDIALS context object for this simulation. */
-  flag = SUNContext_Create((void*)&comm, &ctx);
+  flag = SUNContext_Create(comm, &ctx);
   if (check_flag(&flag, "SUNContext_Create", 1, my_pe)) { MPI_Abort(comm, 1); }
 
   /* Set local length */
@@ -895,118 +895,110 @@ static int Precond(sunrealtype tn, N_Vector u, N_Vector fu, sunbooleantype jok,
       {
         SUNDlsMat_denseCopy(Jbd[lx][ly], P[lx][ly], NVARS, NVARS);
       }
-
-      *jcurPtr = SUNFALSE;
     }
 
-    else
-    {
-      /* jok = SUNFALSE: Generate Jbd from scratch and copy to P */
+    *jcurPtr = SUNFALSE;
+  }
 
-      /* Make local copies of problem variables, for efficiency */
-      q4coef = data->q4;
-      dely   = data->dy;
-      verdco = data->vdco;
-      hordco = data->hdco;
+  else
+  {
+    /* jok = SUNFALSE: Generate Jbd from scratch and copy to P */
 
-      /* Compute 2x2 diagonal Jacobian blocks (using q4 values
+    /* Make local copies of problem variables, for efficiency */
+    q4coef = data->q4;
+    dely   = data->dy;
+    verdco = data->vdco;
+    hordco = data->hdco;
+
+    /* Compute 2x2 diagonal Jacobian blocks (using q4 values
      computed on the last f call).  Load into P. */
-      for (ly = 0; ly < MYSUB; ly++)
-      {
-        jy   = ly + isuby * MYSUB;
-        ydn  = YMIN + (jy - SUN_RCONST(0.5)) * dely;
-        yup  = ydn + dely;
-        cydn = verdco * exp(SUN_RCONST(0.2) * ydn);
-        cyup = verdco * exp(SUN_RCONST(0.2) * yup);
-        diag = -(cydn + cyup + SUN_RCONST(2.0) * hordco);
-        for (lx = 0; lx < MXSUB; lx++)
-        {
-          offset        = lx * NVARS + ly * nvmxsub;
-          c1            = udata[offset];
-          c2            = udata[offset + 1];
-          j             = Jbd[lx][ly];
-          a             = P[lx][ly];
-          IJth(j, 1, 1) = (-Q1 * C3 - Q2 * c2) + diag;
-          IJth(j, 1, 2) = -Q2 * c1 + q4coef;
-          IJth(j, 2, 1) = Q1 * C3 - Q2 * c2;
-          IJth(j, 2, 2) = (-Q2 * c1 - q4coef) + diag;
-          SUNDlsMat_denseCopy(j, a, NVARS, NVARS);
-        }
-      }
-
-      *jcurPtr = SUNTRUE;
-    }
-
-    /* Scale by -gamma */
     for (ly = 0; ly < MYSUB; ly++)
     {
-      for (lx = 0; lx < MXSUB; lx++)
-        SUNDlsMat_denseScale(-gamma, P[lx][ly], NVARS, NVARS);
-
-      /* Add identity matrix and do LU decompositions on blocks in place */
-      for (lx = 0; lx < MXSUB; lx++)
-      {
-        for (ly = 0; ly < MYSUB; ly++)
-        {
-          SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
-          ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
-          if (ier != 0) return (1);
-        }
-      }
-
-      /* Add identity matrix and do LU decompositions on blocks in place */
+      jy   = ly + isuby * MYSUB;
+      ydn  = YMIN + (jy - SUN_RCONST(0.5)) * dely;
+      yup  = ydn + dely;
+      cydn = verdco * exp(SUN_RCONST(0.2) * ydn);
+      cyup = verdco * exp(SUN_RCONST(0.2) * yup);
+      diag = -(cydn + cyup + SUN_RCONST(2.0) * hordco);
       for (lx = 0; lx < MXSUB; lx++)
       {
-        for (ly = 0; ly < MYSUB; ly++)
-        {
-          SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
-          ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
-          if (ier != 0) { return (1); }
-        }
+        offset        = lx * NVARS + ly * nvmxsub;
+        c1            = udata[offset];
+        c2            = udata[offset + 1];
+        j             = Jbd[lx][ly];
+        a             = P[lx][ly];
+        IJth(j, 1, 1) = (-Q1 * C3 - Q2 * c2) + diag;
+        IJth(j, 1, 2) = -Q2 * c1 + q4coef;
+        IJth(j, 2, 1) = Q1 * C3 - Q2 * c2;
+        IJth(j, 2, 2) = (-Q2 * c1 - q4coef) + diag;
+        SUNDlsMat_denseCopy(j, a, NVARS, NVARS);
       }
-
-      return (0);
     }
 
-    /* Preconditioner solve routine */
-    static int PSolve(sunrealtype tn, N_Vector u, N_Vector fu, N_Vector r,
-                      N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                      void* user_data)
+    *jcurPtr = SUNTRUE;
+  }
+
+  /* Scale by -gamma */
+  for (ly = 0; ly < MYSUB; ly++)
+  {
+    for (lx = 0; lx < MXSUB; lx++)
     {
-      sunrealtype**(*P)[MYSUB];
-      int nvmxsub;
-      sunindextype*(*pivot)[MYSUB];
-      int lx, ly;
-      sunrealtype *zdata, *v;
-      UserData data;
+      SUNDlsMat_denseScale(-gamma, P[lx][ly], NVARS, NVARS);
+    }
+  }
 
-      /* Extract the P and pivot arrays from user_data */
-      data  = (UserData)user_data;
-      P     = data->P;
-      pivot = data->pivot;
+  /* Add identity matrix and do LU decompositions on blocks in place */
+  for (lx = 0; lx < MXSUB; lx++)
+  {
+    for (ly = 0; ly < MYSUB; ly++)
+    {
+      SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
+      ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
+      if (ier != 0) { return (1); }
+    }
+  }
 
-      /* Solve the block-diagonal system Px = r using LU factors stored
+  return (0);
+}
+
+/* Preconditioner solve routine */
+static int PSolve(sunrealtype tn, N_Vector u, N_Vector fu, N_Vector r, N_Vector z,
+                  sunrealtype gamma, sunrealtype delta, int lr, void* user_data)
+{
+  sunrealtype**(*P)[MYSUB];
+  int nvmxsub;
+  sunindextype*(*pivot)[MYSUB];
+  int lx, ly;
+  sunrealtype *zdata, *v;
+  UserData data;
+
+  /* Extract the P and pivot arrays from user_data */
+  data  = (UserData)user_data;
+  P     = data->P;
+  pivot = data->pivot;
+
+  /* Solve the block-diagonal system Px = r using LU factors stored
      in P and pivot data in pivot, and return the solution in z.
      First copy vector r to z. */
-      N_VScale(SUN_RCONST(1.0), r, z);
-      nvmxsub = data->nvmxsub;
-      zdata   = N_VGetArrayPointer(z);
+  N_VScale(SUN_RCONST(1.0), r, z);
+  nvmxsub = data->nvmxsub;
+  zdata   = N_VGetArrayPointer(z);
 
-      for (lx = 0; lx < MXSUB; lx++)
-      {
-        for (ly = 0; ly < MYSUB; ly++)
-        {
-          v = &(zdata[lx * NVARS + ly * nvmxsub]);
-          SUNDlsMat_denseGETRS(P[lx][ly], NVARS, pivot[lx][ly], v);
-        }
-      }
-
-      return (0);
+  for (lx = 0; lx < MXSUB; lx++)
+  {
+    for (ly = 0; ly < MYSUB; ly++)
+    {
+      v = &(zdata[lx * NVARS + ly * nvmxsub]);
+      SUNDlsMat_denseGETRS(P[lx][ly], NVARS, pivot[lx][ly], v);
     }
+  }
 
-    /*********************** Private Helper Function ************************/
+  return (0);
+}
 
-    /* Check function return value...
+/*********************** Private Helper Function ************************/
+
+/* Check function return value...
      opt == 0 means SUNDIALS function allocates memory so check if
               returned NULL pointer
      opt == 1 means SUNDIALS function returns a flag so check if
@@ -1014,35 +1006,34 @@ static int Precond(sunrealtype tn, N_Vector u, N_Vector fu, sunbooleantype jok,
      opt == 2 means function allocates memory so check if returned
               NULL pointer */
 
-    static int check_flag(void* flagvalue, const char* funcname, int opt, int id)
+static int check_flag(void* flagvalue, const char* funcname, int opt, int id)
+{
+  int* errflag;
+
+  /* Check if SUNDIALS function returned NULL pointer - no memory allocated */
+  if (opt == 0 && flagvalue == NULL)
+  {
+    fprintf(stderr,
+            "\nSUNDIALS_ERROR(%d): %s() failed - returned NULL pointer\n\n", id,
+            funcname);
+    return (1);
+  }
+  else if (opt == 1)
+  { /* Check if flag < 0 */
+    errflag = (int*)flagvalue;
+    if (*errflag < 0)
     {
-      int* errflag;
-
-      /* Check if SUNDIALS function returned NULL pointer - no memory allocated */
-      if (opt == 0 && flagvalue == NULL)
-      {
-        fprintf(stderr,
-                "\nSUNDIALS_ERROR(%d): %s() failed - returned NULL pointer\n\n",
-                id, funcname);
-        return (1);
-      }
-      else if (opt == 1)
-      { /* Check if flag < 0 */
-        errflag = (int*)flagvalue;
-        if (*errflag < 0)
-        {
-          fprintf(stderr, "\nSUNDIALS_ERROR(%d): %s() failed with flag = %d\n\n",
-                  id, funcname, *errflag);
-          return (1);
-        }
-      }
-      else if (opt == 2 && flagvalue == NULL)
-      { /* Check if function returned NULL pointer - no memory allocated */
-        fprintf(stderr,
-                "\nMEMORY_ERROR(%d): %s() failed - returned NULL pointer\n\n",
-                id, funcname);
-        return (1);
-      }
-
-      return (0);
+      fprintf(stderr, "\nSUNDIALS_ERROR(%d): %s() failed with flag = %d\n\n",
+              id, funcname, *errflag);
+      return (1);
     }
+  }
+  else if (opt == 2 && flagvalue == NULL)
+  { /* Check if function returned NULL pointer - no memory allocated */
+    fprintf(stderr, "\nMEMORY_ERROR(%d): %s() failed - returned NULL pointer\n\n",
+            id, funcname);
+    return (1);
+  }
+
+  return (0);
+}

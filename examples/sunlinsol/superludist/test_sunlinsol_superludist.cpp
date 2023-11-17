@@ -35,7 +35,7 @@
 #define LOG_PROCESS_TO_FILE 0
 
 /* helper functions */
-int csr_from_dense(SUNMatrix Ad, realtype droptol, realtype** matdata,
+int csr_from_dense(SUNMatrix Ad, sunrealtype droptol, sunrealtype** matdata,
                    sunindextype** colind, sunindextype** rowptrs);
 
 /* ----------------------------------------------------------------------
@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
   SUNMatrix A, D;               /* test matrices              */
   SuperMatrix* Asuper;          /* SuperMatrices of A         */
   N_Vector gx, gy, gb, x, y, b; /* test vectors               */
-  realtype* matdata;            /* underlying data arrays     */
-  realtype *xdata, *ydata, *bdata;
+  sunrealtype* matdata;         /* underlying data arrays     */
+  sunrealtype *xdata, *ydata, *bdata;
   sunindextype *rowptrs, *colind;
   gridinfo_t grid; /* SuperLU-DIST process grid  */
   xLUstruct_t lu;
@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
   comm = MPI_COMM_WORLD;
 
-  if (SUNContext_Create(&comm, &sunctx))
+  if (SUNContext_Create(comm, &sunctx))
   {
     printf("ERROR: SUNContext_Create failed\n");
     return (-1);
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
       i          = rand() % N;
       j          = rand() % N;
       matdata    = SUNDenseMatrix_Column(D, j);
-      matdata[i] = (realtype)rand() / (realtype)RAND_MAX / N;
+      matdata[i] = (sunrealtype)rand() / (sunrealtype)RAND_MAX / N;
     }
 
     /* Add identity to matrix */
@@ -210,7 +210,7 @@ int main(int argc, char* argv[])
     /* fill x with random data */
     for (i = 0; i < N; i++)
     {
-      xdata[i] = (realtype)rand() / (realtype)RAND_MAX;
+      xdata[i] = (sunrealtype)rand() / (sunrealtype)RAND_MAX;
     }
 
     /* copy x into y to print in case of solver failure */
@@ -230,7 +230,7 @@ int main(int argc, char* argv[])
     for (i = 1; i < nprocs; i++)
     {
       sunindextype *coltemp, *rowtemp;
-      realtype* datatemp;
+      sunrealtype* datatemp;
       sunindextype fst_rowi, M_loci;
 
       M_loci   = (i == (nprocs - 1)) ? M_loc + M_rem : Mnprocs;
@@ -303,7 +303,7 @@ int main(int argc, char* argv[])
     MPI_Recv(&NNZ_local, 1, MPI_SUNINDEXTYPE, 0, grid.iam, grid.comm, &mpistatus);
 
     /* Allocate memory for matrix members */
-    matdata = (realtype*)SUPERLU_MALLOC(NNZ_local * sizeof(realtype));
+    matdata = (sunrealtype*)SUPERLU_MALLOC(NNZ_local * sizeof(sunrealtype));
     colind  = (sunindextype*)SUPERLU_MALLOC(NNZ_local * sizeof(sunindextype));
     rowptrs = (sunindextype*)SUPERLU_MALLOC((M_loc + 1) * sizeof(sunindextype));
 
@@ -496,11 +496,11 @@ int main(int argc, char* argv[])
 /* ----------------------------------------------------------------------
  * Implementation-specific 'check' routines
  * --------------------------------------------------------------------*/
-int check_vector(N_Vector X, N_Vector Y, realtype tol)
+int check_vector(N_Vector X, N_Vector Y, sunrealtype tol)
 {
   int failure = 0;
   sunindextype i, local_length, maxloc;
-  realtype *Xdata, *Ydata, maxerr;
+  sunrealtype *Xdata, *Ydata, maxerr;
 
   Xdata        = N_VGetArrayPointer(X);
   Ydata        = N_VGetArrayPointer(Y);
@@ -531,7 +531,7 @@ int check_vector(N_Vector X, N_Vector Y, realtype tol)
   else { return (0); }
 }
 
-int csr_from_dense(SUNMatrix Ad, realtype droptol, realtype** matdata,
+int csr_from_dense(SUNMatrix Ad, sunrealtype droptol, sunrealtype** matdata,
                    sunindextype** colind, sunindextype** rowptrs)
 {
   sunindextype i, j, nnz;
@@ -555,7 +555,7 @@ int csr_from_dense(SUNMatrix Ad, realtype droptol, realtype** matdata,
   }
 
   /* allocate */
-  (*matdata) = (realtype*)malloc(nnz * sizeof(realtype));
+  (*matdata) = (sunrealtype*)malloc(nnz * sizeof(sunrealtype));
   (*colind)  = (sunindextype*)malloc(nnz * sizeof(sunindextype));
   (*rowptrs) = (sunindextype*)malloc((M + 1) * sizeof(sunindextype));
 

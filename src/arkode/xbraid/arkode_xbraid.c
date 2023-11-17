@@ -19,7 +19,6 @@
 #include "arkode/arkode.h"
 #include "arkode_arkstep_impl.h"
 #include "arkode_xbraid_impl.h"
-#include "sundials/impl/sundials_errors_impl.h"
 #include "sundials/sundials_math.h"
 
 #define ONE SUN_RCONST(1.0)
@@ -259,14 +258,13 @@ int ARKBraid_GetLastARKStepFlag(braid_App app, int* last_flag)
 
 int ARKBraid_GetSolution(braid_App app, sunrealtype* tout, N_Vector yout)
 {
-  SUNAssignSUNCTX(yout->sunctx);
   ARKBraidContent content;
   if (app == NULL) { return SUNBRAID_ILLINPUT; }
   if (app->content == NULL) { return SUNBRAID_MEMFAIL; }
   content = (ARKBraidContent)app->content;
   if (content->yout == NULL) { return SUNBRAID_MEMFAIL; }
   *tout = content->tout;
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, content->yout, yout));
+  N_VScale(ONE, content->yout, yout);
   return SUNBRAID_SUCCESS;
 }
 
@@ -354,7 +352,6 @@ int ARKBraid_Init(braid_App app, sunrealtype t, braid_Vector* u_ptr)
 
   /* Access app content */
   content = (ARKBraidContent)app->content;
-  SUNAssignSUNCTX(content->ark_mem->sunctx);
 
   if (content->ark_mem == NULL) { return SUNBRAID_MEMFAIL; }
 
@@ -370,7 +367,7 @@ int ARKBraid_Init(braid_App app, sunrealtype t, braid_Vector* u_ptr)
   if (flag != SUNBRAID_SUCCESS) { return flag; }
 
   /* Set initial solution at all time points */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, content->ark_mem->yn, y));
+  N_VScale(ONE, content->ark_mem->yn, y);
 
   return SUNBRAID_SUCCESS;
 }
@@ -391,7 +388,6 @@ int ARKBraid_Access(braid_App app, braid_Vector u, braid_AccessStatus astatus)
 
   /* Access app content */
   content = (ARKBraidContent)app->content;
-  SUNAssignSUNCTX(content->ark_mem->sunctx);
 
   if (content->ark_mem) { return SUNBRAID_MEMFAIL; }
 
@@ -427,7 +423,7 @@ int ARKBraid_Access(braid_App app, braid_Vector u, braid_AccessStatus astatus)
 
       /* Save solution for output to user */
       content->tout = time;
-      SUNCheckCallLastErrNoRet(N_VScale(ONE, u->y, content->yout));
+      N_VScale(ONE, u->y, content->yout);
     }
   }
 

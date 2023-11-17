@@ -196,7 +196,7 @@ class BlockReduceExecPolicy : public ExecPolicy
 public:
   BlockReduceExecPolicy(const size_t blockDim, const size_t gridDim = 0,
                         hipStream_t stream = 0)
-    : ExecPolicy(stream), blockDim_(blockDim), gridDim_(gridDim)
+    : blockDim_(blockDim), gridDim_(gridDim), ExecPolicy(stream)
   {
     if (blockDim < 1 || blockDim % WARP_SIZE)
     {

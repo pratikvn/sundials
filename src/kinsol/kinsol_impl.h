@@ -23,10 +23,9 @@
 #include <stdarg.h>
 
 #include <kinsol/kinsol.h>
-#include <sundials/impl/sundials_errors_impl.h>
-#include <sundials/impl/sundials_context_impl.h>
-#include "sundials_iterative_impl.h"
 #include "sundials_logger_impl.h"
+#include "sundials_context_impl.h"
+#include "sundials_iterative_impl.h"
 
 #ifdef __cplusplus  /* wrapper to enable C++ usage */
 extern "C" {
@@ -55,6 +54,13 @@ extern "C" {
 
 #define OMEGA_MIN SUN_RCONST(0.00001)
 #define OMEGA_MAX SUN_RCONST(0.9)
+
+/*=================================================================*/
+/* Shortcuts                                                       */
+/*=================================================================*/
+
+#define KIN_PROFILER kin_mem->kin_sunctx->profiler
+#define KIN_LOGGER kin_mem->kin_sunctx->logger
 
 /*
  * -----------------------------------------------------------------
@@ -380,8 +386,9 @@ typedef struct KINMemRec {
 
 /* High level error handler */
 
-void KINProcessError(KINMem kin_mem, int error_code, int line, const char *func,
-                     const char* file, const char *msgfmt, ...);
+void KINProcessError(KINMem kin_mem,
+                     int error_code, const char *module, const char *fname,
+                     const char *msgfmt, ...);
 
 /* Prototype of internal errHandler function */
 

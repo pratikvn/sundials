@@ -95,7 +95,7 @@ int main(int argc, char** argv)
   if (ierr) return ierr;
 
   /* Create SUNDIALS context */
-  ierr = SUNContext_Create(&comm, &ctx);
+  ierr = SUNContext_Create(comm, &ctx);
   if (ierr) return ierr;
 
   /* Solution start and end time */
@@ -244,9 +244,6 @@ int main(int argc, char** argv)
   if (check_retval((void*)C, "SUNAdaptController_I", 0)) { return 1; }
   ierr = ARKStepSetAdaptController(arkode_mem, C);
   if (check_retval(&ierr, "ARKStepSetAdaptController", 1)) { return 1; }
-
-  ierr = ARKStepSetInitStep(arkode_mem, dt);
-  if (check_retval(&ierr, "ARKStepSetInitStep", 1)) { return 1; }
 
   ierr = ARKStepSetInitStep(arkode_mem, dt);
   if (check_retval(&ierr, "ARKStepSetInitStep", 1)) { return 1; }

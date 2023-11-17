@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sundials/sundials_context.h>
+#include <sundials/sundials_math.h>
 
 #include "arkode/arkode_butcher.h"
 #include "arkode_erkstep_impl.h"
@@ -38,7 +40,7 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   /* Check that f is supplied */
   if (f == NULL)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ERKStep", "ERKStepCreate",
                     MSG_ARK_NULL_F);
     return (NULL);
   }
@@ -46,14 +48,14 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   /* Check for legal input parameters */
   if (y0 == NULL)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ERKStep", "ERKStepCreate",
                     MSG_ARK_NULL_Y0);
     return (NULL);
   }
 
   if (!sunctx)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ERKStep", "ERKStepCreate",
                     MSG_ARK_NULL_SUNCTX);
     return (NULL);
   }
@@ -62,7 +64,7 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   nvectorOK = erkStep_CheckNVector(y0);
   if (!nvectorOK)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ERKStep", "ERKStepCreate",
                     MSG_ARK_BAD_NVECTOR);
     return (NULL);
   }
@@ -71,7 +73,7 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   ark_mem = arkCreate(sunctx);
   if (ark_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep", "ERKStepCreate",
                     MSG_ARK_NO_MEM);
     return (NULL);
   }
@@ -81,7 +83,7 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   step_mem = (ARKodeERKStepMem)malloc(sizeof(struct ARKodeERKStepMemRec));
   if (step_mem == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ERKStep", "ERKStepCreate",
                     MSG_ARK_ARKMEM_FAIL);
     return (NULL);
   }
@@ -97,7 +99,7 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   retval = ERKStepSetDefaults((void*)ark_mem);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ERKStep", "ERKStepCreate",
                     "Error setting default solver options");
     return (NULL);
   }
@@ -120,7 +122,7 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   retval = arkInit(ark_mem, t0, y0, FIRST_INIT);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ERKStep", "ERKStepCreate",
                     "Unable to initialize main ARKODE infrastructure");
     return (NULL);
   }
@@ -148,14 +150,9 @@ int ERKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
                                  &step_mem);
   if (retval != ARK_SUCCESS) { return (retval); }
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* Determing change in vector sizes */
   lrw1 = liw1 = 0;
-  if (y0->ops->nvspace != NULL)
-  {
-    SUNCheckCallLastErrNoRet(N_VSpace(y0, &lrw1, &liw1));
-  }
+  if (y0->ops->nvspace != NULL) { N_VSpace(y0, &lrw1, &liw1); }
   lrw_diff      = lrw1 - ark_mem->lrw1;
   liw_diff      = liw1 - ark_mem->liw1;
   ark_mem->lrw1 = lrw1;
@@ -165,7 +162,7 @@ int ERKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
   retval = arkResize(ark_mem, y0, hscale, t0, resize, resize_data);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ERKStep", "ERKStepResize",
                     "Unable to resize main ARKODE infrastructure");
     return (retval);
   }
@@ -176,7 +173,7 @@ int ERKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
     if (!arkResizeVec(ark_mem, resize, resize_data, lrw_diff, liw_diff, y0,
                       &step_mem->F[i]))
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ERKStep", "ERKStepResize",
                       "Unable to resize vector");
       return (ARK_MEM_FAIL);
     }
@@ -210,7 +207,7 @@ int ERKStepReInit(void* arkode_mem, ARKRhsFn f, sunrealtype t0, N_Vector y0)
   /* Check if ark_mem was allocated */
   if (ark_mem->MallocDone == SUNFALSE)
   {
-    arkProcessError(ark_mem, ARK_NO_MALLOC, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_NO_MALLOC, "ARKODE::ERKStep", "ERKStepReInit",
                     MSG_ARK_NO_MALLOC);
     return (ARK_NO_MALLOC);
   }
@@ -218,7 +215,7 @@ int ERKStepReInit(void* arkode_mem, ARKRhsFn f, sunrealtype t0, N_Vector y0)
   /* Check that f is supplied */
   if (f == NULL)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ERKStep", "ERKStepReInit",
                     MSG_ARK_NULL_F);
     return (ARK_ILL_INPUT);
   }
@@ -226,7 +223,7 @@ int ERKStepReInit(void* arkode_mem, ARKRhsFn f, sunrealtype t0, N_Vector y0)
   /* Check for legal input parameters */
   if (y0 == NULL)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ERKStep", "ERKStepReInit",
                     MSG_ARK_NULL_Y0);
     return (ARK_ILL_INPUT);
   }
@@ -238,7 +235,7 @@ int ERKStepReInit(void* arkode_mem, ARKRhsFn f, sunrealtype t0, N_Vector y0)
   retval = arkInit(arkode_mem, t0, y0, FIRST_INIT);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ERKStep", "ERKStepReInit",
                     "Unable to initialize main ARKODE infrastructure");
     return (retval);
   }
@@ -271,7 +268,7 @@ int ERKStepReset(void* arkode_mem, sunrealtype tR, N_Vector yR)
 
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ERKStep", "ERKStepReset",
                     "Unable to initialize main ARKODE infrastructure");
     return (retval);
   }
@@ -291,8 +288,8 @@ int ERKStepSStolerances(void* arkode_mem, sunrealtype reltol, sunrealtype abstol
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "ERKStepSStolerances", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -305,8 +302,8 @@ int ERKStepSVtolerances(void* arkode_mem, sunrealtype reltol, N_Vector abstol)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "ERKStepSVtolerances", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -319,8 +316,8 @@ int ERKStepWFtolerances(void* arkode_mem, ARKEwtFn efun)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "ERKStepWFtolerances", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -333,7 +330,7 @@ int ERKStepRootInit(void* arkode_mem, int nrtfn, ARKRootFn g)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep", "ERKStepRootInit",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -349,14 +346,14 @@ int ERKStepEvolve(void* arkode_mem, sunrealtype tout, N_Vector yout,
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep", "ERKStepEvolve",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
-  SUNDIALS_MARK_FUNCTION_BEGIN(ark_mem->sunctx->profiler);
+  SUNDIALS_MARK_FUNCTION_BEGIN(ARK_PROFILER);
   retval = arkEvolve(ark_mem, tout, yout, tret, itask);
-  SUNDIALS_MARK_FUNCTION_END(ark_mem->sunctx->profiler);
+  SUNDIALS_MARK_FUNCTION_END(ARK_PROFILER);
   return (retval);
 }
 
@@ -367,14 +364,14 @@ int ERKStepGetDky(void* arkode_mem, sunrealtype t, int k, N_Vector dky)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep", "ERKStepGetDky",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
-  SUNDIALS_MARK_FUNCTION_BEGIN(ark_mem->sunctx->profiler);
+  SUNDIALS_MARK_FUNCTION_BEGIN(ARK_PROFILER);
   retval = arkGetDky(ark_mem, t, k, dky);
-  SUNDIALS_MARK_FUNCTION_END(ark_mem->sunctx->profiler);
+  SUNDIALS_MARK_FUNCTION_END(ARK_PROFILER);
   return (retval);
 }
 
@@ -485,7 +482,7 @@ void ERKStepPrintMem(void* arkode_mem, FILE* outfile)
   for (i = 0; i < step_mem->stages; i++)
   {
     fprintf(outfile, "ERKStep: F[%i]:\n", i);
-    SUNCheckCallLastErrNoRet(N_VPrintFile(step_mem->F[i], outfile));
+    N_VPrintFile(step_mem->F[i], outfile);
   }
 #endif
 }
@@ -542,7 +539,7 @@ int erkStep_Init(void* arkode_mem, int init_type)
   retval = erkStep_SetButcherTable(ark_mem);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ERKStep", "erkStep_Init",
                     "Could not create Butcher table");
     return (ARK_ILL_INPUT);
   }
@@ -551,7 +548,7 @@ int erkStep_Init(void* arkode_mem, int init_type)
   retval = erkStep_CheckButcherTable(ark_mem);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ERKStep", "erkStep_Init",
                     "Error in Butcher table");
     return (ARK_ILL_INPUT);
   }
@@ -563,8 +560,8 @@ int erkStep_Init(void* arkode_mem, int init_type)
   /* Ensure that if adaptivity is enabled, then method includes embedding coefficients */
   if (!ark_mem->fixedstep && (step_mem->p == 0))
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__,
-                    __FILE__, "Adaptive timestepping cannot be performed without embedding coefficients");
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ERKStep",
+                    "erkStep_Init", "Adaptive timestepping cannot be performed without embedding coefficients");
     return (ARK_ILL_INPUT);
   }
 
@@ -616,7 +613,7 @@ int erkStep_Init(void* arkode_mem, int init_type)
 
     if (retval != ARK_SUCCESS)
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ERKStep", "erkStep_Init",
                       "Unable to update interpolation polynomial degree");
       return (ARK_ILL_INPUT);
     }
@@ -670,8 +667,6 @@ int erkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                  &step_mem);
   if (retval != ARK_SUCCESS) { return (retval); }
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* perform RHS functions contingent on 'mode' argument */
   switch (mode)
   {
@@ -691,7 +686,7 @@ int erkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
     }
 
     /* copy RHS vector into output */
-    SUNCheckCallLastErrNoRet(N_VScale(ONE, step_mem->F[0], f));
+    N_VScale(ONE, step_mem->F[0], f);
 
     break;
 
@@ -733,8 +728,8 @@ int erkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
     step_mem->nfe++;
     if (retval != 0)
     {
-      arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__, __FILE__,
-                      MSG_ARK_RHSFUNC_FAILED, t);
+      arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ERKStep",
+                      "erkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
       return (ARK_RHSFUNC_FAIL);
     }
 
@@ -742,8 +737,8 @@ int erkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
 
   default:
     /* return with RHS failure if unknown mode is passed */
-    arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__, __FILE__,
-                    "Unknown full RHS mode");
+    arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ERKStep",
+                    "erkStep_FullRHS", "Unknown full RHS mode");
     return (ARK_RHSFUNC_FAIL);
   }
 
@@ -786,8 +781,6 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
                                  &step_mem);
   if (retval != ARK_SUCCESS) { return (retval); }
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* local shortcuts for fused vector operations */
   cvals = step_mem->cvals;
   Xvecs = step_mem->Xvecs;
@@ -800,14 +793,12 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
 #endif
 
 #ifdef SUNDIALS_LOGGING_EXTRA_DEBUG
-  SUNLogger_QueueMsg(ark_mem->sunctx->logger, SUN_LOGLEVEL_DEBUG,
-                     "ARKODE::erkStep_TakeStep", "stage", "z[0] =", "");
-  SUNCheckCallLastErrNoRet(
-    N_VPrintFile(ark_mem->ycur, ark_mem->sunctx->logger->debug_fp));
-  SUNLogger_QueueMsg(ark_mem->sunctx->logger, SUN_LOGLEVEL_DEBUG,
-                     "ARKODE::erkStep_TakeStep", "stage RHS", "F[0] =", "");
-  SUNCheckCallLastErrNoRet(
-    N_VPrintFile(step_mem->F[0], ark_mem->sunctx->logger->debug_fp));
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::erkStep_TakeStep",
+                     "stage", "z[0] =", "");
+  N_VPrintFile(ark_mem->ycur, ARK_LOGGER->debug_fp);
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::erkStep_TakeStep",
+                     "stage RHS", "F[0] =", "");
+  N_VPrintFile(step_mem->F[0], ARK_LOGGER->debug_fp);
 #endif
 
   /* Call the full RHS if needed. If this is the first step then we may need to
@@ -853,7 +844,6 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
 
     /*   call fused vector operation to do the work */
     retval = N_VLinearCombination(nvec, cvals, Xvecs, ark_mem->ycur);
-    SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
 
     /* apply user-supplied stage postprocessing function (if supplied) */
@@ -872,10 +862,9 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
     if (retval > 0) { return (ARK_UNREC_RHSFUNC_ERR); }
 
 #ifdef SUNDIALS_LOGGING_EXTRA_DEBUG
-    SUNLogger_QueueMsg(ark_mem->sunctx->logger, SUN_LOGLEVEL_DEBUG,
+    SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
                        "ARKODE::erkStep_TakeStep", "stage RHS", "F[%i] =", is);
-    SUNCheckCallLastErrNoRet(
-      N_VPrintFile(step_mem->F[is], ark_mem->sunctx->logger->debug_fp));
+    N_VPrintFile(step_mem->F[is], ARK_LOGGER->debug_fp);
 #endif
 
   } /* loop over stages */
@@ -885,11 +874,9 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
   if (retval < 0) { return (retval); }
 
 #ifdef SUNDIALS_LOGGING_EXTRA_DEBUG
-  SUNLogger_QueueMsg(ark_mem->sunctx->logger, SUN_LOGLEVEL_DEBUG,
-                     "ARKODE::erkStep_TakeStep", "updated solution",
-                     "ycur =", "");
-  SUNCheckCallLastErrNoRet(
-    N_VPrintFile(ark_mem->ycur, ark_mem->sunctx->logger->debug_fp));
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::erkStep_TakeStep",
+                     "updated solution", "ycur =", "");
+  N_VPrintFile(ark_mem->ycur, ARK_LOGGER->debug_fp);
 #endif
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
@@ -917,14 +904,13 @@ int erkStep_AccessStepMem(void* arkode_mem, const char* fname,
   /* access ARKodeMem structure */
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep", fname, MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   *ark_mem = (ARKodeMem)arkode_mem;
   if ((*ark_mem)->step_mem == NULL)
   {
-    arkProcessError(*ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(*ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep", fname,
                     MSG_ERKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -964,8 +950,8 @@ int erkStep_SetButcherTable(ARKodeMem ark_mem)
   /* access ARKodeERKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ERKSTEP_NO_MEM);
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "erkStep_SetButcherTable", MSG_ERKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
   step_mem = (ARKodeERKStepMem)ark_mem->step_mem;
@@ -1035,8 +1021,8 @@ int erkStep_CheckButcherTable(ARKodeMem ark_mem)
   /* access ARKodeERKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ERKSTEP_NO_MEM);
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "erkStep_CheckButcherTable", MSG_ERKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
   step_mem = (ARKodeERKStepMem)ark_mem->step_mem;
@@ -1044,24 +1030,24 @@ int erkStep_CheckButcherTable(ARKodeMem ark_mem)
   /* check that stages > 0 */
   if (step_mem->stages < 1)
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "stages < 1!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ERKStep",
+                    "erkStep_CheckButcherTable", "stages < 1!");
     return (ARK_INVALID_TABLE);
   }
 
   /* check that method order q > 0 */
   if (step_mem->q < 1)
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "method order < 1!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ERKStep",
+                    "erkStep_CheckButcherTable", "method order < 1!");
     return (ARK_INVALID_TABLE);
   }
 
   /* check that embedding order p > 0 */
   if ((step_mem->p < 1) && (!ark_mem->fixedstep))
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "embedding order < 1!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ERKStep",
+                    "erkStep_CheckButcherTable", "embedding order < 1!");
     return (ARK_INVALID_TABLE);
   }
 
@@ -1070,8 +1056,8 @@ int erkStep_CheckButcherTable(ARKodeMem ark_mem)
   {
     if (step_mem->B->d == NULL)
     {
-      arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                      "no embedding!");
+      arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ERKStep",
+                      "erkStep_CheckButcherTable", "no embedding!");
       return (ARK_INVALID_TABLE);
     }
   }
@@ -1087,8 +1073,8 @@ int erkStep_CheckButcherTable(ARKodeMem ark_mem)
   }
   if (!okay)
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "Ae Butcher table is implicit!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ERKStep",
+                    "erkStep_CheckButcherTable", "Ae Butcher table is implicit!");
     return (ARK_INVALID_TABLE);
   }
 
@@ -1134,8 +1120,6 @@ int erkStep_CheckButcherTable(ARKodeMem ark_mem)
   ---------------------------------------------------------------*/
 int erkStep_ComputeSolutions(ARKodeMem ark_mem, sunrealtype* dsmPtr)
 {
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* local data */
   int retval, j, nvec;
   N_Vector y, yerr;
@@ -1146,8 +1130,8 @@ int erkStep_ComputeSolutions(ARKodeMem ark_mem, sunrealtype* dsmPtr)
   /* access ARKodeERKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ERKSTEP_NO_MEM);
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "erkStep_ComputeSolutions", MSG_ERKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
   step_mem = (ARKodeERKStepMem)ark_mem->step_mem;
@@ -1178,7 +1162,6 @@ int erkStep_ComputeSolutions(ARKodeMem ark_mem, sunrealtype* dsmPtr)
 
   /*   call fused vector operation to do the work */
   retval = N_VLinearCombination(nvec, cvals, Xvecs, y);
-  SUNCheckCallNoRet(retval);
   if (retval != 0) { return (ARK_VECTOROP_ERR); }
 
   /* Compute yerr (if step adaptivity enabled) */
@@ -1195,11 +1178,10 @@ int erkStep_ComputeSolutions(ARKodeMem ark_mem, sunrealtype* dsmPtr)
 
     /* call fused vector operation to do the work */
     retval = N_VLinearCombination(nvec, cvals, Xvecs, yerr);
-    SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
 
     /* fill error norm */
-    *dsmPtr = SUNCheckCallLastErrNoRet(N_VWrmsNorm(yerr, ark_mem->ewt));
+    *dsmPtr = N_VWrmsNorm(yerr, ark_mem->ewt);
   }
 
   return (ARK_SUCCESS);

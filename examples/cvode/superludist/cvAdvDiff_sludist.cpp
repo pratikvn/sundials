@@ -41,19 +41,12 @@
 
 #include <cmath>
 #include <cvode/cvode.h> /* prototypes for CVODE fcts., consts.          */
-#include <cvode/cvode.h> /* prototypes for CVODE fcts., consts.          */
-#include <cvode/cvode_direct.h> /* CVODE direct linear solver interface         */
-#include <mpi.h>                /* MPI constants and types */
-#include <mpi.h>                /* MPI constants and types */
-#include <nvector/nvector_parallel.h> /* access to MPI-parallel N_Vector              */
+#include <mpi.h>         /* MPI constants and types */
 #include <nvector/nvector_parallel.h> /* access to MPI-parallel N_Vector              */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sundials/sundials_types.h> /* definition of type sunrealtype                  */
-#include <sundials/sundials_types.h> /* definition of type sunrealtype                  */
 #include <sunlinsol/sunlinsol_superludist.h> /* access to the SuperLU-DIST SUNLinearSolver   */
-#include <sunlinsol/sunlinsol_superludist.h> /* access to the SuperLU-DIST SUNLinearSolver   */
-#include <sunmatrix/sunmatrix_slunrloc.h> /* access to the SuperLU SLU_NR_loc SUNMatrix   */
 #include <sunmatrix/sunmatrix_slunrloc.h> /* access to the SuperLU SLU_NR_loc SUNMatrix   */
 
 #include "superlu_ddefs.h"
@@ -148,7 +141,7 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(comm, &my_pe);
 
   /* Create the SUNDIALS context */
-  retval = SUNContext_Create(&comm, &sunctx);
+  retval = SUNContext_Create(comm, &sunctx);
   if (check_retval(&retval, "SUNContext_Create", 1, my_pe)) { return (1); }
 
   /* check for nprow and npcol arguments */

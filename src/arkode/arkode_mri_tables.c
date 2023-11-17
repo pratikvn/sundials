@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sundials/sundials_math.h>
 
 #include "arkode_impl.h"
 #include "arkode_mristep_impl.h"
@@ -41,7 +42,7 @@ MRIStepCoupling MRIStepCoupling_LoadTable(ARKODE_MRITableID method)
 #undef ARK_MRI_TABLE
 
   default:
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE", "MRIStepCoupling_LoadTable",
                     "Unknown coupling table");
     return NULL;
   }

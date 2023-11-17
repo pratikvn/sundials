@@ -50,10 +50,10 @@ int main(int argc, char* argv[])
   int print_timing;
   int print_on_fail;
   sunindextype j, k;
-  realtype *cols, *xdata, *colIj;
+  sunrealtype *colj, *xdata, *colIj;
   SUNContext sunctx;
 
-  if (SUNContext_Create(NULL, &sunctx))
+  if (SUNContext_Create(SUN_COMM_NULL, &sunctx))
   {
     printf("ERROR: SUNContext_Create failed\n");
     return (-1);
@@ -94,10 +94,10 @@ int main(int argc, char* argv[])
   /* Fill A matrix with uniform random data in [0,1/cols] */
   for (j = 0; j < cols; j++)
   {
-    cols = SUNDenseMatrix_Column(A, j);
+    colj = SUNDenseMatrix_Column(A, j);
     for (k = 0; k < rows; k++)
     {
-      cols[k] = (realtype)rand() / (realtype)RAND_MAX / cols;
+      colj[k] = (sunrealtype)rand() / (sunrealtype)RAND_MAX / cols;
     }
   }
 
@@ -105,8 +105,8 @@ int main(int argc, char* argv[])
   j = cols - 1;
   for (k = 0; k < rows; k++)
   {
-    cols    = SUNDenseMatrix_Column(I, j);
-    cols[k] = 1;
+    colj    = SUNDenseMatrix_Column(I, j);
+    colj[k] = 1;
     j       = j - 1;
   }
 
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
   {
     for (j = 0; j < cols; j++)
     {
-      cols    = SUNDenseMatrix_Column(A, j);
+      colj    = SUNDenseMatrix_Column(A, j);
       colIj   = SUNDenseMatrix_Column(I, j);
       colj[k] = colj[k] + colIj[k];
     }
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
   xdata = N_VGetArrayPointer(x);
   for (j = 0; j < cols; j++)
   {
-    xdata[j] = (realtype)rand() / (realtype)RAND_MAX;
+    xdata[j] = (sunrealtype)rand() / (sunrealtype)RAND_MAX;
   }
 
   /* copy A and x into B and y to print in case of solver failure */
@@ -196,11 +196,11 @@ int main(int argc, char* argv[])
 /* ----------------------------------------------------------------------
  * Implementation-specific 'check' routines
  * --------------------------------------------------------------------*/
-int check_vector(N_Vector X, N_Vector Y, realtype tol)
+int check_vector(N_Vector X, N_Vector Y, sunrealtype tol)
 {
   int failure = 0;
   sunindextype i, local_length;
-  realtype *Xdata, *Ydata, maxerr;
+  sunrealtype *Xdata, *Ydata, maxerr;
 
   Xdata        = N_VGetArrayPointer(X);
   Ydata        = N_VGetArrayPointer(Y);

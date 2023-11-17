@@ -21,6 +21,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/sundials_math.h>
+#include <sundials/sundials_types.h>
 
 #include "arkode_arkstep_impl.h"
 
@@ -192,178 +194,6 @@ int ARKStepSetMaxConvFails(void* arkode_mem, int maxncf)
 int ARKStepSetAdaptController(void* arkode_mem, SUNAdaptController C)
 {
   return (arkSetAdaptController(arkode_mem, C));
-}
-
-int ARKStepSetFixedStep(void* arkode_mem, sunrealtype hfixed)
-{
-  return (arkSetFixedStep(arkode_mem, hfixed));
-}
-
-int ARKStepSetInterpolantDegree(void* arkode_mem, int degree)
-{
-  if (degree < 0) { degree = ARK_INTERP_MAX_DEGREE; }
-  return (arkSetInterpolantDegree(arkode_mem, degree));
-}
-
-int ARKStepSetInterpolantType(void* arkode_mem, int itype)
-{
-  return (arkSetInterpolantType(arkode_mem, itype));
-}
-
-int ARKStepSetErrHandlerFn(void* arkode_mem, ARKErrHandlerFn ehfun, void* eh_data)
-{
-  return (arkSetErrHandlerFn(arkode_mem, ehfun, eh_data));
-}
-
-int ARKStepSetErrFile(void* arkode_mem, FILE* errfp)
-{
-  return (arkSetErrFile(arkode_mem, errfp));
-}
-
-int ARKStepSetDiagnostics(void* arkode_mem, FILE* diagfp)
-{
-  return (arkSetDiagnostics(arkode_mem, diagfp));
-}
-
-int ARKStepSetMaxNumSteps(void* arkode_mem, long int mxsteps)
-{
-  return (arkSetMaxNumSteps(arkode_mem, mxsteps));
-}
-
-int ARKStepSetMaxHnilWarns(void* arkode_mem, int mxhnil)
-{
-  return (arkSetMaxHnilWarns(arkode_mem, mxhnil));
-}
-
-int ARKStepSetInitStep(void* arkode_mem, sunrealtype hin)
-{
-  return (arkSetInitStep(arkode_mem, hin));
-}
-
-int ARKStepSetMinStep(void* arkode_mem, sunrealtype hmin)
-{
-  return (arkSetMinStep(arkode_mem, hmin));
-}
-
-int ARKStepSetMaxStep(void* arkode_mem, sunrealtype hmax)
-{
-  return (arkSetMaxStep(arkode_mem, hmax));
-}
-
-int ARKStepSetStopTime(void* arkode_mem, sunrealtype tstop)
-{
-  return (arkSetStopTime(arkode_mem, tstop));
-}
-
-int ARKStepClearStopTime(void* arkode_mem)
-{
-  return (arkClearStopTime(arkode_mem));
-}
-
-int ARKStepSetRootDirection(void* arkode_mem, int* rootdir)
-{
-  return (arkSetRootDirection(arkode_mem, rootdir));
-}
-
-int ARKStepSetNoInactiveRootWarn(void* arkode_mem)
-{
-  return (arkSetNoInactiveRootWarn(arkode_mem));
-}
-
-int ARKStepSetConstraints(void* arkode_mem, N_Vector constraints)
-{
-  return (arkSetConstraints(arkode_mem, constraints));
-}
-
-int ARKStepSetMaxNumConstrFails(void* arkode_mem, int maxfails)
-{
-  return (arkSetMaxNumConstrFails(arkode_mem, maxfails));
-}
-
-int ARKStepSetPostprocessStepFn(void* arkode_mem, ARKPostProcessFn ProcessStep)
-{
-  return (arkSetPostprocessStepFn(arkode_mem, ProcessStep));
-}
-
-int ARKStepSetPostprocessStageFn(void* arkode_mem, ARKPostProcessFn ProcessStage)
-{
-  return (arkSetPostprocessStageFn(arkode_mem, ProcessStage));
-}
-
-int ARKStepSetCFLFraction(void* arkode_mem, sunrealtype cfl_frac)
-{
-  return (arkSetCFLFraction(arkode_mem, cfl_frac));
-}
-
-int ARKStepSetSafetyFactor(void* arkode_mem, sunrealtype safety)
-{
-  return (arkSetSafetyFactor(arkode_mem, safety));
-}
-
-int ARKStepSetErrorBias(void* arkode_mem, sunrealtype bias)
-{
-  return (arkSetErrorBias(arkode_mem, bias));
-}
-
-int ARKStepSetMaxGrowth(void* arkode_mem, sunrealtype mx_growth)
-{
-  return (arkSetMaxGrowth(arkode_mem, mx_growth));
-}
-
-int ARKStepSetMinReduction(void* arkode_mem, sunrealtype eta_min)
-{
-  return (arkSetMinReduction(arkode_mem, eta_min));
-}
-
-int ARKStepSetFixedStepBounds(void* arkode_mem, sunrealtype lb, sunrealtype ub)
-{
-  return (arkSetFixedStepBounds(arkode_mem, lb, ub));
-}
-
-int ARKStepSetAdaptivityMethod(void* arkode_mem, int imethod, int idefault,
-                               int pq, sunrealtype adapt_params[3])
-{
-  return (arkSetAdaptivityMethod(arkode_mem, imethod, idefault, pq, adapt_params));
-}
-
-int ARKStepSetAdaptivityFn(void* arkode_mem, ARKAdaptFn hfun, void* h_data)
-{
-  return (arkSetAdaptivityFn(arkode_mem, hfun, h_data));
-}
-
-int ARKStepSetMaxFirstGrowth(void* arkode_mem, sunrealtype etamx1)
-{
-  return (arkSetMaxFirstGrowth(arkode_mem, etamx1));
-}
-
-int ARKStepSetMaxEFailGrowth(void* arkode_mem, sunrealtype etamxf)
-{
-  return (arkSetMaxEFailGrowth(arkode_mem, etamxf));
-}
-
-int ARKStepSetSmallNumEFails(void* arkode_mem, int small_nef)
-{
-  return (arkSetSmallNumEFails(arkode_mem, small_nef));
-}
-
-int ARKStepSetMaxCFailGrowth(void* arkode_mem, sunrealtype etacf)
-{
-  return (arkSetMaxCFailGrowth(arkode_mem, etacf));
-}
-
-int ARKStepSetStabilityFn(void* arkode_mem, ARKExpStabFn EStab, void* estab_data)
-{
-  return (arkSetStabilityFn(arkode_mem, EStab, estab_data));
-}
-
-int ARKStepSetMaxErrTestFails(void* arkode_mem, int maxnef)
-{
-  return (arkSetMaxErrTestFails(arkode_mem, maxnef));
-}
-
-int ARKStepSetMaxConvFails(void* arkode_mem, int maxncf)
-{
-  return (arkSetMaxConvFails(arkode_mem, maxncf));
 }
 
 int ARKStepSetFixedStep(void* arkode_mem, sunrealtype hfixed)
@@ -582,6 +412,127 @@ int ARKStepGetJac(void* arkode_mem, SUNMatrix* J)
 int ARKStepGetJacTime(void* arkode_mem, sunrealtype* t_J)
 {
   return arkLSGetJacTime(arkode_mem, t_J);
+}
+
+int ARKStepGetJacNumSteps(void* arkode_mem, long* nst_J)
+{
+  return arkLSGetJacNumSteps(arkode_mem, nst_J);
+}
+
+int ARKStepGetLinWorkSpace(void* arkode_mem, long int* lenrwLS, long int* leniwLS)
+{
+  return (arkLSGetWorkSpace(arkode_mem, lenrwLS, leniwLS));
+}
+
+int ARKStepGetNumJacEvals(void* arkode_mem, long int* njevals)
+{
+  return (arkLSGetNumJacEvals(arkode_mem, njevals));
+}
+
+int ARKStepGetNumPrecEvals(void* arkode_mem, long int* npevals)
+{
+  return (arkLSGetNumPrecEvals(arkode_mem, npevals));
+}
+
+int ARKStepGetNumPrecSolves(void* arkode_mem, long int* npsolves)
+{
+  return (arkLSGetNumPrecSolves(arkode_mem, npsolves));
+}
+
+int ARKStepGetNumLinIters(void* arkode_mem, long int* nliters)
+{
+  return (arkLSGetNumLinIters(arkode_mem, nliters));
+}
+
+int ARKStepGetNumLinConvFails(void* arkode_mem, long int* nlcfails)
+{
+  return (arkLSGetNumConvFails(arkode_mem, nlcfails));
+}
+
+int ARKStepGetNumJTSetupEvals(void* arkode_mem, long int* njtsetups)
+{
+  return (arkLSGetNumJTSetupEvals(arkode_mem, njtsetups));
+}
+
+int ARKStepGetNumJtimesEvals(void* arkode_mem, long int* njvevals)
+{
+  return (arkLSGetNumJtimesEvals(arkode_mem, njvevals));
+}
+
+int ARKStepGetNumLinRhsEvals(void* arkode_mem, long int* nfevalsLS)
+{
+  return (arkLSGetNumRhsEvals(arkode_mem, nfevalsLS));
+}
+
+int ARKStepGetLastLinFlag(void* arkode_mem, long int* flag)
+{
+  return (arkLSGetLastFlag(arkode_mem, flag));
+}
+
+int ARKStepGetMassWorkSpace(void* arkode_mem, long int* lenrwMLS,
+                            long int* leniwMLS)
+{
+  return (arkLSGetMassWorkSpace(arkode_mem, lenrwMLS, leniwMLS));
+}
+
+int ARKStepGetNumMassSetups(void* arkode_mem, long int* nmsetups)
+{
+  return (arkLSGetNumMassSetups(arkode_mem, nmsetups));
+}
+
+int ARKStepGetNumMassMultSetups(void* arkode_mem, long int* nmvsetups)
+{
+  return (arkLSGetNumMassMatvecSetups(arkode_mem, nmvsetups));
+}
+
+int ARKStepGetNumMassMult(void* arkode_mem, long int* nmvevals)
+{
+  return (arkLSGetNumMassMult(arkode_mem, nmvevals));
+}
+
+int ARKStepGetNumMassSolves(void* arkode_mem, long int* nmsolves)
+{
+  return (arkLSGetNumMassSolves(arkode_mem, nmsolves));
+}
+
+int ARKStepGetNumMassPrecEvals(void* arkode_mem, long int* nmpevals)
+{
+  return (arkLSGetNumMassPrecEvals(arkode_mem, nmpevals));
+}
+
+int ARKStepGetNumMassPrecSolves(void* arkode_mem, long int* nmpsolves)
+{
+  return (arkLSGetNumMassPrecSolves(arkode_mem, nmpsolves));
+}
+
+int ARKStepGetNumMassIters(void* arkode_mem, long int* nmiters)
+{
+  return (arkLSGetNumMassIters(arkode_mem, nmiters));
+}
+
+int ARKStepGetNumMassConvFails(void* arkode_mem, long int* nmcfails)
+{
+  return (arkLSGetNumMassConvFails(arkode_mem, nmcfails));
+}
+
+int ARKStepGetNumMTSetups(void* arkode_mem, long int* nmtsetups)
+{
+  return (arkLSGetNumMTSetups(arkode_mem, nmtsetups));
+}
+
+int ARKStepGetCurrentMassMatrix(void* arkode_mem, SUNMatrix* M)
+{
+  return (arkLSGetCurrentMassMatrix(arkode_mem, M));
+}
+
+int ARKStepGetLastMassFlag(void* arkode_mem, long int* flag)
+{
+  return (arkLSGetLastMassFlag(arkode_mem, flag));
+}
+
+char* ARKStepGetLinReturnFlagName(long int flag)
+{
+  return (arkLSGetReturnFlagName(flag));
 }
 
 /* -----------------------------------------------------------------------------

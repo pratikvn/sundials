@@ -21,6 +21,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/sundials_math.h>
+#include <sundials/sundials_types.h>
 
 #include "arkode_erkstep_impl.h"
 
@@ -194,173 +196,6 @@ int ERKStepSetAdaptController(void* arkode_mem, SUNAdaptController C)
   return (arkSetAdaptController(arkode_mem, C));
 }
 
-int ERKStepSetInterpolantDegree(void* arkode_mem, int degree)
-{
-  if (degree < 0) { degree = ARK_INTERP_MAX_DEGREE; }
-  return (arkSetInterpolantDegree(arkode_mem, degree));
-}
-
-int ERKStepSetInterpolantType(void* arkode_mem, int itype)
-{
-  return (arkSetInterpolantType(arkode_mem, itype));
-}
-
-int ERKStepSetErrHandlerFn(void* arkode_mem, ARKErrHandlerFn ehfun, void* eh_data)
-{
-  return (arkSetErrHandlerFn(arkode_mem, ehfun, eh_data));
-}
-
-int ERKStepSetErrFile(void* arkode_mem, FILE* errfp)
-{
-  return (arkSetErrFile(arkode_mem, errfp));
-}
-
-int ERKStepSetUserData(void* arkode_mem, void* user_data)
-{
-  return (arkSetUserData(arkode_mem, user_data));
-}
-
-int ERKStepSetDiagnostics(void* arkode_mem, FILE* diagfp)
-{
-  return (arkSetDiagnostics(arkode_mem, diagfp));
-}
-
-int ERKStepSetMaxNumSteps(void* arkode_mem, long int mxsteps)
-{
-  return (arkSetMaxNumSteps(arkode_mem, mxsteps));
-}
-
-int ERKStepSetMaxHnilWarns(void* arkode_mem, int mxhnil)
-{
-  return (arkSetMaxHnilWarns(arkode_mem, mxhnil));
-}
-
-int ERKStepSetInitStep(void* arkode_mem, sunrealtype hin)
-{
-  return (arkSetInitStep(arkode_mem, hin));
-}
-
-int ERKStepSetMinStep(void* arkode_mem, sunrealtype hmin)
-{
-  return (arkSetMinStep(arkode_mem, hmin));
-}
-
-int ERKStepSetMaxStep(void* arkode_mem, sunrealtype hmax)
-{
-  return (arkSetMaxStep(arkode_mem, hmax));
-}
-
-int ERKStepSetStopTime(void* arkode_mem, sunrealtype tstop)
-{
-  return (arkSetStopTime(arkode_mem, tstop));
-}
-
-int ERKStepClearStopTime(void* arkode_mem)
-{
-  return (arkClearStopTime(arkode_mem));
-}
-
-int ERKStepSetRootDirection(void* arkode_mem, int* rootdir)
-{
-  return (arkSetRootDirection(arkode_mem, rootdir));
-}
-
-int ERKStepSetNoInactiveRootWarn(void* arkode_mem)
-{
-  return (arkSetNoInactiveRootWarn(arkode_mem));
-}
-
-int ERKStepSetConstraints(void* arkode_mem, N_Vector constraints)
-{
-  return (arkSetConstraints(arkode_mem, constraints));
-}
-
-int ERKStepSetMaxNumConstrFails(void* arkode_mem, int maxfails)
-{
-  return (arkSetMaxNumConstrFails(arkode_mem, maxfails));
-}
-
-int ERKStepSetPostprocessStepFn(void* arkode_mem, ARKPostProcessFn ProcessStep)
-{
-  return (arkSetPostprocessStepFn(arkode_mem, ProcessStep));
-}
-
-int ERKStepSetPostprocessStageFn(void* arkode_mem, ARKPostProcessFn ProcessStage)
-{
-  return (arkSetPostprocessStageFn(arkode_mem, ProcessStage));
-}
-
-int ERKStepSetCFLFraction(void* arkode_mem, sunrealtype cfl_frac)
-{
-  return (arkSetCFLFraction(arkode_mem, cfl_frac));
-}
-
-int ERKStepSetSafetyFactor(void* arkode_mem, sunrealtype safety)
-{
-  return (arkSetSafetyFactor(arkode_mem, safety));
-}
-
-int ERKStepSetErrorBias(void* arkode_mem, sunrealtype bias)
-{
-  return (arkSetErrorBias(arkode_mem, bias));
-}
-
-int ERKStepSetMaxGrowth(void* arkode_mem, sunrealtype mx_growth)
-{
-  return (arkSetMaxGrowth(arkode_mem, mx_growth));
-}
-
-int ERKStepSetMinReduction(void* arkode_mem, sunrealtype eta_min)
-{
-  return (arkSetMinReduction(arkode_mem, eta_min));
-}
-
-int ERKStepSetFixedStepBounds(void* arkode_mem, sunrealtype lb, sunrealtype ub)
-{
-  return (arkSetFixedStepBounds(arkode_mem, lb, ub));
-}
-
-int ERKStepSetAdaptivityMethod(void* arkode_mem, int imethod, int idefault,
-                               int pq, sunrealtype adapt_params[3])
-{
-  return (arkSetAdaptivityMethod(arkode_mem, imethod, idefault, pq, adapt_params));
-}
-
-int ERKStepSetAdaptivityFn(void* arkode_mem, ARKAdaptFn hfun, void* h_data)
-{
-  return (arkSetAdaptivityFn(arkode_mem, hfun, h_data));
-}
-
-int ERKStepSetMaxFirstGrowth(void* arkode_mem, sunrealtype etamx1)
-{
-  return (arkSetMaxFirstGrowth(arkode_mem, etamx1));
-}
-
-int ERKStepSetMaxEFailGrowth(void* arkode_mem, sunrealtype etamxf)
-{
-  return (arkSetMaxEFailGrowth(arkode_mem, etamxf));
-}
-
-int ERKStepSetSmallNumEFails(void* arkode_mem, int small_nef)
-{
-  return (arkSetSmallNumEFails(arkode_mem, small_nef));
-}
-
-int ERKStepSetStabilityFn(void* arkode_mem, ARKExpStabFn EStab, void* estab_data)
-{
-  return (arkSetStabilityFn(arkode_mem, EStab, estab_data));
-}
-
-int ERKStepSetMaxErrTestFails(void* arkode_mem, int maxnef)
-{
-  return (arkSetMaxErrTestFails(arkode_mem, maxnef));
-}
-
-int ERKStepSetFixedStep(void* arkode_mem, sunrealtype hfixed)
-{
-  return (arkSetFixedStep(arkode_mem, hfixed));
-}
-
 /*===============================================================
   ERKStep Optional output functions (wrappers for generic ARKODE
   utility routines). All are documented in arkode_io.c.
@@ -369,6 +204,92 @@ int ERKStepSetFixedStep(void* arkode_mem, sunrealtype hfixed)
 int ERKStepGetNumStepAttempts(void* arkode_mem, long int* nstep_attempts)
 {
   return (arkGetNumStepAttempts(arkode_mem, nstep_attempts));
+}
+
+int ERKStepGetNumSteps(void* arkode_mem, long int* nsteps)
+{
+  return (arkGetNumSteps(arkode_mem, nsteps));
+}
+
+int ERKStepGetActualInitStep(void* arkode_mem, sunrealtype* hinused)
+{
+  return (arkGetActualInitStep(arkode_mem, hinused));
+}
+
+int ERKStepGetLastStep(void* arkode_mem, sunrealtype* hlast)
+{
+  return (arkGetLastStep(arkode_mem, hlast));
+}
+
+int ERKStepGetCurrentStep(void* arkode_mem, sunrealtype* hcur)
+{
+  return (arkGetCurrentStep(arkode_mem, hcur));
+}
+
+int ERKStepGetCurrentTime(void* arkode_mem, sunrealtype* tcur)
+{
+  return (arkGetCurrentTime(arkode_mem, tcur));
+}
+
+int ERKStepGetTolScaleFactor(void* arkode_mem, sunrealtype* tolsfact)
+{
+  return (arkGetTolScaleFactor(arkode_mem, tolsfact));
+}
+
+int ERKStepGetErrWeights(void* arkode_mem, N_Vector eweight)
+{
+  return (arkGetErrWeights(arkode_mem, eweight));
+}
+
+int ERKStepGetWorkSpace(void* arkode_mem, long int* lenrw, long int* leniw)
+{
+  return (arkGetWorkSpace(arkode_mem, lenrw, leniw));
+}
+
+int ERKStepGetNumGEvals(void* arkode_mem, long int* ngevals)
+{
+  return (arkGetNumGEvals(arkode_mem, ngevals));
+}
+
+int ERKStepGetRootInfo(void* arkode_mem, int* rootsfound)
+{
+  return (arkGetRootInfo(arkode_mem, rootsfound));
+}
+
+int ERKStepGetStepStats(void* arkode_mem, long int* nsteps, sunrealtype* hinused,
+                        sunrealtype* hlast, sunrealtype* hcur, sunrealtype* tcur)
+{
+  return (arkGetStepStats(arkode_mem, nsteps, hinused, hlast, hcur, tcur));
+}
+
+int ERKStepGetNumConstrFails(void* arkode_mem, long int* nconstrfails)
+{
+  return (arkGetNumConstrFails(arkode_mem, nconstrfails));
+}
+
+int ERKStepGetNumExpSteps(void* arkode_mem, long int* nsteps)
+{
+  return (arkGetNumExpSteps(arkode_mem, nsteps));
+}
+
+int ERKStepGetNumAccSteps(void* arkode_mem, long int* nsteps)
+{
+  return (arkGetNumAccSteps(arkode_mem, nsteps));
+}
+
+int ERKStepGetNumErrTestFails(void* arkode_mem, long int* netfails)
+{
+  return (arkGetNumErrTestFails(arkode_mem, netfails));
+}
+
+int ERKStepGetUserData(void* arkode_mem, void** user_data)
+{
+  return (arkGetUserData(arkode_mem, user_data));
+}
+
+char* ERKStepGetReturnFlagName(long int flag)
+{
+  return (arkGetReturnFlagName(flag));
 }
 
 /* -----------------------------------------------------------------------------
@@ -510,7 +431,7 @@ int ERKStepSetDefaults(void* arkode_mem)
   retval = arkSetDefaults(arkode_mem);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ERKStep", "ERKStepSetDefaults",
                     "Error setting ARKODE infrastructure defaults");
     return (retval);
   }
@@ -629,7 +550,7 @@ int ERKStepSetTable(void* arkode_mem, ARKodeButcherTable B)
   /* check for legal inputs */
   if (B == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep", "ERKStepSetTable",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -654,7 +575,7 @@ int ERKStepSetTable(void* arkode_mem, ARKodeButcherTable B)
   step_mem->B = ARKodeButcherTable_Copy(B);
   if (step_mem->B == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep", "ERKStepSetTable",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -688,8 +609,8 @@ int ERKStepSetTableNum(void* arkode_mem, ARKODE_ERKTableID etable)
   /* check that argument specifies an explicit table */
   if (etable < ARKODE_MIN_ERK_NUM || etable > ARKODE_MAX_ERK_NUM)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    "Illegal ERK table number");
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "ERKStepSetTableNum", "Illegal ERK table number");
     return (ARK_ILL_INPUT);
   }
 
@@ -708,8 +629,8 @@ int ERKStepSetTableNum(void* arkode_mem, ARKODE_ERKTableID etable)
   step_mem->B = ARKodeButcherTable_LoadERK(etable);
   if (step_mem->B == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    "Error setting table with that index");
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "ERKStepSetTableNum", "Error setting table with that index");
     return (ARK_ILL_INPUT);
   }
   step_mem->stages = step_mem->B->stages;
@@ -800,10 +721,8 @@ int ERKStepGetEstLocalErrors(void* arkode_mem, N_Vector ele)
                                  &ark_mem, &step_mem);
   if (retval != ARK_SUCCESS) { return (retval); }
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* copy vector to output */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, ark_mem->tempv1, ele));
+  N_VScale(ONE, ark_mem->tempv1, ele);
 
   return (ARK_SUCCESS);
 }
@@ -867,7 +786,7 @@ int ERKStepPrintAllStats(void* arkode_mem, FILE* outfile, SUNOutputFormat fmt)
     fprintf(outfile, "\n");
     break;
   default:
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE", "ERKStepPrintAllStats",
                     "Invalid formatting option.");
     return (ARK_ILL_INPUT);
   }
@@ -899,7 +818,8 @@ int ERKStepWriteParameters(void* arkode_mem, FILE* fp)
   retval = arkWriteParameters(arkode_mem, fp);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "ERKStepWriteParameters",
                     "Error writing ARKODE infrastructure parameters");
     return (retval);
   }
@@ -931,8 +851,8 @@ int ERKStepWriteButcher(void* arkode_mem, FILE* fp)
   /* check that Butcher table is non-NULL (otherwise report error) */
   if (step_mem->B == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    "Butcher table memory is NULL");
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ERKStep",
+                    "ERKStepWriteButcher", "Butcher table memory is NULL");
     return (ARK_MEM_NULL);
   }
 

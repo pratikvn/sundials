@@ -157,8 +157,8 @@ int arkAdapt(void* arkode_mem, ARKodeHAdaptMem hadapt_mem, N_Vector ycur,
   h_acc = int_dir * SUNMAX(SUNRabs(h_acc), SUNRabs(hadapt_mem->etamin * hcur));
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_INFO
-  SUNLogger_QueueMsg(ark_mem->sunctx->logger, SUN_LOGLEVEL_INFO,
-                     "ARKODE::arkAdapt", "new-step-after-max-min-bounds",
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_INFO, "ARKODE::arkAdapt",
+                     "new-step-after-max-min-bounds",
                      "h_acc = %" RSYM ", h_cfl = %" RSYM, h_acc, h_cfl);
 #endif
 

@@ -34,7 +34,7 @@ if(USE_XSDK_DEFAULTS)
 endif()
 
 # ---------------------------------------------------------------
-# Option to specify precision (realtype)
+# Option to specify precision (sunrealtype)
 # ---------------------------------------------------------------
 
 set(DOCSTR "single, double, or extended")
@@ -94,10 +94,6 @@ if(SUNDIALS_LOGGING_LEVEL GREATER_EQUAL 3)
   message(STATUS "SUNDIALS logging level set to ${SUNDIALS_LOGGING_LEVEL}")
   message(WARNING "SUNDIALS built with additional logging turned on, performance may be affected.")
 endif()
-
-set(DOCSTR "Build SUNDIALS logging with MPI support")
-sundials_option(SUNDIALS_LOGGING_ENABLE_MPI BOOL "${DOCSTR}" "OFF"
-                DEPENDS_ON ENABLE_MPI)
 
 # ---------------------------------------------------------------
 # Option to use the generic math libraries

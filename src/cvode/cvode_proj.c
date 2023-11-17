@@ -20,6 +20,7 @@
 #include <string.h>
 
 #include "cvode_impl.h"
+#include "sundials/sundials_math.h"
 
 /* Private constants */
 #define ZERO SUN_RCONST(0.0) /* real 0.0 */
@@ -30,8 +31,8 @@
 /* Private utility function prototypes */
 static int cvProjCreate(CVodeProjMem* proj_mem);
 static int cvProjSetDefaults(CVodeProjMem proj_mem);
-static int cvAccessProjMem(void* cvode_mem, int line, const char* fname,
-                           CVodeMem* cv_mem, CVodeProjMem* proj_mem);
+static int cvAccessProjMem(void* cvode_mem, const char* fname, CVodeMem* cv_mem,
+                           CVodeProjMem* proj_mem);
 
 /* ===========================================================================
  * Exported Functions - projection initialization
@@ -49,8 +50,7 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
   /* Check the CVODE memory pointer */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__,
-                   MSG_CV_MEM_NULL);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "CVodeSetProjFn", MSG_CV_MEM_NULL);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -58,7 +58,7 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
   /* Check if the projection function is NULL */
   if (pfun == NULL)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetProjFn",
                    "The projection function is NULL.");
     return (CV_ILL_INPUT);
   }
@@ -66,7 +66,7 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
   /* Check for compatible method */
   if (cv_mem->cv_lmm != CV_BDF)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetProjFn",
                    "Projection is only supported with BDF methods.");
     return (CV_ILL_INPUT);
   }
@@ -75,7 +75,7 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
   retval = cvProjCreate(&(cv_mem->proj_mem));
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_MEM_FAIL, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_MEM_FAIL, "CVODE", "CVodeSetProjFn",
                    MSG_CV_MEM_FAIL);
     return (CV_MEM_FAIL);
   }
@@ -106,7 +106,7 @@ int CVodeSetProjErrEst(void* cvode_mem, sunbooleantype onoff)
   CVodeProjMem proj_mem;
 
   /* Access memory structures */
-  retval = cvAccessProjMem(cvode_mem, __LINE__, __func__, &cv_mem, &proj_mem);
+  retval = cvAccessProjMem(cvode_mem, "CVodeSetProjErrEst", &cv_mem, &proj_mem);
   if (retval != CV_SUCCESS) { return (retval); }
 
   /* Set projection error flag */
@@ -122,7 +122,8 @@ int CVodeSetProjFrequency(void* cvode_mem, long int freq)
   CVodeProjMem proj_mem;
 
   /* Access memory structures */
-  retval = cvAccessProjMem(cvode_mem, __LINE__, __func__, &cv_mem, &proj_mem);
+  retval = cvAccessProjMem(cvode_mem, "CVodeSetProjFrequency", &cv_mem,
+                           &proj_mem);
   if (retval != CV_SUCCESS) { return (retval); }
 
   /* Set projection frequency */
@@ -155,7 +156,8 @@ int CVodeSetMaxNumProjFails(void* cvode_mem, int max_fails)
   CVodeProjMem proj_mem;
 
   /* Access memory structures */
-  retval = cvAccessProjMem(cvode_mem, __LINE__, __func__, &cv_mem, &proj_mem);
+  retval = cvAccessProjMem(cvode_mem, "CVodeSetMaxNumProjFails", &cv_mem,
+                           &proj_mem);
   if (retval != CV_SUCCESS) { return (retval); }
 
   /* Set maximum number of projection failures in a step attempt */
@@ -180,7 +182,7 @@ int CVodeSetEpsProj(void* cvode_mem, sunrealtype eps)
   CVodeProjMem proj_mem;
 
   /* Access memory structures */
-  retval = cvAccessProjMem(cvode_mem, __LINE__, __func__, &cv_mem, &proj_mem);
+  retval = cvAccessProjMem(cvode_mem, "CVodeSetEpsProj", &cv_mem, &proj_mem);
   if (retval != CV_SUCCESS) { return (retval); }
 
   /* Set the projection tolerance */
@@ -205,7 +207,7 @@ int CVodeSetProjFailEta(void* cvode_mem, sunrealtype eta)
   CVodeProjMem proj_mem;
 
   /* Access memory structures */
-  retval = cvAccessProjMem(cvode_mem, __LINE__, __func__, &cv_mem, &proj_mem);
+  retval = cvAccessProjMem(cvode_mem, "CVodeSetProjFailEta", &cv_mem, &proj_mem);
   if (retval != CV_SUCCESS) { return (retval); }
 
   /* Set the step size reduction factor for a projection failure */
@@ -234,7 +236,8 @@ int CVodeGetNumProjEvals(void* cvode_mem, long int* nproj)
   CVodeProjMem proj_mem;
 
   /* Access memory structures */
-  retval = cvAccessProjMem(cvode_mem, __LINE__, __func__, &cv_mem, &proj_mem);
+  retval = cvAccessProjMem(cvode_mem, "CVodeGetNumProjectionEvals", &cv_mem,
+                           &proj_mem);
   if (retval != CV_SUCCESS) { return (retval); }
 
   /* Get number of projection evaluations */
@@ -250,7 +253,7 @@ int CVodeGetNumProjFails(void* cvode_mem, long int* npfails)
   CVodeProjMem proj_mem;
 
   /* Access memory structures */
-  retval = cvAccessProjMem(cvode_mem, __LINE__, __func__, &cv_mem, &proj_mem);
+  retval = cvAccessProjMem(cvode_mem, "CVodeGetNumProjFails", &cv_mem, &proj_mem);
   if (retval != CV_SUCCESS) { return (retval); }
 
   /* Get number of projection fails */
@@ -275,8 +278,6 @@ int CVodeGetNumProjFails(void* cvode_mem, long int* npfails)
 int cvDoProjection(CVodeMem cv_mem, int* nflagPtr, sunrealtype saved_t,
                    int* npfailPtr)
 {
-  SUNAssignSUNCTX(cv_mem->cv_sunctx);
-
   int retval;
   N_Vector errP;
   N_Vector acorP;
@@ -285,7 +286,7 @@ int cvDoProjection(CVodeMem cv_mem, int* nflagPtr, sunrealtype saved_t,
   /* Access projection memory */
   if (cv_mem->proj_mem == NULL)
   {
-    cvProcessError(cv_mem, CV_PROJ_MEM_NULL, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_PROJ_MEM_NULL, "CVODE", "cvDoProjection",
                    MSG_CV_PROJ_MEM_NULL);
     return (CV_PROJ_MEM_NULL);
   }
@@ -302,10 +303,7 @@ int cvDoProjection(CVodeMem cv_mem, int* nflagPtr, sunrealtype saved_t,
   else { errP = NULL; }
 
   /* Copy acor into errP (if projecting the error) */
-  if (proj_mem->err_proj)
-  {
-    SUNCheckCallLastErrNoRet(N_VScale(ONE, cv_mem->cv_acor, errP));
-  }
+  if (proj_mem->err_proj) { N_VScale(ONE, cv_mem->cv_acor, errP); }
 
   /* Call the user projection function */
   retval = proj_mem->pfun(cv_mem->cv_tn, cv_mem->cv_y, acorP,
@@ -321,8 +319,7 @@ int cvDoProjection(CVodeMem cv_mem, int* nflagPtr, sunrealtype saved_t,
     /* Recompute acnrm to be used in error test (if projecting the error) */
     if (proj_mem->err_proj)
     {
-      cv_mem->cv_acnrm =
-        SUNCheckCallLastErrNoRet(N_VWrmsNorm(errP, cv_mem->cv_ewt));
+      cv_mem->cv_acnrm = N_VWrmsNorm(errP, cv_mem->cv_ewt);
     }
 
     /* The projection was successful, return now */
@@ -434,13 +431,13 @@ static int cvProjSetDefaults(CVodeProjMem proj_mem)
   return (CV_SUCCESS);
 }
 
-static int cvAccessProjMem(void* cvode_mem, int line, const char* fname,
-                           CVodeMem* cv_mem, CVodeProjMem* proj_mem)
+static int cvAccessProjMem(void* cvode_mem, const char* fname, CVodeMem* cv_mem,
+                           CVodeProjMem* proj_mem)
 {
   /* Access cvode memory */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, line, fname, __FILE__, MSG_CV_MEM_NULL);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", fname, MSG_CV_MEM_NULL);
     return (CV_MEM_NULL);
   }
   *cv_mem = (CVodeMem)cvode_mem;
@@ -448,7 +445,7 @@ static int cvAccessProjMem(void* cvode_mem, int line, const char* fname,
   /* Access projection memory */
   if ((*cv_mem)->proj_mem == NULL)
   {
-    cvProcessError(*cv_mem, CV_PROJ_MEM_NULL, line, fname, __FILE__,
+    cvProcessError(*cv_mem, CV_PROJ_MEM_NULL, "CVODE", fname,
                    MSG_CV_PROJ_MEM_NULL);
     return (CV_PROJ_MEM_NULL);
   }

@@ -20,6 +20,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sundials/sundials_math.h>
+#include <sundials/sundials_types.h>
 
 #include "arkode_impl.h"
 #include "arkode_interp_impl.h"
@@ -295,9 +297,9 @@ void arkInterpPrintMem_Hermite(ARKInterp interp, FILE* outfile)
     fprintf(outfile, "arkode_interp (Hermite): yold:\n");
     N_VPrintFile(HINT_YOLD(interp), outfile);
     fprintf(outfile, "arkode_interp (Hermite): fa:\n");
-    SUNCheckCallLastErrNoRet(N_VPrintFile(HINT_FA(interp), outfile));
+    N_VPrintFile(HINT_FA(interp), outfile);
     fprintf(outfile, "arkode_interp (Hermite): fb:\n");
-    SUNCheckCallLastErrNoRet(N_VPrintFile(HINT_FB(interp), outfile));
+    N_VPrintFile(HINT_FB(interp), outfile);
 #endif
   }
 }
@@ -341,8 +343,8 @@ int arkInterpSetDegree_Hermite(void* arkode_mem, ARKInterp interp, int degree)
   {
     if (degree > ARK_INTERP_MAX_DEGREE)
     {
-      arkProcessError(ark_mem, ARK_INTERP_FAIL, __LINE__, __func__, __FILE__,
-                      "Illegal degree specified.");
+      arkProcessError(ark_mem, ARK_INTERP_FAIL, "ARKODE",
+                      "arkInterpSetDegree_Hermite", "Illegal degree specified.");
       return (ARK_ILL_INPUT);
     }
 
@@ -375,8 +377,6 @@ int arkInterpInit_Hermite(void* arkode_mem, ARKInterp interp, sunrealtype tnew)
   /* access ARKodeMem structure */
   if (arkode_mem == NULL) { return (ARK_MEM_NULL); }
   ark_mem = (ARKodeMem)arkode_mem;
-
-  SUNAssignSUNCTX(ark_mem->sunctx);
 
   /* initialize time values */
   HINT_TOLD(interp) = tnew;
@@ -438,8 +438,6 @@ int arkInterpUpdate_Hermite(void* arkode_mem, ARKInterp interp, sunrealtype tnew
   /* access ARKodeMem structure */
   if (arkode_mem == NULL) { return (ARK_MEM_NULL); }
   ark_mem = (ARKodeMem)arkode_mem;
-
-  SUNAssignSUNCTX(ark_mem->sunctx);
 
   /* call full RHS if needed -- called just BEFORE the end of a step, so yn has
      NOT been updated to ycur yet */
@@ -508,8 +506,6 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp,
   if (arkode_mem == NULL) { return (ARK_MEM_NULL); }
   ark_mem = (ARKodeMem)arkode_mem;
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* set constants */
   tau2 = tau * tau;
   tau3 = tau * tau2;
@@ -545,15 +541,15 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp,
   /* error on illegal d */
   if (d < 0)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
-                    "Requested illegal derivative.");
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE",
+                    "arkInterpEvaluate_Hermite", "Requested illegal derivative.");
     return (ARK_ILL_INPUT);
   }
 
   /* if d is too high, just return zeros */
   if (d > q)
   {
-    SUNCheckCallLastErrNoRet(N_VConst(ZERO, yout));
+    N_VConst(ZERO, yout);
     return (ARK_SUCCESS);
   }
 
@@ -570,6 +566,11 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp,
       a0 = -tau;
       a1 = ONE + tau;
     }
+    else
+    { /* d=1 */
+      a0 = -ONE / h;
+      a1 = ONE / h;
+    }
     N_VLinearSum(a0, HINT_YOLD(interp), a1, ark_mem->yn, yout);
     break;
 
@@ -580,11 +581,22 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp,
       a[1] = ONE - tau2;
       a[2] = h * (tau2 + tau);
     }
+    else if (d == 1)
+    {
+      a[0] = TWO * tau / h;
+      a[1] = -TWO * tau / h;
+      a[2] = (ONE + TWO * tau);
+    }
+    else
+    { /* d == 2 */
+      a[0] = TWO / h / h;
+      a[1] = -TWO / h / h;
+      a[2] = TWO / h;
+    }
     X[0]   = HINT_YOLD(interp);
     X[1]   = ark_mem->yn;
     X[2]   = ark_mem->fn;
     retval = N_VLinearCombination(3, a, X, yout);
-    SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
     break;
 
@@ -596,12 +608,32 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp,
       a[2] = h * (tau2 + tau3);
       a[3] = h * (tau + TWO * tau2 + tau3);
     }
+    else if (d == 1)
+    {
+      a[0] = SIX * (tau + tau2) / h;
+      a[1] = -SIX * (tau + tau2) / h;
+      a[2] = TWO * tau + THREE * tau2;
+      a[3] = ONE + FOUR * tau + THREE * tau2;
+    }
+    else if (d == 2)
+    {
+      a[0] = SIX * (ONE + TWO * tau) / h2;
+      a[1] = -SIX * (ONE + TWO * tau) / h2;
+      a[2] = (TWO + SIX * tau) / h;
+      a[3] = (FOUR + SIX * tau) / h;
+    }
+    else
+    { /* d == 3 */
+      a[0] = TWELVE / h3;
+      a[1] = -TWELVE / h3;
+      a[2] = SIX / h2;
+      a[3] = SIX / h2;
+    }
     X[0]   = HINT_YOLD(interp);
     X[1]   = ark_mem->yn;
     X[2]   = HINT_FOLD(interp);
     X[3]   = ark_mem->fn;
     retval = N_VLinearCombination(4, a, X, yout);
-    SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
     break;
 
@@ -628,13 +660,50 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp,
       a[3] = h * (tau + TWO * tau2 + tau3);
       a[4] = h * SUN_RCONST(27.0) * FOURTH * (-tau4 - TWO * tau3 - tau2);
     }
+    else if (d == 1)
+    {
+      a[0] =
+        (-TWELVE * tau - SUN_RCONST(48.0) * tau2 - SUN_RCONST(36.0) * tau3) / h;
+      a[1] = (TWELVE * tau + SUN_RCONST(48.0) * tau2 + SUN_RCONST(36.0) * tau3) /
+             h;
+      a[2] = HALF *
+             (-FIVE * tau - SUN_RCONST(21.0) * tau2 - SUN_RCONST(18.0) * tau3);
+      a[3] = (ONE + FOUR * tau + THREE * tau2);
+      a[4] = -SUN_RCONST(27.0) * HALF * (TWO * tau3 + THREE * tau2 + tau);
+    }
+    else if (d == 2)
+    {
+      a[0] = (-TWELVE - SUN_RCONST(96.0) * tau - SUN_RCONST(108.0) * tau2) / h2;
+      a[1] = (TWELVE + SUN_RCONST(96.0) * tau + SUN_RCONST(108.0) * tau2) / h2;
+      a[2] = (-FIVE * HALF - SUN_RCONST(21.0) * tau - SUN_RCONST(27.0) * tau2) /
+             h;
+      a[3] = (FOUR + SIX * tau) / h;
+      a[4] = (-SUN_RCONST(27.0) * HALF - SUN_RCONST(81.0) * tau -
+              SUN_RCONST(81.0) * tau2) /
+             h;
+    }
+    else if (d == 3)
+    {
+      a[0] = (-SUN_RCONST(96.0) - SUN_RCONST(216.0) * tau) / h3;
+      a[1] = (SUN_RCONST(96.0) + SUN_RCONST(216.0) * tau) / h3;
+      a[2] = (-SUN_RCONST(21.0) - SUN_RCONST(54.0) * tau) / h2;
+      a[3] = SIX / h2;
+      a[4] = (-SUN_RCONST(81.0) - SUN_RCONST(162.0) * tau) / h2;
+    }
+    else
+    { /* d == 4 */
+      a[0] = -SUN_RCONST(216.0) / h4;
+      a[1] = SUN_RCONST(216.0) / h4;
+      a[2] = -SUN_RCONST(54.0) / h3;
+      a[3] = ZERO;
+      a[4] = -SUN_RCONST(162.0) / h3;
+    }
     X[0]   = HINT_YOLD(interp);
     X[1]   = ark_mem->yn;
     X[2]   = HINT_FOLD(interp);
     X[3]   = ark_mem->fn;
     X[4]   = HINT_FA(interp);
     retval = N_VLinearCombination(5, a, X, yout);
-    SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
     break;
 
@@ -763,13 +832,12 @@ int arkInterpEvaluate_Hermite(void* arkode_mem, ARKInterp interp,
     X[4]   = HINT_FA(interp);
     X[5]   = HINT_FB(interp);
     retval = N_VLinearCombination(6, a, X, yout);
-    SUNCheckCallNoRet(retval);
     if (retval != 0) { return (ARK_VECTOROP_ERR); }
     break;
 
   default:
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
-                    "Illegal polynomial order");
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE",
+                    "arkInterpEvaluate_Hermite", "Illegal polynomial order");
     return (ARK_ILL_INPUT);
   }
 
@@ -991,7 +1059,7 @@ void arkInterpPrintMem_Lagrange(ARKInterp I, FILE* outfile)
       for (i = 0; i < LINT_NMAX(I); i++)
       {
         fprintf(outfile, "arkode_interp (Lagrange): yhist[%i]:\n", i);
-        SUNCheckCallLastErrNoRet(N_VPrintFile(LINT_YJ(I, i), outfile));
+        N_VPrintFile(LINT_YJ(I, i), outfile);
       }
     }
 #endif
@@ -1037,8 +1105,8 @@ int arkInterpSetDegree_Lagrange(void* arkode_mem, ARKInterp I, int degree)
   {
     if (degree > ARK_INTERP_MAX_DEGREE)
     {
-      arkProcessError(ark_mem, ARK_INTERP_FAIL, __LINE__, __func__, __FILE__,
-                      "Illegal degree specified.");
+      arkProcessError(ark_mem, ARK_INTERP_FAIL, "ARKODE",
+                      "arkInterpSetDegree_Lagrange", "Illegal degree specified.");
       return (ARK_ILL_INPUT);
     }
 
@@ -1071,8 +1139,6 @@ int arkInterpInit_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tnew)
   /* access ARKodeMem structure */
   if (arkode_mem == NULL) { return (ARK_MEM_NULL); }
   ark_mem = (ARKodeMem)arkode_mem;
-
-  SUNAssignSUNCTX(ark_mem->sunctx);
 
   /* check if storage has increased since the last init */
   if (LINT_NMAX(I) > LINT_NMAXALLOC(I))
@@ -1140,7 +1206,7 @@ int arkInterpInit_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tnew)
 
   /* set current time and state as first entries of (t,y) history, update counter */
   LINT_TJ(I, 0) = tnew;
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, ark_mem->yn, LINT_YJ(I, 0)));
+  N_VScale(ONE, ark_mem->yn, LINT_YJ(I, 0));
   LINT_NHIST(I) = 1;
 
   /* return with success */
@@ -1172,8 +1238,6 @@ int arkInterpUpdate_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tnew)
   if (arkode_mem == NULL) { return (ARK_MEM_NULL); }
   ark_mem = (ARKodeMem)arkode_mem;
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* set readability shortcuts */
   nhist = LINT_NHIST(I);
   nmax  = LINT_NMAX(I);
@@ -1203,7 +1267,7 @@ int arkInterpUpdate_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tnew)
 
   /* copy tnew and ycur into first entry of history arrays */
   thist[0] = tnew;
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, ark_mem->ycur, yhist[0]));
+  N_VScale(ONE, ark_mem->ycur, yhist[0]);
 
   /* update 'nhist' (first few steps) */
   LINT_NHIST(I) = nhist = SUNMIN(nhist + 1, nmax);
@@ -1251,8 +1315,6 @@ int arkInterpEvaluate_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tau,
   if (arkode_mem == NULL) { return (ARK_MEM_NULL); }
   ark_mem = (ARKodeMem)arkode_mem;
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* set readability shortcuts */
   nhist = LINT_NHIST(I);
   thist = LINT_THIST(I);
@@ -1271,7 +1333,8 @@ int arkInterpEvaluate_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tau,
   /* error on illegal deriv */
   if ((deriv < 0) || (deriv > 3))
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE",
+                    "arkInterpEvaluate_Lagrange",
                     "Requested illegal derivative.");
     return (ARK_ILL_INPUT);
   }
@@ -1279,14 +1342,14 @@ int arkInterpEvaluate_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tau,
   /* if deriv is too high, just return zeros */
   if (deriv > q)
   {
-    SUNCheckCallLastErrNoRet(N_VConst(ZERO, yout));
+    N_VConst(ZERO, yout);
     return (ARK_SUCCESS);
   }
 
   /* if constant interpolant is requested, just return ynew */
   if (q == 0)
   {
-    SUNCheckCallLastErrNoRet(N_VScale(ONE, yhist[0], yout));
+    N_VScale(ONE, yhist[0], yout);
     return (ARK_SUCCESS);
   }
 
@@ -1306,7 +1369,7 @@ int arkInterpEvaluate_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tau,
       a[0] = LBasisD(I, 0, tval);
       a[1] = LBasisD(I, 1, tval);
     }
-    SUNCheckCallLastErrNoRet(N_VLinearSum(a[0], yhist[0], a[1], yhist[1], yout));
+    N_VLinearSum(a[0], yhist[0], a[1], yhist[1], yout);
     return (ARK_SUCCESS);
   }
 
@@ -1340,7 +1403,6 @@ int arkInterpEvaluate_Lagrange(void* arkode_mem, ARKInterp I, sunrealtype tau,
 
   /*    call N_VLinearCombination to evaluate the result, and return */
   retval = N_VLinearCombination(q + 1, a, X, yout);
-  SUNCheckCallNoRet(retval);
   if (retval != 0) { return (ARK_VECTOROP_ERR); }
 
   return (ARK_SUCCESS);

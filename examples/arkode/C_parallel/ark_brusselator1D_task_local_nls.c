@@ -67,21 +67,13 @@
 #include <string.h>
 
 #include "arkode/arkode_arkstep.h"    /* ARKStep                   */
-#include "arkode/arkode_arkstep.h"    /* ARKStep                   */
-#include "arkode/arkode_erkstep.h"    /* ERKStep                   */
 #include "arkode/arkode_erkstep.h"    /* ERKStep                   */
 #include "nvector/nvector_mpiplusx.h" /* MPI+X N_Vector            */
-#include "nvector/nvector_mpiplusx.h" /* MPI+X N_Vector            */
-#include "nvector/nvector_serial.h"   /* serial N_Vector           */
 #include "nvector/nvector_serial.h"   /* serial N_Vector           */
 #include "sundials/sundials_logger.h"
 #include "sunlinsol/sunlinsol_dense.h"        /* dense SUNLinearSolver     */
-#include "sunlinsol/sunlinsol_dense.h"        /* dense SUNLinearSolver     */
-#include "sunlinsol/sunlinsol_spgmr.h"        /* GMRES SUNLinearSolver     */
 #include "sunlinsol/sunlinsol_spgmr.h"        /* GMRES SUNLinearSolver     */
 #include "sunmatrix/sunmatrix_dense.h"        /* dense SUNMatrix           */
-#include "sunmatrix/sunmatrix_dense.h"        /* dense SUNMatrix           */
-#include "sunnonlinsol/sunnonlinsol_newton.h" /* Newton SUNNonlinearSolver */
 #include "sunnonlinsol/sunnonlinsol_newton.h" /* Newton SUNNonlinearSolver */
 
 /* Maximum size of output directory string */
@@ -265,7 +257,7 @@ int main(int argc, char* argv[])
   /* Start timing */
   starttime = MPI_Wtime();
 
-  retval = SUNContext_Create((void*)&comm, &ctx);
+  retval = SUNContext_Create(comm, &ctx);
   if (check_retval(&retval, "SUNContext_Create", 1)) { MPI_Abort(comm, 1); }
 
   /* Allocate user data structure */
@@ -1142,7 +1134,6 @@ int TaskLocalNewton_GetNumConvFails(SUNNonlinearSolver NLS, long int* nconvfails
 
 SUNNonlinearSolver TaskLocalNewton(SUNContext ctx, N_Vector y)
 {
-  void* tmp_comm;
   SUNNonlinearSolver NLS;
   TaskLocalNewton_Content content;
 
@@ -1181,14 +1172,7 @@ SUNNonlinearSolver TaskLocalNewton(SUNContext ctx, N_Vector y)
   NLS->content = content;
 
   /* Fill general content */
-  tmp_comm = N_VGetCommunicator(y);
-  if (tmp_comm == NULL)
-  {
-    SUNNonlinSolFree(NLS);
-    return NULL;
-  }
-
-  content->comm = *((MPI_Comm*)tmp_comm);
+  content->comm = N_VGetCommunicator(y);
   if (content->comm == MPI_COMM_NULL)
   {
     SUNNonlinSolFree(NLS);

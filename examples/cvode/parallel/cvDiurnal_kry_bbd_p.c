@@ -65,7 +65,7 @@
 #include <nvector/nvector_parallel.h> /* access to MPI-parallel N_Vector      */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_types.h> /* definitions of realtype, sunbooleantype */
+#include <sundials/sundials_types.h> /* definitions of sunrealtype, sunbooleantype */
 #include <sunlinsol/sunlinsol_spgmr.h> /* access to SPGMR SUNLinearSolver      */
 
 /* helpful macros */
@@ -123,8 +123,8 @@
 
 typedef struct
 {
-  realtype q4, om, dx, dy, hdco, haco, vdco;
-  realtype uext[NVARS * (MXSUB + 2) * (MYSUB + 2)];
+  sunrealtype q4, om, dx, dy, hdco, haco, vdco;
+  sunrealtype uext[NVARS * (MXSUB + 2) * (MYSUB + 2)];
   int my_pe, isubx, isuby;
   sunindextype nvmxsub, nvmxsub2, Nlocal;
   MPI_Comm comm;
@@ -138,25 +138,26 @@ static void SetInitialProfiles(N_Vector u, UserData data);
 static void PrintIntro(int npes, sunindextype mudq, sunindextype mldq,
                        sunindextype mukeep, sunindextype mlkeep);
 static void PrintOutput(void* cvode_mem, int my_pe, MPI_Comm comm, N_Vector u,
-                        realtype t);
+                        sunrealtype t);
 static void PrintFinalStats(void* cvode_mem);
 static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
-                  sunindextype dsizex, sunindextype dsizey, realtype uarray[]);
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, realtype uext[], realtype buffer[]);
+                  sunindextype dsizex, sunindextype dsizey, sunrealtype uarray[]);
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[]);
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, realtype uext[], realtype buffer[]);
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[]);
 
-static void fucomm(realtype t, N_Vector u, void* user_data);
+static void fucomm(sunrealtype t, N_Vector u, void* user_data);
 
 /* Prototype of function called by the solver */
 
-static int f(realtype t, N_Vector u, N_Vector udot, void* user_data);
+static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data);
 
 /* Prototype of functions called by the CVBBDPRE module */
 
-static int flocal(sunindextype Nlocal, realtype t, N_Vector u, N_Vector udot,
+static int flocal(sunindextype Nlocal, sunrealtype t, N_Vector u, N_Vector udot,
                   void* user_data);
 
 /* Private function to check function return values */
@@ -171,7 +172,7 @@ int main(int argc, char* argv[])
   UserData data;
   SUNLinearSolver LS;
   void* cvode_mem;
-  realtype abstol, reltol, t, tout;
+  sunrealtype abstol, reltol, t, tout;
   N_Vector u;
   int iout, my_pe, npes, retval, jpre;
   sunindextype neq, local_N, mudq, mldq, mukeep, mlkeep;
@@ -192,7 +193,7 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(comm, &my_pe);
 
   /* Create the SUNDIALS context */
-  retval = SUNContext_Create(&comm, &sunctx);
+  retval = SUNContext_Create(comm, &sunctx);
   if (check_retval(&retval, "SUNContext_Create", 1, my_pe))
   {
     MPI_Abort(comm, 1);
@@ -321,7 +322,7 @@ int main(int argc, char* argv[])
 
     /* In loop over output points, call CVode, print results, test for error */
 
-    for (iout = 1, iout = TWOHR; iout <= NOUT; iout++, tout += TWOHR)
+    for (iout = 1, tout = TWOHR; iout <= NOUT; iout++, tout += TWOHR)
     {
       retval = CVode(cvode_mem, tout, u, &t, CV_NORMAL);
       if (check_retval(&retval, "CVode", 1, my_pe)) { break; }
@@ -357,8 +358,8 @@ static void InitUserData(int my_pe, sunindextype local_N, MPI_Comm comm,
 
   /* Set problem constants */
   data->om   = PI / HALFDAY;
-  data->dx   = (XMAX - XMIN) / ((realtype)(MX - 1));
-  data->dy   = (YMAX - YMIN) / ((realtype)(MY - 1));
+  data->dx   = (XMAX - XMIN) / ((sunrealtype)(MX - 1));
+  data->dy   = (YMAX - YMIN) / ((sunrealtype)(MY - 1));
   data->hdco = KH / SQR(data->dx);
   data->haco = VEL / (SUN_RCONST(2.0) * data->dx);
   data->vdco = (SUN_RCONST(1.0) / SQR(data->dy)) * KV0;
@@ -384,8 +385,8 @@ static void SetInitialProfiles(N_Vector u, UserData data)
   int isubx, isuby;
   int lx, ly, jx, jy;
   sunindextype offset;
-  realtype dx, dy, x, y, cx, cy, xmid, ymid;
-  realtype* uarray;
+  sunrealtype dx, dy, x, y, cx, cy, xmid, ymid;
+  sunrealtype* uarray;
 
   /* Set pointer to data array in vector u */
 
@@ -443,12 +444,12 @@ static void PrintIntro(int npes, sunindextype mudq, sunindextype mldq,
 /* Print current t, step count, order, stepsize, and sampled c1,c2 values */
 
 static void PrintOutput(void* cvode_mem, int my_pe, MPI_Comm comm, N_Vector u,
-                        realtype t)
+                        sunrealtype t)
 {
   int qu, retval, npelast;
   long int nst;
   sunindextype i0, i1;
-  realtype hu, *uarray, tempu[2];
+  sunrealtype hu, *uarray, tempu[2];
   MPI_Status status;
 
   npelast = NPEX * NPEY - 1;
@@ -561,11 +562,11 @@ static void PrintFinalStats(void* cvode_mem)
 /* Routine to send boundary data to neighboring PEs */
 
 static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
-                  sunindextype dsizex, sunindextype dsizey, realtype uarray[])
+                  sunindextype dsizex, sunindextype dsizey, sunrealtype uarray[])
 {
   int i, ly;
   sunindextype offsetu, offsetbuf;
-  realtype bufleft[NVARS * MYSUB], bufright[NVARS * MYSUB];
+  sunrealtype bufleft[NVARS * MYSUB], bufright[NVARS * MYSUB];
 
   /* If isuby > 0, send data from bottom x-line of u */
 
@@ -618,18 +619,18 @@ static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
 
 /* Routine to start receiving boundary data from neighboring PEs.
    Notes:
-   1) buffer should be able to hold 2*NVARS*MYSUB realtype entries, should be
+   1) buffer should be able to hold 2*NVARS*MYSUB sunrealtype entries, should be
    passed to both the BRecvPost and BRecvWait functions, and should not
    be manipulated between the two calls.
    2) request should have 4 entries, and should be passed in both calls also. */
 
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, realtype uext[], realtype buffer[])
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[])
 {
   sunindextype offsetue;
   /* Have bufleft and bufright use the same buffer */
-  realtype *bufleft = buffer, *bufright = buffer + NVARS * MYSUB;
+  sunrealtype *bufleft = buffer, *bufright = buffer + NVARS * MYSUB;
 
   /* If isuby > 0, receive data for bottom x-line of uext */
   if (isuby != 0)
@@ -663,17 +664,18 @@ static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
 
 /* Routine to finish receiving boundary data from neighboring PEs.
    Notes:
-   1) buffer should be able to hold 2*NVARS*MYSUB realtype entries, should be
+   1) buffer should be able to hold 2*NVARS*MYSUB sunrealtype entries, should be
    passed to both the BRecvPost and BRecvWait functions, and should not
    be manipulated between the two calls.
    2) request should have 4 entries, and should be passed in both calls also. */
 
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, realtype uext[], realtype buffer[])
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[])
 {
   int i, ly;
   sunindextype dsizex2, offsetue, offsetbuf;
-  realtype *bufleft = buffer, *bufright = buffer + NVARS * MYSUB;
+  sunrealtype *bufleft = buffer, *bufright = buffer + NVARS * MYSUB;
   MPI_Status status;
 
   dsizex2 = dsizex + 2 * NVARS;
@@ -722,10 +724,10 @@ static void BRecvWait(MPI_Request request[], int isubx, int isuby,
 /* fucomm routine.  This routine performs all inter-processor
    communication of data in u needed to calculate f.         */
 
-static void fucomm(realtype t, N_Vector u, void* user_data)
+static void fucomm(sunrealtype t, N_Vector u, void* user_data)
 {
   UserData data;
-  realtype *uarray, *uext, buffer[2 * NVARS * MYSUB];
+  sunrealtype *uarray, *uext, buffer[2 * NVARS * MYSUB];
   MPI_Comm comm;
   int my_pe, isubx, isuby;
   sunindextype nvmxsub, nvmysub;
@@ -762,7 +764,7 @@ static void fucomm(realtype t, N_Vector u, void* user_data)
 /* f routine.  Evaluate f(t,y).  First call fucomm to do communication of
    subgrid boundary data into uext.  Then calculate f by a call to flocal. */
 
-static int f(realtype t, N_Vector u, N_Vector udot, void* user_data)
+static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data)
 {
   UserData data;
 
@@ -785,19 +787,19 @@ static int f(realtype t, N_Vector u, N_Vector udot, void* user_data)
    inter-processor communication of data needed to calculate f has already
    been done, and this data is in the work array uext.                    */
 
-static int flocal(sunindextype Nlocal, realtype t, N_Vector u, N_Vector udot,
+static int flocal(sunindextype Nlocal, sunrealtype t, N_Vector u, N_Vector udot,
                   void* user_data)
 {
-  realtype* uext;
-  realtype q3, c1, c2, c1dn, c2dn, c1up, c2up, c1lt, c2lt;
-  realtype c1rt, c2rt, cydn, cyup, hord1, hord2, horad1, horad2;
-  realtype qq1, qq2, qq3, qq4, rkin1, rkin2, s, vertd1, vertd2, ydn, yup;
-  realtype q4coef, dely, verdco, hordco, horaco;
+  sunrealtype* uext;
+  sunrealtype q3, c1, c2, c1dn, c2dn, c1up, c2up, c1lt, c2lt;
+  sunrealtype c1rt, c2rt, cydn, cyup, hord1, hord2, horad1, horad2;
+  sunrealtype qq1, qq2, qq3, qq4, rkin1, rkin2, s, vertd1, vertd2, ydn, yup;
+  sunrealtype q4coef, dely, verdco, hordco, horaco;
   int i, lx, ly, jy;
   int isubx, isuby;
   sunindextype nvmxsub, nvmxsub2, offsetu, offsetue;
   UserData data;
-  realtype *uarray, *duarray;
+  sunrealtype *uarray, *duarray;
 
   uarray  = N_VGetArrayPointer(u);
   duarray = N_VGetArrayPointer(udot);

@@ -18,6 +18,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/sundials_math.h>
+#include <sundials/sundials_types.h>
 
 #include "arkode_mristep_impl.h"
 
@@ -69,72 +71,6 @@ int MRIStepSetStopTime(void* arkode_mem, sunrealtype tstop)
 int MRIStepSetInterpolateStopTime(void* arkode_mem, sunbooleantype interp)
 {
   return (arkSetInterpolateStopTime(arkode_mem, interp));
-}
-
-int MRIStepClearStopTime(void* arkode_mem)
-{
-  return (arkClearStopTime(arkode_mem));
-}
-
-int MRIStepSetRootDirection(void* arkode_mem, int* rootdir)
-{
-  return (arkSetRootDirection(arkode_mem, rootdir));
-}
-
-int MRIStepSetNoInactiveRootWarn(void* arkode_mem)
-{
-  return (arkSetNoInactiveRootWarn(arkode_mem));
-}
-
-int MRIStepSetPostprocessStepFn(void* arkode_mem, ARKPostProcessFn ProcessStep)
-{
-  return (arkSetPostprocessStepFn(arkode_mem, ProcessStep));
-}
-
-int MRIStepSetPostprocessStageFn(void* arkode_mem, ARKPostProcessFn ProcessStage)
-{
-  return (arkSetPostprocessStageFn(arkode_mem, ProcessStage));
-}
-
-int MRIStepSetInterpolantDegree(void* arkode_mem, int degree)
-{
-  if (degree < 0) { degree = ARK_INTERP_MAX_DEGREE; }
-  return (arkSetInterpolantDegree(arkode_mem, degree));
-}
-
-int MRIStepSetInterpolantType(void* arkode_mem, int itype)
-{
-  return (arkSetInterpolantType(arkode_mem, itype));
-}
-
-int MRIStepSetErrHandlerFn(void* arkode_mem, ARKErrHandlerFn ehfun, void* eh_data)
-{
-  return (arkSetErrHandlerFn(arkode_mem, ehfun, eh_data));
-}
-
-int MRIStepSetErrFile(void* arkode_mem, FILE* errfp)
-{
-  return (arkSetErrFile(arkode_mem, errfp));
-}
-
-int MRIStepSetDiagnostics(void* arkode_mem, FILE* diagfp)
-{
-  return (arkSetDiagnostics(arkode_mem, diagfp));
-}
-
-int MRIStepSetMaxNumSteps(void* arkode_mem, long int mxsteps)
-{
-  return (arkSetMaxNumSteps(arkode_mem, mxsteps));
-}
-
-int MRIStepSetMaxHnilWarns(void* arkode_mem, int mxhnil)
-{
-  return (arkSetMaxHnilWarns(arkode_mem, mxhnil));
-}
-
-int MRIStepSetStopTime(void* arkode_mem, sunrealtype tstop)
-{
-  return (arkSetStopTime(arkode_mem, tstop));
 }
 
 int MRIStepClearStopTime(void* arkode_mem)
@@ -547,8 +483,8 @@ int MRIStepSetCoupling(void* arkode_mem, MRIStepCoupling MRIC)
   /* check for illegal inputs */
   if (MRIC == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_MRISTEP_NO_COUPLING);
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::MRIStep",
+                    "MRIStepSetCoupling", MSG_MRISTEP_NO_COUPLING);
     return (ARK_ILL_INPUT);
   }
 
@@ -571,8 +507,8 @@ int MRIStepSetCoupling(void* arkode_mem, MRIStepCoupling MRIC)
   step_mem->MRIC = MRIStepCoupling_Copy(MRIC);
   if (step_mem->MRIC == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_MRISTEP_NO_COUPLING);
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::MRIStep",
+                    "MRIStepSetCoupling", MSG_MRISTEP_NO_COUPLING);
     return (ARK_MEM_NULL);
   }
   MRIStepCoupling_Space(step_mem->MRIC, &Tliw, &Tlrw);
@@ -637,15 +573,16 @@ int MRIStepSetFixedStep(void* arkode_mem, sunrealtype hsfixed)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::MRIStep",
+                    "MRIStepSetFixedStep", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
 
   if (hsfixed == ZERO)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::MRIStep",
+                    "MRIStepSetFixedStep",
                     "MRIStep does not support adaptive steps at this time.");
     return (ARK_ILL_INPUT);
   }
@@ -797,12 +734,11 @@ int MRIStepSetMaxNonlinIters(void* arkode_mem, int maxcor)
                                  &ark_mem, &step_mem);
   if (retval != ARK_SUCCESS) { return (retval); }
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
-
   /* Return error message if no NLS module is present */
   if (step_mem->NLS == NULL)
   {
-    arkProcessError(ark_mem, ARK_NLS_OP_ERR, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_NLS_OP_ERR, "ARKODE::MRIStep",
+                    "MRIStepSetMaxNonlinIters",
                     "No SUNNonlinearSolver object is present");
     return (ARK_ILL_INPUT);
   }
@@ -813,10 +749,10 @@ int MRIStepSetMaxNonlinIters(void* arkode_mem, int maxcor)
 
   /* send argument to NLS structure */
   retval = SUNNonlinSolSetMaxIters(step_mem->NLS, step_mem->maxcor);
-  SUNCheckCallNoRet(retval);
-  if (retval != SUN_SUCCESS)
+  if (retval != SUN_NLS_SUCCESS)
   {
-    arkProcessError(ark_mem, ARK_NLS_OP_ERR, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_NLS_OP_ERR, "ARKODE::MRIStep",
+                    "MRIStepSetMaxNonlinIters",
                     "Error setting maxcor in SUNNonlinearSolver object");
     return (ARK_NLS_OP_ERR);
   }
@@ -1203,7 +1139,7 @@ int MRIStepPrintAllStats(void* arkode_mem, FILE* outfile, SUNOutputFormat fmt)
     break;
 
   default:
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE", "MRIStepPrintAllStats",
                     "Invalid formatting option.");
     return (ARK_ILL_INPUT);
   }
@@ -1235,7 +1171,8 @@ int MRIStepWriteParameters(void* arkode_mem, FILE* fp)
   retval = arkWriteParameters(arkode_mem, fp);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::MRIStep",
+                    "MRIStepWriteParameters",
                     "Error writing ARKODE infrastructure parameters");
     return (retval);
   }
@@ -1262,8 +1199,8 @@ int MRIStepWriteCoupling(void* arkode_mem, FILE* fp)
   /* check that coupling structure is non-NULL (otherwise report error) */
   if (step_mem->MRIC == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    "Coupling structure is NULL");
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::MRIStep",
+                    "MRIStepWriteCoupling", "Coupling structure is NULL");
     return (ARK_MEM_NULL);
   }
 

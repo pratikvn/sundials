@@ -39,6 +39,9 @@
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/sundials_context.h>
+#include <sundials/sundials_math.h> /* definition of ABS and EXP            */
+#include <sundials/sundials_types.h> /* definition of type sunrealtype          */
 #include <sunlinsol/sunlinsol_band.h> /* access to band SUNLinearSolver       */
 #include <sunmatrix/sunmatrix_band.h> /* access to band SUNMatrix             */
 
@@ -91,7 +94,7 @@ static void PrintFinalStats(void* cvode_mem);
 
 /* Private function to check function return values */
 
-static int check_retval(int retval, const char* funcname);
+static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Functions Called by the Solver */
 
@@ -127,35 +130,25 @@ int main(void)
   sunctx    = NULL;
 
   /* Create the SUNDIALS context */
-  retval = SUNContext_Create(NULL, &sunctx);
-  if (check_retval(retval, "SUNContext_Create")) { return (1); }
-
-  /* Setup different error handler stack so that we abort after logging */
-  SUNContext_PopErrHandler(sunctx);
-  SUNContext_PushErrHandler(sunctx, SUNAbortErrHandlerFn, NULL);
-  SUNContext_PushErrHandler(sunctx, SUNLogErrHandlerFn, NULL);
+  retval = SUNContext_Create(SUN_COMM_NULL, &sunctx);
+  if (check_retval(&retval, "SUNContext_Create", 1)) { return (1); }
 
   /* Get a reference to the profiler */
   retval = SUNContext_GetProfiler(sunctx, &profobj);
-  if (check_retval(retval, "SUNContext_GetProfiler")) { return (1); }
+  if (check_retval(&retval, "SUNContext_GetProfiler", 1)) { return (1); }
 
   SUNDIALS_MARK_FUNCTION_BEGIN(profobj);
 
   /* Create a serial vector */
 
   u = N_VNew_Serial(NEQ, sunctx); /* Allocate u vector */
-  if (check_retval(SUNGetLastErr(sunctx), "N_VNew_Serial")) { return (1); }
+  if (check_retval((void*)u, "N_VNew_Serial", 0)) { return (1); }
 
   reltol = ZERO; /* Set the tolerances */
   abstol = ATOL;
 
   data = (UserData)malloc(sizeof *data); /* Allocate data memory */
-  if (!data)
-  {
-    fprintf(stderr, "MEMORY_ERROR: malloc failed - returned NULL pointer\n");
-    return 1;
-  }
-
+  if (check_retval((void*)data, "malloc", 2)) { return (1); }
   dx = data->dx = XMAX / (MX + 1); /* Set grid coefficients in data */
   dy = data->dy = YMAX / (MY + 1);
   data->hdcoef  = ONE / (dx * dx);
@@ -171,39 +164,39 @@ int main(void)
    * Backward Differentiation Formula */
 
   cvode_mem = CVodeCreate(CV_BDF, sunctx);
-  if (check_retval(SUNGetLastErr(sunctx), "CVodeCreate")) { return (1); }
+  if (check_retval((void*)cvode_mem, "CVodeCreate", 0)) { return (1); }
 
   /* Call CVodeInit to initialize the integrator memory and specify the
    * user's right hand side function in u'=f(t,u), the inital time T0, and
    * the initial dependent variable vector u. */
   retval = CVodeInit(cvode_mem, f, T0, u);
-  if (check_retval(retval, "CVodeInit")) { return (1); }
+  if (check_retval(&retval, "CVodeInit", 1)) { return (1); }
 
   /* Call CVodeSStolerances to specify the scalar relative tolerance
    * and scalar absolute tolerance */
   retval = CVodeSStolerances(cvode_mem, reltol, abstol);
-  if (check_retval(retval, "CVodeSStolerances")) { return (1); }
+  if (check_retval(&retval, "CVodeSStolerances", 1)) { return (1); }
 
   /* Set the pointer to user-defined data */
   retval = CVodeSetUserData(cvode_mem, data);
-  if (check_retval(retval, "CVodeSetUserData")) { return (1); }
+  if (check_retval(&retval, "CVodeSetUserData", 1)) { return (1); }
 
   /* Create banded SUNMatrix for use in linear solves -- since this will be factored,
      set the storage bandwidth to be the sum of upper and lower bandwidths */
   A = SUNBandMatrix(NEQ, MY, MY, sunctx);
-  if (check_retval(SUNGetLastErr(sunctx), "SUNBandMatrix")) { return (1); }
+  if (check_retval((void*)A, "SUNBandMatrix", 0)) { return (1); }
 
   /* Create banded SUNLinearSolver object for use by CVode */
   LS = SUNLinSol_Band(u, A, sunctx);
-  if (check_retval(SUNGetLastErr(sunctx), "SUNLinSol_Band")) { return (1); }
+  if (check_retval((void*)LS, "SUNLinSol_Band", 0)) { return (1); }
 
   /* Call CVodeSetLinearSolver to attach the matrix and linear solver to CVode */
   retval = CVodeSetLinearSolver(cvode_mem, LS, A);
-  if (check_retval(retval, "CVodeSetLinearSolver")) { return (1); }
+  if (check_retval(&retval, "CVodeSetLinearSolver", 1)) { return (1); }
 
   /* Set the user-supplied Jacobian routine Jac */
   retval = CVodeSetJacFn(cvode_mem, Jac);
-  if (check_retval(retval, "CVodeSetJacFn")) { return (1); }
+  if (check_retval(&retval, "CVodeSetJacFn", 1)) { return (1); }
 
   SUNDIALS_MARK_END(profobj, "Setup");
 
@@ -215,10 +208,10 @@ int main(void)
   for (iout = 1, tout = T1; iout <= NOUT; iout++, tout += DTOUT)
   {
     retval = CVode(cvode_mem, tout, u, &t, CV_NORMAL);
-    if (check_retval(retval, "CVode")) { break; }
+    if (check_retval(&retval, "CVode", 1)) { break; }
     umax   = N_VMaxNorm(u);
     retval = CVodeGetNumSteps(cvode_mem, &nst);
-    check_retval(retval, "CVodeGetNumSteps");
+    check_retval(&retval, "CVodeGetNumSteps", 1);
     PrintOutput(t, umax, nst);
   }
   SUNDIALS_MARK_END(profobj, "Integration loop");
@@ -419,22 +412,22 @@ static void PrintFinalStats(void* cvode_mem)
   long int nst, nfe, nsetups, netf, nni, ncfn, nje, nfeLS;
 
   retval = CVodeGetNumSteps(cvode_mem, &nst);
-  check_retval(retval, "CVodeGetNumSteps");
+  check_retval(&retval, "CVodeGetNumSteps", 1);
   retval = CVodeGetNumRhsEvals(cvode_mem, &nfe);
-  check_retval(retval, "CVodeGetNumRhsEvals");
+  check_retval(&retval, "CVodeGetNumRhsEvals", 1);
   retval = CVodeGetNumLinSolvSetups(cvode_mem, &nsetups);
-  check_retval(retval, "CVodeGetNumLinSolvSetups");
+  check_retval(&retval, "CVodeGetNumLinSolvSetups", 1);
   retval = CVodeGetNumErrTestFails(cvode_mem, &netf);
-  check_retval(retval, "CVodeGetNumErrTestFails");
+  check_retval(&retval, "CVodeGetNumErrTestFails", 1);
   retval = CVodeGetNumNonlinSolvIters(cvode_mem, &nni);
-  check_retval(retval, "CVodeGetNumNonlinSolvIters");
+  check_retval(&retval, "CVodeGetNumNonlinSolvIters", 1);
   retval = CVodeGetNumNonlinSolvConvFails(cvode_mem, &ncfn);
-  check_retval(retval, "CVodeGetNumNonlinSolvConvFails");
+  check_retval(&retval, "CVodeGetNumNonlinSolvConvFails", 1);
 
   retval = CVodeGetNumJacEvals(cvode_mem, &nje);
-  check_retval(retval, "CVodeGetNumJacEvals");
+  check_retval(&retval, "CVodeGetNumJacEvals", 1);
   retval = CVodeGetNumLinRhsEvals(cvode_mem, &nfeLS);
-  check_retval(retval, "CVodeGetNumLinRhsEvals");
+  check_retval(&retval, "CVodeGetNumLinRhsEvals", 1);
 
   printf("\nFinal Statistics:\n");
   printf("nst = %-6ld nfe  = %-6ld nsetups = %-6ld nfeLS = %-6ld nje = %ld\n",
@@ -444,15 +437,48 @@ static void PrintFinalStats(void* cvode_mem)
   return;
 }
 
-/* Check function return value */
-static int check_retval(int retval, const char* funcname)
+/* Check function return value...
+     opt == 0 means SUNDIALS function allocates memory so check if
+              returned NULL pointer
+     opt == 1 means SUNDIALS function returns an integer value so check if
+              retval < 0
+     opt == 2 means function allocates memory so check if returned
+              NULL pointer */
+
+static int check_retval(void* returnvalue, const char* funcname, int opt)
 {
-  /* Check if retval < 0 */
-  if (retval < 0)
+  int* retval;
+
+  /* Check if SUNDIALS function returned NULL pointer - no memory allocated */
+
+  if (opt == 0 && returnvalue == NULL)
   {
-    fprintf(stderr, "\nSUNDIALS_ERROR: %s() failed with retval = %d\n\n",
-            funcname, retval);
+    fprintf(stderr, "\nSUNDIALS_ERROR: %s() failed - returned NULL pointer\n\n",
+            funcname);
     return (1);
   }
-  else { return (0); }
+
+  /* Check if retval < 0 */
+
+  else if (opt == 1)
+  {
+    retval = (int*)returnvalue;
+    if (*retval < 0)
+    {
+      fprintf(stderr, "\nSUNDIALS_ERROR: %s() failed with retval = %d\n\n",
+              funcname, *retval);
+      return (1);
+    }
+  }
+
+  /* Check if function returned NULL pointer - no memory allocated */
+
+  else if (opt == 2 && returnvalue == NULL)
+  {
+    fprintf(stderr, "\nMEMORY_ERROR: %s() failed - returned NULL pointer\n\n",
+            funcname);
+    return (1);
+  }
+
+  return (0);
 }

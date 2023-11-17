@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
   printf("  number of tests       %d  \n", ntests);
   printf("  timing on/off         %d  \n", print_timing);
 
-  flag = SUNContext_Create(NULL, &ctx);
+  flag = SUNContext_Create(SUN_COMM_NULL, &ctx);
   if (flag) { return flag; }
 
   /* Create vectors */
@@ -256,7 +256,6 @@ void ClearCache()
 
     sum = SUN_RCONST(0.0);
     for (i = 0; i < N; i++) { sum += data[i]; }
-    (void)sum;
   }
 
   return;

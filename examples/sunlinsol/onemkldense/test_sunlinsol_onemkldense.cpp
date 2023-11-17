@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
   sunindextype i, j, k;
   SUNContext sunctx;
 
-  if (SUNContext_Create(NULL, &sunctx))
+  if (SUNContext_Create(SUN_COMM_NULL, &sunctx))
   {
     printf("ERROR: SUNContext_Create failed\n");
     return (-1);
@@ -191,8 +191,8 @@ int main(int argc, char* argv[])
   }
 
   // Allocate host data
-  realtype* Adata =
-    (realtype*)malloc(sizeof(realtype) * SUNMatrix_OneMklDense_LData(A));
+  sunrealtype* Adata =
+    (sunrealtype*)malloc(sizeof(sunrealtype) * SUNMatrix_OneMklDense_LData(A));
   if (!Adata)
   {
     printf("Data allocation failed\n");
@@ -204,8 +204,8 @@ int main(int argc, char* argv[])
     SUNMatDestroy(I);
   }
 
-  realtype* Idata =
-    (realtype*)malloc(sizeof(realtype) * SUNMatrix_OneMklDense_LData(I));
+  sunrealtype* Idata =
+    (sunrealtype*)malloc(sizeof(sunrealtype) * SUNMatrix_OneMklDense_LData(I));
   if (!Idata)
   {
     printf("Data allocation failed\n");
@@ -225,8 +225,8 @@ int main(int argc, char* argv[])
     {
       for (i = 0; i < rows; i++)
       {
-        Adata[k * cols * rows + j * rows + i] = (realtype)rand() /
-                                                (realtype)RAND_MAX / cols;
+        Adata[k * cols * rows + j * rows + i] = (sunrealtype)rand() /
+                                                (sunrealtype)RAND_MAX / cols;
       }
     }
   }
@@ -261,10 +261,10 @@ int main(int argc, char* argv[])
   SUNMatrix_OneMklDense_CopyToDevice(I, Idata);
 
   // Fill x vector with uniform random data in [0,1]
-  realtype* xdata = N_VGetArrayPointer(x);
+  sunrealtype* xdata = N_VGetArrayPointer(x);
   for (j = 0; j < cols * nblocks; j++)
   {
-    xdata[j] = (realtype)rand() / (realtype)RAND_MAX;
+    xdata[j] = (sunrealtype)rand() / (sunrealtype)RAND_MAX;
   }
 
   N_VCopyToDevice_Sycl(x);
@@ -356,13 +356,13 @@ int main(int argc, char* argv[])
  * Implementation-specific 'check' routines
  * ---------------------------------------------------------------------------*/
 
-int check_vector(N_Vector X, N_Vector Y, realtype tol)
+int check_vector(N_Vector X, N_Vector Y, sunrealtype tol)
 {
   int failure               = 0;
   sunindextype i            = 0;
   sunindextype local_length = N_VGetLength(X);
-  realtype* Xdata           = N_VGetArrayPointer(X);
-  realtype* Ydata           = N_VGetArrayPointer(Y);
+  sunrealtype* Xdata        = N_VGetArrayPointer(X);
+  sunrealtype* Ydata        = N_VGetArrayPointer(Y);
 
   // Copy data to host
   N_VCopyFromDevice_Sycl(X);
@@ -376,7 +376,7 @@ int check_vector(N_Vector X, N_Vector Y, realtype tol)
 
   if (failure > ZERO)
   {
-    realtype maxerr = ZERO;
+    sunrealtype maxerr = ZERO;
     for (i = 0; i < local_length; i++)
     {
       maxerr = SUNMAX(SUNRabs(Xdata[i] - Ydata[i]), maxerr);

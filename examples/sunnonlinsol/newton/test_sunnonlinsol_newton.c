@@ -57,7 +57,7 @@ static int check_retval(void* flagvalue, const char* funcname, int opt);
 static int Res(N_Vector y, N_Vector f, void* mem);
 
 /* Jacobian of the nonlinear residual */
-static int Jac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 /*
@@ -84,7 +84,7 @@ static int LSolve(N_Vector b, void* mem);
 
 /* Convergence test function */
 static int ConvTest(SUNNonlinearSolver NLS, N_Vector y, N_Vector del,
-                    realtype tol, N_Vector ewt, void* mem);
+                    sunrealtype tol, N_Vector ewt, void* mem);
 
 /* -----------------------------------------------------------------------------
  * Main testing routine
@@ -98,7 +98,7 @@ int main(int argc, char* argv[])
   SUNContext sunctx;
 
   /* create SUNDIALS context */
-  retval = SUNContext_Create(NULL, &sunctx);
+  retval = SUNContext_Create(SUN_COMM_NULL, &sunctx);
   if (check_retval(&retval, "SUNContext_Create", 1)) { return (1); }
 
   /* create proxy for integrator memory */
@@ -260,10 +260,10 @@ int LSolve(N_Vector b, void* mem)
 }
 
 /* Proxy for integrator convergence test function */
-int ConvTest(SUNNonlinearSolver NLS, N_Vector y, N_Vector del, realtype tol,
+int ConvTest(SUNNonlinearSolver NLS, N_Vector y, N_Vector del, sunrealtype tol,
              N_Vector ewt, void* mem)
 {
-  realtype delnrm;
+  sunrealtype delnrm;
 
   /* compute the norm of the correction */
   delnrm = N_VWrmsNorm(del, ewt);
@@ -283,7 +283,7 @@ int ConvTest(SUNNonlinearSolver NLS, N_Vector y, N_Vector del, realtype tol,
 int Res(N_Vector ycor, N_Vector f, void* mem)
 {
   IntegratorMem Imem;
-  realtype y1, y2, y3;
+  sunrealtype y1, y2, y3;
 
   if (mem == NULL)
   {
@@ -317,10 +317,10 @@ int Res(N_Vector ycor, N_Vector f, void* mem)
  *            ( 6x  -4  2z )
  *
  * ---------------------------------------------------------------------------*/
-int Jac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
+int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
         N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
-  realtype y1, y2, y3;
+  sunrealtype y1, y2, y3;
 
   y1 = NV_Ith_S(y, 0);
   y2 = NV_Ith_S(y, 1);

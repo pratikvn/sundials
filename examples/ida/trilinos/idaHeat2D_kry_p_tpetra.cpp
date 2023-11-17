@@ -55,13 +55,9 @@
 #include <ida/ida.h>
 #include <nvector/nvector_trilinos.h>
 #include <nvector/trilinos/SundialsTpetraVectorInterface.hpp>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sundials/sundials_mpi_types.h>
 #include <sundials/sundials_types.h>
 #include <sunlinsol/sunlinsol_spgmr.h>
-#include <vector>
 
 #define ZERO SUN_RCONST(0.0)
 #define ONE  SUN_RCONST(1.0)
@@ -190,7 +186,7 @@ int main(int argc, char* argv[])
     MPI_Comm rawComm = *(mpiComm->getRawMpiComm());
 
     SUNContext ctx;
-    retval = SUNContext_Create((void*)&rawComm, &ctx);
+    retval = SUNContext_Create(rawComm, &ctx);
     if (check_retval(&retval, "SUNContext_Create", 1, thispe)) { return -1; }
 
     /* Allocate and initialize the data structure */

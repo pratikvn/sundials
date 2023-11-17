@@ -85,7 +85,7 @@ int main(int argc, char** argv)
      - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
   ierr = PetscInitialize(&argc, &argv, (char*)0, help);
   if (ierr) return ierr;
-  ierr = SUNContext_Create(&comm, &sunctx);
+  ierr = SUNContext_Create(comm, &sunctx);
   if (ierr) return ierr;
 
   /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

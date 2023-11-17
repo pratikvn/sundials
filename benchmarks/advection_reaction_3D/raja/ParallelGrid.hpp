@@ -96,9 +96,15 @@ public:
       dims[1] = npxyz[1];
       dims[2] = npxyz[2];
     }
+
+    int retval, nprocs;
+    MPI_Comm_size(*comm, &nprocs);
+    retval = MPI_Dims_create(nprocs, 3, dims);
+    assert(retval == MPI_SUCCESS);
+
     int periods[] = {bc == BoundaryType::PERIODIC, bc == BoundaryType::PERIODIC,
                      bc == BoundaryType::PERIODIC};
-    int retval    = MPI_Cart_create(*comm, 3, dims, periods, reorder, comm);
+    retval        = MPI_Cart_create(*comm, 3, dims, periods, reorder, comm);
     assert(retval == MPI_SUCCESS);
 
     retval = MPI_Cart_get(*comm, 3, dims, periods, coords);
@@ -513,9 +519,6 @@ public:
   int ipS, ipN;
   int ipB, ipF;
   bool upwindRight; /* Upwind dir: true/false == R/L      */
-
-  int dims[3];
-  int coords[3];
 
   int dims[3];
   int coords[3];

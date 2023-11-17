@@ -25,8 +25,6 @@
 #include <iomanip>
 #include <iostream>
 #include <nvector/nvector_serial.h>
-#include <stdio.h>
-#include <string.h>
 #include <string>
 #include <sunlinsol/sunlinsol_dense.h>
 #include <sunmatrix/sunmatrix_dense.h>
@@ -48,25 +46,25 @@ using namespace std;
 // User data structure
 struct UserData
 {
-  decltype( lambda_e = SUN_RCONST(-1.0);
-  decltype( lambda_i = SUN_RCONST(-1.0);
-  decltype( lambda_f = SUN_RCONST(-1.0);
+  sunrealtype lambda_e = SUN_RCONST(-1.0);
+  sunrealtype lambda_i = SUN_RCONST(-1.0);
+  sunrealtype lambda_f = SUN_RCONST(-1.0);
 };
 
 // User-supplied Functions called by the solver
-static int fe(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
-static int fi(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
-static int ff(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
-static int Ji(decltype( t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
+static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+static int ff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+static int Ji(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 // Private function to check function return values
 static int check_flag(void* flagvalue, const string funcname, int opt);
 
 // Test drivers
-static int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps,
-                     realtype hs, realtype hf, realtype reltol, realtype abstol,
-                     UserData* udata, SUNContext ctx);
+static int run_tests(MRISTEP_METHOD_TYPE type, sunrealtype t0, int nsteps,
+                     sunrealtype hs, sunrealtype hf, sunrealtype reltol,
+                     sunrealtype abstol, UserData* udata, SUNContext ctx);
 
 // -----------------------------------------------------------------------------
 // Main Program
@@ -75,18 +73,18 @@ static int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps,
 int main(int argc, char* argv[])
 {
   // Initial time
-  realtype t0 = SUN_RCONST(0.0);
+  sunrealtype t0 = SUN_RCONST(0.0);
 
   // Number of time steps
   int nsteps = 1;
 
   // Relative and absolute tolerances
-  realtype reltol = SUN_RCONST(1.0e-4);
-  realtype abstol = SUN_RCONST(1.0e-6);
+  sunrealtype reltol = SUN_RCONST(1.0e-4);
+  sunrealtype abstol = SUN_RCONST(1.0e-6);
 
   // Slow and fast step sizes
-  realtype hs = SUN_RCONST(0.01);
-  realtype hf = SUN_RCONST(0.01);
+  sunrealtype hs = SUN_RCONST(0.01);
+  sunrealtype hf = SUN_RCONST(0.01);
 
   // User data structure
   UserData udata;
@@ -135,9 +133,9 @@ int main(int argc, char* argv[])
 // Test drivers
 // -----------------------------------------------------------------------------
 
-int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
-              realtype hf, realtype reltol, realtype abstol, UserData* udata,
-              SUNContext sunctx)
+int run_tests(MRISTEP_METHOD_TYPE type, sunrealtype t0, int nsteps,
+              sunrealtype hs, sunrealtype hf, sunrealtype reltol,
+              sunrealtype abstol, UserData* udata, SUNContext sunctx)
 {
   // Reusable error-checking flag
   int flag;
@@ -333,8 +331,8 @@ int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
     // Output statistics
     // -----------------
 
-    realtype t  = t0;
-    realtype tf = nsteps * hs;
+    sunrealtype t  = t0;
+    sunrealtype tf = nsteps * hs;
 
     for (int i = 0; i < nsteps; i++)
     {
@@ -381,7 +379,7 @@ int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
       check_flag(&flag, "MRIStepGetNumLinRhsEvals", 1);
     }
 
-    realtype pow = udata->lambda_f;
+    sunrealtype pow = udata->lambda_f;
     if (type == MRISTEP_EXPLICIT || type == MRISTEP_IMEX)
     {
       pow += udata->lambda_e;
@@ -390,10 +388,10 @@ int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
     {
       pow += udata->lambda_i;
     }
-    realtype ytrue = exp(pow * t);
+    sunrealtype ytrue = exp(pow * t);
 
-    realtype* ydata = N_VGetArrayPointer(y);
-    realtype error  = ytrue - ydata[0];
+    sunrealtype* ydata = N_VGetArrayPointer(y);
+    sunrealtype error  = ytrue - ydata[0];
 
     cout << "\nMRIStep Statistics:\n";
     cout << "   Time        = " << t << "\n";
@@ -508,11 +506,11 @@ int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
 // -----------------------------------------------------------------------------
 
 // Explicit ODE RHS function fe(t,y)
-static int fe(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  realtype* y_data  = N_VGetArrayPointer(y);
-  realtype* yd_data = N_VGetArrayPointer(ydot);
-  UserData* udata   = static_cast<UserData*>(user_data);
+  sunrealtype* y_data  = N_VGetArrayPointer(y);
+  sunrealtype* yd_data = N_VGetArrayPointer(ydot);
+  UserData* udata      = static_cast<UserData*>(user_data);
 
   yd_data[0] = udata->lambda_e * y_data[0];
 
@@ -520,11 +518,11 @@ static int fe(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 }
 
 // Implicit ODE RHS function fi(t,y)
-static int fi(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  realtype* y_data  = N_VGetArrayPointer(y);
-  realtype* yd_data = N_VGetArrayPointer(ydot);
-  UserData* udata   = static_cast<UserData*>(user_data);
+  sunrealtype* y_data  = N_VGetArrayPointer(y);
+  sunrealtype* yd_data = N_VGetArrayPointer(ydot);
+  UserData* udata      = static_cast<UserData*>(user_data);
 
   yd_data[0] = udata->lambda_i * y_data[0];
 
@@ -532,11 +530,11 @@ static int fi(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 }
 
 // Fast ODE RHS function ff(t,y)
-static int ff(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+static int ff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  realtype* y_data  = N_VGetArrayPointer(y);
-  realtype* yd_data = N_VGetArrayPointer(ydot);
-  UserData* udata   = static_cast<UserData*>(user_data);
+  sunrealtype* y_data  = N_VGetArrayPointer(y);
+  sunrealtype* yd_data = N_VGetArrayPointer(ydot);
+  UserData* udata      = static_cast<UserData*>(user_data);
 
   yd_data[0] = udata->lambda_f * y_data[0];
 
@@ -544,11 +542,11 @@ static int ff(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 }
 
 // Jacobian routine to compute J(t,y) = dfi/dy.
-static int Ji(realtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
+static int Ji(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
-  realtype* J_data = SUNDenseMatrix_Data(J);
-  UserData* udata  = static_cast<UserData*>(user_data);
+  sunrealtype* J_data = SUNDenseMatrix_Data(J);
+  UserData* udata     = static_cast<UserData*>(user_data);
 
   J_data[0] = udata->lambda_i;
 

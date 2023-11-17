@@ -18,6 +18,7 @@
 #include <arkode/arkode_butcher_erk.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/sundials_math.h>
 
 #include "arkode_impl.h"
 
@@ -37,7 +38,7 @@ ARKodeButcherTable ARKodeButcherTable_LoadERK(ARKODE_ERKTableID emethod)
 #undef ARK_BUTCHER_TABLE
 
   default:
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE", "ARKodeButcherTable_LoadERK",
                     "Unknown Butcher table");
     return NULL;
   }
@@ -66,7 +67,7 @@ ARKODE_ERKTableID arkButcherTableERKNameToID(const char* emethod)
 #include "arkode_butcher_erk.def"
 #undef ARK_BUTCHER_TABLE
 
-  arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+  arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE", "arkButcherTableERKNameToID",
                   "Unknown Butcher table");
 
   return ARKODE_ERK_NONE;

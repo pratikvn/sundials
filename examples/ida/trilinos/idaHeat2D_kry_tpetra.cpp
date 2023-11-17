@@ -49,8 +49,6 @@
 #include <ida/ida.h> /* prototypes for IDA methods           */
 #include <nvector/nvector_trilinos.h>
 #include <nvector/trilinos/SundialsTpetraVectorInterface.hpp>
-#include <stdio.h>
-#include <stdlib.h>
 #include <sundials/sundials_types.h> /* definition of type sunrealtype          */
 #include <sunlinsol/sunlinsol_spgmr.h> /* access to spgmr SUNLinearSolver      */
 
@@ -128,7 +126,7 @@ int main(int argc, char* argv[])
 
   /* Create the SUNDIALS context object for this simulation. */
   SUNContext ctx;
-  retval = SUNContext_Create(NULL, &ctx);
+  retval = SUNContext_Create(SUN_COMM_NULL, &ctx);
   if (check_retval(&retval, "SUNContext_Create", 1)) { return -1; }
 
   /* Assign parameters in the user data structure. */

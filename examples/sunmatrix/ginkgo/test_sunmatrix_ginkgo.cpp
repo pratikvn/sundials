@@ -483,9 +483,8 @@ extern "C" int check_vector(N_Vector expected, N_Vector computed, sunrealtype to
       }
     }
   }
-}
 
-return failure > 0;
+  return failure > 0;
 }
 
 extern "C" sunbooleantype has_data(SUNMatrix A)

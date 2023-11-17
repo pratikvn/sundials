@@ -133,6 +133,12 @@ Changes from previous versions
 Changes in vX.X.X
 -----------------
 
+The previously deprecated types ``realtype`` and ``booleantype`` were removed
+from ``sundials_types.h`` and replaced with ``sunrealtype`` and
+``sunbooleantype``. The deprecated names for these types can be used by including
+the header file ``sundials_types_deprecated.h`` but will be fully removed in the
+next major release.
+
 Added the :c:type:`SUNAdaptController` base class, ported ARKODE's internal
 implementations of time step controllers into implementations of this class,
 and updated ARKODE to use these objects instead of its own implementations.  Added
@@ -181,6 +187,29 @@ Changed the ``SUNProfiler`` so that it does not rely on ``MPI_WTime`` in any cas
 This fixes `GitHub Issue #312 <https://github.com/LLNL/sundials/issues/312>`_. 
 
 Added Fortran support for the LAPACK  dense ``SUNLinearSolver`` implementation.
+
+**Breaking change** 
+We have replaced the use of a type-erased (i.e., ``void*``) pointer to a
+communicator in place of ``MPI_Comm`` throughout the SUNDIALS API with a
+:c:type:`SUNComm`, which is just a typedef to an ``int`` in builds without MPI
+and a typedef to a ``MPI_Comm`` in builds with MPI. Here is what this means:
+
+- All users will need to update their codes because the call to 
+  :c:func:`SUNContext_Create` now takes a :c:type:`SUNComm` instead
+  of type-erased pointer to a communicator. For non-MPI codes,
+  pass :c:type:`SUN_COMM_NULL` to the ``comm`` argument instead of
+  ``NULL``. For MPI codes, pass the ``MPI_Comm`` directly. 
+  The required change should be doable with a find-and-replace. 
+
+- The same change must be made for calls to 
+  :c:func:`SUNLogger_Create` or :c:func:`SUNProfiler_Create`. 
+  
+- Some users will need to update their calls to ``N_VGetCommunicator``, and 
+  update any custom ``N_Vector`` implementations tht provide 
+  ``N_VGetCommunicator``, since it now returns a ``SUNComm``. 
+
+The change away from type-erased pointers for :c:type:`SUNComm` fixes problems like the 
+one described in `GitHub Issue #275 <https://github.com/LLNL/sundials/issues/275>`.
 
 **Breaking change**
 Functions, types and header files that were previously deprecated have been

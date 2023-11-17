@@ -55,15 +55,13 @@
  * -----------------------------------------------------------------*/
 
 #include <cvodes/cvodes.h>          /* prototypes for CVODE fcts., consts.  */
-#include <cvodes/cvodes_direct.h>   /* access to CVDls interface            */
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
-#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
-#include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver      */
+#include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix            */
 
 /* Accessor macros */
 
@@ -189,7 +187,7 @@ int main(int argc, char* argv[])
   data->p[2] = SUN_RCONST(3.0e7);
 
   /* Create the SUNDIALS simulation context that all SUNDIALS objects require */
-  retval = SUNContext_Create(NULL, &sunctx);
+  retval = SUNContext_Create(SUN_COMM_NULL, &sunctx);
   if (check_retval(&retval, "SUNContext_Create", 1)) { return (1); }
 
   /* Initialize y */

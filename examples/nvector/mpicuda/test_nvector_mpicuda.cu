@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
   MPI_Comm_size(comm, &nprocs);
   MPI_Comm_rank(comm, &myid);
 
-  Test_Init(&comm);
+  Test_Init(comm);
 
   /* check inputs */
   if (argc < 3)
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
     {
       printf("ERROR: TWO (2) Inputs required: vector length, print timing \n");
     }
-    Test_AbortMPI(&comm, -1);
+    Test_AbortMPI(comm, -1);
   }
 
   local_length = (sunindextype)atol(argv[1]);
@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
     {
       printf("ERROR: local vector length must be a positive integer \n");
     }
-    Test_AbortMPI(&comm, -1);
+    Test_AbortMPI(comm, -1);
   }
 
   print_timing = atoi(argv[2]);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
       {
         printf("FAIL: Unable to create a new CUDA vector \n\n");
       }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     /* Create the MPI+X vector */
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
       {
         printf("FAIL: Unable to create a new MPIPlusX vector \n\n");
       }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     /* Check vector ID */
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
     fails += Test_N_VGetLength(plusX, myid);
 
     /* Check vector communicator */
-    fails += Test_N_VGetCommunicatorMPI(plusX, &comm, myid);
+    fails += Test_N_VGetCommunicatorMPI(plusX, comm, myid);
 
     /* Test clone functions */
     fails += Test_N_VCloneEmpty(plusX, myid);
@@ -140,7 +140,7 @@ int main(int argc, char* argv[])
       N_VDestroy(X);
       N_VDestroy(plusX);
       if (myid == 0) { printf("FAIL: Unable to create a new vector \n\n"); }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     plusZ = N_VClone(plusX);
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
       N_VDestroy(plusX);
       N_VDestroy(plusY);
       if (myid == 0) { printf("FAIL: Unable to create a new vector \n\n"); }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     /* Standard vector operation tests */
@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
       {
         printf("FAIL: Unable to create a new CUDA vector \n\n");
       }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     /* create the MPIPlusX vector */
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
       {
         printf("FAIL: Unable to create a new MPIPlusX vector \n\n");
       }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     /* fused operations */
@@ -251,7 +251,7 @@ int main(int argc, char* argv[])
       {
         printf("FAIL: Unable to create a new CUDA vector \n\n");
       }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     /* create the MPIPlusX vector */
@@ -269,7 +269,7 @@ int main(int argc, char* argv[])
       {
         printf("FAIL: Unable to create a new MPIPlusX vector \n\n");
       }
-      Test_AbortMPI(&comm, 1);
+      Test_AbortMPI(comm, 1);
     }
 
     /* fused operations */
@@ -408,13 +408,13 @@ sunrealtype get_element(N_Vector plusX, sunindextype i)
 
 double max_time(N_Vector plusX, double time)
 {
-  MPI_Comm* comm;
+  MPI_Comm comm;
   double maxt;
 
-  comm = (MPI_Comm*)N_VGetCommunicator(plusX);
+  comm = N_VGetCommunicator(plusX);
 
   /* get max time across all MPI ranks */
-  (void)MPI_Reduce(&time, &maxt, 1, MPI_DOUBLE, MPI_MAX, 0, *comm);
+  (void)MPI_Reduce(&time, &maxt, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
   return (maxt);
 }
 

@@ -18,6 +18,15 @@
 // By default, wrap all constants as native fortran PARAMETERs
 %fortranconst;
 
+// Inform SWIG of the SUNDIALS_EXPORT macro
+#define SUNDIALS_EXPORT
+#define SUNDIALS_DEPRECATED_EXPORT
+#define SUNDIALS_DEPRECATED_EXPORT_MSG(msg)
+#define SUNDIALS_STATIC_INLINE
+
+// All modules need sundials_types
+%import "../sundials/fsundials_types_mod.i"
+
 // Prefix all functions with F
 // E.g. CVodeCreate -> FCVodeCreate
 %rename("F%s", %$isfunction) "";
@@ -45,8 +54,8 @@
 // Treat array of N_Vectors as an opaque pointer
 %apply void* { N_Vector* };
 
-// Assume realtype* is an array of doubles
-%apply double[] { realtype* };
+// Assume sunrealtype* is an array of doubles
+%apply double[] { sunrealtype* };
 
 // Assume realtype* is an array of doubles
 %apply double[] { sunrealtype* };
@@ -62,13 +71,5 @@
 
 // Treat all ** as an opaque pointer
 %apply void** { SWIGTYPE ** };
-
-
-// Inform SWIG of the SUNDIALS_EXPORT macro
-#define SUNDIALS_EXPORT
-#define SUNDIALS_DEPRECATED_EXPORT
-#define SUNDIALS_DEPRECATED_EXPORT_MSG(msg)
-#define SUNDIALS_STATIC_INLINE
-#define
 
 %include "fcopyright.i"

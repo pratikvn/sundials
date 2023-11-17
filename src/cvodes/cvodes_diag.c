@@ -1,5 +1,5 @@
 /*
- * -----------------------------------------------------------------
+ * ----------------------------------------------------------------- 
  * Programmer(s): Radu Serban @ LLNL
  * -----------------------------------------------------------------
  * SUNDIALS Copyright Start
@@ -40,7 +40,7 @@ static int CVDiagSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight,
 
 static int CVDiagFree(CVodeMem cv_mem);
 
-/*
+/* 
  * ================================================================
  *
  *                   PART I - forward problems
@@ -78,7 +78,7 @@ static int CVDiagFree(CVodeMem cv_mem);
 
 /*
  * -----------------------------------------------------------------
- * CVDiag
+ * CVDiag 
  * -----------------------------------------------------------------
  * This routine initializes the memory record and sets various function
  * fields specific to the diagonal linear solver module.  CVDense first
@@ -89,7 +89,7 @@ static int CVDiagFree(CVodeMem cv_mem);
  * CVDiagMemRec and sets the cv_lmem field in (*cvode_mem) to the
  * address of this structure.  It sets setupNonNull in (*cvode_mem) to
  * SUNTRUE.  Finally, it allocates memory for M, bit, and bitcomp.
- * The CVDiag return value is SUCCESS = 0, LMEM_FAIL = -1, or
+ * The CVDiag return value is SUCCESS = 0, LMEM_FAIL = -1, or 
  * LIN_ILL_INPUT=-2.
  * -----------------------------------------------------------------
  */
@@ -102,18 +102,15 @@ int CVDiag(void* cvode_mem)
   /* Return immediately if cvode_mem is NULL */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CVDIAG_MEM_NULL, __LINE__, __func__, __FILE__,
-                   MSGDG_CVMEM_NULL);
+    cvProcessError(NULL, CVDIAG_MEM_NULL, "CVDIAG", "CVDiag", MSGDG_CVMEM_NULL);
     return (CVDIAG_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
 
-  SUNAssignSUNCTX(cv_mem->cv_sunctx);
-
   /* Check if N_VCompare and N_VInvTest are present */
   if (vec_tmpl->ops->nvcompare == NULL || vec_tmpl->ops->nvinvtest == NULL)
   {
-    cvProcessError(cv_mem, CVDIAG_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CVDIAG_ILL_INPUT, "CVDIAG", "CVDiag",
                    MSGDG_BAD_NVECTOR);
     return (CVDIAG_ILL_INPUT);
   }
@@ -131,8 +128,7 @@ int CVDiag(void* cvode_mem)
   cvdiag_mem = (CVDiagMem)malloc(sizeof(CVDiagMemRec));
   if (cvdiag_mem == NULL)
   {
-    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, __LINE__, __func__, __FILE__,
-                   MSGDG_MEM_FAIL);
+    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, "CVDIAG", "CVDiag", MSGDG_MEM_FAIL);
     return (CVDIAG_MEM_FAIL);
   }
 
@@ -140,32 +136,29 @@ int CVDiag(void* cvode_mem)
 
   /* Allocate memory for M, bit, and bitcomp */
 
-  M = SUNCheckCallLastErrNoRet(N_VClone(vec_tmpl));
+  M = N_VClone(vec_tmpl);
   if (M == NULL)
   {
-    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, __LINE__, __func__, __FILE__,
-                   MSGDG_MEM_FAIL);
+    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, "CVDIAG", "CVDiag", MSGDG_MEM_FAIL);
     free(cvdiag_mem);
     cvdiag_mem = NULL;
     return (CVDIAG_MEM_FAIL);
   }
-  bit = SUNCheckCallLastErrNoRet(N_VClone(vec_tmpl));
+  bit = N_VClone(vec_tmpl);
   if (bit == NULL)
   {
-    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, __LINE__, __func__, __FILE__,
-                   MSGDG_MEM_FAIL);
-    SUNCheckCallLastErrNoRet(N_VDestroy(M));
+    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, "CVDIAG", "CVDiag", MSGDG_MEM_FAIL);
+    N_VDestroy(M);
     free(cvdiag_mem);
     cvdiag_mem = NULL;
     return (CVDIAG_MEM_FAIL);
   }
-  bitcomp = SUNCheckCallLastErrNoRet(N_VClone(vec_tmpl));
+  bitcomp = N_VClone(vec_tmpl);
   if (bitcomp == NULL)
   {
-    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, __LINE__, __func__, __FILE__,
-                   MSGDG_MEM_FAIL);
-    SUNCheckCallLastErrNoRet(N_VDestroy(M));
-    SUNCheckCallLastErrNoRet(N_VDestroy(bit));
+    cvProcessError(cv_mem, CVDIAG_MEM_FAIL, "CVDIAG", "CVDiag", MSGDG_MEM_FAIL);
+    N_VDestroy(M);
+    N_VDestroy(bit);
     free(cvdiag_mem);
     cvdiag_mem = NULL;
     return (CVDIAG_MEM_FAIL);
@@ -190,7 +183,7 @@ int CVDiagGetWorkSpace(void* cvode_mem, long int* lenrwLS, long int* leniwLS)
   /* Return immediately if cvode_mem is NULL */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CVDIAG_MEM_NULL, __LINE__, __func__, __FILE__,
+    cvProcessError(NULL, CVDIAG_MEM_NULL, "CVDIAG", "CVDiagGetWorkSpace",
                    MSGDG_CVMEM_NULL);
     return (CVDIAG_MEM_NULL);
   }
@@ -216,7 +209,7 @@ int CVDiagGetNumRhsEvals(void* cvode_mem, long int* nfevalsLS)
   /* Return immediately if cvode_mem is NULL */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CVDIAG_MEM_NULL, __LINE__, __func__, __FILE__,
+    cvProcessError(NULL, CVDIAG_MEM_NULL, "CVDIAG", "CVDiagGetNumRhsEvals",
                    MSGDG_CVMEM_NULL);
     return (CVDIAG_MEM_NULL);
   }
@@ -224,7 +217,7 @@ int CVDiagGetNumRhsEvals(void* cvode_mem, long int* nfevalsLS)
 
   if (lmem == NULL)
   {
-    cvProcessError(cv_mem, CVDIAG_LMEM_NULL, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CVDIAG_LMEM_NULL, "CVDIAG", "CVDiagGetNumRhsEvals",
                    MSGDG_LMEM_NULL);
     return (CVDIAG_LMEM_NULL);
   }
@@ -249,7 +242,7 @@ int CVDiagGetLastFlag(void* cvode_mem, long int* flag)
   /* Return immediately if cvode_mem is NULL */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CVDIAG_MEM_NULL, __LINE__, __func__, __FILE__,
+    cvProcessError(NULL, CVDIAG_MEM_NULL, "CVDIAG", "CVDiagGetLastFlag",
                    MSGDG_CVMEM_NULL);
     return (CVDIAG_MEM_NULL);
   }
@@ -257,7 +250,7 @@ int CVDiagGetLastFlag(void* cvode_mem, long int* flag)
 
   if (lmem == NULL)
   {
-    cvProcessError(cv_mem, CVDIAG_LMEM_NULL, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CVDIAG_LMEM_NULL, "CVDIAG", "CVDiagGetLastFlag",
                    MSGDG_LMEM_NULL);
     return (CVDIAG_LMEM_NULL);
   }
@@ -322,8 +315,8 @@ static int CVDiagInit(CVodeMem cv_mem)
  * -----------------------------------------------------------------
  * CVDiagSetup
  * -----------------------------------------------------------------
- * This routine does the setup operations for the diagonal linear
- * solver.  It constructs a diagonal approximation to the Newton matrix
+ * This routine does the setup operations for the diagonal linear 
+ * solver.  It constructs a diagonal approximation to the Newton matrix 
  * M = I - gamma*J, updates counters, and inverts M.
  * -----------------------------------------------------------------
  */
@@ -332,8 +325,6 @@ static int CVDiagSetup(CVodeMem cv_mem, int convfail, N_Vector ypred,
                        N_Vector fpred, sunbooleantype* jcurPtr, N_Vector vtemp1,
                        N_Vector vtemp2, N_Vector vtemp3)
 {
-  SUNAssignSUNCTX(cv_mem->cv_sunctx);
-
   sunrealtype r;
   N_Vector ftemp, y;
   sunbooleantype invOK;
@@ -348,15 +339,15 @@ static int CVDiagSetup(CVodeMem cv_mem, int convfail, N_Vector ypred,
 
   /* Form y with perturbation = FRACT*(func. iter. correction) */
   r = FRACT * rl1;
-  SUNCheckCallLastErrNoRet(N_VLinearSum(h, fpred, -ONE, zn[1], ftemp));
-  SUNCheckCallLastErrNoRet(N_VLinearSum(r, ftemp, ONE, ypred, y));
+  N_VLinearSum(h, fpred, -ONE, zn[1], ftemp);
+  N_VLinearSum(r, ftemp, ONE, ypred, y);
 
   /* Evaluate f at perturbed y */
   retval = f(tn, y, M, cv_mem->cv_user_data);
   nfeDI++;
   if (retval < 0)
   {
-    cvProcessError(cv_mem, CVDIAG_RHSFUNC_UNRECVR, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CVDIAG_RHSFUNC_UNRECVR, "CVDIAG", "CVDiagSetup",
                    MSGDG_RHSFUNC_FAILED);
     last_flag = CVDIAG_RHSFUNC_UNRECVR;
     return (-1);
@@ -368,20 +359,20 @@ static int CVDiagSetup(CVodeMem cv_mem, int convfail, N_Vector ypred,
   }
 
   /* Construct M = I - gamma*J with J = diag(deltaf_i/deltay_i) */
-  SUNCheckCallLastErrNoRet(N_VLinearSum(ONE, M, -ONE, fpred, M));
-  SUNCheckCallLastErrNoRet(N_VLinearSum(FRACT, ftemp, -h, M, M));
-  SUNCheckCallLastErrNoRet(N_VProd(ftemp, ewt, y));
+  N_VLinearSum(ONE, M, -ONE, fpred, M);
+  N_VLinearSum(FRACT, ftemp, -h, M, M);
+  N_VProd(ftemp, ewt, y);
   /* Protect against deltay_i being at roundoff level */
-  SUNCheckCallLastErrNoRet(N_VCompare(uround, y, bit));
-  SUNCheckCallLastErrNoRet(N_VAddConst(bit, -ONE, bitcomp));
-  SUNCheckCallLastErrNoRet(N_VProd(ftemp, bit, y));
-  SUNCheckCallLastErrNoRet(N_VLinearSum(FRACT, y, -ONE, bitcomp, y));
-  SUNCheckCallLastErrNoRet(N_VDiv(M, y, M));
-  SUNCheckCallLastErrNoRet(N_VProd(M, bit, M));
-  SUNCheckCallLastErrNoRet(N_VLinearSum(ONE, M, -ONE, bitcomp, M));
+  N_VCompare(uround, y, bit);
+  N_VAddConst(bit, -ONE, bitcomp);
+  N_VProd(ftemp, bit, y);
+  N_VLinearSum(FRACT, y, -ONE, bitcomp, y);
+  N_VDiv(M, y, M);
+  N_VProd(M, bit, M);
+  N_VLinearSum(ONE, M, -ONE, bitcomp, M);
 
   /* Invert M with test for zero components */
-  invOK = SUNCheckCallLastErrNoRet(N_VInvTest(M, M));
+  invOK = N_VInvTest(M, M);
   if (!invOK)
   {
     last_flag = CVDIAG_INV_FAIL;
@@ -407,8 +398,6 @@ static int CVDiagSetup(CVodeMem cv_mem, int convfail, N_Vector ypred,
 static int CVDiagSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight,
                        N_Vector ycur, N_Vector fcur)
 {
-  SUNAssignSUNCTX(cv_mem->cv_sunctx);
-
   sunbooleantype invOK;
   sunrealtype r;
   CVDiagMem cvdiag_mem;
@@ -420,11 +409,11 @@ static int CVDiagSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight,
   if (gammasv != gamma)
   {
     r = gamma / gammasv;
-    SUNCheckCallLastErrNoRet(N_VInv(M, M));
-    SUNCheckCallLastErrNoRet(N_VAddConst(M, -ONE, M));
-    SUNCheckCallLastErrNoRet(N_VScale(r, M, M));
-    SUNCheckCallLastErrNoRet(N_VAddConst(M, ONE, M));
-    invOK = SUNCheckCallLastErrNoRet(N_VInvTest(M, M));
+    N_VInv(M, M);
+    N_VAddConst(M, -ONE, M);
+    N_VScale(r, M, M);
+    N_VAddConst(M, ONE, M);
+    invOK = N_VInvTest(M, M);
     if (!invOK)
     {
       last_flag = CVDIAG_INV_FAIL;
@@ -434,7 +423,7 @@ static int CVDiagSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight,
   }
 
   /* Apply M-inverse to b */
-  SUNCheckCallLastErrNoRet(N_VProd(b, M, b));
+  N_VProd(b, M, b);
 
   last_flag = CVDIAG_SUCCESS;
   return (0);
@@ -450,22 +439,20 @@ static int CVDiagSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight,
 
 static int CVDiagFree(CVodeMem cv_mem)
 {
-  SUNAssignSUNCTX(cv_mem->cv_sunctx);
-
   CVDiagMem cvdiag_mem;
 
   cvdiag_mem = (CVDiagMem)lmem;
 
-  SUNCheckCallLastErrNoRet(N_VDestroy(M));
-  SUNCheckCallLastErrNoRet(N_VDestroy(bit));
-  SUNCheckCallLastErrNoRet(N_VDestroy(bitcomp));
+  N_VDestroy(M);
+  N_VDestroy(bit);
+  N_VDestroy(bitcomp);
   free(cvdiag_mem);
   cv_mem->cv_lmem = NULL;
 
   return (0);
 }
 
-/*
+/* 
  * ================================================================
  *
  *                   PART II - backward problems
@@ -476,7 +463,7 @@ static int CVDiagFree(CVodeMem cv_mem)
 /*
  * CVDiagB
  *
- * Wrappers for the backward phase around the corresponding
+ * Wrappers for the backward phase around the corresponding 
  * CVODES functions
  */
 
@@ -491,8 +478,7 @@ int CVDiagB(void* cvode_mem, int which)
   /* Check if cvode_mem exists */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CVDIAG_MEM_NULL, __LINE__, __func__, __FILE__,
-                   MSGDG_CVMEM_NULL);
+    cvProcessError(NULL, CVDIAG_MEM_NULL, "CVSDIAG", "CVDiagB", MSGDG_CVMEM_NULL);
     return (CVDIAG_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -500,8 +486,7 @@ int CVDiagB(void* cvode_mem, int which)
   /* Was ASA initialized? */
   if (cv_mem->cv_adjMallocDone == SUNFALSE)
   {
-    cvProcessError(cv_mem, CVDIAG_NO_ADJ, __LINE__, __func__, __FILE__,
-                   MSGDG_NO_ADJ);
+    cvProcessError(cv_mem, CVDIAG_NO_ADJ, "CVSDIAG", "CVDiagB", MSGDG_NO_ADJ);
     return (CVDIAG_NO_ADJ);
   }
   ca_mem = cv_mem->cv_adj_mem;
@@ -509,7 +494,7 @@ int CVDiagB(void* cvode_mem, int which)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CVDIAG_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CVDIAG_ILL_INPUT, "CVSDIAG", "CVDiagB",
                    MSGDG_BAD_WHICH);
     return (CVDIAG_ILL_INPUT);
   }

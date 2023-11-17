@@ -27,8 +27,8 @@
 extern "C" {
 #endif
 /* Forward declarations for implementation specific utility functions */
-int check_vector(N_Vector expected, N_Vector computed, realtype tol);
-void sync_device(voidvoidvoidvoidvoidvoidvoidvoidvoidvoidvoidvoid);
+int check_vector(N_Vector expected, N_Vector computed, sunrealtype tol);
+void sync_device(voidvoidvoidvoidvoidvoidvoidvoidvoidvoidvoidvoidvoid);
 
 /* Test function declarations */
 int Test_SUNLinSolGetType(SUNLinearSolver S, SUNLinearSolver_Type suntype, int myid);
@@ -44,7 +44,7 @@ int Test_SUNLinSolSetScalingVectors(SUNLinearSolver S, N_Vector s1, N_Vector s2,
 int Test_SUNLinSolSetZeroGuess(SUNLinearSolver S, int myid);
 int Test_SUNLinSolInitialize(SUNLinearSolver S, int myid);
 int Test_SUNLinSolSetup(SUNLinearSolver S, SUNMatrix A, int myid);
-int Test_SUNLinSolSolve(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b, realtype tol, sunbooleantype zeroguess,
+int Test_SUNLinSolSolve(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b, sunrealtype tol, sunbooleantype zeroguess,
                         int myid);
 
 /* Timing function */

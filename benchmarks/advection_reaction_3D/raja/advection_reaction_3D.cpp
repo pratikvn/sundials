@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
 
   /* Create SUNDIALS context */
-  SUNContext_Create((void*)&comm, &ctx);
+  SUNContext_Create(comm, &ctx);
 
   /* Create SUNDIALS memory helper */
 #if defined(USE_CUDA)
@@ -734,9 +734,8 @@ void InputError(char* name)
                     "direction\n");
     fprintf(stderr, "  --npxyz <int> <int> <int> number of processors in each "
                     "direction (0 forces MPI to decide)\n");
-    fprintf(stderr,
-            "  --xmax <sunrealtype>         maximum value of x (size of "
-            "domain)\n");
+    fprintf(stderr, "  --xmax <sunrealtype>         maximum value of x (size "
+                    "of domain)\n");
     fprintf(stderr, "  --tf <sunrealtype>           final time\n");
     fprintf(stderr, "  --A <sunrealtype>            A parameter value\n");
     fprintf(stderr, "  --B <sunrealtype>            B parameter value\n");
