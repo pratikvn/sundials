@@ -35,8 +35,8 @@ extern "C" {
 #endif
 
 extern void FK_BJAC(long int* N, long int* MU, long int* ML, long int* EBAND,
-                    sunrealtype* UU, sunrealtype* FU, sunrealtype* BJAC, sunrealtype* WK1,
-                    sunrealtype* WK2, int* IER);
+                    sunrealtype* UU, sunrealtype* FU, sunrealtype* BJAC,
+                    sunrealtype* WK1, sunrealtype* WK2, int* IER);
 
 #ifdef __cplusplus
 }

@@ -32,12 +32,14 @@
 extern "C" {
 #endif
 
-extern void FARK_PSET(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunbooleantype* JOK,
-                      sunbooleantype* JCUR, sunrealtype* GAMMA, sunrealtype* H,
-                      long int* IPAR, sunrealtype* RPAR, int* IER);
-extern void FARK_PSOL(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* R,
-                      sunrealtype* Z, sunrealtype* GAMMA, sunrealtype* DELTA, int* LR,
-                      long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FARK_PSET(sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                      sunbooleantype* JOK, sunbooleantype* JCUR,
+                      sunrealtype* GAMMA, sunrealtype* H, long int* IPAR,
+                      sunrealtype* RPAR, int* IER);
+extern void FARK_PSOL(sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                      sunrealtype* R, sunrealtype* Z, sunrealtype* GAMMA,
+                      sunrealtype* DELTA, int* LR, long int* IPAR,
+                      sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }

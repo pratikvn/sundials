@@ -60,17 +60,18 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 
 /* Private function to check computed solution */
-static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol, sunrealtype atol);
+static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol,
+                     sunrealtype atol);
 
 /* Main Program */
 int main(void)
 {
   /* general problem parameters */
-  sunrealtype T0      = SUN_RCONST(0.0);           /* initial time */
-  sunrealtype Tf      = SUN_RCONST(1.e11);         /* final time */
-  sunrealtype dTout   = (Tf - T0) / 100;       /* time between outputs */
-  int Nt           = (int)ceil(Tf / dTout); /* number of output times */
-  sunindextype NEQ = 3;                     /* number of dependent vars. */
+  sunrealtype T0    = SUN_RCONST(0.0);       /* initial time */
+  sunrealtype Tf    = SUN_RCONST(1.e11);     /* final time */
+  sunrealtype dTout = (Tf - T0) / 100;       /* time between outputs */
+  int Nt            = (int)ceil(Tf / dTout); /* number of output times */
+  sunindextype NEQ  = 3;                     /* number of dependent vars. */
 
   /* general problem variables */
   int flag;                  /* reusable error-checking flag */
@@ -303,7 +304,7 @@ static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol, sunrealtype at
   int passfail = 0; /* answer pass (0) or fail (1) flag */
   N_Vector ref;     /* reference solution vector        */
   N_Vector ewt;     /* error weight vector              */
-  sunrealtype err;     /* wrms error                       */
+  sunrealtype err;  /* wrms error                       */
   sunrealtype ZERO = SUN_RCONST(0.0);
   sunrealtype ONE  = SUN_RCONST(1.0);
 

@@ -50,9 +50,9 @@ int main(int argc, char* argv[])
   sunindextype matrows, matcols; /* matrix dimensions          */
   sunindextype nblocks;          /* number of blocks in matrix */
   N_Vector x, y;                 /* test vectors               */
-  sunrealtype *xdata, *ydata;       /* pointers to vector data    */
+  sunrealtype *xdata, *ydata;    /* pointers to vector data    */
   SUNMatrix A, I;                /* test matrices              */
-  sunrealtype *Adata, *Idata;       /* pointers to matrix data    */
+  sunrealtype *Adata, *Idata;    /* pointers to matrix data    */
   int print_timing, square;
   sunindextype i, j, k, m, n;
   SUNContext sunctx;
@@ -118,10 +118,12 @@ int main(int argc, char* argv[])
   if (square) { I = SUNMatClone(A); }
 
   /* Allocate host data */
-  Adata = (sunrealtype*)malloc(sizeof(sunrealtype) * SUNMatrix_MagmaDense_LData(A));
+  Adata =
+    (sunrealtype*)malloc(sizeof(sunrealtype) * SUNMatrix_MagmaDense_LData(A));
   if (square)
   {
-    Idata = (sunrealtype*)malloc(sizeof(sunrealtype) * SUNMatrix_MagmaDense_LData(I));
+    Idata =
+      (sunrealtype*)malloc(sizeof(sunrealtype) * SUNMatrix_MagmaDense_LData(I));
   }
 
   /* Fill matrices and vectors */
@@ -213,8 +215,8 @@ int check_matrix(SUNMatrix A, SUNMatrix B, sunrealtype tol)
   sunindextype i      = 0;
   sunindextype Aldata = SUNMatrix_MagmaDense_LData(A);
   sunindextype Bldata = SUNMatrix_MagmaDense_LData(B);
-  sunrealtype* Adata     = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
-  sunrealtype* Bdata     = (sunrealtype*)malloc(sizeof(sunrealtype) * Bldata);
+  sunrealtype* Adata  = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
+  sunrealtype* Bdata  = (sunrealtype*)malloc(sizeof(sunrealtype) * Bldata);
 
   /* copy data to host */
   SUNMatrix_MagmaDense_CopyFromDevice(A, Adata);
@@ -245,7 +247,7 @@ int check_matrix_entry(SUNMatrix A, sunrealtype val, sunrealtype tol)
   int failure         = 0;
   sunindextype i      = 0;
   sunindextype Aldata = SUNMatrix_MagmaDense_LData(A);
-  sunrealtype* Adata     = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
+  sunrealtype* Adata  = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
 
   /* copy data to host */
   SUNMatrix_MagmaDense_CopyFromDevice(A, Adata);

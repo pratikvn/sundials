@@ -71,8 +71,8 @@ __global__ void solution_p_kernel(const sunrealtype t, sunrealtype* up,
                                   const sunindextype js, const sunindextype je,
                                   const sunindextype nx, const sunindextype ny,
                                   const sunindextype nx_loc,
-                                  const sunindextype ny_loc, const sunrealtype dx,
-                                  const sunrealtype dy)
+                                  const sunindextype ny_loc,
+                                  const sunrealtype dx, const sunrealtype dy)
 {
   // Thread location in the local grid
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -115,8 +115,8 @@ int Solution(sunrealtype t, N_Vector u, UserData* udata)
   const sunindextype ny     = udata->ny;
   const sunindextype nx_loc = udata->nx_loc;
   const sunindextype ny_loc = udata->ny_loc;
-  const sunrealtype dx         = udata->dx;
-  const sunrealtype dy         = udata->dy;
+  const sunrealtype dx      = udata->dx;
+  const sunrealtype dy      = udata->dy;
 
   sunrealtype* uarray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
   if (check_flag((void*)uarray, "N_VGetDeviceArrayPointer", 0)) { return -1; }
@@ -145,8 +145,8 @@ int SolutionDerivative(sunrealtype t, N_Vector up, UserData* udata)
   const sunindextype ny     = udata->ny;
   const sunindextype nx_loc = udata->nx_loc;
   const sunindextype ny_loc = udata->ny_loc;
-  const sunrealtype dx         = udata->dx;
-  const sunrealtype dy         = udata->dy;
+  const sunrealtype dx      = udata->dx;
+  const sunrealtype dy      = udata->dy;
 
   sunrealtype* uparray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(up));
   if (check_flag((void*)uparray, "N_VGetDeviceArrayPointer", 0)) { return -1; }

@@ -31,7 +31,7 @@ static int InitializeClearCache(int cachesize);
 static int FinalizeClearCache();
 
 /* private data for clearing cache */
-static sunindextype N; /* data length */
+static sunindextype N;    /* data length */
 static sunrealtype* data; /* host data   */
 
 /* ----------------------------------------------------------------------
@@ -199,7 +199,8 @@ int main(int argc, char* argv[])
  * --------------------------------------------------------------------*/
 
 /* random data between lower and upper */
-void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower, sunrealtype upper)
+void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower,
+             sunrealtype upper)
 {
   sunrealtype* Xdata;
 
@@ -262,7 +263,7 @@ static int InitializeClearCache(int cachesize)
 
   /* determine size of vector to clear cache, N = ceil(2 * nbytes/sunrealtype) */
   nbytes = (size_t)(2 * cachesize * 1024 * 1024);
-  N      = (sunindextype)((nbytes + sizeof(sunrealtype) - 1) / sizeof(sunrealtype));
+  N = (sunindextype)((nbytes + sizeof(sunrealtype) - 1) / sizeof(sunrealtype));
 
   /* allocate data and fill random values */
   data = (sunrealtype*)malloc(N * sizeof(sunrealtype));

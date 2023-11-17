@@ -22,8 +22,8 @@ struct UserOptions
   // Integrator settings
   sunrealtype rtol = SUN_RCONST(1.0e-5);  // relative tolerance
   sunrealtype atol = SUN_RCONST(1.0e-10); // absolute tolerance
-  int maxsteps  = 0;               // max steps between outputs
-  int onestep   = 0;               // one step mode, number of steps
+  int maxsteps     = 0;                   // max steps between outputs
+  int onestep      = 0;                   // one step mode, number of steps
 
   // Linear solver and preconditioner settings
   std::string ls       = "cg";  // linear solver to use
@@ -31,7 +31,7 @@ struct UserOptions
   bool lsinfo          = false; // output residual history
   int liniters         = 20;    // number of linear iterations
   int msbp             = 0;     // preconditioner setup frequency
-  sunrealtype epslin      = ZERO;  // linear solver tolerance factor
+  sunrealtype epslin   = ZERO;  // linear solver tolerance factor
 
   // Helper functions
   int parse_args(vector<string>& args, bool outproc);
@@ -174,12 +174,12 @@ int main(int argc, char* argv[])
     if (uopts.ls == "cg")
     {
       LS = SUNLinSol_PCG(u, prectype, uopts.liniters, ctx);
-      if (check_flag((void *) LS, "SUNLinSol_PCG", 0)) return 1;
+      if (check_flag((void*)LS, "SUNLinSol_PCG", 0)) { return 1; }
     }
     else if (uopts.ls == "gmres")
     {
       LS = SUNLinSol_SPGMR(u, prectype, uopts.liniters, ctx);
-      if (check_flag((void *) LS, "SUNLinSol_SPGMR", 0)) return 1;
+      if (check_flag((void*)LS, "SUNLinSol_SPGMR", 0)) { return 1; }
     }
     else if (uopts.ls == "sludist")
     {

@@ -298,8 +298,8 @@ void N_VDestroy_SensWrapper(N_Vector v)
   Standard vector operations
   ============================================================================*/
 
-void N_VLinearSum_SensWrapper(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y,
-                              N_Vector z)
+void N_VLinearSum_SensWrapper(sunrealtype a, N_Vector x, sunrealtype b,
+                              N_Vector y, N_Vector z)
 {
   int i;
 

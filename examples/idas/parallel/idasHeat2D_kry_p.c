@@ -79,7 +79,8 @@ typedef struct
 
 /* User-supplied residual function and supporting routines */
 
-int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_data);
+int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+            void* user_data);
 
 static int rescomm(N_Vector uu, N_Vector up, void* user_data);
 
@@ -89,20 +90,22 @@ static int reslocal(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector res,
 static int BSend(MPI_Comm comm, int thispe, int ixsub, int jysub,
                  sunindextype dsizex, sunindextype dsizey, sunrealtype uarray[]);
 
-static int BRecvPost(MPI_Comm comm, MPI_Request request[], int thispe,
-                     int ixsub, int jysub, sunindextype dsizex,
-                     sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[]);
+static int BRecvPost(MPI_Comm comm, MPI_Request request[], int thispe, int ixsub,
+                     int jysub, sunindextype dsizex, sunindextype dsizey,
+                     sunrealtype uext[], sunrealtype buffer[]);
 
 static int BRecvWait(MPI_Request request[], int ixsub, int jysub,
-                     sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[]);
+                     sunindextype dsizex, sunrealtype uext[],
+                     sunrealtype buffer[]);
 
 /* User-supplied preconditioner routines */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data);
-
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
                void* user_data);
+
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data);
 
 /* Private function to check function return values */
 
@@ -386,8 +389,8 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  *
  */
 
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
-               void* user_data)
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data)
 {
   sunrealtype *ppv, pelinv;
   sunindextype lx, ly, ixbegin, ixend, jybegin, jyend, locu, mxsub, mysub;
@@ -440,8 +443,9 @@ int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtyp
  * computed in PsetupHeat), returning the result in zvec.
  */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* user_data)
 {
   UserData data;
 
@@ -636,9 +640,9 @@ static int BSend(MPI_Comm comm, int thispe, int ixsub, int jysub,
  *      both calls also.
  */
 
-static int BRecvPost(MPI_Comm comm, MPI_Request request[], int thispe,
-                     int ixsub, int jysub, sunindextype dsizex,
-                     sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[])
+static int BRecvPost(MPI_Comm comm, MPI_Request request[], int thispe, int ixsub,
+                     int jysub, sunindextype dsizex, sunindextype dsizey,
+                     sunrealtype uext[], sunrealtype buffer[])
 {
   sunindextype offsetue;
   /* Have bufleft and bufright use the same buffer. */
@@ -687,7 +691,8 @@ static int BRecvPost(MPI_Comm comm, MPI_Request request[], int thispe,
  */
 
 static int BRecvWait(MPI_Request request[], int ixsub, int jysub,
-                     sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[])
+                     sunindextype dsizex, sunrealtype uext[],
+                     sunrealtype buffer[])
 {
   sunindextype ly, dsizex2, offsetue;
   sunrealtype *bufleft = buffer, *bufright = buffer + MYSUB;
@@ -801,7 +806,8 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
     {
       xfact      = data->dx * i;
       loc        = offset + iloc;
-      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                   (ONE - yfact);
       if (i == 0 || i == MX - 1 || j == 0 || j == MY - 1)
       {
         iddata[loc] = ZERO;

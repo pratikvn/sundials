@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
 #else
   N_Vector u = N_VNew(udata.nodes, sunctx);
 #endif
-  if (check_ptr(u, "N_VNew")) return 1;
+  if (check_ptr(u, "N_VNew")) { return 1; }
 
   // Set initial condition
   int flag = Solution(ZERO, u, udata);

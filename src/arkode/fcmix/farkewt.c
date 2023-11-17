@@ -29,8 +29,8 @@
 extern "C" {
 #endif
 
-extern void FARK_EWT(sunrealtype* Y, sunrealtype* EWT, long int* IPAR, sunrealtype* RPAR,
-                     int* IER);
+extern void FARK_EWT(sunrealtype* Y, sunrealtype* EWT, long int* IPAR,
+                     sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }

@@ -44,7 +44,7 @@
 #include <nvector/nvector_openmpdev.h> /* OpenMPDEV N_Vector types, fcts., macros */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* def. of SUNRsqrt, etc.               */
+#include <sundials/sundials_math.h> /* def. of SUNRsqrt, etc.               */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype, etc */
 #include <sunlinsol/sunlinsol_pcg.h> /* access to PCG SUNLinearSolver        */
 
@@ -66,8 +66,8 @@
 typedef struct
 {
   sunindextype N; /* number of intervals   */
-  sunrealtype dx;    /* mesh spacing          */
-  sunrealtype k;     /* diffusion coefficient */
+  sunrealtype dx; /* mesh spacing          */
+  sunrealtype k;  /* diffusion coefficient */
 }* UserData;
 
 /* User-supplied Functions Called by the Solver */
@@ -82,15 +82,15 @@ static int check_flag(void* flagvalue, const char* funcname, int opt);
 int main(void)
 {
   /* general problem parameters */
-  sunrealtype T0    = SUN_RCONST(0.0); /* initial time */
-  sunrealtype Tf    = SUN_RCONST(1.0); /* final time */
-  int Nt         = 10;          /* total number of output times */
-  sunrealtype rtol  = 1.e-6;       /* relative tolerance */
-  sunrealtype atol  = 1.e-10;      /* absolute tolerance */
-  UserData udata = NULL;
+  sunrealtype T0   = SUN_RCONST(0.0); /* initial time */
+  sunrealtype Tf   = SUN_RCONST(1.0); /* final time */
+  int Nt           = 10;              /* total number of output times */
+  sunrealtype rtol = 1.e-6;           /* relative tolerance */
+  sunrealtype atol = 1.e-10;          /* absolute tolerance */
+  UserData udata   = NULL;
   sunrealtype* data;
   sunindextype N = 201; /* spatial mesh size */
-  sunrealtype k     = 0.5; /* heat conductivity */
+  sunrealtype k  = 0.5; /* heat conductivity */
   sunindextype i;
 
   /* general problem variables */
@@ -259,8 +259,8 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   UserData udata = (UserData)user_data; /* access problem data */
   sunindextype N = udata->N;            /* set variable shortcuts */
-  sunrealtype k     = udata->k;
-  sunrealtype dx    = udata->dx;
+  sunrealtype k  = udata->k;
+  sunrealtype dx = udata->dx;
   sunrealtype *Y = NULL, *Ydot = NULL;
   sunrealtype c1, c2;
   sunindextype i, isource;
@@ -307,8 +307,8 @@ static int Jac(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
 {
   UserData udata = (UserData)user_data; /* variable shortcuts */
   sunindextype N = udata->N;
-  sunrealtype k     = udata->k;
-  sunrealtype dx    = udata->dx;
+  sunrealtype k  = udata->k;
+  sunrealtype dx = udata->dx;
   sunrealtype *V = NULL, *JV = NULL;
   sunrealtype c1, c2;
   sunindextype i;

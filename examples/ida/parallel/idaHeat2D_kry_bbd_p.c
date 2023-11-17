@@ -83,8 +83,8 @@ typedef struct
 static int heatres(sunrealtype tres, N_Vector uu, N_Vector up, N_Vector res,
                    void* user_data);
 
-static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uu, N_Vector up,
-                   void* user_data);
+static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uu,
+                   N_Vector up, void* user_data);
 
 static int reslocal(sunindextype Nlocal, sunrealtype tres, N_Vector uu,
                     N_Vector up, N_Vector res, void* user_data);
@@ -423,8 +423,8 @@ static int heatres(sunrealtype tres, N_Vector uu, N_Vector up, N_Vector res,
  * communication of data in u needed to calculate G.
  */
 
-static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uu, N_Vector up,
-                   void* user_data)
+static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uu,
+                   N_Vector up, void* user_data)
 {
   UserData data;
   sunrealtype *uarray, *uext, buffer[2 * MYSUB];
@@ -759,7 +759,8 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
     {
       xfact      = data->dx * i;
       loc        = offset + iloc;
-      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                   (ONE - yfact);
       if (i == 0 || i == MX - 1 || j == 0 || j == MY - 1)
       {
         iddata[loc] = ZERO;

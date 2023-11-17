@@ -30,8 +30,8 @@
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FCV_EWT(sunrealtype* Y, sunrealtype* EWT, long int* IPAR, sunrealtype* RPAR,
-                    int* IER);
+extern void FCV_EWT(sunrealtype* Y, sunrealtype* EWT, long int* IPAR,
+                    sunrealtype* RPAR, int* IER);
 #ifdef __cplusplus
 }
 #endif

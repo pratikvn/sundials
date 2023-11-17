@@ -44,7 +44,7 @@
 #include <nvector/nvector_openmpdev.h> /* OpenMPDEV N_Vector types, fcts., macros */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* def. of SUNRsqrt, etc.               */
+#include <sundials/sundials_math.h> /* def. of SUNRsqrt, etc.               */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype, etc */
 #include <sunlinsol/sunlinsol_pcg.h> /* access to PCG SUNLinearSolver        */
 
@@ -79,7 +79,7 @@
 /* user data structure */
 typedef struct
 {
-  sunindextype N;      /* current number of intervals */
+  sunindextype N;         /* current number of intervals */
   sunrealtype* x_host;    /* current mesh on host */
   sunrealtype* x_dev;     /* current mesh on device */
   sunrealtype k;          /* diffusion coefficient */
@@ -105,10 +105,10 @@ int main(void)
   sunrealtype Tf     = SUN_RCONST(1.0);    /* final time */
   sunrealtype rtol   = SUN_RCONST(1.e-3);  /* relative tolerance */
   sunrealtype atol   = SUN_RCONST(1.e-10); /* absolute tolerance */
-  sunrealtype hscale = SUN_RCONST(1.0);    /* time step change factor on resizes */
-  UserData udata  = NULL;
+  sunrealtype hscale = SUN_RCONST(1.0); /* time step change factor on resizes */
+  UserData udata     = NULL;
   sunrealtype* data;
-  sunindextype N  = 21;             /* initial spatial mesh size */
+  sunindextype N     = 21;                 /* initial spatial mesh size */
   sunrealtype refine = SUN_RCONST(3.0e-3); /* adaptivity refinement tolerance */
   sunrealtype k      = SUN_RCONST(0.5);    /* heat conductivity */
   sunindextype i;
@@ -117,11 +117,11 @@ int main(void)
 
   /* general problem variables */
   int flag;                    /* reusable error-checking flag */
-  N_Vector y  = NULL;          /* empty vector for storing solution */
-  N_Vector y2 = NULL;          /* empty vector for storing solution */
-  N_Vector yt = NULL;          /* empty vector for swapping */
-  SUNLinearSolver LS = NULL;   /* empty linear solver object */
-  void *arkode_mem = NULL;     /* empty ARKode memory structure */
+  N_Vector y           = NULL; /* empty vector for storing solution */
+  N_Vector y2          = NULL; /* empty vector for storing solution */
+  N_Vector yt          = NULL; /* empty vector for swapping */
+  SUNLinearSolver LS   = NULL; /* empty linear solver object */
+  void* arkode_mem     = NULL; /* empty ARKode memory structure */
   SUNAdaptController C = NULL; /* empty controller object */
   FILE *XFID, *UFID;
   sunrealtype t, olddt, newdt;
@@ -199,9 +199,9 @@ int main(void)
 
   /* Specify I-controller with default parameters */
   C = SUNAdaptController_I(ctx);
-  if (check_flag((void *)C, "SUNAdaptController_I", 0)) return 1;
+  if (check_flag((void*)C, "SUNAdaptController_I", 0)) { return 1; }
   flag = ARKStepSetAdaptController(arkode_mem, C);
-  if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
+  if (check_flag(&flag, "ARKStepSetAdaptController", 1)) { return 1; }
 
   /* Specify linearly implicit RHS, with time-dependent Jacobian */
   flag = ARKStepSetLinear(arkode_mem, 1);
@@ -283,8 +283,8 @@ int main(void)
 
     /* copy new mesh from host array to device array */
     xnew_dev = omp_target_alloc(Nnew * sizeof(sunrealtype), dev);
-    omp_target_memcpy(xnew_dev, xnew_host, Nnew * sizeof(sunrealtype), 0, 0, dev,
-                      host);
+    omp_target_memcpy(xnew_dev, xnew_host, Nnew * sizeof(sunrealtype), 0, 0,
+                      dev, host);
 
     /* project solution onto new mesh */
     flag = project(udata->N, udata->x_dev, y, Nnew, xnew_dev, y2);
@@ -336,10 +336,10 @@ int main(void)
   free(udata->x_host); /* Free user data */
   omp_target_free(udata->x_dev, dev);
   free(udata);
-  ARKStepFree(&arkode_mem);    /* Free integrator memory */
-  SUNLinSolFree(LS);           /* Free linear solver */
-  (void) SUNAdaptController_Destroy(C);  /* Free time adaptivity controller */
-  SUNContext_Free(&ctx);       /* Free context */
+  ARKStepFree(&arkode_mem);            /* Free integrator memory */
+  SUNLinSolFree(LS);                   /* Free linear solver */
+  (void)SUNAdaptController_Destroy(C); /* Free time adaptivity controller */
+  SUNContext_Free(&ctx);               /* Free context */
 
   return 0;
 }
@@ -353,8 +353,8 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   UserData udata = (UserData)user_data; /* access problem data */
   sunindextype N = udata->N;            /* set variable shortcuts */
-  sunrealtype k     = udata->k;
-  sunrealtype* x    = udata->x_dev;
+  sunrealtype k  = udata->k;
+  sunrealtype* x = udata->x_dev;
   sunrealtype *Y = NULL, *Ydot = NULL;
   sunrealtype dxL, dxR;
   sunindextype i;
@@ -396,8 +396,8 @@ static int Jac(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
 {
   UserData udata = (UserData)user_data; /* variable shortcuts */
   sunindextype N = udata->N;
-  sunrealtype k     = udata->k;
-  sunrealtype* x    = udata->x_dev;
+  sunrealtype k  = udata->k;
+  sunrealtype* x = udata->x_dev;
   sunrealtype *V = NULL, *JV = NULL;
   sunrealtype dxL, dxR;
   sunindextype i;

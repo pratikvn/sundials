@@ -52,13 +52,13 @@
 #define ZERO SUN_RCONST(0.0)
 
 #define XMAX  SUN_RCONST(2.0)   /* domain boundary           */
-#define MX    10            /* mesh dimension            */
-#define NEQ   MX            /* number of equations       */
+#define MX    10                /* mesh dimension            */
+#define NEQ   MX                /* number of equations       */
 #define ATOL  SUN_RCONST(1e-10) /* scalar absolute tolerance */
-#define T0    ZERO          /* initial time              */
+#define T0    ZERO              /* initial time              */
 #define T1    SUN_RCONST(0.5)   /* first output time         */
 #define DTOUT SUN_RCONST(0.5)   /* output time increment     */
-#define NOUT  10            /* number of output times    */
+#define NOUT  10                /* number of output times    */
 
 /* Type : UserData
    contains mesh spacing and problem parameters. */

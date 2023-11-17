@@ -111,10 +111,7 @@ static sunbooleantype sunLoggerIsOutputRank(SUNLogger logger, int* rank_ref)
   }
   else { retval = SUNTRUE; /* output all ranks */ }
 #else
-  if (rank_ref)
-  {
-    *rank_ref = 0;
-  }
+  if (rank_ref) { *rank_ref = 0; }
   retval = SUNTRUE;
 #endif
 

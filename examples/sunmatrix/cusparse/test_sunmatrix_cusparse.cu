@@ -80,9 +80,9 @@ int main(int argc, char* argv[])
   int block_nnz_max;                /* max number of nnz in block */
   int mattype;                      /* matrix storage type        */
   N_Vector x, y, d_x, d_y;          /* test vectors               */
-  sunrealtype* vecdata;                /* pointers to vector data    */
+  sunrealtype* vecdata;             /* pointers to vector data    */
   SUNMatrix A, B, C, D, dA, dB, dI; /* test matrices              */
-  sunrealtype* matdata;                /* pointer to matrix data     */
+  sunrealtype* matdata;             /* pointer to matrix data     */
   int print_timing, square;
   int matrix_to_use;
   sunindextype i, j;
@@ -537,7 +537,7 @@ int main(int argc, char* argv[])
 int Test_SetKernelExecPolicy(SUNMatrix I, int myid)
 {
   int print_all_ranks = 0;
-  sunrealtype tol        = 100 * SUN_UNIT_ROUNDOFF;
+  sunrealtype tol     = 100 * SUN_UNIT_ROUNDOFF;
   SUNMatrix B         = SUNMatClone(I);
 
   /* check cloned matrix */
@@ -712,7 +712,7 @@ int check_matrix_entry(SUNMatrix dA, sunrealtype val, sunrealtype tol)
   sunindextype i;
 
   /* copy matrix data to host for the checks */
-  Adata   = (sunrealtype*)malloc(SUNMatrix_cuSparse_NNZ(dA) * sizeof(sunrealtype));
+  Adata = (sunrealtype*)malloc(SUNMatrix_cuSparse_NNZ(dA) * sizeof(sunrealtype));
   failure = SUNMatrix_cuSparse_CopyFromDevice(dA, Adata, NULL, NULL);
   cudaDeviceSynchronize();
 

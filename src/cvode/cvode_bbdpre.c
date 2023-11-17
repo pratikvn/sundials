@@ -35,18 +35,19 @@
 #define TWO          SUN_RCONST(2.0)
 
 /* Prototypes of functions CVBBDPrecSetup and CVBBDPrecSolve */
-static int CVBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                          sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data);
+static int CVBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                          sunbooleantype jok, sunbooleantype* jcurPtr,
+                          sunrealtype gamma, void* bbd_data);
 static int CVBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                          N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                          void* bbd_data);
+                          N_Vector z, sunrealtype gamma, sunrealtype delta,
+                          int lr, void* bbd_data);
 
 /* Prototype for CVBBDPrecFree */
 static int CVBBDPrecFree(CVodeMem cv_mem);
 
 /* Prototype for difference quotient Jacobian calculation routine */
-static int CVBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y, N_Vector gy,
-                      N_Vector ytemp, N_Vector gtemp);
+static int CVBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y,
+                      N_Vector gy, N_Vector ytemp, N_Vector gtemp);
 
 /*-----------------------------------------------------------------
   User-Callable Functions: initialization, reinit and free
@@ -474,8 +475,9 @@ int CVBBDPrecGetNumGfnEvals(void* cvode_mem, long int* ngevalsBBDP)
 
   Return value: int
   -----------------------------------------------------------------*/
-static int CVBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                          sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data)
+static int CVBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                          sunbooleantype jok, sunbooleantype* jcurPtr,
+                          sunrealtype gamma, void* bbd_data)
 {
   CVBBDPrecData pdata;
   CVodeMem cv_mem;
@@ -569,8 +571,8 @@ static int CVBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype
   The value returned by the CVBBDPrecSolve function is a int.
   -----------------------------------------------------------------*/
 static int CVBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                          N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                          void* bbd_data)
+                          N_Vector z, sunrealtype gamma, sunrealtype delta,
+                          int lr, void* bbd_data)
 {
   int ls_status;
   CVBBDPrecData pdata;
@@ -638,8 +640,8 @@ static int CVBBDPrecFree(CVodeMem cv_mem)
   This routine also assumes that the local elements of a vector are
   stored contiguously.
   -----------------------------------------------------------------*/
-static int CVBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y, N_Vector gy,
-                      N_Vector ytemp, N_Vector gtemp)
+static int CVBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y,
+                      N_Vector gy, N_Vector ytemp, N_Vector gtemp)
 {
   CVodeMem cv_mem;
   sunrealtype gnorm, minInc, inc, inc_inv, yj, conj;

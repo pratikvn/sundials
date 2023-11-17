@@ -24,15 +24,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sunadaptcontroller/sunadaptcontroller_soderlind.h>
+#include <sundials/sundials_config.h>
+#include <sundials/sundials_math.h>
+#include <sundials/sundials_types.h>
 
 #include "arkode_impl.h"
 #include "arkode_interp_impl.h"
 #include "sundials_utils.h"
-#include <sundials/sundials_config.h>
-#include <sundials/sundials_math.h>
-#include <sundials/sundials_types.h>
-#include <sunadaptcontroller/sunadaptcontroller_soderlind.h>
-
 
 /*===============================================================
   EXPORTED FUNCTIONS
@@ -106,7 +105,7 @@ ARKodeMem arkCreate(SUNContext sunctx)
 
   /* Initialize lrw and liw */
   ark_mem->lrw = 18;
-  ark_mem->liw = 41;  /* fcn/data ptr, int, long int, sunindextype, sunbooleantype */
+  ark_mem->liw = 41; /* fcn/data ptr, int, long int, sunindextype, sunbooleantype */
 
   /* No mallocs have been done yet */
   ark_mem->VabstolMallocDone  = SUNFALSE;
@@ -136,18 +135,20 @@ ARKodeMem arkCreate(SUNContext sunctx)
 
   /* Allocate default step controller (PID) and note storage */
   ark_mem->hadapt_mem->hcontroller = SUNAdaptController_PID(sunctx);
-  if (ark_mem->hadapt_mem->hcontroller == NULL) {
+  if (ark_mem->hadapt_mem->hcontroller == NULL)
+  {
     arkProcessError(NULL, ARK_MEM_FAIL, "ARKODE", "arkCreate",
                     "Allocation of step controller object failed");
-    return(NULL);
+    return (NULL);
   }
   ark_mem->hadapt_mem->owncontroller = SUNTRUE;
-  (void) SUNAdaptController_Space(ark_mem->hadapt_mem->hcontroller, &lenrw, &leniw);
+  (void)SUNAdaptController_Space(ark_mem->hadapt_mem->hcontroller, &lenrw,
+                                 &leniw);
   ark_mem->lrw += lenrw;
   ark_mem->liw += leniw;
 
   /* Initialize the interpolation structure to NULL */
-  ark_mem->interp = NULL;
+  ark_mem->interp      = NULL;
   ark_mem->interp_type = -1;
 
   /* Initially, rwt should point to ewt */
@@ -218,8 +219,8 @@ ARKodeMem arkCreate(SUNContext sunctx)
   The return value is ARK_SUCCESS = 0 if no errors occurred, or
   a negative value otherwise.
   ---------------------------------------------------------------*/
-int arkResize(ARKodeMem ark_mem, N_Vector y0, sunrealtype hscale, sunrealtype t0,
-              ARKVecResizeFn resize, void* resize_data)
+int arkResize(ARKodeMem ark_mem, N_Vector y0, sunrealtype hscale,
+              sunrealtype t0, ARKVecResizeFn resize, void* resize_data)
 {
   SUNAssignSUNCTX(ark_mem->sunctx);
   sunbooleantype resizeOK;
@@ -279,7 +280,9 @@ int arkResize(ARKodeMem ark_mem, N_Vector y0, sunrealtype hscale, sunrealtype t0
   /* Determing change in vector sizes */
   lrw1 = liw1 = 0;
   if (y0->ops->nvspace != NULL)
+  {
     SUNCheckCallLastErrNoRet(N_VSpace(y0, &lrw1, &liw1));
+  }
   lrw_diff      = lrw1 - ark_mem->lrw1;
   liw_diff      = liw1 - ark_mem->liw1;
   ark_mem->lrw1 = lrw1;
@@ -691,8 +694,8 @@ int arkResFtolerance(ARKodeMem ark_mem, ARKRwtFn rfun)
   exactly the specified stop time, and hence interpolation of
   y(tout) is not required.
   ---------------------------------------------------------------*/
-int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret,
-              int itask)
+int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout,
+              sunrealtype* tret, int itask)
 {
   SUNAssignSUNCTX(ark_mem->sunctx);
 
@@ -913,17 +916,17 @@ int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout, sunrealtype* t
     /* Looping point for step attempts */
     dsm      = ZERO;
     attempts = ncf = nef = constrfails = ark_mem->last_kflag = 0;
-    relax_fails = 0;
-    nflag = FIRST_CALL;
-    for(;;) {
-
+    relax_fails                                              = 0;
+    nflag                                                    = FIRST_CALL;
+    for (;;)
+    {
       /* increment attempt counters */
       attempts++;
       ark_mem->nst_attempts++;
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
-      SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
-                         "ARKODE::arkEvolve", "start-step",
+      SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::arkEvolve",
+                         "start-step",
                          "step = %li, attempt = %i, h = %" RSYM
                          ", tcur = %" RSYM,
                          ark_mem->nst, attempts, ark_mem->h, ark_mem->tcur);
@@ -933,12 +936,12 @@ int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout, sunrealtype* t
             0 => step completed successfully
            >0 => step encountered recoverable failure; reduce step if possible
            <0 => step encountered unrecoverable failure */
-      kflag = ark_mem->step((void*) ark_mem, &dsm, &nflag);
-      if (kflag < 0) break;
+      kflag = ark_mem->step((void*)ark_mem, &dsm, &nflag);
+      if (kflag < 0) { break; }
 
       /* handle solver convergence failures */
       kflag = arkCheckConvergence(ark_mem, &nflag, &ncf);
-      if (kflag < 0) break;
+      if (kflag < 0) { break; }
 
       /* Perform relaxation:
            - computes relaxation parameter
@@ -948,7 +951,7 @@ int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout, sunrealtype* t
       if (ark_mem->relax_enabled && (kflag == ARK_SUCCESS))
       {
         kflag = arkRelax(ark_mem, &relax_fails, &dsm, &nflag);
-        if (kflag < 0) break;
+        if (kflag < 0) { break; }
       }
 
       /* perform constraint-handling (if selected, and if solver check passed) */
@@ -1058,18 +1061,19 @@ int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout, sunrealtype* t
     }
 
     /* Check if tn is at tstop or near tstop */
-    if ( ark_mem->tstopset )
+    if (ark_mem->tstopset)
     {
-      troundoff = FUZZ_FACTOR*ark_mem->uround *
-        (SUNRabs(ark_mem->tcur) + SUNRabs(ark_mem->h));
+      troundoff = FUZZ_FACTOR * ark_mem->uround *
+                  (SUNRabs(ark_mem->tcur) + SUNRabs(ark_mem->h));
 
-      if ( SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
+      if (SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
       {
         /* Ensure tout >= tstop, otherwise check for tout return below */
         if ((tout - ark_mem->tstop) * ark_mem->h >= ZERO ||
             SUNRabs(tout - ark_mem->tstop) <= troundoff)
         {
-          if (ark_mem->tstopinterp) {
+          if (ark_mem->tstopinterp)
+          {
             retval = arkGetDky(ark_mem, ark_mem->tstop, 0, yout);
             if (retval != ARK_SUCCESS)
             {
@@ -1078,27 +1082,26 @@ int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout, sunrealtype* t
               istate = retval;
               break;
             }
-          } else {
-            N_VScale(ONE, ark_mem->yn, yout);
           }
+          else { N_VScale(ONE, ark_mem->yn, yout); }
           ark_mem->tretlast = *tret = ark_mem->tstop;
-          ark_mem->tstopset = SUNFALSE;
-          istate = ARK_TSTOP_RETURN;
+          ark_mem->tstopset         = SUNFALSE;
+          istate                    = ARK_TSTOP_RETURN;
           break;
         }
       }
       /* limit upcoming step if it will overcome tstop */
-      else if ( (ark_mem->tcur + ark_mem->hprime - ark_mem->tstop)*ark_mem->h > ZERO )
+      else if ((ark_mem->tcur + ark_mem->hprime - ark_mem->tstop) * ark_mem->h >
+               ZERO)
       {
         ark_mem->hprime = (ark_mem->tstop - ark_mem->tcur) *
-          (ONE-FOUR*ark_mem->uround);
-        ark_mem->eta = ark_mem->hprime/ark_mem->h;
+                          (ONE - FOUR * ark_mem->uround);
+        ark_mem->eta = ark_mem->hprime / ark_mem->h;
       }
     }
 
     /* In NORMAL mode, check if tout reached */
-    if ( (itask == ARK_NORMAL) &&
-         (ark_mem->tcur-tout)*ark_mem->h >= ZERO )
+    if ((itask == ARK_NORMAL) && (ark_mem->tcur - tout) * ark_mem->h >= ZERO)
     {
       retval = arkGetDky(ark_mem, tout, 0, yout);
       if (retval != ARK_SUCCESS)
@@ -1109,8 +1112,8 @@ int arkEvolve(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout, sunrealtype* t
         break;
       }
       ark_mem->tretlast = *tret = tout;
-      ark_mem->next_h = ark_mem->hprime;
-      istate = ARK_SUCCESS;
+      ark_mem->next_h           = ark_mem->hprime;
+      istate                    = ARK_SUCCESS;
       break;
     }
 
@@ -1218,9 +1221,11 @@ void arkFree(void** arkode_mem)
   arkFreeVectors(ark_mem);
 
   /* free the time step adaptivity module */
-  if (ark_mem->hadapt_mem != NULL) {
-    if (ark_mem->hadapt_mem->owncontroller) {
-      (void) SUNAdaptController_Destroy(ark_mem->hadapt_mem->hcontroller);
+  if (ark_mem->hadapt_mem != NULL)
+  {
+    if (ark_mem->hadapt_mem->owncontroller)
+    {
+      (void)SUNAdaptController_Destroy(ark_mem->hadapt_mem->hcontroller);
       ark_mem->hadapt_mem->owncontroller = SUNFALSE;
     }
     free(ark_mem->hadapt_mem);
@@ -1231,7 +1236,7 @@ void arkFree(void** arkode_mem)
   if (ark_mem->interp != NULL)
   {
     arkInterpFree(ark_mem, ark_mem->interp);
-    ark_mem->interp = NULL;
+    ark_mem->interp      = NULL;
     ark_mem->interp_type = -1;
   }
 
@@ -1245,7 +1250,7 @@ void arkFree(void** arkode_mem)
   /* free the relaxation module */
   if (ark_mem->relax_mem)
   {
-    (void) arkRelaxDestroy(ark_mem->relax_mem);
+    (void)arkRelaxDestroy(ark_mem->relax_mem);
     ark_mem->relax_mem = NULL;
   }
 
@@ -1432,10 +1437,11 @@ int arkInit(ARKodeMem ark_mem, sunrealtype t0, N_Vector y0, int init_type)
     if (!(ark_mem->interp))
     {
       ark_mem->interp = arkInterpCreate_Hermite(ark_mem, ARK_INTERP_MAX_DEGREE);
-      if (ark_mem->interp == NULL) {
+      if (ark_mem->interp == NULL)
+      {
         arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE", "arkInit",
                         "Unable to allocate interpolation module");
-        return(ARK_MEM_FAIL);
+        return (ARK_MEM_FAIL);
       }
       ark_mem->interp_type = ARK_INTERP_HERMITE;
     }
@@ -1478,16 +1484,16 @@ int arkInit(ARKodeMem ark_mem, sunrealtype t0, N_Vector y0, int init_type)
 
     /* Reset error controller object */
     retval = SUNAdaptController_Reset(ark_mem->hadapt_mem->hcontroller);
-    if (retval != SUNADAPTCONTROLLER_SUCCESS) {
+    if (retval != SUNADAPTCONTROLLER_SUCCESS)
+    {
       arkProcessError(ark_mem, ARK_CONTROLLER_ERR, "ARKODE", "arkInit",
                       "Unable to reset error controller object");
-      return(ARK_CONTROLLER_ERR);
+      return (ARK_CONTROLLER_ERR);
     }
 
     /* Adaptivity counters */
     ark_mem->hadapt_mem->nst_acc = 0;
     ark_mem->hadapt_mem->nst_exp = 0;
-
 
     /* Indicate that calling the full RHS function is not required, this flag is
        updated to SUNTRUE by the interpolation module initialization function
@@ -1526,7 +1532,7 @@ void arkPrintMem(ARKodeMem ark_mem, FILE* outfile)
   fprintf(outfile, "user_efun = %i\n", ark_mem->user_efun);
   fprintf(outfile, "tstopset = %i\n", ark_mem->tstopset);
   fprintf(outfile, "tstopinterp = %i\n", ark_mem->tstopinterp);
-  fprintf(outfile, "tstop = %" RSYM"\n", ark_mem->tstop);
+  fprintf(outfile, "tstop = %" RSYM "\n", ark_mem->tstop);
   fprintf(outfile, "VabstolMallocDone = %i\n", ark_mem->VabstolMallocDone);
   fprintf(outfile, "MallocDone = %i\n", ark_mem->MallocDone);
   fprintf(outfile, "initsetup = %i\n", ark_mem->initsetup);
@@ -1620,11 +1626,12 @@ void arkPrintMem(ARKodeMem ark_mem, FILE* outfile)
   ---------------------------------------------------------------*/
 sunbooleantype arkCheckTimestepper(ARKodeMem ark_mem)
 {
-  if ( (ark_mem->step_init    == NULL) ||
-       (ark_mem->step         == NULL) ||
-       (ark_mem->step_mem     == NULL) )
-    return(SUNFALSE);
-  return(SUNTRUE);
+  if ((ark_mem->step_init == NULL) || (ark_mem->step == NULL) ||
+      (ark_mem->step_mem == NULL))
+  {
+    return (SUNFALSE);
+  }
+  return (SUNTRUE);
 }
 
 /*---------------------------------------------------------------
@@ -1686,8 +1693,8 @@ sunbooleantype arkAllocVec(ARKodeMem ark_mem, N_Vector tmpl, N_Vector* v)
 }
 
 sunbooleantype arkAllocVecArray(int count, N_Vector tmpl, N_Vector** v,
-                             sunindextype lrw1, long int* lrw,
-                             sunindextype liw1, long int* liw)
+                                sunindextype lrw1, long int* lrw,
+                                sunindextype liw1, long int* liw)
 {
   SUNAssignSUNCTX(tmpl->sunctx);
 
@@ -1752,8 +1759,8 @@ void arkFreeVecArray(int count, N_Vector** v, sunindextype lrw1, long int* lrw,
   SUNFALSE is retured.
   ---------------------------------------------------------------*/
 sunbooleantype arkResizeVec(ARKodeMem ark_mem, ARKVecResizeFn resize,
-                         void* resize_data, sunindextype lrw_diff,
-                         sunindextype liw_diff, N_Vector tmpl, N_Vector* v)
+                            void* resize_data, sunindextype lrw_diff,
+                            sunindextype liw_diff, N_Vector tmpl, N_Vector* v)
 {
   SUNAssignSUNCTX(ark_mem->sunctx);
 
@@ -1787,9 +1794,9 @@ sunbooleantype arkResizeVec(ARKodeMem ark_mem, ARKVecResizeFn resize,
 }
 
 sunbooleantype arkResizeVecArray(ARKVecResizeFn resize, void* resize_data,
-                              int count, N_Vector tmpl, N_Vector** v,
-                              sunindextype lrw_diff, long int* lrw,
-                              sunindextype liw_diff, long int* liw)
+                                 int count, N_Vector tmpl, N_Vector** v,
+                                 sunindextype lrw_diff, long int* lrw,
+                                 sunindextype liw_diff, long int* liw)
 {
   SUNAssignSUNCTX(tmpl->sunctx);
 
@@ -1871,8 +1878,8 @@ sunbooleantype arkAllocVectors(ARKodeMem ark_mem, N_Vector tmpl)
   returns SUNTRUE, otherwise it returns SUNFALSE.
   ---------------------------------------------------------------*/
 sunbooleantype arkResizeVectors(ARKodeMem ark_mem, ARKVecResizeFn resize,
-                             void* resize_data, sunindextype lrw_diff,
-                             sunindextype liw_diff, N_Vector tmpl)
+                                void* resize_data, sunindextype lrw_diff,
+                                sunindextype liw_diff, N_Vector tmpl)
 {
   /* Vabstol */
   if (!arkResizeVec(ark_mem, resize, resize_data, lrw_diff, liw_diff, tmpl,
@@ -2114,21 +2121,21 @@ int arkInitialSetup(ARKodeMem ark_mem, sunrealtype tout)
   /* If fullrhs will be called (to estimate initial step, explicit steppers, Hermite
      interpolation module, and possibly (but not always) arkRootCheck1), then
      ensure that it is provided, and space is allocated for fn. */
-  if (ark_mem->call_fullrhs || (ark_mem->h0u == ZERO && ark_mem->hin == ZERO)
-      || ark_mem->root_mem)
+  if (ark_mem->call_fullrhs || (ark_mem->h0u == ZERO && ark_mem->hin == ZERO) ||
+      ark_mem->root_mem)
   {
     if (!ark_mem->step_fullrhs)
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE",
-                      "arkInitialSetup", MSG_ARK_MISSING_FULLRHS);
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE", "arkInitialSetup",
+                      MSG_ARK_MISSING_FULLRHS);
       return ARK_ILL_INPUT;
     }
 
     if (!arkAllocVec(ark_mem, ark_mem->yn, &ark_mem->fn))
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE",
-                      "arkInitialSetup", MSG_ARK_MEM_FAIL);
-      return(ARK_MEM_FAIL);
+      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE", "arkInitialSetup",
+                      MSG_ARK_MEM_FAIL);
+      return (ARK_MEM_FAIL);
     }
   }
 
@@ -2274,7 +2281,8 @@ int arkStopTests(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout,
       /* If the full RHS was not computed in the last call to arkCompleteStep
          and roots were found in the previous step, then compute the full rhs
          for possible use in arkRootCheck2 (not always necessary) */
-      if (!(ark_mem->fn_is_current) && irfndp != 0) {
+      if (!(ark_mem->fn_is_current) && irfndp != 0)
+      {
         retval = ark_mem->step_fullrhs(ark_mem, ark_mem->tn, ark_mem->yn,
                                        ark_mem->fn, ARK_FULLRHS_END);
         if (retval != 0)
@@ -2347,9 +2355,9 @@ int arkStopTests(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout,
   }
 
   /* Test for tn at tstop or near tstop */
-  if ( ark_mem->tstopset )
+  if (ark_mem->tstopset)
   {
-    if ( SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
+    if (SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
     {
       /* Ensure tout >= tstop, otherwise check for tout return below */
       if ((tout - ark_mem->tstop) * ark_mem->h >= ZERO ||
@@ -2358,26 +2366,28 @@ int arkStopTests(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout,
         if (ark_mem->tstopinterp)
         {
           *ier = arkGetDky(ark_mem, ark_mem->tstop, 0, yout);
-          if (*ier != ARK_SUCCESS) {
+          if (*ier != ARK_SUCCESS)
+          {
             arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE", "arkStopTests",
                             MSG_ARK_BAD_TSTOP, ark_mem->tstop, ark_mem->tcur);
             *ier = ARK_ILL_INPUT;
-            return(1);
+            return (1);
           }
-        } else {
-          N_VScale(ONE, ark_mem->yn, yout);
         }
+        else { N_VScale(ONE, ark_mem->yn, yout); }
         ark_mem->tretlast = *tret = ark_mem->tstop;
-        ark_mem->tstopset = SUNFALSE;
-        *ier = ARK_TSTOP_RETURN;
-        return(1);
+        ark_mem->tstopset         = SUNFALSE;
+        *ier                      = ARK_TSTOP_RETURN;
+        return (1);
       }
     }
     /* If next step would overtake tstop, adjust stepsize */
-    else if ( (ark_mem->tcur + ark_mem->hprime - ark_mem->tstop)*ark_mem->h > ZERO )
+    else if ((ark_mem->tcur + ark_mem->hprime - ark_mem->tstop) * ark_mem->h >
+             ZERO)
     {
-      ark_mem->hprime = (ark_mem->tstop - ark_mem->tcur)*(ONE-FOUR*ark_mem->uround);
-      ark_mem->eta = ark_mem->hprime/ark_mem->h;
+      ark_mem->hprime = (ark_mem->tstop - ark_mem->tcur) *
+                        (ONE - FOUR * ark_mem->uround);
+      ark_mem->eta = ark_mem->hprime / ark_mem->h;
     }
   }
 
@@ -2407,7 +2417,7 @@ int arkStopTests(ARKodeMem ark_mem, sunrealtype tout, N_Vector yout,
     return (1);
   }
 
-  return(0);
+  return (0);
 }
 
 /*---------------------------------------------------------------
@@ -2670,13 +2680,14 @@ int arkCompleteStep(ARKodeMem ark_mem, sunrealtype dsm)
 
   /* During long-time integration, roundoff can creep into tcur.
      Compensated summation fixes this but with increased cost, so it is optional. */
-  if (ark_mem->use_compensated_sums) {
+  if (ark_mem->use_compensated_sums)
+  {
     sunCompensatedSum(ark_mem->tn, ark_mem->h, &ark_mem->tcur, &ark_mem->terr);
-  } else {
-    ark_mem->tcur = ark_mem->tn + ark_mem->h;
   }
+  else { ark_mem->tcur = ark_mem->tn + ark_mem->h; }
 
-  if ( ark_mem->tstopset ) {
+  if (ark_mem->tstopset)
+  {
     troundoff = FUZZ_FACTOR * ark_mem->uround *
                 (SUNRabs(ark_mem->tcur) + SUNRabs(ark_mem->h));
     if (SUNRabs(ark_mem->tcur - ark_mem->tstop) <= troundoff)
@@ -2686,10 +2697,9 @@ int arkCompleteStep(ARKodeMem ark_mem, sunrealtype dsm)
   }
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
-  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
-                     "ARKODE::arkCompleteStep", "end-step",
-                     "step = %li, h = %" RSYM ", tcur = %" RSYM, ark_mem->nst,
-                     ark_mem->h, ark_mem->tcur);
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::arkCompleteStep",
+                     "end-step", "step = %li, h = %" RSYM ", tcur = %" RSYM,
+                     ark_mem->nst, ark_mem->h, ark_mem->tcur);
 #endif
 
   /* apply user-supplied step postprocessing function (if supplied) */
@@ -2703,7 +2713,8 @@ int arkCompleteStep(ARKodeMem ark_mem, sunrealtype dsm)
 
      NOTE: This must be called before updating yn with ycur as the interpolation
      module may need to save tn, yn from the start of this step */
-  if (ark_mem->interp != NULL) {
+  if (ark_mem->interp != NULL)
+  {
     retval = arkInterpUpdate(ark_mem, ark_mem->interp, ark_mem->tcur);
     if (retval != ARK_SUCCESS) { return (retval); }
   }
@@ -2713,13 +2724,14 @@ int arkCompleteStep(ARKodeMem ark_mem, sunrealtype dsm)
   ark_mem->fn_is_current = SUNFALSE;
 
   /* Notify time step controller object of successful step */
-  retval = SUNAdaptController_UpdateH(ark_mem->hadapt_mem->hcontroller, ark_mem->h, dsm);
-  if (retval != SUNADAPTCONTROLLER_SUCCESS) {
+  retval = SUNAdaptController_UpdateH(ark_mem->hadapt_mem->hcontroller,
+                                      ark_mem->h, dsm);
+  if (retval != SUNADAPTCONTROLLER_SUCCESS)
+  {
     arkProcessError(ark_mem, ARK_CONTROLLER_ERR, "ARKODE", "arkCompleteStep",
                     "Failure updating controller object");
-    return(ARK_CONTROLLER_ERR);
+    return (ARK_CONTROLLER_ERR);
   }
-
 
   /* update scalar quantities */
   ark_mem->nst++;
@@ -2834,7 +2846,7 @@ int arkHandleFailure(ARKodeMem ark_mem, int flag)
   case ARK_RELAX_FAIL:
     arkProcessError(ark_mem, ARK_RELAX_FAIL, "ARKODE", "ARKODE",
                     "At t = %Lg the relaxation module failed",
-                    (long double) ark_mem->tcur);
+                    (long double)ark_mem->tcur);
     break;
   case ARK_RELAX_MEM_NULL:
     arkProcessError(ark_mem, ARK_RELAX_MEM_NULL, "ARKODE", "ARKODE",
@@ -3113,8 +3125,9 @@ int arkPredict_CutoffOrder(ARKodeMem ark_mem, sunrealtype tau, N_Vector yguess)
   i.e. the inputs cvals[0:nvec-1] and Xvecs[0:nvec-1] may be
   combined to form f(t_n+hj,z_j).
   ---------------------------------------------------------------*/
-int arkPredict_Bootstrap(ARKodeMem ark_mem, sunrealtype hj, sunrealtype tau, int nvec,
-                         sunrealtype* cvals, N_Vector* Xvecs, N_Vector yguess)
+int arkPredict_Bootstrap(ARKodeMem ark_mem, sunrealtype hj, sunrealtype tau,
+                         int nvec, sunrealtype* cvals, N_Vector* Xvecs,
+                         N_Vector yguess)
 {
   SUNAssignSUNCTX(ark_mem->sunctx);
 
@@ -3324,7 +3337,8 @@ int arkCheckTemporalError(ARKodeMem ark_mem, int* nflagPtr, int* nefPtr,
      and set upcoming step size */
   ark_mem->eta = SUNMIN(ark_mem->eta, ark_mem->hadapt_mem->etamax);
   ark_mem->eta = SUNMAX(ark_mem->eta, ark_mem->hmin / SUNRabs(ark_mem->h));
-  ark_mem->eta /= SUNMAX(ONE, SUNRabs(ark_mem->h) * ark_mem->hmax_inv*ark_mem->eta);
+  ark_mem->eta /=
+    SUNMAX(ONE, SUNRabs(ark_mem->h) * ark_mem->hmax_inv * ark_mem->eta);
 
   /* If est. local error norm dsm passes test, return ARK_SUCCESS */
   if (dsm <= ONE) { return (ARK_SUCCESS); }
@@ -3349,9 +3363,10 @@ int arkCheckTemporalError(ARKodeMem ark_mem, int* nflagPtr, int* nefPtr,
   /* Enforce min/max step bounds once again due to adjustments above */
   ark_mem->eta = SUNMIN(ark_mem->eta, ark_mem->hadapt_mem->etamax);
   ark_mem->eta = SUNMAX(ark_mem->eta, ark_mem->hmin / SUNRabs(ark_mem->h));
-  ark_mem->eta /= SUNMAX(ONE, SUNRabs(ark_mem->h) * ark_mem->hmax_inv*ark_mem->eta);
+  ark_mem->eta /=
+    SUNMAX(ONE, SUNRabs(ark_mem->h) * ark_mem->hmax_inv * ark_mem->eta);
 
-  return(TRY_AGAIN);
+  return (TRY_AGAIN);
 }
 
 /*---------------------------------------------------------------

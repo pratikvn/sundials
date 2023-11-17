@@ -1322,14 +1322,14 @@ static int InitUserData(UserData* udata)
 
   // Fixed Point Solver settings
   udata->rtol    = SUN_RCONST(1.e-8); // relative tolerance
-  udata->maa     = 1;             // 1 Anderson Acceleration vector
-  udata->damping = ONE;           // no damping for Anderson Acceleration
-  udata->orthaa  = 0;             // use MGS for Anderson Acceleration
-  udata->maxits  = 200;           // max number of fixed point iterations
+  udata->maa     = 1;                 // 1 Anderson Acceleration vector
+  udata->damping = ONE;               // no damping for Anderson Acceleration
+  udata->orthaa  = 0;                 // use MGS for Anderson Acceleration
+  udata->maxits  = 200;               // max number of fixed point iterations
 
   // Linear solver and preconditioner options
-  udata->liniters  = 20;            // max linear iterations
-  udata->epslin    = SUN_RCONST(1.e-8); // relative stopping tolerance
+  udata->liniters = 20;                // max linear iterations
+  udata->epslin   = SUN_RCONST(1.e-8); // relative stopping tolerance
 
   // Linear solver object
   udata->LS = NULL;

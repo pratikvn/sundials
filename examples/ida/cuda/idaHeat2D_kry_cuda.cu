@@ -64,11 +64,12 @@ typedef _UserData* UserData;
 int resHeat(sunrealtype tres, N_Vector uu, N_Vector up, N_Vector resval,
             void* user_data);
 
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data);
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data);
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data);
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data);
 
 /* Prototypes for private functions */
 
@@ -107,13 +108,13 @@ __global__ void resHeatKernel(const sunrealtype* uu, const sunrealtype* up,
       /* Loop over interior points; set res = up - (central difference). */
       sunrealtype dif1 = uu[tid - 1] + uu[tid + 1] - TWO * uu[tid];
       sunrealtype dif2 = uu[tid - mm] + uu[tid + mm] - TWO * uu[tid];
-      rr[tid]       = up[tid] - coeff * (dif1 + dif2);
+      rr[tid]          = up[tid] - coeff * (dif1 + dif2);
     }
   }
 }
 
-__global__ void PsetupHeatKernel(sunrealtype* ppv, sunindextype mm, sunrealtype c_j,
-                                 sunrealtype coeff)
+__global__ void PsetupHeatKernel(sunrealtype* ppv, sunindextype mm,
+                                 sunrealtype c_j, sunrealtype coeff)
 {
   sunindextype i, j, tid;
 
@@ -424,16 +425,16 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  * pp etc.) are used from the PsetupdHeat argument list.
  */
 
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data)
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data)
 {
   sunindextype mm;
   sunrealtype* ppv;
   UserData data;
 
-  data           = (UserData)prec_data;
-  ppv            = N_VGetDeviceArrayPointer_Cuda(data->pp);
-  mm             = data->mm;
+  data              = (UserData)prec_data;
+  ppv               = N_VGetDeviceArrayPointer_Cuda(data->pp);
+  mm                = data->mm;
   sunrealtype coeff = data->coeff;
 
   unsigned block = 256;
@@ -451,8 +452,9 @@ int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtyp
  * computed in PrecondHeateq), returning the result in zvec.
  */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data)
 {
   UserData data;
   data = (UserData)prec_data;

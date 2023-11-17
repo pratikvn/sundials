@@ -45,10 +45,10 @@ struct UserOptions
 {
   int npxyz[3];      /* number of processors in x,y,z */
   sunindextype npts; /* number of spatial mesh points */
-  sunrealtype t0;       /* initial time                  */
-  sunrealtype tf;       /* final time                    */
-  sunrealtype rtol;     /* relative tolerance            */
-  sunrealtype atol;     /* absolute tolerance            */
+  sunrealtype t0;    /* initial time                  */
+  sunrealtype tf;    /* final time                    */
+  sunrealtype rtol;  /* relative tolerance            */
+  sunrealtype atol;  /* absolute tolerance            */
   int order;         /* method order                  */
   string method;     /* method string                 */
   string nls;        /* nonlinear solver to use       */
@@ -102,7 +102,7 @@ struct UserData
   sunrealtype c; /* advection coefficient        */
 
   /* parallel mesh */
-  ParallelGrid<sunrealtype,sunindextype>* grid;
+  ParallelGrid<sunrealtype, sunindextype>* grid;
 
   /* count of implicit function evals by the task local nonlinear solver */
   long int nnlfi;
@@ -112,8 +112,15 @@ struct UserData
 
   /* constructor that takes the context */
   UserData(SUNContext ctx)
-    : ctx(ctx), umask(nullptr), vmask(nullptr), wmask(nullptr), uopt(nullptr),
-      TFID(nullptr), UFID(nullptr), VFID(nullptr), WFID(nullptr)
+    : ctx(ctx),
+      umask(nullptr),
+      vmask(nullptr),
+      wmask(nullptr),
+      uopt(nullptr),
+      TFID(nullptr),
+      UFID(nullptr),
+      VFID(nullptr),
+      WFID(nullptr)
   {
     SUNContext_GetProfiler(ctx, &prof);
   }
@@ -157,7 +164,7 @@ int FillSendBuffers(N_Vector y, UserData* udata);
 /* functions for processing command line args */
 int SetupProblem(int argc, char* argv[], UserData* udata, UserOptions* uopt,
                  SUNMemoryHelper memhelper, SUNContext ctx);
-void InputError(char *name);
+void InputError(char* name);
 int ComponentMask(N_Vector mask, const int component, const UserData* udata);
 
 /* function to write solution to disk */

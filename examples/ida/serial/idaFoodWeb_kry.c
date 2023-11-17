@@ -127,7 +127,7 @@
 #define AY    SUN_RCONST(1.0)    /* Total range of y variable         */
 #define RTOL  SUN_RCONST(1.e-5)  /* Relative tolerance                */
 #define ATOL  SUN_RCONST(1.e-5)  /* Absolute tolerance                */
-#define NOUT  6              /* Number of output times            */
+#define NOUT  6                  /* Number of output times            */
 #define TMULT SUN_RCONST(10.0)   /* Multiplier for tout values        */
 #define TADD  SUN_RCONST(0.3)    /* Increment for tout values         */
 #define ZERO  SUN_RCONST(0.)
@@ -166,8 +166,8 @@ static int Precond(sunrealtype tt, N_Vector cc, N_Vector cp, N_Vector rr,
                    sunrealtype cj, void* user_data);
 
 static int PSolve(sunrealtype tt, N_Vector cc, N_Vector cp, N_Vector rr,
-                  N_Vector rvec, N_Vector zvec, sunrealtype cj, sunrealtype delta,
-                  void* user_data);
+                  N_Vector rvec, N_Vector zvec, sunrealtype cj,
+                  sunrealtype delta, void* user_data);
 
 /* Prototypes for private Helper Functions. */
 
@@ -177,9 +177,10 @@ static void SetInitialProfiles(N_Vector cc, N_Vector cp, N_Vector id,
 static void PrintHeader(int maxl, sunrealtype rtol, sunrealtype atol);
 static void PrintOutput(void* mem, N_Vector c, sunrealtype t);
 static void PrintFinalStats(void* mem);
-static void Fweb(sunrealtype tcalc, N_Vector cc, N_Vector crate, UserData webdata);
-static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                     UserData webdata);
+static void Fweb(sunrealtype tcalc, N_Vector cc, N_Vector crate,
+                 UserData webdata);
+static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                     sunrealtype* ratesxy, UserData webdata);
 static sunrealtype dotprod(sunindextype size, sunrealtype* x1, sunrealtype* x2);
 static int check_retval(void* returnvalue, char* funcname, int opt);
 
@@ -469,8 +470,8 @@ static int Precond(sunrealtype tt, N_Vector cc, N_Vector cp, N_Vector rr,
 }
 
 static int PSolve(sunrealtype tt, N_Vector cc, N_Vector cp, N_Vector rr,
-                  N_Vector rvec, N_Vector zvec, sunrealtype cj, sunrealtype dalta,
-                  void* user_data)
+                  N_Vector rvec, N_Vector zvec, sunrealtype cj,
+                  sunrealtype dalta, void* user_data)
 {
   sunrealtype **Pxy, *zxy;
   sunindextype* pivot;
@@ -778,8 +779,8 @@ static void Fweb(sunrealtype tcalc, N_Vector cc, N_Vector crate, UserData webdat
  * At a given (x,y), evaluate the array of ns reaction terms R.
  */
 
-static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                     UserData webdata)
+static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                     sunrealtype* ratesxy, UserData webdata)
 {
   int is;
   sunrealtype fac;

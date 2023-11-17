@@ -36,7 +36,7 @@ int Solution(sunrealtype t, N_Vector u, UserData* udata)
   sunindextype jend   = (udata->HaveNbrN) ? udata->ny_loc : udata->ny_loc - 1;
 
   sunrealtype* uarray = N_VGetArrayPointer(u);
-  if (check_flag((void*)uarray, "N_VGetArrayPointer", 0)) return -1;
+  if (check_flag((void*)uarray, "N_VGetArrayPointer", 0)) { return -1; }
 
   for (sunindextype j = jstart; j < jend; j++)
   {
@@ -75,7 +75,7 @@ int SolutionDerivative(sunrealtype t, N_Vector up, UserData* udata)
   sunindextype jend   = (udata->HaveNbrN) ? udata->ny_loc : udata->ny_loc - 1;
 
   sunrealtype* uparray = N_VGetArrayPointer(up);
-  if (check_flag((void*)uparray, "N_VGetArrayPointer", 0)) return -1;
+  if (check_flag((void*)uparray, "N_VGetArrayPointer", 0)) { return -1; }
 
   for (sunindextype j = jstart; j < jend; j++)
   {

@@ -174,7 +174,8 @@ int main(int argc, char* argv[])
  * --------------------------------------------------------------------*/
 
 /* random data between lower and upper */
-void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower, sunrealtype upper)
+void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower,
+             sunrealtype upper)
 {
   rand_realtype(N_VGetHostArrayPointer_Raja(Xvec), Xlen, lower, upper);
   N_VCopyToDevice_Raja(Xvec);

@@ -96,9 +96,9 @@ sunindextype bandGBTRF(sunrealtype** a, sunindextype n, sunindextype mu,
   return (SUNDlsMat_bandGBTRF(a, n, mu, ml, smu, p));
 }
 
-sunindextype SUNDlsMat_bandGBTRF(sunrealtype** a, sunindextype n, sunindextype mu,
-                                 sunindextype ml, sunindextype smu,
-                                 sunindextype* p)
+sunindextype SUNDlsMat_bandGBTRF(sunrealtype** a, sunindextype n,
+                                 sunindextype mu, sunindextype ml,
+                                 sunindextype smu, sunindextype* p)
 {
   sunindextype c, r, num_rows;
   sunindextype i, j, k, l, storage_l, storage_k, last_col_k, last_row_k;
@@ -212,8 +212,8 @@ sunindextype SUNDlsMat_bandGBTRF(sunrealtype** a, sunindextype n, sunindextype m
   return (0);
 }
 
-void bandGBTRS(sunrealtype** a, sunindextype n, sunindextype smu, sunindextype ml,
-               sunindextype* p, sunrealtype* b)
+void bandGBTRS(sunrealtype** a, sunindextype n, sunindextype smu,
+               sunindextype ml, sunindextype* p, sunrealtype* b)
 {
   SUNDlsMat_bandGBTRS(a, n, smu, ml, p, b);
 }
@@ -252,8 +252,9 @@ void SUNDlsMat_bandGBTRS(sunrealtype** a, sunindextype n, sunindextype smu,
   }
 }
 
-void bandCopy(sunrealtype** a, sunrealtype** b, sunindextype n, sunindextype a_smu,
-              sunindextype b_smu, sunindextype copymu, sunindextype copyml)
+void bandCopy(sunrealtype** a, sunrealtype** b, sunindextype n,
+              sunindextype a_smu, sunindextype b_smu, sunindextype copymu,
+              sunindextype copyml)
 {
   SUNDlsMat_bandCopy(a, b, n, a_smu, b_smu, copymu, copyml);
 }
@@ -314,8 +315,9 @@ void bandMatvec(sunrealtype** a, sunrealtype* x, sunrealtype* y, sunindextype n,
   SUNDlsMat_bandMatvec(a, x, y, n, mu, ml, smu);
 }
 
-void SUNDlsMat_bandMatvec(sunrealtype** a, sunrealtype* x, sunrealtype* y, sunindextype n,
-                          sunindextype mu, sunindextype ml, sunindextype smu)
+void SUNDlsMat_bandMatvec(sunrealtype** a, sunrealtype* x, sunrealtype* y,
+                          sunindextype n, sunindextype mu, sunindextype ml,
+                          sunindextype smu)
 {
   sunindextype i, j, is, ie;
   sunrealtype* col_j;

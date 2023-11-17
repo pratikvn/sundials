@@ -31,7 +31,7 @@
 #include <ida/ida.h>                /* prototypes for IDA fcts., consts.    */
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 
 #if defined(SUNDIALS_EXTENDED_PRECISION)
@@ -60,7 +60,8 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Private function to check computed solution */
 static void analytical_solution(sunrealtype t, N_Vector y, N_Vector yp);
-static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol, sunrealtype atol);
+static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol,
+                     sunrealtype atol);
 
 /* Main Program */
 int main(void)
@@ -69,13 +70,13 @@ int main(void)
   SUNContext ctx;
 
   /* general problem parameters */
-  sunrealtype T0      = SUN_RCONST(0.0);    /* initial time */
-  sunrealtype Tf      = SUN_RCONST(1.0);    /* final time */
-  sunrealtype dTout   = SUN_RCONST(0.1);    /* time between outputs */
-  sunindextype NEQ = 2;              /* number of dependent vars. */
-  sunrealtype reltol  = SUN_RCONST(1.0e-4); /* tolerances */
-  sunrealtype abstol  = SUN_RCONST(1.0e-9);
-  sunrealtype alpha   = SUN_RCONST(10.0); /* stiffness parameter */
+  sunrealtype T0     = SUN_RCONST(0.0);    /* initial time */
+  sunrealtype Tf     = SUN_RCONST(1.0);    /* final time */
+  sunrealtype dTout  = SUN_RCONST(0.1);    /* time between outputs */
+  sunindextype NEQ   = 2;                  /* number of dependent vars. */
+  sunrealtype reltol = SUN_RCONST(1.0e-4); /* tolerances */
+  sunrealtype abstol = SUN_RCONST(1.0e-9);
+  sunrealtype alpha  = SUN_RCONST(10.0); /* stiffness parameter */
 
   /* general problem variables */
   int retval;                /* reusable error-checking flag */
@@ -193,12 +194,12 @@ int main(void)
 int fres(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
 {
   sunrealtype* rdata = (sunrealtype*)user_data; /* cast user_data to sunrealtype */
-  sunrealtype alpha  = rdata[0];        /* set shortcut for stiffness parameter */
-  sunrealtype x1     = NV_Ith_S(yy, 0); /* access current solution values */
-  sunrealtype x2     = NV_Ith_S(yy, 1);
-  sunrealtype x1p    = NV_Ith_S(yp, 0); /* access current derivative values */
-  sunrealtype ONE    = SUN_RCONST(1.0);
-  sunrealtype TWO    = SUN_RCONST(2.0);
+  sunrealtype alpha = rdata[0]; /* set shortcut for stiffness parameter */
+  sunrealtype x1    = NV_Ith_S(yy, 0); /* access current solution values */
+  sunrealtype x2    = NV_Ith_S(yy, 1);
+  sunrealtype x1p   = NV_Ith_S(yp, 0); /* access current derivative values */
+  sunrealtype ONE   = SUN_RCONST(1.0);
+  sunrealtype TWO   = SUN_RCONST(2.0);
 
   NV_Ith_S(rr, 0) = (ONE - alpha) / (t - TWO) * x1 - x1 + (alpha - ONE) * x2 +
                     TWO * exp(t) - x1p;
@@ -356,7 +357,7 @@ static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol, sunrealtype at
   N_Vector ytrue;   /* true solution vector               */
   N_Vector ewt;     /* error weight vector                */
   N_Vector abstol;  /* absolute tolerance vector          */
-  sunrealtype err;     /* wrms error                         */
+  sunrealtype err;  /* wrms error                         */
   sunrealtype ONE = SUN_RCONST(1.0);
 
   /* create solution and error weight vectors */

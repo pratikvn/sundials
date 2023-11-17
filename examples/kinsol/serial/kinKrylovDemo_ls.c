@@ -116,23 +116,23 @@
 #define MX       5 /* MX = number of x mesh points */
 #define MY       5 /* MY = number of y mesh points */
 #define NSMX     (NUM_SPECIES * MX)
-#define NEQ      (NSMX * MY)     /* number of equations in the system */
-#define AA       SUN_RCONST(1.0)     /* value of coefficient AA in above eqns */
-#define EE       SUN_RCONST(10000.)  /* value of coefficient EE in above eqns */
-#define GG       SUN_RCONST(0.5e-6)  /* value of coefficient GG in above eqns */
-#define BB       SUN_RCONST(1.0)     /* value of coefficient BB in above eqns */
-#define DPREY    SUN_RCONST(1.0)     /* value of coefficient dprey above */
-#define DPRED    SUN_RCONST(0.5)     /* value of coefficient dpred above */
-#define ALPHA    SUN_RCONST(1.0)     /* value of coefficient alpha above */
-#define AX       SUN_RCONST(1.0)     /* total range of x variable */
-#define AY       SUN_RCONST(1.0)     /* total range of y variable */
-#define FTOL     SUN_RCONST(1.e-7)   /* ftol tolerance */
-#define STOL     SUN_RCONST(1.e-13)  /* stol tolerance */
-#define THOUSAND SUN_RCONST(1000.0)  /* one thousand */
-#define ZERO     SUN_RCONST(0.)      /* 0. */
-#define ONE      SUN_RCONST(1.0)     /* 1. */
-#define TWO      SUN_RCONST(2.0)     /* 2. */
-#define PREYIN   SUN_RCONST(1.0)     /* initial guess for prey concentrations. */
+#define NEQ      (NSMX * MY)        /* number of equations in the system */
+#define AA       SUN_RCONST(1.0)    /* value of coefficient AA in above eqns */
+#define EE       SUN_RCONST(10000.) /* value of coefficient EE in above eqns */
+#define GG       SUN_RCONST(0.5e-6) /* value of coefficient GG in above eqns */
+#define BB       SUN_RCONST(1.0)    /* value of coefficient BB in above eqns */
+#define DPREY    SUN_RCONST(1.0)    /* value of coefficient dprey above */
+#define DPRED    SUN_RCONST(0.5)    /* value of coefficient dpred above */
+#define ALPHA    SUN_RCONST(1.0)    /* value of coefficient alpha above */
+#define AX       SUN_RCONST(1.0)    /* total range of x variable */
+#define AY       SUN_RCONST(1.0)    /* total range of y variable */
+#define FTOL     SUN_RCONST(1.e-7)  /* ftol tolerance */
+#define STOL     SUN_RCONST(1.e-13) /* stol tolerance */
+#define THOUSAND SUN_RCONST(1000.0) /* one thousand */
+#define ZERO     SUN_RCONST(0.)     /* 0. */
+#define ONE      SUN_RCONST(1.0)    /* 1. */
+#define TWO      SUN_RCONST(2.0)    /* 2. */
+#define PREYIN   SUN_RCONST(1.0)    /* initial guess for prey concentrations. */
 #define PREDIN   SUN_RCONST(30000.0) /* initial guess for predator concs.      */
 
 /* Linear Solver Loop Constants */
@@ -183,11 +183,12 @@ static void InitUserData(UserData data);
 static void FreeUserData(UserData data);
 static void SetInitialProfiles(N_Vector cc, N_Vector sc);
 static void PrintHeader(int globalstrategy, int maxl, int maxlrst,
-                        sunrealtype fnormtol, sunrealtype scsteptol, int linsolver);
+                        sunrealtype fnormtol, sunrealtype scsteptol,
+                        int linsolver);
 static void PrintOutput(N_Vector cc);
 static void PrintFinalStats(void* kmem, int linsolver);
-static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                    void* user_data);
+static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                    sunrealtype* ratesxy, void* user_data);
 static sunrealtype DotProd(int size, sunrealtype* x1, sunrealtype* x2);
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 
@@ -572,8 +573,8 @@ static int PrecSolveBD(N_Vector cc, N_Vector cscale, N_Vector fval,
  * Interaction rate function routine
  */
 
-static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                    void* user_data)
+static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                    sunrealtype* ratesxy, void* user_data)
 {
   int i;
   sunrealtype fac;
@@ -768,7 +769,8 @@ static void SetInitialProfiles(N_Vector cc, N_Vector sc)
  */
 
 static void PrintHeader(int globalstrategy, int maxl, int maxlrst,
-                        sunrealtype fnormtol, sunrealtype scsteptol, int linsolver)
+                        sunrealtype fnormtol, sunrealtype scsteptol,
+                        int linsolver)
 {
   printf("\nPredator-prey test problem --  KINSol (serial version)\n\n");
   printf("Mesh dimensions = %d X %d\n", MX, MY);

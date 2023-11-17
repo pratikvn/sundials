@@ -17,20 +17,17 @@
  * ---------------------------------------------------------------------------*/
 
 // Header files
-#include <cstdio>
-#include <iomanip>
-#include <iostream>
-#include <cstring>
-#include <cmath>
-#include <string>
-
 #include <arkode/arkode_arkstep.h>
 #include <arkode/arkode_mristep.h>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <iomanip>
 #include <iostream>
 #include <nvector/nvector_serial.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <sunlinsol/sunlinsol_dense.h>
 #include <sunmatrix/sunmatrix_dense.h>
 
@@ -51,16 +48,16 @@ using namespace std;
 // User data structure
 struct UserData
 {
-  realtype lambda_e = SUN_RCONST(-1.0);
-  realtype lambda_i = SUN_RCONST(-1.0);
-  realtype lambda_f = SUN_RCONST(-1.0);
+  decltype( lambda_e = SUN_RCONST(-1.0);
+  decltype( lambda_i = SUN_RCONST(-1.0);
+  decltype( lambda_f = SUN_RCONST(-1.0);
 };
 
 // User-supplied Functions called by the solver
-static int fe(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int fi(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int ff(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int Ji(realtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
+static int fe(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
+static int fi(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
+static int ff(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
+static int Ji(decltype( t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
               N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 // Private function to check function return values
@@ -95,12 +92,12 @@ int main(int argc, char* argv[])
   UserData udata;
 
   // Check for inputs
-  if (argc > 1) udata.lambda_e = std::stod(argv[1]);
-  if (argc > 2) udata.lambda_i = std::stod(argv[2]);
-  if (argc > 3) udata.lambda_f = std::stod(argv[3]);
-  if (argc > 4) hs = std::stod(argv[4]);
-  if (argc > 5) hf = std::stod(argv[5]);
-  if (argc > 5) nsteps = std::stoi(argv[6]);
+  if (argc > 1) { udata.lambda_e = std::stod(argv[1]); }
+  if (argc > 2) { udata.lambda_i = std::stod(argv[2]); }
+  if (argc > 3) { udata.lambda_f = std::stod(argv[3]); }
+  if (argc > 4) { hs = std::stod(argv[4]); }
+  if (argc > 5) { hf = std::stod(argv[5]); }
+  if (argc > 5) { nsteps = std::stoi(argv[6]); }
 
   // Output problem setup
   cout << "\nDahlquist ODE test problem:\n";
@@ -274,13 +271,13 @@ int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
     methods          = new ARKODE_MRITableID[num_methods];
     stiffly_accurate = new bool[num_methods];
 
-    methods[0] = ARKODE_MRI_GARK_IRK21a;
+    methods[0]          = ARKODE_MRI_GARK_IRK21a;
     stiffly_accurate[0] = true;
 
     methods[1]          = ARKODE_MRI_GARK_ESDIRK34a;
     stiffly_accurate[1] = true;
 
-    methods[2] = ARKODE_MRI_GARK_ESDIRK46a;
+    methods[2]          = ARKODE_MRI_GARK_ESDIRK46a;
     stiffly_accurate[2] = true;
   }
   else if (type == MRISTEP_IMEX)
@@ -293,13 +290,13 @@ int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
     methods          = new ARKODE_MRITableID[num_methods];
     stiffly_accurate = new bool[num_methods];
 
-    methods[0] = ARKODE_IMEX_MRI_GARK3a;
+    methods[0]          = ARKODE_IMEX_MRI_GARK3a;
     stiffly_accurate[0] = false;
 
     methods[1]          = ARKODE_IMEX_MRI_GARK3b;
     stiffly_accurate[1] = false;
 
-    methods[2] = ARKODE_IMEX_MRI_GARK4;
+    methods[2]          = ARKODE_IMEX_MRI_GARK4;
     stiffly_accurate[2] = false;
   }
   else { return 1; }
@@ -447,10 +444,7 @@ int run_tests(MRISTEP_METHOD_TYPE type, realtype t0, int nsteps, realtype hs,
         // evaluated and stored at the start of the next step.
         fi_evals = mri_nst * (nstages_stored - 1) + mri_nni;
       }
-      else
-      {
-        fi_evals = mri_nst * nstages_stored + mri_nni;
-      }
+      else { fi_evals = mri_nst * nstages_stored + mri_nni; }
     }
 
     if (mri_nfsi != fi_evals)

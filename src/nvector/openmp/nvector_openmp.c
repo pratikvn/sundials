@@ -45,7 +45,7 @@ static void VScaleDiff_OpenMP(sunrealtype c, N_Vector x, N_Vector y,
 static void VLin1_OpenMP(sunrealtype a, N_Vector x, N_Vector y,
                          N_Vector z); /* z=ax+y    */
 static void VLin2_OpenMP(sunrealtype a, N_Vector x, N_Vector y,
-                         N_Vector z);                         /* z=ax-y    */
+                         N_Vector z);                            /* z=ax-y    */
 static void Vaxpy_OpenMP(sunrealtype a, N_Vector x, N_Vector y); /* y <- ax+y */
 static void VScaleBy_OpenMP(sunrealtype a, N_Vector x);          /* x <-
                                                                           ax */
@@ -205,8 +205,8 @@ N_Vector N_VNew_OpenMP(sunindextype length, int num_threads, SUNContext sunctx)
  * Function to create a vector with user data component
  */
 
-N_Vector N_VMake_OpenMP(sunindextype length, sunrealtype* v_data, int num_threads,
-                        SUNContext sunctx)
+N_Vector N_VMake_OpenMP(sunindextype length, sunrealtype* v_data,
+                        int num_threads, SUNContext sunctx)
 {
   SUNAssignSUNCTX(sunctx);
   N_Vector v;
@@ -1588,9 +1588,9 @@ SUNErrCode N_VWrmsNormMaskVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
   return SUN_SUCCESS;
 }
 
-SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, sunrealtype* a,
-                                              N_Vector* X, N_Vector** Y,
-                                              N_Vector** Z)
+SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum,
+                                              sunrealtype* a, N_Vector* X,
+                                              N_Vector** Y, N_Vector** Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -1701,8 +1701,9 @@ SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum, sunrealtype* a
   return SUN_SUCCESS;
 }
 
-SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum, sunrealtype* c,
-                                                  N_Vector** X, N_Vector* Z)
+SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
+                                                  sunrealtype* c, N_Vector** X,
+                                                  N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0][0]->sunctx);
 
@@ -2337,7 +2338,8 @@ static void VLin2VectorArray_OpenMP(int nvec, sunrealtype a, N_Vector* X,
   }
 }
 
-static void VaxpyVectorArray_OpenMP(int nvec, sunrealtype a, N_Vector* X, N_Vector* Y)
+static void VaxpyVectorArray_OpenMP(int nvec, sunrealtype a, N_Vector* X,
+                                    N_Vector* Y)
 {
   int i;
   sunindextype j, N;

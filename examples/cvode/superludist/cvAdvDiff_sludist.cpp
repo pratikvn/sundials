@@ -41,35 +41,33 @@
 
 #include <cmath>
 #include <cvode/cvode.h> /* prototypes for CVODE fcts., consts.          */
+#include <cvode/cvode.h> /* prototypes for CVODE fcts., consts.          */
 #include <cvode/cvode_direct.h> /* CVODE direct linear solver interface         */
 #include <mpi.h>                /* MPI constants and types */
+#include <mpi.h>                /* MPI constants and types */
+#include <nvector/nvector_parallel.h> /* access to MPI-parallel N_Vector              */
 #include <nvector/nvector_parallel.h> /* access to MPI-parallel N_Vector              */
 #include <stdio.h>
 #include <stdlib.h>
 #include <sundials/sundials_types.h> /* definition of type sunrealtype                  */
+#include <sundials/sundials_types.h> /* definition of type sunrealtype                  */
 #include <sunlinsol/sunlinsol_superludist.h> /* access to the SuperLU-DIST SUNLinearSolver   */
+#include <sunlinsol/sunlinsol_superludist.h> /* access to the SuperLU-DIST SUNLinearSolver   */
+#include <sunmatrix/sunmatrix_slunrloc.h> /* access to the SuperLU SLU_NR_loc SUNMatrix   */
 #include <sunmatrix/sunmatrix_slunrloc.h> /* access to the SuperLU SLU_NR_loc SUNMatrix   */
 
 #include "superlu_ddefs.h"
 
-#include <cvode/cvode.h>                          /* prototypes for CVODE fcts., consts.          */
-#include <nvector/nvector_parallel.h>             /* access to MPI-parallel N_Vector              */
-#include <sunlinsol/sunlinsol_superludist.h>      /* access to the SuperLU-DIST SUNLinearSolver   */
-#include <sunmatrix/sunmatrix_slunrloc.h>         /* access to the SuperLU SLU_NR_loc SUNMatrix   */
-#include <sundials/sundials_types.h>              /* definition of type sunrealtype                  */
-
-#include <mpi.h> /* MPI constants and types */
-
 /* Problem Constants */
 
 #define XMAX  SUN_RCONST(2.0)    /* domain boundary           */
-#define MX    10             /* mesh dimension            */
-#define NEQ   MX             /* number of equations       */
+#define MX    10                 /* mesh dimension            */
+#define NEQ   MX                 /* number of equations       */
 #define ATOL  SUN_RCONST(1.0e-5) /* scalar absolute tolerance */
-#define T0    ZERO           /* initial time              */
+#define T0    ZERO               /* initial time              */
 #define T1    SUN_RCONST(0.5)    /* first output time         */
 #define DTOUT SUN_RCONST(0.5)    /* output time increment     */
-#define NOUT  10             /* number of output times    */
+#define NOUT  10                 /* number of output times    */
 
 #define ZERO SUN_RCONST(0.0)
 #define HALF SUN_RCONST(0.5)
@@ -196,7 +194,8 @@ int main(int argc, char* argv[])
   reltol = ZERO; /* Set the tolerances */
   abstol = ATOL;
 
-  dx = data->dx = XMAX / ((sunrealtype)(MX + 1)); /* Set grid coefficients in data */
+  dx = data->dx = XMAX /
+                  ((sunrealtype)(MX + 1)); /* Set grid coefficients in data */
   data->hdcoef = ONE / (dx * dx);
   data->hacoef = HALF / (TWO * dx);
 

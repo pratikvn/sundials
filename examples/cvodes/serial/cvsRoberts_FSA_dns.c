@@ -90,7 +90,7 @@
 
 /* Problem Constants */
 
-#define NEQ   3           /* number of equations  */
+#define NEQ   3               /* number of equations  */
 #define Y1    SUN_RCONST(1.0) /* initial y components */
 #define Y2    SUN_RCONST(0.0)
 #define Y3    SUN_RCONST(0.0)
@@ -101,7 +101,7 @@
 #define T0    SUN_RCONST(0.0)  /* initial time           */
 #define T1    SUN_RCONST(0.4)  /* first output time      */
 #define TMULT SUN_RCONST(10.0) /* output time factor     */
-#define NOUT  12           /* number of output times */
+#define NOUT  12               /* number of output times */
 
 #define NP 3 /* number of problem parameters */
 #define NS 3 /* number of sensitivities computed */
@@ -122,8 +122,9 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
-static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS, N_Vector yS,
-              N_Vector ySdot, void* user_data, N_Vector tmp1, N_Vector tmp2);
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS,
+              N_Vector yS, N_Vector ySdot, void* user_data, N_Vector tmp1,
+              N_Vector tmp2);
 
 static int ewt(N_Vector y, N_Vector w, void* user_data);
 
@@ -409,8 +410,9 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
  * fS routine. Compute sensitivity r.h.s.
  */
 
-static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS, N_Vector yS,
-              N_Vector ySdot, void* user_data, N_Vector tmp1, N_Vector tmp2)
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS,
+              N_Vector yS, N_Vector ySdot, void* user_data, N_Vector tmp1,
+              N_Vector tmp2)
 {
   UserData data;
   sunrealtype p1, p2, p3;

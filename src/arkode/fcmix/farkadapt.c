@@ -29,10 +29,11 @@
 extern "C" {
 #endif
 
-extern void FARK_ADAPT(sunrealtype* Y, sunrealtype* T, sunrealtype* H1, sunrealtype* H2,
-                       sunrealtype* H3, sunrealtype* E1, sunrealtype* E2, sunrealtype* E3,
-                       int* Q, int* P, sunrealtype* HNEW, long int* IPAR,
-                       sunrealtype* RPAR, int* IER);
+extern void FARK_ADAPT(sunrealtype* Y, sunrealtype* T, sunrealtype* H1,
+                       sunrealtype* H2, sunrealtype* H3, sunrealtype* E1,
+                       sunrealtype* E2, sunrealtype* E3, int* Q, int* P,
+                       sunrealtype* HNEW, long int* IPAR, sunrealtype* RPAR,
+                       int* IER);
 
 #ifdef __cplusplus
 }
@@ -56,9 +57,9 @@ void FARK_ADAPTSET(int* flag, int* ier)
 
 /* C interface to user-supplied fortran routine FARKADAPT; see 
    farkode.h for further information */
-int FARKAdapt(N_Vector y, sunrealtype t, sunrealtype h1, sunrealtype h2, sunrealtype h3,
-              sunrealtype e1, sunrealtype e2, sunrealtype e3, int q, int p,
-              sunrealtype* hnew, void* user_data)
+int FARKAdapt(N_Vector y, sunrealtype t, sunrealtype h1, sunrealtype h2,
+              sunrealtype h3, sunrealtype e1, sunrealtype e2, sunrealtype e3,
+              int q, int p, sunrealtype* hnew, void* user_data)
 {
   int ier = 0;
   sunrealtype* ydata;

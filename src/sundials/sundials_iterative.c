@@ -110,13 +110,15 @@ SUNErrCode SUNModifiedGS(N_Vector* v, sunrealtype** h, int k, int p,
  */
 
 SUNErrCode ClassicalGS(N_Vector* v, sunrealtype** h, int k, int p,
-                       sunrealtype* new_vk_norm, sunrealtype* stemp, N_Vector* vtemp)
+                       sunrealtype* new_vk_norm, sunrealtype* stemp,
+                       N_Vector* vtemp)
 {
   return (SUNClassicalGS(v, h, k, p, new_vk_norm, stemp, vtemp));
 }
 
 SUNErrCode SUNClassicalGS(N_Vector* v, sunrealtype** h, int k, int p,
-                          sunrealtype* new_vk_norm, sunrealtype* stemp, N_Vector* vtemp)
+                          sunrealtype* new_vk_norm, sunrealtype* stemp,
+                          N_Vector* vtemp)
 {
   int i, i0, k_minus_1;
   sunrealtype vk_norm;
@@ -345,8 +347,8 @@ int SUNQRsol(int n, sunrealtype** h, sunrealtype* q, sunrealtype* b)
  * -----------------------------------------------------------------
  */
 
-SUNErrCode SUNQRAdd_MGS(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMax,
-                        void* QRdata)
+SUNErrCode SUNQRAdd_MGS(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
+                        int mMax, void* QRdata)
 {
   sunindextype j;
   SUNQRData qrdata = (SUNQRData)QRdata;
@@ -375,8 +377,8 @@ SUNErrCode SUNQRAdd_MGS(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMa
  * -----------------------------------------------------------------
  */
 
-SUNErrCode SUNQRAdd_ICWY(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMax,
-                         void* QRdata)
+SUNErrCode SUNQRAdd_ICWY(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
+                         int mMax, void* QRdata)
 {
   sunindextype j, k;
   SUNQRData qrdata = (SUNQRData)QRdata;
@@ -498,8 +500,8 @@ SUNErrCode SUNQRAdd_ICWY_SB(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
  * -----------------------------------------------------------------
  */
 
-SUNErrCode SUNQRAdd_CGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m, int mMax,
-                         void* QRdata)
+SUNErrCode SUNQRAdd_CGS2(N_Vector* Q, sunrealtype* R, N_Vector df, int m,
+                         int mMax, void* QRdata)
 {
   sunindextype j;
   SUNQRData qrdata = (SUNQRData)QRdata;

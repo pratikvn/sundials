@@ -247,7 +247,8 @@ SUNErrCode SUNLinSolInitialize_SPFGMR(SUNLinearSolver S)
   /*   Hessenberg matrix Hes */
   if (content->Hes == NULL)
   {
-    content->Hes = (sunrealtype**)malloc((content->maxl + 1) * sizeof(sunrealtype*));
+    content->Hes =
+      (sunrealtype**)malloc((content->maxl + 1) * sizeof(sunrealtype*));
     SUNAssert(content->Hes, SUN_ERR_MALLOC_FAIL);
 
     for (k = 0; k <= content->maxl; k++)
@@ -261,7 +262,8 @@ SUNErrCode SUNLinSolInitialize_SPFGMR(SUNLinearSolver S)
   /*   Givens rotation components */
   if (content->givens == NULL)
   {
-    content->givens = (sunrealtype*)malloc(2 * content->maxl * sizeof(sunrealtype));
+    content->givens =
+      (sunrealtype*)malloc(2 * content->maxl * sizeof(sunrealtype));
     SUNAssert(content->givens, SUN_ERR_MALLOC_FAIL);
   }
 

@@ -172,18 +172,18 @@ struct UserData
   MPI_Request reqSN;
 
   // Integrator settings
-  sunrealtype rtol;        // relative tolerance
-  sunrealtype atol;        // absolute tolerance
-  int      order;       // ARKode method order
-  bool     linear;      // enable/disable linearly implicit option
+  sunrealtype rtol; // relative tolerance
+  sunrealtype atol; // absolute tolerance
+  int order;        // ARKode method order
+  bool linear;      // enable/disable linearly implicit option
 
   // Linear solver and preconditioner settings
-  bool     pcg;       // use PCG (true) or GMRES (false)
-  bool     prec;      // preconditioner on/off
-  bool     matvec;    // use hypre matrix-vector product
-  int      liniters;  // number of linear iterations
-  int      msbp;      // max number of steps between preconditioner setups
-  sunrealtype epslin;    // linear solver tolerance factor
+  bool pcg;           // use PCG (true) or GMRES (false)
+  bool prec;          // preconditioner on/off
+  bool matvec;        // use hypre matrix-vector product
+  int liniters;       // number of linear iterations
+  int msbp;           // max number of steps between preconditioner setups
+  sunrealtype epslin; // linear solver tolerance factor
 
   // hypre objects
   HYPRE_StructGrid grid;
@@ -234,7 +234,7 @@ struct UserData
   double accesstime;
 
   // XBraid settings
-  sunrealtype x_tol;      // Xbraid stopping tolerance
+  sunrealtype x_tol;   // Xbraid stopping tolerance
   int x_nt;            // number of fine grid time points
   int x_skip;          // skip all work on first down cycle
   int x_max_levels;    // max number of levels
@@ -273,8 +273,8 @@ int MyAccess(braid_App app, braid_Vector u, braid_AccessStatus astatus);
 static int f(sunrealtype t, N_Vector u, N_Vector f, void* user_data);
 
 // Jacobian-vector product function
-static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                  void* user_data, N_Vector tmp);
+static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                  N_Vector fy, void* user_data, N_Vector tmp);
 
 // Preconditioner setup and solve functions
 static int PSetup(sunrealtype t, N_Vector u, N_Vector f, sunbooleantype jok,
@@ -346,14 +346,14 @@ static int check_flag(void* flagvalue, const string funcname, int opt);
 
 int main(int argc, char* argv[])
 {
-  int flag;                   // reusable error-checking flag
-  UserData *udata    = NULL;  // user data structure
-  N_Vector u         = NULL;  // vector for storing solution
-  SUNLinearSolver LS = NULL;  // linear solver memory structure
-  void *arkode_mem   = NULL;  // ARKODE memory structure
-  braid_Core core    = NULL;  // XBraid memory structure
-  braid_App app      = NULL;  // ARKode + XBraid interface structure
-  SUNAdaptController    C = NULL;  // time step adaptivity controller
+  int flag;                    // reusable error-checking flag
+  UserData* udata      = NULL; // user data structure
+  N_Vector u           = NULL; // vector for storing solution
+  SUNLinearSolver LS   = NULL; // linear solver memory structure
+  void* arkode_mem     = NULL; // ARKODE memory structure
+  braid_Core core      = NULL; // XBraid memory structure
+  braid_App app        = NULL; // ARKode + XBraid interface structure
+  SUNAdaptController C = NULL; // time step adaptivity controller
 
   // Timing variables
   double t1 = 0.0;
@@ -400,7 +400,7 @@ int main(int argc, char* argv[])
   if (outproc)
   {
     flag = PrintUserData(udata);
-    if (check_flag(&flag, "PrintUserData", 1)) return 1;
+    if (check_flag(&flag, "PrintUserData", 1)) { return 1; }
   }
 
   // ------------------------
@@ -429,12 +429,12 @@ int main(int argc, char* argv[])
   if (udata->pcg)
   {
     LS = SUNLinSol_PCG(u, prectype, udata->liniters, ctx);
-    if (check_flag((void *) LS, "SUNLinSol_PCG", 0)) return 1;
+    if (check_flag((void*)LS, "SUNLinSol_PCG", 0)) { return 1; }
   }
   else
   {
     LS = SUNLinSol_SPGMR(u, prectype, udata->liniters, ctx);
-    if (check_flag((void *) LS, "SUNLinSol_SPGMR", 0)) return 1;
+    if (check_flag((void*)LS, "SUNLinSol_SPGMR", 0)) { return 1; }
   }
 
   // ---------------------
@@ -527,9 +527,9 @@ int main(int argc, char* argv[])
   {
     // Use I controller with default parameters
     C = SUNAdaptController_I(ctx);
-    if (check_flag((void*) C, "SUNAdaptController_I", 0)) return 1;
+    if (check_flag((void*)C, "SUNAdaptController_I", 0)) { return 1; }
     flag = ARKStepSetAdaptController(arkode_mem, C);
-    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
+    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) { return 1; }
 
     // Set the step size reduction factor limit (1 / refinement factor limit)
     flag = ARKStepSetMinReduction(arkode_mem, ONE / udata->x_rfactor_limit);
@@ -701,16 +701,16 @@ int main(int argc, char* argv[])
   // Clean up and return
   // --------------------
 
-  ARKStepFree(&arkode_mem);              // Free integrator memory
-  SUNLinSolFree(LS);                     // Free linear solver
-  N_VDestroy(u);                         // Free vectors
-  FreeUserData(udata);                   // Free user data
+  ARKStepFree(&arkode_mem); // Free integrator memory
+  SUNLinSolFree(LS);        // Free linear solver
+  N_VDestroy(u);            // Free vectors
+  FreeUserData(udata);      // Free user data
   delete udata;
-  braid_Destroy(core);                   // Free braid memory
-  ARKBraid_Free(&app);                   // Free interface memory
-  (void) SUNAdaptController_Destroy(C);  // Free time adaptivity controller
-  SUNContext_Free(&ctx);                 // Free context
-  flag = MPI_Finalize();                 // Finalize MPI
+  braid_Destroy(core);                 // Free braid memory
+  ARKBraid_Free(&app);                 // Free interface memory
+  (void)SUNAdaptController_Destroy(C); // Free time adaptivity controller
+  SUNContext_Free(&ctx);               // Free context
+  flag = MPI_Finalize();               // Finalize MPI
 
   return 0;
 }
@@ -954,10 +954,10 @@ int MyInit(braid_App app, sunrealtype t, braid_Vector* u_ptr)
 // Access XBraid and current vector
 int MyAccess(braid_App app, braid_Vector u, braid_AccessStatus astatus)
 {
-  int flag;   // return flag
-  int iter;   // current iteration number
-  int level;  // current level
-  int done;   // has XBraid finished
+  int flag;      // return flag
+  int iter;      // current iteration number
+  int level;     // current level
+  int done;      // has XBraid finished
   sunrealtype t; // current time
   void* user_data;
   UserData* udata;
@@ -1307,8 +1307,8 @@ static int f(sunrealtype t, N_Vector u, N_Vector f, void* user_data)
 }
 
 // Jacobian-vector product function
-static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                  void* user_data, N_Vector tmp)
+static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                  N_Vector fy, void* user_data, N_Vector tmp)
 {
   int flag;
 
@@ -2410,18 +2410,18 @@ static int InitUserData(UserData* udata, SUNContext ctx)
   udata->ipN = -1;
 
   // Integrator settings
-  udata->rtol        = SUN_RCONST(1.e-5);   // relative tolerance
-  udata->atol        = SUN_RCONST(1.e-10);  // absolute tolerance
-  udata->order       = 3;               // method order
-  udata->linear      = true;            // linearly implicit problem
+  udata->rtol   = SUN_RCONST(1.e-5);  // relative tolerance
+  udata->atol   = SUN_RCONST(1.e-10); // absolute tolerance
+  udata->order  = 3;                  // method order
+  udata->linear = true;               // linearly implicit problem
 
   // Linear solver and preconditioner options
-  udata->pcg       = true;       // use PCG (true) or GMRES (false)
-  udata->prec      = true;       // enable preconditioning
-  udata->matvec    = false;      // use hypre matrix-vector product
-  udata->liniters  = 100;        // max linear iterations
-  udata->msbp      = 0;          // use default (20 steps)
-  udata->epslin    = ZERO;       // use default (0.05)
+  udata->pcg      = true;  // use PCG (true) or GMRES (false)
+  udata->prec     = true;  // enable preconditioning
+  udata->matvec   = false; // use hypre matrix-vector product
+  udata->liniters = 100;   // max linear iterations
+  udata->msbp     = 0;     // use default (20 steps)
+  udata->epslin   = ZERO;  // use default (0.05)
 
   // hypre objects
   udata->grid    = NULL;
@@ -2580,31 +2580,13 @@ static int ReadInputs(int* argc, char*** argv, UserData* udata, bool outproc)
     // Temporal domain settings
     else if (arg == "--tf") { udata->tf = stod((*argv)[arg_idx++]); }
     // Integrator settings
-    else if (arg == "--rtol")
-    {
-      udata->rtol = stod((*argv)[arg_idx++]);
-    }
-    else if (arg == "--atol")
-    {
-      udata->atol = stod((*argv)[arg_idx++]);
-    }
-    else if (arg == "--order")
-    {
-      udata->order = stoi((*argv)[arg_idx++]);
-    }
-    else if (arg == "--nonlinear")
-    {
-      udata->linear = false;
-    }
+    else if (arg == "--rtol") { udata->rtol = stod((*argv)[arg_idx++]); }
+    else if (arg == "--atol") { udata->atol = stod((*argv)[arg_idx++]); }
+    else if (arg == "--order") { udata->order = stoi((*argv)[arg_idx++]); }
+    else if (arg == "--nonlinear") { udata->linear = false; }
     // Linear solver settings
-    else if (arg == "--gmres")
-    {
-      udata->pcg = false;
-    }
-    else if (arg == "--matvec")
-    {
-      udata->matvec = true;
-    }
+    else if (arg == "--gmres") { udata->pcg = false; }
+    else if (arg == "--matvec") { udata->matvec = true; }
     else if (arg == "--liniters")
     {
       udata->liniters = stoi((*argv)[arg_idx++]);

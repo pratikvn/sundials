@@ -37,9 +37,9 @@ extern void FIDA_ROOTFN(sunrealtype*, /* T    */
                         sunrealtype*, /* Y    */
                         sunrealtype*, /* YP   */
                         sunrealtype*, /* G    */
-                        long int*, /* IPAR */
+                        long int*,    /* IPAR */
                         sunrealtype*, /* RPAR */
-                        int*);     /* IER  */
+                        int*);        /* IER  */
 #ifdef __cplusplus
 }
 #endif

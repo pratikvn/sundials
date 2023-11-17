@@ -176,11 +176,11 @@ struct UserData
 
 int main(int argc, char* argv[])
 {
-  const sunrealtype T0    = SUN_RCONST(0.0);  /* initial time                   */
-  const sunrealtype Tf    = SUN_RCONST(10.0); /* final time                    */
-  const sunrealtype dTout = SUN_RCONST(1.0);  /* time between outputs          */
-  const int Nt = (int)ceil(Tf / dTout);   /* number of output times        */
-  const sunrealtype reltol = 1.0e-6;      /* relative integrator tolerance */
+  const sunrealtype T0 = SUN_RCONST(0.0);  /* initial time                   */
+  const sunrealtype Tf = SUN_RCONST(10.0); /* final time                    */
+  const sunrealtype dTout = SUN_RCONST(1.0); /* time between outputs          */
+  const int Nt = (int)ceil(Tf / dTout);      /* number of output times        */
+  const sunrealtype reltol = 1.0e-6;         /* relative integrator tolerance */
   int retval;
   N_Vector y, abstol;
   SUNMatrix A;

@@ -73,11 +73,11 @@ int main(int argc, char** argv)
   MPI_Comm comm  = PETSC_COMM_WORLD;
 
   /* SUNDIALS data structures */
-  void              *arkode_mem; /* integrator memory */
-  N_Vector           nvecx;      /* SUNDIALS N_Vector wrapper of X */
-  SUNNonlinearSolver NLS;        /* SUNDIALS nonlinear solver */
-  SUNContext         ctx;        /* SUNDIALS context */
-  SUNAdaptController C;          /* SUNDIALS controller object */
+  void* arkode_mem;       /* integrator memory */
+  N_Vector nvecx;         /* SUNDIALS N_Vector wrapper of X */
+  SUNNonlinearSolver NLS; /* SUNDIALS nonlinear solver */
+  SUNContext ctx;         /* SUNDIALS context */
+  SUNAdaptController C;   /* SUNDIALS controller object */
 
   /* PETSc data structures */
   SNES snes;    /* nonlinear solver */
@@ -241,12 +241,12 @@ int main(int argc, char** argv)
   if (check_retval(&ierr, "ARKStepSetNonlinearSolver", 1)) { return 1; }
 
   C = SUNAdaptController_I(ctx);
-  if (check_retval((void *)C, "SUNAdaptController_I", 0)) return 1;
+  if (check_retval((void*)C, "SUNAdaptController_I", 0)) { return 1; }
   ierr = ARKStepSetAdaptController(arkode_mem, C);
-  if (check_retval(&ierr, "ARKStepSetAdaptController", 1)) return 1;
+  if (check_retval(&ierr, "ARKStepSetAdaptController", 1)) { return 1; }
 
-  ierr = ARKStepSetInitStep(arkode_mem,dt);
-  if (check_retval(&ierr,"ARKStepSetInitStep",1)) return 1;
+  ierr = ARKStepSetInitStep(arkode_mem, dt);
+  if (check_retval(&ierr, "ARKStepSetInitStep", 1)) { return 1; }
 
   ierr = ARKStepSetInitStep(arkode_mem, dt);
   if (check_retval(&ierr, "ARKStepSetInitStep", 1)) { return 1; }
@@ -289,10 +289,10 @@ int main(int argc, char** argv)
    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
   /* Free SUNDIALS data structures */
-  N_VDestroy(nvecx);           /* Free x nvector         */
-  SUNNonlinSolFree(NLS);       /* Free nonlinear solver  */
-  ARKStepFree(&arkode_mem);    /* Free integrator memory */
-  (void) SUNAdaptController_Destroy(C); /* Free time adaptivity controller */
+  N_VDestroy(nvecx);                   /* Free x nvector         */
+  SUNNonlinSolFree(NLS);               /* Free nonlinear solver  */
+  ARKStepFree(&arkode_mem);            /* Free integrator memory */
+  (void)SUNAdaptController_Destroy(C); /* Free time adaptivity controller */
 
   /* Free petsc data structures */
   ierr = MatDestroy(&J);

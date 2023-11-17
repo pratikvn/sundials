@@ -32,7 +32,7 @@
 /* Private function prototypes */
 static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
 static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
-                                              N_Vector y);
+                                                 N_Vector y);
 static SUNErrCode Matvec_SparseCSC(SUNMatrix A, N_Vector x, N_Vector y);
 static SUNErrCode Matvec_SparseCSR(SUNMatrix A, N_Vector x, N_Vector y);
 static SUNErrCode format_convert(const SUNMatrix A, SUNMatrix B);
@@ -137,7 +137,8 @@ SUNMatrix SUNSparseMatrix(sunindextype M, sunindextype N, sunindextype NNZ,
  * if the request for matrix storage cannot be satisfied.
  */
 
-SUNMatrix SUNSparseFromDenseMatrix(SUNMatrix Ad, sunrealtype droptol, int sparsetype)
+SUNMatrix SUNSparseFromDenseMatrix(SUNMatrix Ad, sunrealtype droptol,
+                                   int sparsetype)
 {
   SUNAssignSUNCTX(Ad->sunctx);
   sunindextype i, j, nnz;
@@ -211,7 +212,8 @@ SUNMatrix SUNSparseFromDenseMatrix(SUNMatrix Ad, sunrealtype droptol, int sparse
  * if the request for matrix storage cannot be satisfied.
  */
 
-SUNMatrix SUNSparseFromBandMatrix(SUNMatrix Ab, sunrealtype droptol, int sparsetype)
+SUNMatrix SUNSparseFromBandMatrix(SUNMatrix Ab, sunrealtype droptol,
+                                  int sparsetype)
 {
   SUNAssignSUNCTX(Ab->sunctx);
   sunindextype i, j, nnz;
@@ -334,7 +336,7 @@ SUNErrCode SUNSparseMatrix_Realloc(SUNMatrix A)
   SM_INDEXVALS_S(A) = (sunindextype*)realloc(SM_INDEXVALS_S(A),
                                              nzmax * sizeof(sunindextype));
   SM_DATA_S(A) = (sunrealtype*)realloc(SM_DATA_S(A), nzmax * sizeof(sunrealtype));
-  SM_NNZ_S(A)  = nzmax;
+  SM_NNZ_S(A) = nzmax;
 
   return SUN_SUCCESS;
 }
@@ -355,8 +357,8 @@ SUNErrCode SUNSparseMatrix_Reallocate(SUNMatrix A, sunindextype NNZ)
   /* perform reallocation */
   SM_INDEXVALS_S(A) = (sunindextype*)realloc(SM_INDEXVALS_S(A),
                                              NNZ * sizeof(sunindextype));
-  SM_DATA_S(A)      = (sunrealtype*)realloc(SM_DATA_S(A), NNZ * sizeof(sunrealtype));
-  SM_NNZ_S(A)       = NNZ;
+  SM_DATA_S(A) = (sunrealtype*)realloc(SM_DATA_S(A), NNZ * sizeof(sunrealtype));
+  SM_NNZ_S(A)  = NNZ;
 
   return SUN_SUCCESS;
 }
@@ -569,8 +571,9 @@ SUNErrCode SUNMatCopy_Sparse(SUNMatrix A, SUNMatrix B)
   {
     SM_INDEXVALS_S(B) = (sunindextype*)realloc(SM_INDEXVALS_S(B),
                                                A_nz * sizeof(sunindextype));
-    SM_DATA_S(B) = (sunrealtype*)realloc(SM_DATA_S(B), A_nz * sizeof(sunrealtype));
-    SM_NNZ_S(B)  = A_nz;
+    SM_DATA_S(B)      = (sunrealtype*)realloc(SM_DATA_S(B),
+                                              A_nz * sizeof(sunrealtype));
+    SM_NNZ_S(B)       = A_nz;
   }
 
   /* zero out B so that copy works correctly */
@@ -654,21 +657,22 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
   if (newvals == 0)
   {
     /* iterate through columns, adding 1.0 to diagonal */
-    for (j=0; j < SUNMIN(M,N); j++)
-      for (i=Ap[j]; i<Ap[j+1]; i++)
-        if (Ai[i] == j) {
-          Ax[i] = ONE + c*Ax[i];
-        } else {
-          Ax[i] = c*Ax[i];
-        }
+    for (j = 0; j < SUNMIN(M, N); j++)
+    {
+      for (i = Ap[j]; i < Ap[j + 1]; i++)
+      {
+        if (Ai[i] == j) { Ax[i] = ONE + c * Ax[i]; }
+        else { Ax[i] = c * Ax[i]; }
+      }
+    }
 
-
-  /*   case 2: A has sufficient storage, but does not already contain a diagonal */
-  } else if (!newmat) {
-
+    /*   case 2: A has sufficient storage, but does not already contain a diagonal */
+  }
+  else if (!newmat)
+  {
     /* create work arrays for nonzero row (column) indices and values in a single column (row) */
-    w = (sunindextype *) malloc(M * sizeof(sunindextype));
-    x = (sunrealtype *) malloc(M * sizeof(sunrealtype));
+    w = (sunindextype*)malloc(M * sizeof(sunindextype));
+    x = (sunrealtype*)malloc(M * sizeof(sunrealtype));
 
     /* determine storage location where last column (row) should end */
     nz = Ap[N] + newvals;
@@ -679,40 +683,43 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
     Ap[N] = nz;
 
     /* iterate through columns (rows) backwards */
-    for (j=N-1; j>=0; j--) {
-
+    for (j = N - 1; j >= 0; j--)
+    {
       /* reset diagonal entry, in case it's not in A */
       x[j] = ZERO;
 
       /* iterate down column (row) of A, collecting nonzeros */
-      for (p=Ap[j], i=0; p<cend; p++, i++) {
-        w[i] = Ai[p];        /* collect row (column) index */
-        x[Ai[p]] = c*Ax[p];    /* collect/scale value */
+      for (p = Ap[j], i = 0; p < cend; p++, i++)
+      {
+        w[i]     = Ai[p];     /* collect row (column) index */
+        x[Ai[p]] = c * Ax[p]; /* collect/scale value */
       }
 
       /* NNZ in this column (row) */
       nw = cend - Ap[j];
 
       /* add identity to this column (row) */
-      if (j < M) {
-        x[j] += ONE;   /* update value */
-      }
+      if (j < M) { x[j] += ONE; /* update value */ }
 
       /* fill entries of A with this column's (row's) data */
       /* fill entries past diagonal */
-      for (i=nw-1; i>=0 && w[i]>j; i--) {
+      for (i = nw - 1; i >= 0 && w[i] > j; i--)
+      {
         Ai[--nz] = w[i];
-        Ax[nz] = x[w[i]];
+        Ax[nz]   = x[w[i]];
       }
       /* fill diagonal if applicable */
-      if (i < 0 /* empty or insert at front */ || w[i] != j /* insert behind front */) {
+      if (i < 0 /* empty or insert at front */ ||
+          w[i] != j /* insert behind front */)
+      {
         Ai[--nz] = j;
-        Ax[nz] = x[j];
+        Ax[nz]   = x[j];
       }
       /* fill entries before diagonal */
-      for (; i>=0; i--) {
+      for (; i >= 0; i--)
+      {
         Ai[--nz] = w[i];
-        Ax[nz] = x[w[i]];
+        Ax[nz]   = x[w[i]];
       }
 
       /* store ptr past this col (row) from orig A, update value for new A */
@@ -724,12 +731,12 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
     free(w);
     free(x);
 
-
-  /*   case 3: A must be reallocated with sufficient storage */
-  } else {
-
+    /*   case 3: A must be reallocated with sufficient storage */
+  }
+  else
+  {
     /* create work array for nonzero values in a single column (row) */
-    x = (sunrealtype *) malloc(M * sizeof(sunrealtype));
+    x = (sunrealtype*)malloc(M * sizeof(sunrealtype));
 
     /* create new matrix for sum */
     C = SUNCheckCallLastErr(SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
@@ -759,29 +766,32 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
       x[j] = ZERO;
 
       /* iterate down column (along row) of A, collecting nonzeros */
-      for (p=Ap[j]; p<Ap[j+1]; p++) {
-        x[Ai[p]] = c*Ax[p];    /* collect/scale value */
+      for (p = Ap[j]; p < Ap[j + 1]; p++)
+      {
+        x[Ai[p]] = c * Ax[p]; /* collect/scale value */
       }
 
       /* add identity to this column (row) */
-      if (j < M) {
-        x[j] += ONE;   /* update value */
-      }
+      if (j < M) { x[j] += ONE; /* update value */ }
 
       /* fill entries of C with this column's (row's) data */
       /* fill entries before diagonal */
-      for (p=Ap[j]; p<Ap[j+1] && Ai[p]<j; p++) {
-        Ci[nz] = Ai[p];
+      for (p = Ap[j]; p < Ap[j + 1] && Ai[p] < j; p++)
+      {
+        Ci[nz]   = Ai[p];
         Cx[nz++] = x[Ai[p]];
       }
       /* fill diagonal if applicable */
-      if (p >= Ap[j+1] /* empty or insert at end */ ||  Ai[p] != j /* insert before end */) {
-        Ci[nz] = j;
+      if (p >= Ap[j + 1] /* empty or insert at end */ ||
+          Ai[p] != j /* insert before end */)
+      {
+        Ci[nz]   = j;
         Cx[nz++] = x[j];
       }
       /* fill entries past diagonal */
-      for (; p<Ap[j+1]; p++) {
-        Ci[nz] = Ai[p];
+      for (; p < Ap[j + 1]; p++)
+      {
+        Ci[nz]   = Ai[p];
         Cx[nz++] = x[Ai[p]];
       }
     }
@@ -1096,7 +1106,8 @@ static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
  * N_Vectors (A*x = b)
  */
 
-static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
+static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
+                                                 N_Vector y)
 {
   /* vectors must implement N_VGetArrayPointer */
   if ((x->ops->nvgetarraypointer == NULL) || (y->ops->nvgetarraypointer == NULL))

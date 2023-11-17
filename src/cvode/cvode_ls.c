@@ -39,9 +39,9 @@
   =================================================================*/
 
 static int cvLsLinSys(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix A,
-                      sunbooleantype jok, sunbooleantype* jcur, sunrealtype gamma,
-                      void* user_data, N_Vector tmp1, N_Vector tmp2,
-                      N_Vector tmp3);
+                      sunbooleantype jok, sunbooleantype* jcur,
+                      sunrealtype gamma, void* user_data, N_Vector tmp1,
+                      N_Vector tmp2, N_Vector tmp3);
 
 /*===============================================================
   CVLS Exported functions -- Required
@@ -1292,8 +1292,8 @@ int cvLsBandDQJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
   Jv = [f(y + v*sig) - f(y)]/sig, where sig = 1 / ||v||_WRMS,
   i.e. the WRMS norm of v*sig is 1.
   -----------------------------------------------------------------*/
-int cvLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                 void* cvode_mem, N_Vector work)
+int cvLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                 N_Vector fy, void* cvode_mem, N_Vector work)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -1340,9 +1340,9 @@ int cvLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy
   Setup the linear system A = I - gamma J
   -----------------------------------------------------------------*/
 static int cvLsLinSys(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix A,
-                      sunbooleantype jok, sunbooleantype* jcur, sunrealtype gamma,
-                      void* cvode_mem, N_Vector vtemp1, N_Vector vtemp2,
-                      N_Vector vtemp3)
+                      sunbooleantype jok, sunbooleantype* jcur,
+                      sunrealtype gamma, void* cvode_mem, N_Vector vtemp1,
+                      N_Vector vtemp2, N_Vector vtemp3)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -1687,10 +1687,10 @@ int cvLsSetup(CVodeMem cv_mem, int convfail, N_Vector ypred, N_Vector fpred,
 int cvLsSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vector ynow,
               N_Vector fnow)
 {
-  CVLsMem  cvls_mem;
+  CVLsMem cvls_mem;
   sunrealtype bnorm = ZERO;
   sunrealtype deltar, delta, w_mean;
-  int      curiter, nli_inc, retval;
+  int curiter, nli_inc, retval;
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
   sunrealtype resnorm;
   long int nps_inc;

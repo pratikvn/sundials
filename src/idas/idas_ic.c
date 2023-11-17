@@ -58,12 +58,12 @@
 
 extern int IDAInitialSetup(IDAMem IDA_mem);
 extern sunrealtype IDAWrmsNorm(IDAMem IDA_mem, N_Vector x, N_Vector w,
-                            sunbooleantype mask);
+                               sunbooleantype mask);
 extern sunrealtype IDASensWrmsNorm(IDAMem IDA_mem, N_Vector* xS, N_Vector* wS,
-                                sunbooleantype mask);
+                                   sunbooleantype mask);
 extern sunrealtype IDASensWrmsNormUpdate(IDAMem IDA_mem, sunrealtype old_nrm,
-                                      N_Vector* xS, N_Vector* wS,
-                                      sunbooleantype mask);
+                                         N_Vector* xS, N_Vector* wS,
+                                         sunbooleantype mask);
 
 extern int IDASensEwtSet(IDAMem IDA_mem, N_Vector* yScur, N_Vector* weightS);
 
@@ -76,7 +76,8 @@ static int IDANewyyp(IDAMem IDA_mem, sunrealtype lambda);
 static int IDANewy(IDAMem IDA_mem);
 
 static int IDASensNewtonIC(IDAMem IDA_mem);
-static int IDASensLineSrch(IDAMem IDA_mem, sunrealtype* delnorm, sunrealtype* fnorm);
+static int IDASensLineSrch(IDAMem IDA_mem, sunrealtype* delnorm,
+                           sunrealtype* fnorm);
 static int IDASensNewyyp(IDAMem IDA_mem, sunrealtype lambda);
 static int IDASensfnorm(IDAMem IDA_mem, sunrealtype* fnorm);
 static int IDASensNlsIC(IDAMem IDA_mem);
@@ -1243,7 +1244,8 @@ static int IDASensNewtonIC(IDAMem IDA_mem)
  * -----------------------------------------------------------------
  */
 
-static int IDASensLineSrch(IDAMem IDA_mem, sunrealtype* delnorm, sunrealtype* fnorm)
+static int IDASensLineSrch(IDAMem IDA_mem, sunrealtype* delnorm,
+                           sunrealtype* fnorm)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 

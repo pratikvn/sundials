@@ -124,10 +124,10 @@
 
 /* Problem Specification Constants */
 
-#define AA    ONE            /* AA = a */
+#define AA    ONE                /* AA = a */
 #define EE    SUN_RCONST(1.0e4)  /* EE = e */
 #define GG    SUN_RCONST(0.5e-6) /* GG = g */
-#define BB    ONE            /* BB = b */
+#define BB    ONE                /* BB = b */
 #define DPREY ONE
 #define DPRED SUN_RCONST(0.5)
 #define ALPH  ONE
@@ -204,17 +204,18 @@ static void PrintAllSpecies(N_Vector c, int ns, int mxns, sunrealtype t);
 static void PrintOutput(void* cvode_mem, sunrealtype t);
 static void PrintFinalStats(void* cvode_mem);
 static void FreeUserData(WebData wdata);
-static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t, sunrealtype c[],
-                     sunrealtype rate[], WebData wdata);
+static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t,
+                     sunrealtype c[], sunrealtype rate[], WebData wdata);
 static void fblock(sunrealtype t, sunrealtype cdata[], int jx, int jy,
                    sunrealtype cdotdata[], WebData wdata);
 static void GSIter(sunrealtype gamma, N_Vector z, N_Vector x, WebData wdata);
 
 /* Small Vector Kernels */
 
-static void v_inc_by_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[], int n);
-static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[], sunrealtype v[],
-                        sunrealtype w[], int n);
+static void v_inc_by_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[],
+                          int n);
+static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[],
+                        sunrealtype v[], sunrealtype w[], int n);
 static void v_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[], int n);
 static void v_zero(sunrealtype u[], int n);
 
@@ -768,8 +769,8 @@ static int f(sunrealtype t, N_Vector c, N_Vector cdot, void* user_data)
   c_1, ... ,c_ns (stored in c[0],...,c[ns-1]), at one spatial point
   and at time t.
 */
-static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t, sunrealtype c[],
-                     sunrealtype rate[], WebData wdata)
+static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t,
+                     sunrealtype c[], sunrealtype rate[], WebData wdata)
 {
   int i, j, ns;
   sunrealtype fac, *bcoef;
@@ -1156,8 +1157,8 @@ static void v_inc_by_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[], int
   for (i = 0; i < n; i++) { u[i] += v[i] * w[i]; }
 }
 
-static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[], sunrealtype v[],
-                        sunrealtype w[], int n)
+static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[],
+                        sunrealtype v[], sunrealtype w[], int n)
 {
   int i;
   for (i = 0; i < n; i++) { u[i] = p[i] * q[i] + v[i] * w[i]; }

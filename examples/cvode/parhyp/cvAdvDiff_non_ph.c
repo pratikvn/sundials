@@ -61,13 +61,13 @@
 #define ZERO SUN_RCONST(0.0)
 
 #define XMAX  SUN_RCONST(2.0)    /* domain boundary           */
-#define MX    10             /* mesh dimension            */
-#define NEQ   MX             /* number of equations       */
+#define MX    10                 /* mesh dimension            */
+#define NEQ   MX                 /* number of equations       */
 #define ATOL  SUN_RCONST(1.0e-5) /* scalar absolute tolerance */
-#define T0    ZERO           /* initial time              */
+#define T0    ZERO               /* initial time              */
 #define T1    SUN_RCONST(0.5)    /* first output time         */
 #define DTOUT SUN_RCONST(0.5)    /* output time increment     */
-#define NOUT  10             /* number of output times    */
+#define NOUT  10                 /* number of output times    */
 
 /* Type : UserData
    contains grid constants, parhyp machine parameters, work array. */
@@ -156,7 +156,8 @@ int main(int argc, char* argv[])
   reltol = ZERO; /* Set the tolerances */
   abstol = ATOL;
 
-  dx = data->dx = XMAX / ((sunrealtype)(MX + 1)); /* Set grid coefficients in data */
+  dx = data->dx = XMAX /
+                  ((sunrealtype)(MX + 1)); /* Set grid coefficients in data */
   data->hdcoef = SUN_RCONST(1.0) / (dx * dx);
   data->hacoef = SUN_RCONST(0.5) / (SUN_RCONST(2.0) * dx);
 

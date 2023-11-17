@@ -156,7 +156,8 @@ sunrealtype** newBandMat(sunindextype n, sunindextype smu, sunindextype ml)
   return (SUNDlsMat_newBandMat(n, smu, ml));
 }
 
-sunrealtype** SUNDlsMat_newBandMat(sunindextype n, sunindextype smu, sunindextype ml)
+sunrealtype** SUNDlsMat_newBandMat(sunindextype n, sunindextype smu,
+                                   sunindextype ml)
 {
   sunrealtype** a;
   sunindextype j, colSize;
@@ -265,7 +266,10 @@ sunindextype* SUNDlsMat_newIndexArray(sunindextype n)
   return (v);
 }
 
-sunrealtype* NewRealArray(sunindextype N) { return (SUNDlsMat_NewRealArray(N)); }
+sunrealtype* NewRealArray(sunindextype N)
+{
+  return (SUNDlsMat_NewRealArray(N));
+}
 
 sunrealtype* SUNDlsMat_NewRealArray(sunindextype N)
 {
@@ -279,7 +283,10 @@ sunrealtype* SUNDlsMat_NewRealArray(sunindextype N)
   return (vec);
 }
 
-sunrealtype* newRealArray(sunindextype N) { return (SUNDlsMat_newRealArray(N)); }
+sunrealtype* newRealArray(sunindextype N)
+{
+  return (SUNDlsMat_newRealArray(N));
+}
 
 sunrealtype* SUNDlsMat_newRealArray(sunindextype m)
 {

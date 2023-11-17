@@ -40,8 +40,8 @@ static int cvNlsLSetupSensSim(sunbooleantype jbad, sunbooleantype* jcur,
                               void* cvode_mem);
 static int cvNlsLSolveSensSim(N_Vector deltaSim, void* cvode_mem);
 static int cvNlsConvTestSensSim(SUNNonlinearSolver NLS, N_Vector ycorSim,
-                                N_Vector delSim, sunrealtype tol, N_Vector ewtSim,
-                                void* cvode_mem);
+                                N_Vector delSim, sunrealtype tol,
+                                N_Vector ewtSim, void* cvode_mem);
 
 /* -----------------------------------------------------------------------------
  * Exported functions
@@ -318,7 +318,8 @@ int cvNlsInitSensSim(CVodeMem cvode_mem)
   return (CV_SUCCESS);
 }
 
-static int cvNlsLSetupSensSim(sunbooleantype jbad, sunbooleantype* jcur, void* cvode_mem)
+static int cvNlsLSetupSensSim(sunbooleantype jbad, sunbooleantype* jcur,
+                              void* cvode_mem)
 {
   CVodeMem cv_mem;
   int retval;

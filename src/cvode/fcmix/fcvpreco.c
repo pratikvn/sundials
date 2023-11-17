@@ -35,13 +35,15 @@
 extern "C" {
 #endif
 
-extern void FCV_PSET(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunbooleantype* JOK,
-                     sunbooleantype* JCUR, sunrealtype* GAMMA, sunrealtype* H,
-                     long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FCV_PSET(sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                     sunbooleantype* JOK, sunbooleantype* JCUR,
+                     sunrealtype* GAMMA, sunrealtype* H, long int* IPAR,
+                     sunrealtype* RPAR, int* IER);
 
-extern void FCV_PSOL(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* R,
-                     sunrealtype* Z, sunrealtype* GAMMA, sunrealtype* DELTA, int* LR,
-                     long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FCV_PSOL(sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                     sunrealtype* R, sunrealtype* Z, sunrealtype* GAMMA,
+                     sunrealtype* DELTA, int* LR, long int* IPAR,
+                     sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }

@@ -117,21 +117,21 @@
 #define NSMXSUB  (NUM_SPECIES * MXSUB)
 #define NSMXSUB2 (NUM_SPECIES * (MXSUB + 2))
 #define NEQ      (NUM_SPECIES * MX * MY) /* number of equations in the system */
-#define AA       SUN_RCONST(1.0)     /* value of coefficient AA in above eqns */
-#define EE       SUN_RCONST(10000.)  /* value of coefficient EE in above eqns */
-#define GG       SUN_RCONST(0.5e-6)  /* value of coefficient GG in above eqns */
-#define BB       SUN_RCONST(1.0)     /* value of coefficient BB in above eqns */
-#define DPREY    SUN_RCONST(1.0)     /* value of coefficient dprey above */
-#define DPRED    SUN_RCONST(0.5)     /* value of coefficient dpred above */
-#define ALPHA    SUN_RCONST(1.0)     /* value of coefficient alpha above */
-#define AX       SUN_RCONST(1.0)     /* total range of x variable */
-#define AY       SUN_RCONST(1.0)     /* total range of y variable */
-#define FTOL     SUN_RCONST(1.e-7)   /* ftol tolerance */
-#define STOL     SUN_RCONST(1.e-13)  /* stol tolerance */
-#define THOUSAND SUN_RCONST(1000.0)  /* one thousand */
-#define ZERO     SUN_RCONST(0.0)     /* 0. */
-#define ONE      SUN_RCONST(1.0)     /* 1. */
-#define PREYIN   SUN_RCONST(1.0)     /* initial guess for prey concentrations. */
+#define AA       SUN_RCONST(1.0)    /* value of coefficient AA in above eqns */
+#define EE       SUN_RCONST(10000.) /* value of coefficient EE in above eqns */
+#define GG       SUN_RCONST(0.5e-6) /* value of coefficient GG in above eqns */
+#define BB       SUN_RCONST(1.0)    /* value of coefficient BB in above eqns */
+#define DPREY    SUN_RCONST(1.0)    /* value of coefficient dprey above */
+#define DPRED    SUN_RCONST(0.5)    /* value of coefficient dpred above */
+#define ALPHA    SUN_RCONST(1.0)    /* value of coefficient alpha above */
+#define AX       SUN_RCONST(1.0)    /* total range of x variable */
+#define AY       SUN_RCONST(1.0)    /* total range of y variable */
+#define FTOL     SUN_RCONST(1.e-7)  /* ftol tolerance */
+#define STOL     SUN_RCONST(1.e-13) /* stol tolerance */
+#define THOUSAND SUN_RCONST(1000.0) /* one thousand */
+#define ZERO     SUN_RCONST(0.0)    /* 0. */
+#define ONE      SUN_RCONST(1.0)    /* 1. */
+#define PREYIN   SUN_RCONST(1.0)    /* initial guess for prey concentrations. */
 #define PREDIN   SUN_RCONST(30000.0) /* initial guess for predator concs.      */
 
 /* User-defined vector access macro: IJ_Vptr */
@@ -181,8 +181,8 @@ static void PrintHeader(int globalstrategy, int maxl, int maxlrst,
                         sunrealtype fnormtol, sunrealtype scsteptol);
 static void PrintOutput(int my_pe, MPI_Comm comm, N_Vector cc);
 static void PrintFinalStats(void* kmem);
-static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                    void* user_data);
+static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                    sunrealtype* ratesxy, void* user_data);
 static sunrealtype DotProd(int size, sunrealtype* x1, sunrealtype* x2);
 static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby, int dsizex,
                   int dsizey, sunrealtype* cdata);
@@ -596,8 +596,8 @@ static int func(N_Vector cc, N_Vector fval, void* user_data)
  * Interaction rate function routine
  */
 
-static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                    void* user_data)
+static void WebRate(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                    sunrealtype* ratesxy, void* user_data)
 {
   int i;
   sunrealtype fac;

@@ -33,8 +33,8 @@ extern "C" {
 
 extern void FARK_BMASS(long int* N, long int* MU, long int* ML, long int* EBAND,
                        sunrealtype* T, sunrealtype* BMASS, long int* IPAR,
-                       sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2, sunrealtype* V3,
-                       int* IER);
+                       sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2,
+                       sunrealtype* V3, int* IER);
 
 #ifdef __cplusplus
 }

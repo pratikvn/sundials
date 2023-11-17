@@ -84,15 +84,17 @@ typedef struct
 
 /* User-supplied residual function */
 
-int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_data);
+int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+            void* user_data);
 
 /* User-supplied preconditioner routines */
 
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
-               void* user_data);
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data);
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data);
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* user_data);
 
 /* Private function to check function return values */
 
@@ -466,8 +468,8 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  *
  */
 
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
-               void* user_data)
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data)
 {
   PetscErrorCode ierr;
   PetscInt i, j, Mx, My, xs, ys, xm, ym;
@@ -522,8 +524,9 @@ int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtyp
  * computed in PsetupHeat), returning the result in zvec.
  */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* user_data)
 {
   UserData data;
 

@@ -46,7 +46,8 @@
 extern "C" {
 #endif
 
-extern void FK_LOCFN(long int* NLOC, sunrealtype* ULOC, sunrealtype* GLOC, int* IER);
+extern void FK_LOCFN(long int* NLOC, sunrealtype* ULOC, sunrealtype* GLOC,
+                     int* IER);
 extern void FK_COMMFN(long int* NLOC, sunrealtype* ULOC, int* IER);
 
 #ifdef __cplusplus

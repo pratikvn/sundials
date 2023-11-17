@@ -38,16 +38,15 @@
  * -----------------------------------------------------------------
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-#include <string.h>
-#include <vector>
-
-#include <Trilinos_version.h>
 #include <Tpetra_Core.hpp>
 #include <Tpetra_Vector.hpp>
 #include <Tpetra_Version.hpp>
+#include <Trilinos_version.h>
+#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <vector>
 
 #if TRILINOS_MAJOR_VERSION > 13
 #include <Tpetra_Access.hpp>
@@ -126,7 +125,8 @@ struct UserData
 
 /* User-supplied residual and supporting functions */
 
-int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_data);
+int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+            void* user_data);
 
 static int rescomm(N_Vector uu, N_Vector up, void* user_data);
 
@@ -141,11 +141,12 @@ static int BRecvWait(MPI_Request request[], void* user_data);
 
 /* User-supplied preconditioner functions */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data);
-
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
                void* user_data);
+
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data);
 
 /* Private function to allocate memory, initialize problem and print output */
 
@@ -388,8 +389,8 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  * pp etc.) are used from the PsetupHeat argument list.
  *
  */
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
-               void* user_data)
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data)
 {
   /* Unwrap the user data */
   UserData* data           = reinterpret_cast<UserData*>(user_data);
@@ -410,10 +411,10 @@ int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtyp
 
 #if TRILINOS_MAJOR_VERSION < 14
   auto pp_2d = pptp->getLocalView<memory_space>();
-  auto pp_1d = Kokkos::subview (pp_2d, Kokkos::ALL(), 0);
+  auto pp_1d = Kokkos::subview(pp_2d, Kokkos::ALL(), 0);
 #else
   auto pp_2d = pptp->getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto pp_1d = Kokkos::subview (pp_2d, Kokkos::ALL(), 0);
+  auto pp_1d = Kokkos::subview(pp_2d, Kokkos::ALL(), 0);
 #endif
 
   /* Calculate the value for the inverse element of the diagonal preconditioner */
@@ -443,8 +444,9 @@ int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtyp
  * containing the inverse diagonal Jacobian elements (previously
  * computed in PsetupHeat), returning the result in zvec.
  */
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* user_data)
 {
   UserData* data = reinterpret_cast<UserData*>(user_data);
 
@@ -498,9 +500,9 @@ static int reslocal(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
   const sunindextype mxsub  = data->mxsub;
   const sunindextype mxsub2 = data->mxsub + 2;
   const sunindextype mysub  = data->mysub;
-  const sunrealtype coeffx     = data->coeffx;
-  const sunrealtype coeffy     = data->coeffy;
-  const sunrealtype coeffxy    = data->coeffxy;
+  const sunrealtype coeffx  = data->coeffx;
+  const sunrealtype coeffy  = data->coeffy;
+  const sunrealtype coeffxy = data->coeffxy;
 
   sunindextype ibc, i0, jbc, j0;
 
@@ -517,16 +519,16 @@ static int reslocal(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
   const auto uu_2d = uuv->getLocalView<memory_space>();
   const auto uu_1d = Kokkos::subview(uu_2d, Kokkos::ALL(), 0);
   const auto up_2d = upv->getLocalView<memory_space>();
-  const auto up_1d = Kokkos::subview (up_2d, Kokkos::ALL(), 0);
-  auto rr_2d = rrv->getLocalView<memory_space>();
-  auto rr_1d = Kokkos::subview (rr_2d, Kokkos::ALL(), 0);
+  const auto up_1d = Kokkos::subview(up_2d, Kokkos::ALL(), 0);
+  auto rr_2d       = rrv->getLocalView<memory_space>();
+  auto rr_1d       = Kokkos::subview(rr_2d, Kokkos::ALL(), 0);
 #else
   const auto uu_2d = uuv->getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  const auto uu_1d = Kokkos::subview (uu_2d, Kokkos::ALL(), 0);
+  const auto uu_1d = Kokkos::subview(uu_2d, Kokkos::ALL(), 0);
   const auto up_2d = upv->getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  const auto up_1d = Kokkos::subview (up_2d, Kokkos::ALL(), 0);
-  auto rr_2d = rrv->getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto rr_1d = Kokkos::subview (rr_2d, Kokkos::ALL(), 0);
+  const auto up_1d = Kokkos::subview(up_2d, Kokkos::ALL(), 0);
+  auto rr_2d       = rrv->getLocalView<memory_space>(Tpetra::Access::ReadWrite);
+  auto rr_1d       = Kokkos::subview(rr_2d, Kokkos::ALL(), 0);
 #endif
 
   Kokkos::View<sunrealtype*, memory_space> uext_1d = data->uext;
@@ -562,9 +564,9 @@ static int reslocal(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
 
       sunrealtype termx = coeffx * (uext_1d(locue - 1) + uext_1d(locue + 1));
       sunrealtype termy = coeffy *
-                       (uext_1d(locue - mxsub2) + uext_1d(locue + mxsub2));
+                          (uext_1d(locue - mxsub2) + uext_1d(locue + mxsub2));
       sunrealtype termctr = coeffxy * uext_1d(locue);
-      rr_1d(locu)      = up_1d(locu) - (termx + termy - termctr);
+      rr_1d(locu)         = up_1d(locu) - (termx + termy - termctr);
     });
 
   return (0);
@@ -596,7 +598,8 @@ static int BSend(N_Vector uu, void* user_data)
   Kokkos::View<sunrealtype*, memory_space> bufright  = data->send_buff_right;
   Kokkos::View<sunrealtype*, memory_space> buftop    = data->send_buff_top;
   Kokkos::View<sunrealtype*, memory_space> bufbottom = data->send_buff_bottom;
-  typename Kokkos::View<sunrealtype*>::HostMirror h_bufleft = data->h_send_buff_left;
+  typename Kokkos::View<sunrealtype*>::HostMirror h_bufleft =
+    data->h_send_buff_left;
   typename Kokkos::View<sunrealtype*>::HostMirror h_bufright =
     data->h_send_buff_right;
   typename Kokkos::View<sunrealtype*>::HostMirror h_buftop = data->h_send_buff_top;
@@ -608,10 +611,10 @@ static int BSend(N_Vector uu, void* user_data)
 
 #if TRILINOS_MAJOR_VERSION < 14
   const auto uu_2d = uuv->getLocalView<memory_space>();
-  const auto uu_1d = Kokkos::subview (uu_2d, Kokkos::ALL(), 0);
+  const auto uu_1d = Kokkos::subview(uu_2d, Kokkos::ALL(), 0);
 #else
   const auto uu_2d = uuv->getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  const auto uu_1d = Kokkos::subview (uu_2d, Kokkos::ALL(), 0);
+  const auto uu_1d = Kokkos::subview(uu_2d, Kokkos::ALL(), 0);
 #endif
 
   /* If jysub > 0, send data from bottom x-line of u.  (via bufbottom) */
@@ -706,7 +709,8 @@ static int BRecvPost(MPI_Request request[], void* user_data)
   const sunindextype mysub = data->mysub;
 
   /* Get left, right, top and bottom host buffers. */
-  typename Kokkos::View<sunrealtype*>::HostMirror h_bufleft = data->h_recv_buff_left;
+  typename Kokkos::View<sunrealtype*>::HostMirror h_bufleft =
+    data->h_recv_buff_left;
   typename Kokkos::View<sunrealtype*>::HostMirror h_bufright =
     data->h_recv_buff_right;
   typename Kokkos::View<sunrealtype*>::HostMirror h_buftop = data->h_recv_buff_top;
@@ -767,7 +771,8 @@ static int BRecvWait(MPI_Request request[], void* user_data)
   const sunindextype mysub = data->mysub;
 
   /* Get pointers to buffers and extended solution vector data array uext. */
-  typename Kokkos::View<sunrealtype*>::HostMirror h_bufleft = data->h_recv_buff_left;
+  typename Kokkos::View<sunrealtype*>::HostMirror h_bufleft =
+    data->h_recv_buff_left;
   typename Kokkos::View<sunrealtype*>::HostMirror h_bufright =
     data->h_recv_buff_right;
   typename Kokkos::View<sunrealtype*>::HostMirror h_buftop = data->h_recv_buff_top;
@@ -953,8 +958,8 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
   /* Set mesh spacings and subgrid indices for this PE. */
   const sunrealtype dx = data->dx;
   const sunrealtype dy = data->dy;
-  const int ixsub   = data->ixsub;
-  const int jysub   = data->jysub;
+  const int ixsub      = data->ixsub;
+  const int jysub      = data->jysub;
 
   /* Set beginning and ending locations in the global array corresponding
      to the portion of that array assigned to this processor. */
@@ -976,7 +981,8 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
     {
       xfact     = dx * i;
       loc       = iloc + jloc * mxsub;
-      u_1d(loc) = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      u_1d(loc) = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                  (ONE - yfact);
 
       if (i == 0 || i == data->mx - 1 || j == 0 || j == data->my - 1)
       {

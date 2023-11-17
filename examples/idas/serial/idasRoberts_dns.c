@@ -36,7 +36,7 @@
 #include <math.h>
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver      */
 #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix            */
@@ -72,9 +72,9 @@ int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector resval,
 static int grob(sunrealtype t, N_Vector yy, N_Vector yp, sunrealtype* gout,
                 void* user_data);
 
-int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector resvec,
-           SUNMatrix JJ, void* user_data, N_Vector tempv1, N_Vector tempv2,
-           N_Vector tempv3);
+int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
+           N_Vector resvec, SUNMatrix JJ, void* user_data, N_Vector tempv1,
+           N_Vector tempv2, N_Vector tempv3);
 
 /* Prototypes of private functions */
 static void PrintHeader(sunrealtype rtol, N_Vector avtol, N_Vector y);
@@ -250,7 +250,8 @@ int main(void)
  * Define the system residual function.
  */
 
-int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
+int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector rr,
+           void* user_data)
 {
   sunrealtype *yval, *ypval, *rval;
 
@@ -288,9 +289,9 @@ static int grob(sunrealtype t, N_Vector yy, N_Vector yp, sunrealtype* gout,
  * Define the Jacobian function.
  */
 
-int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector resvec,
-           SUNMatrix JJ, void* user_data, N_Vector tempv1, N_Vector tempv2,
-           N_Vector tempv3)
+int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
+           N_Vector resvec, SUNMatrix JJ, void* user_data, N_Vector tempv1,
+           N_Vector tempv2, N_Vector tempv3)
 {
   sunrealtype* yval;
 
@@ -300,7 +301,8 @@ int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector re
   IJth(JJ, 2, 1) = SUN_RCONST(0.04);
   IJth(JJ, 3, 1) = ONE;
   IJth(JJ, 1, 2) = SUN_RCONST(1.0e4) * yval[2];
-  IJth(JJ, 2, 2) = SUN_RCONST(-1.0e4) * yval[2] - SUN_RCONST(6.0e7) * yval[1] - cj;
+  IJth(JJ, 2, 2) = SUN_RCONST(-1.0e4) * yval[2] - SUN_RCONST(6.0e7) * yval[1] -
+                   cj;
   IJth(JJ, 3, 2) = ONE;
   IJth(JJ, 1, 3) = SUN_RCONST(1.0e4) * yval[1];
   IJth(JJ, 2, 3) = SUN_RCONST(-1.0e4) * yval[1];
@@ -438,7 +440,7 @@ static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol, N_Vector atol)
   int passfail = 0; /* answer pass (0) or fail (1) retval */
   N_Vector ref;     /* reference solution vector        */
   N_Vector ewt;     /* error weight vector              */
-  sunrealtype err;     /* wrms error                       */
+  sunrealtype err;  /* wrms error                       */
 
   /* create reference solution and error weight vectors */
   ref = N_VClone(y);

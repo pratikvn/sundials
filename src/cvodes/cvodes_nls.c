@@ -25,7 +25,8 @@
 static int cvNlsResidual(N_Vector ycor, N_Vector res, void* cvode_mem);
 static int cvNlsFPFunction(N_Vector ycor, N_Vector res, void* cvode_mem);
 
-static int cvNlsLSetup(sunbooleantype jbad, sunbooleantype* jcur, void* cvode_mem);
+static int cvNlsLSetup(sunbooleantype jbad, sunbooleantype* jcur,
+                       void* cvode_mem);
 static int cvNlsLSolve(N_Vector delta, void* cvode_mem);
 static int cvNlsConvTest(SUNNonlinearSolver NLS, N_Vector ycor, N_Vector del,
                          sunrealtype tol, N_Vector ewt, void* cvode_mem);
@@ -170,9 +171,10 @@ int CVodeSetNlsRhsFn(void* cvode_mem, CVRhsFn f)
   This routine provides access to the relevant data needed to
   compute the nonlinear system function.
   ---------------------------------------------------------------*/
-int CVodeGetNonlinearSystemData(void* cvode_mem, sunrealtype* tcur, N_Vector* ypred,
-                                N_Vector* yn, N_Vector* fn, sunrealtype* gamma,
-                                sunrealtype* rl1, N_Vector* zn1, void** user_data)
+int CVodeGetNonlinearSystemData(void* cvode_mem, sunrealtype* tcur,
+                                N_Vector* ypred, N_Vector* yn, N_Vector* fn,
+                                sunrealtype* gamma, sunrealtype* rl1,
+                                N_Vector* zn1, void** user_data)
 {
   CVodeMem cv_mem;
 

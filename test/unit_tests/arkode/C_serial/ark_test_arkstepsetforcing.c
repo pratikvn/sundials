@@ -64,12 +64,12 @@ int main(int argc, char* argv[])
   SUNContext sunctx = NULL;
 
   /* default input values */
-  sunindextype NEQ = 1;           /* number of dependent vars.    */
-  int order        = 3;           /* order of polynomial forcing  */
+  sunindextype NEQ = 1;               /* number of dependent vars.    */
+  int order        = 3;               /* order of polynomial forcing  */
   realtype T0      = SUN_RCONST(0.0); /* initial time                 */
   realtype Tf      = SUN_RCONST(1.0); /* final time                   */
-  realtype tshift  = T0;          /* time shift for normalization */
-  realtype tscale  = Tf;          /* time scale for normalization */
+  realtype tshift  = T0;              /* time shift for normalization */
+  realtype tscale  = Tf;              /* time scale for normalization */
 
   /* tolerances */
   realtype reltol = SUNRsqrt(SUN_UNIT_ROUNDOFF);
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
   void* arkode_mem   = NULL; /* ARKode memory structure                  */
   int i, j;                  /* loop counters                            */
   realtype tret;             /* integrator return time                   */
-  realtype* data;            /* array for accessing vector data          */
+  realtype* atan;            /* array for accessing vector data          */
   long int nst, nst_a;       /* number of integrator steps               */
   long int mxsteps = 100000; /* max steps before output                  */
 

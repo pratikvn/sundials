@@ -47,8 +47,8 @@
 #endif
 
 /* Problem Constants */
-#define MXSTEPS 2000           /* max number of steps */
-#define NEQ     3              /* number of equations */
+#define MXSTEPS 2000               /* max number of steps */
+#define NEQ     3                  /* number of equations */
 #define T0      SUN_RCONST(0.0)    /* initial time        */
 #define T1      SUN_RCONST(4.0e10) /* first output time   */
 
@@ -60,7 +60,7 @@ typedef struct
   sunbooleantype sensi;   /* turn on (T) or off (F) sensitivity analysis    */
   sunbooleantype errconS; /* full (T) or partial error control (F)          */
   sunbooleantype fsDQ;    /* user provided r.h.s sensitivity analysis (T/F) */
-  int meth;            /* sensitivity method                             */
+  int meth;               /* sensitivity method                             */
   sunrealtype p[3];       /* sensitivity variables                          */
 }* UserData;
 
@@ -75,8 +75,9 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* udata,
 
 /* User provided routine called by the solver to compute
  * r.h.s. sensititivy. */
-static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS, N_Vector yS,
-              N_Vector ySdot, void* udata, N_Vector tmp1, N_Vector tmp2);
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS,
+              N_Vector yS, N_Vector ySdot, void* udata, N_Vector tmp1,
+              N_Vector tmp2);
 
 /* Prototypes of private functions */
 static int runCVode(void* cvode_mem, N_Vector y, N_Vector* yS, UserData data);
@@ -418,8 +419,9 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* udata,
  * fS routine. Compute sensitivity r.h.s.
  */
 
-static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS, N_Vector yS,
-              N_Vector ySdot, void* udata, N_Vector tmp1, N_Vector tmp2)
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS,
+              N_Vector yS, N_Vector ySdot, void* udata, N_Vector tmp1,
+              N_Vector tmp2)
 {
   UserData data;
   sunrealtype p1, p2, p3;

@@ -35,7 +35,7 @@
 #include <math.h>
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_klu.h> /* access to KLU linear solver          */
 #include <sunmatrix/sunmatrix_sparse.h> /* access to sparse SUNMatrix           */
@@ -218,7 +218,8 @@ int main(void)
  * Define the system residual function.
  */
 
-int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
+int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector rr,
+           void* user_data)
 {
   sunrealtype *yval, *ypval, *rval;
 
@@ -263,7 +264,7 @@ int jacrobCSC(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
   sunrealtype* yval;
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(JJ);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(JJ);
-  sunrealtype* data        = SUNSparseMatrix_Data(JJ);
+  sunrealtype* data     = SUNSparseMatrix_Data(JJ);
 
   yval = N_VGetArrayPointer(yy);
 
@@ -285,7 +286,7 @@ int jacrobCSC(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
   /* column 1 */
   data[3]    = SUN_RCONST(1.0e4) * yval[2];
   rowvals[3] = 0;
-  data[4]    = (SUN_RCONST(-1.0e4) * yval[2]) - (SUN_RCONST(6.0e7) * yval[1]) - cj;
+  data[4] = (SUN_RCONST(-1.0e4) * yval[2]) - (SUN_RCONST(6.0e7) * yval[1]) - cj;
   rowvals[4] = 1;
   data[5]    = ONE;
   rowvals[5] = 2;
@@ -311,7 +312,7 @@ int jacrobCSR(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
   sunrealtype* yval;
   sunindextype* rowptrs = SUNSparseMatrix_IndexPointers(JJ);
   sunindextype* colvals = SUNSparseMatrix_IndexValues(JJ);
-  sunrealtype* data        = SUNSparseMatrix_Data(JJ);
+  sunrealtype* data     = SUNSparseMatrix_Data(JJ);
 
   yval = N_VGetArrayPointer(yy);
 
@@ -333,7 +334,7 @@ int jacrobCSR(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
   /* row 1 */
   data[3]    = SUN_RCONST(0.04);
   colvals[3] = 0;
-  data[4]    = (SUN_RCONST(-1.0e4) * yval[2]) - (SUN_RCONST(6.0e7) * yval[1]) - cj;
+  data[4] = (SUN_RCONST(-1.0e4) * yval[2]) - (SUN_RCONST(6.0e7) * yval[1]) - cj;
   colvals[4] = 1;
   data[5]    = SUN_RCONST(-1.0e4) * yval[1];
   colvals[5] = 2;

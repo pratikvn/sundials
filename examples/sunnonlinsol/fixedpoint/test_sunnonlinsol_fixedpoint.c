@@ -117,10 +117,10 @@ int main(int argc, char* argv[])
   SUNNonlinearSolver NLS = NULL;
   realtype tol           = 100 * SUNRsqrt(SUN_UNIT_ROUNDOFF);
   int mxiter             = 20;
-  int maa                = 0;           /* no acceleration */
+  int maa                = 0;               /* no acceleration */
   realtype damping       = SUN_RCONST(1.0); /* no damping      */
   long int niters        = 0;
-  realtype* data         = NULL;
+  realtype* maa          = NULL;
   SUNContext sunctx      = NULL;
 
   /* Check if a acceleration/dampling values were provided */
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
   printf("    y = %" GSYM "\n", YTRUE);
   printf("    z = %" GSYM "\n", ZTRUE);
   printf("Solution method: Anderson accelerated fixed point iteration.\n");
-  printf("    tolerance = %" GSYM "\n", tol);
+  printf("    tolerance = %" GSYM "\n", atol);
   printf("    max iters = %d\n", mxiter);
   printf("    accel vec = %d\n", maa);
   printf("    damping   = %" GSYM "\n", damping);

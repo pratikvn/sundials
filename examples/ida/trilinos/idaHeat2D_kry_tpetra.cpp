@@ -34,21 +34,19 @@
  * -----------------------------------------------------------------
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <cmath>
-
-#include <Trilinos_version.h>
 #include <Tpetra_Core.hpp>
 #include <Tpetra_Vector.hpp>
 #include <Tpetra_Version.hpp>
+#include <Trilinos_version.h>
+#include <cmath>
+#include <stdio.h>
+#include <stdlib.h>
 
 #if TRILINOS_MAJOR_VERSION > 13
 #include <Tpetra_Access.hpp>
 #endif
 
-#include <ida/ida.h>                   /* prototypes for IDA methods           */
-#include <nvector/trilinos/SundialsTpetraVectorInterface.hpp>
+#include <ida/ida.h> /* prototypes for IDA methods           */
 #include <nvector/nvector_trilinos.h>
 #include <nvector/trilinos/SundialsTpetraVectorInterface.hpp>
 #include <stdio.h>
@@ -91,11 +89,12 @@ typedef vector_type::map_type map_type;
 int resHeat(sunrealtype tres, N_Vector uu, N_Vector up, N_Vector resval,
             void* user_data);
 
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data);
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data);
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data);
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data);
 
 /* Prototypes for private functions */
 
@@ -377,16 +376,16 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
   const auto uu_2d = uutp->getLocalView<memory_space>();
   const auto uu_1d = Kokkos::subview(uu_2d, Kokkos::ALL(), 0);
   const auto up_2d = uptp->getLocalView<memory_space>();
-  const auto up_1d = Kokkos::subview (up_2d, Kokkos::ALL(), 0);
-  auto rr_2d = rrtp->getLocalView<memory_space>();
-  auto rr_1d = Kokkos::subview (rr_2d, Kokkos::ALL(), 0);
+  const auto up_1d = Kokkos::subview(up_2d, Kokkos::ALL(), 0);
+  auto rr_2d       = rrtp->getLocalView<memory_space>();
+  auto rr_1d       = Kokkos::subview(rr_2d, Kokkos::ALL(), 0);
 #else
   const auto uu_2d = uutp->getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  const auto uu_1d = Kokkos::subview (uu_2d, Kokkos::ALL(), 0);
+  const auto uu_1d = Kokkos::subview(uu_2d, Kokkos::ALL(), 0);
   const auto up_2d = uptp->getLocalView<memory_space>(Tpetra::Access::ReadOnly);
-  const auto up_1d = Kokkos::subview (up_2d, Kokkos::ALL(), 0);
+  const auto up_1d = Kokkos::subview(up_2d, Kokkos::ALL(), 0);
   auto rr_2d = rrtp->getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto rr_1d = Kokkos::subview (rr_2d, Kokkos::ALL(), 0);
+  auto rr_1d = Kokkos::subview(rr_2d, Kokkos::ALL(), 0);
 #endif
 
   coeff = data->coeff;
@@ -407,7 +406,7 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
         /* Loop over interior points; set res = up - (central difference). */
         sunrealtype dif1 = uu_1d(loc - 1) + uu_1d(loc + 1) - TWO * uu_1d(loc);
         sunrealtype dif2 = uu_1d(loc - mm) + uu_1d(loc + mm) - TWO * uu_1d(loc);
-        rr_1d(loc)    = up_1d(loc) - coeff * (dif1 + dif2);
+        rr_1d(loc)       = up_1d(loc) - coeff * (dif1 + dif2);
       }
     });
 
@@ -430,28 +429,28 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  * In this instance, only cj and data (user data structure, with
  * pp etc.) are used from the PsetupdHeat argument list.
  */
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data)
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data)
 {
   UserData* data = reinterpret_cast<UserData*>(prec_data);
   sunindextype mm;
 
-  mm             = data->mm;
+  mm                = data->mm;
   sunrealtype coeff = data->coeff;
 
   Teuchos::RCP<vector_type> pptp = N_VGetVector_Trilinos(data->pp);
 
 #if TRILINOS_MAJOR_VERSION < 14
   auto pp_2d = pptp->getLocalView<memory_space>();
-  auto pp_1d = Kokkos::subview (pp_2d, Kokkos::ALL(), 0);
+  auto pp_1d = Kokkos::subview(pp_2d, Kokkos::ALL(), 0);
 #else
   auto pp_2d = pptp->getLocalView<memory_space>(Tpetra::Access::ReadWrite);
-  auto pp_1d = Kokkos::subview (pp_2d, Kokkos::ALL(), 0);
+  auto pp_1d = Kokkos::subview(pp_2d, Kokkos::ALL(), 0);
 #endif
 
-  Kokkos::parallel_for (Kokkos::RangePolicy<execution_space>(0, mm*mm),
-    KOKKOS_LAMBDA (const local_ordinal_type &loc)
-    {
+  Kokkos::parallel_for(
+    Kokkos::RangePolicy<execution_space>(0, mm * mm),
+    KOKKOS_LAMBDA(const local_ordinal_type& loc) {
       sunindextype i = loc % mm;
       sunindextype j = loc / mm;
       if (j == 0 || j == mm - 1 || i == 0 || i == mm - 1)
@@ -475,8 +474,9 @@ int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtyp
  * containing the inverse diagonal Jacobian elements, returning the
  * result in zvec.
  */
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data)
 {
   UserData* data = reinterpret_cast<UserData*>(prec_data);
   N_VProd(data->pp, rvec, zvec);

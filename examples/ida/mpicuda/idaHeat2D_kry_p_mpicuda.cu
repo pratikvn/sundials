@@ -75,7 +75,8 @@ typedef struct
 
 /* User-supplied residual function and supporting routines */
 
-int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_data);
+int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+            void* user_data);
 
 static int rescomm(N_Vector uu, N_Vector up, void* user_data);
 
@@ -98,11 +99,12 @@ static int BRecvWait(MPI_Request request[], int ixsub, int jysub, int npex,
 
 /* User-supplied preconditioner routines */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data);
-
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
                void* user_data);
+
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data);
 
 /* Private function to check function return values */
 
@@ -149,8 +151,9 @@ __global__ void PsetupHeatKernel(sunrealtype* ppv, sunindextype mx,
   }
 }
 
-__global__ void CopyLocalToExtendedArray(const sunrealtype* uuv, sunrealtype* uext,
-                                         sunindextype mx, sunindextype my)
+__global__ void CopyLocalToExtendedArray(const sunrealtype* uuv,
+                                         sunrealtype* uext, sunindextype mx,
+                                         sunindextype my)
 {
   sunindextype i, j, tid;
 
@@ -166,12 +169,13 @@ __global__ void CopyLocalToExtendedArray(const sunrealtype* uuv, sunrealtype* ue
   }
 }
 
-__global__ void LocalResidualKernel(const sunrealtype* uext, const sunrealtype* upv,
-                                    sunrealtype* resv, sunindextype mx,
-                                    sunindextype my, sunindextype ibc,
-                                    sunindextype jbc, sunindextype i0,
-                                    sunindextype j0, sunrealtype coeffx,
-                                    sunrealtype coeffy, sunrealtype coeffxy)
+__global__ void LocalResidualKernel(const sunrealtype* uext,
+                                    const sunrealtype* upv, sunrealtype* resv,
+                                    sunindextype mx, sunindextype my,
+                                    sunindextype ibc, sunindextype jbc,
+                                    sunindextype i0, sunindextype j0,
+                                    sunrealtype coeffx, sunrealtype coeffy,
+                                    sunrealtype coeffxy)
 {
   sunindextype i, j, tid;
 
@@ -187,14 +191,15 @@ __global__ void LocalResidualKernel(const sunrealtype* uext, const sunrealtype* 
     sunindextype locue = (i + 1) + (j + 1) * (mx + 2);
 
     sunrealtype termx = coeffx * (uext[locue - 1] + uext[locue + 1]);
-    sunrealtype termy = coeffy * (uext[locue - (mx + 2)] + uext[locue + (mx + 2)]);
+    sunrealtype termy = coeffy *
+                        (uext[locue - (mx + 2)] + uext[locue + (mx + 2)]);
     sunrealtype termctr = coeffxy * uext[locue];
-    resv[locu]       = upv[locu] - (termx + termy - termctr);
+    resv[locu]          = upv[locu] - (termx + termy - termctr);
   }
 }
 
-__global__ void CopyToBottomBuffer(const sunrealtype* uarray, sunrealtype* bufbottom,
-                                   sunindextype mx)
+__global__ void CopyToBottomBuffer(const sunrealtype* uarray,
+                                   sunrealtype* bufbottom, sunindextype mx)
 {
   sunindextype tid;
 
@@ -226,8 +231,9 @@ __global__ void CopyToLeftBuffer(const sunrealtype* uarray, sunrealtype* bufleft
   if (tid < my) { bufleft[tid] = uarray[tid * mx]; }
 }
 
-__global__ void CopyToRightBuffer(const sunrealtype* uarray, sunrealtype* bufright,
-                                  sunindextype mx, sunindextype my)
+__global__ void CopyToRightBuffer(const sunrealtype* uarray,
+                                  sunrealtype* bufright, sunindextype mx,
+                                  sunindextype my)
 {
   sunindextype tid;
 
@@ -237,8 +243,8 @@ __global__ void CopyToRightBuffer(const sunrealtype* uarray, sunrealtype* bufrig
   if (tid < my) { bufright[tid] = uarray[tid * mx + (mx - 1)]; }
 }
 
-__global__ void CopyFromBottomBuffer(const sunrealtype* bufbottom, sunrealtype* uext,
-                                     sunindextype mx)
+__global__ void CopyFromBottomBuffer(const sunrealtype* bufbottom,
+                                     sunrealtype* uext, sunindextype mx)
 {
   sunindextype tid;
 
@@ -270,8 +276,9 @@ __global__ void CopyFromLeftBuffer(const sunrealtype* bufleft, sunrealtype* uext
   if (tid < my) { uext[(tid + 1) * (mx + 2)] = bufleft[tid]; }
 }
 
-__global__ void CopyFromRightBuffer(const sunrealtype* bufright, sunrealtype* uext,
-                                    sunindextype mx, sunindextype my)
+__global__ void CopyFromRightBuffer(const sunrealtype* bufright,
+                                    sunrealtype* uext, sunindextype mx,
+                                    sunindextype my)
 {
   sunindextype tid;
 
@@ -520,8 +527,8 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  *
  */
 
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
-               void* user_data)
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data)
 {
   sunindextype ibc, i0, jbc, j0;
 
@@ -562,8 +569,9 @@ int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtyp
  * computed in PsetupHeat), returning the result in zvec.
  */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* user_data)
 {
   UserData data = (UserData)user_data;
 
@@ -638,22 +646,23 @@ static int reslocal(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
   UserData data = (UserData)user_data;
 
   /* Get subgrid indices, array sizes, and grid coefficients. */
-  const int ixsub          = data->ixsub;
-  const int jysub          = data->jysub;
-  const int npex           = data->npex;
-  const int npey           = data->npey;
-  const sunindextype mxsub = data->mxsub;
-  const sunindextype mysub = data->mysub;
-  const sunrealtype coeffx    = data->coeffx;
-  const sunrealtype coeffy    = data->coeffy;
-  const sunrealtype coeffxy   = data->coeffxy;
+  const int ixsub           = data->ixsub;
+  const int jysub           = data->jysub;
+  const int npex            = data->npex;
+  const int npey            = data->npey;
+  const sunindextype mxsub  = data->mxsub;
+  const sunindextype mysub  = data->mysub;
+  const sunrealtype coeffx  = data->coeffx;
+  const sunrealtype coeffy  = data->coeffy;
+  const sunrealtype coeffxy = data->coeffxy;
 
   /* Vector data arrays, extended work array uext. */
   const sunrealtype* uuv =
     N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(uu));
   const sunrealtype* upv =
     N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(up));
-  sunrealtype* resv = N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(rr));
+  sunrealtype* resv =
+    N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(rr));
   sunrealtype* uext = data->uext;
 
   sunindextype ibc, i0, jbc, j0;
@@ -1021,7 +1030,8 @@ static int AllocUserData(int thispe, MPI_Comm comm, N_Vector uu, UserData data)
   }
 
   /* Allocate local host send buffer */
-  data->host_send_buff = (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
+  data->host_send_buff =
+    (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
   if (data->host_send_buff == NULL)
   {
     N_VDestroy(data->pp);
@@ -1030,7 +1040,8 @@ static int AllocUserData(int thispe, MPI_Comm comm, N_Vector uu, UserData data)
     return -1;
   }
 
-  data->host_recv_buff = (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
+  data->host_recv_buff =
+    (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
   if (data->host_recv_buff == NULL)
   {
     N_VDestroy(data->pp);
@@ -1096,14 +1107,16 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
   /* Initialize uu. */
 
   // Get host pointer
-  sunrealtype* uudata = N_VGetHostArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(uu));
-  sunrealtype* iddata = N_VGetHostArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(id));
+  sunrealtype* uudata =
+    N_VGetHostArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(uu));
+  sunrealtype* iddata =
+    N_VGetHostArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(id));
 
   /* Set mesh spacings and subgrid indices for this PE. */
   const sunrealtype dx = data->dx;
   const sunrealtype dy = data->dy;
-  const int ixsub   = data->ixsub;
-  const int jysub   = data->jysub;
+  const int ixsub      = data->ixsub;
+  const int jysub      = data->jysub;
 
   /* Set beginning and ending locations in the global array corresponding
      to the portion of that array assigned to this processor. */
@@ -1123,9 +1136,10 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
     yfact = dy * j;
     for (i = ixbegin, iloc = 0; i <= ixend; i++, iloc++)
     {
-      xfact = dx * i;
-      loc   = iloc + jloc * mxsub;
-      uudata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      xfact       = dx * i;
+      loc         = iloc + jloc * mxsub;
+      uudata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                    (ONE - yfact);
 
       if (i == 0 || i == data->mx - 1 || j == 0 || j == data->my - 1)
       {

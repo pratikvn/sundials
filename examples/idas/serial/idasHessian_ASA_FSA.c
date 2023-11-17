@@ -44,7 +44,7 @@
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver      */
 #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix            */
@@ -87,8 +87,8 @@ typedef struct
 static int res(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector resval,
                void* user_data);
 
-static int resS(int Ns, sunrealtype t, N_Vector yy, N_Vector yp, N_Vector resval,
-                N_Vector* yyS, N_Vector* ypS, N_Vector* resvalS,
+static int resS(int Ns, sunrealtype t, N_Vector yy, N_Vector yp,
+                N_Vector resval, N_Vector* yyS, N_Vector* ypS, N_Vector* resvalS,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 static int rhsQ(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector qdot,
@@ -124,7 +124,8 @@ int main(int argc, char* argv[])
   UserData data;
   sunrealtype time, ti, tf;
   int retval, nckp, indexB1, indexB2, is;
-  sunrealtype G, Gm, Gp, dp1, dp2, grdG_fwd[2], grdG_bck[2], grdG_cntr[2], H11, H22;
+  sunrealtype G, Gm, Gp, dp1, dp2, grdG_fwd[2], grdG_bck[2], grdG_cntr[2], H11,
+    H22;
   sunrealtype rtolFD, atolFD;
   SUNMatrix A, AB1, AB2;
   SUNLinearSolver LS, LSB1, LSB2;
@@ -576,8 +577,8 @@ static int res(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector rr,
   return (0);
 }
 
-static int resS(int Ns, sunrealtype t, N_Vector yy, N_Vector yp, N_Vector resval,
-                N_Vector* yyS, N_Vector* ypS, N_Vector* resvalS,
+static int resS(int Ns, sunrealtype t, N_Vector yy, N_Vector yp,
+                N_Vector resval, N_Vector* yyS, N_Vector* ypS, N_Vector* resvalS,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   UserData data;

@@ -79,20 +79,20 @@
 typedef struct
 {
   sunindextype N; /* number of intervals     */
-  sunrealtype dx;    /* mesh spacing            */
-  sunrealtype a;     /* constant forcing on u   */
-  sunrealtype b;     /* steady-state value of w */
-  sunrealtype du;    /* diffusion coeff for u   */
-  sunrealtype dv;    /* diffusion coeff for v   */
-  sunrealtype dw;    /* diffusion coeff for w   */
-  sunrealtype ep;    /* stiffness parameter     */
+  sunrealtype dx; /* mesh spacing            */
+  sunrealtype a;  /* constant forcing on u   */
+  sunrealtype b;  /* steady-state value of w */
+  sunrealtype du; /* diffusion coeff for u   */
+  sunrealtype dv; /* diffusion coeff for v   */
+  sunrealtype dw; /* diffusion coeff for w   */
+  sunrealtype ep; /* stiffness parameter     */
 }* UserData;
 
 /* User-supplied Functions Called by the Solver */
 static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int JacVI(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                 void* user_data, N_Vector tmp1);
+static int JacVI(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                 N_Vector fy, void* user_data, N_Vector tmp1);
 
 /* Private function to check function return values */
 static int check_flag(void* flagvalue, const char* funcname, int opt);
@@ -101,13 +101,13 @@ static int check_flag(void* flagvalue, const char* funcname, int opt);
 int main(void)
 {
   /* general problem parameters */
-  sunrealtype T0       = ZERO;         /* initial time */
-  sunrealtype Tf       = SUN_RCONST(10.0); /* final time */
-  int Nt            = 100;          /* total number of output times */
-  int Nvar          = 3;            /* number of solution fields */
+  sunrealtype T0    = ZERO;             /* initial time */
+  sunrealtype Tf    = SUN_RCONST(10.0); /* final time */
+  int Nt            = 100;              /* total number of output times */
+  int Nvar          = 3;                /* number of solution fields */
   UserData userdata = NULL;
   sunrealtype *udata, *vdata, *wdata;
-  sunindextype N  = 201;         /* spatial mesh size */
+  sunindextype N     = 201;             /* spatial mesh size */
   sunrealtype a      = SUN_RCONST(0.6); /* problem parameters */
   sunrealtype b      = SUN_RCONST(2.0);
   sunrealtype du     = SUN_RCONST(0.001);
@@ -346,10 +346,10 @@ static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   UserData userdata = (UserData)user_data; /* access problem data */
   sunindextype N    = userdata->N;         /* set variable shortcuts */
-  sunrealtype du       = userdata->du;
-  sunrealtype dv       = userdata->dv;
-  sunrealtype dw       = userdata->dw;
-  sunrealtype dx       = userdata->dx;
+  sunrealtype du    = userdata->du;
+  sunrealtype dv    = userdata->dv;
+  sunrealtype dw    = userdata->dw;
+  sunrealtype dx    = userdata->dx;
   sunrealtype *y_u = NULL, *y_v = NULL, *y_w = NULL;
   sunrealtype *f_u = NULL, *f_v = NULL, *f_w = NULL;
   sunrealtype uconst, vconst, wconst;
@@ -399,9 +399,9 @@ static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   UserData userdata = (UserData)user_data; /* access problem data */
   sunindextype N    = userdata->N;         /* set variable shortcuts */
-  sunrealtype a        = userdata->a;
-  sunrealtype b        = userdata->b;
-  sunrealtype ep       = userdata->ep;
+  sunrealtype a     = userdata->a;
+  sunrealtype b     = userdata->b;
+  sunrealtype ep    = userdata->ep;
   sunrealtype *y_u = NULL, *y_v = NULL, *y_w = NULL;
   sunrealtype *f_u = NULL, *f_v = NULL, *f_w = NULL;
   sunindextype i;
@@ -443,12 +443,12 @@ static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 }
 
 /* Jacobian-vector product routine (implicit portion only) */
-static int JacVI(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                 void* user_data, N_Vector tmp1)
+static int JacVI(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                 N_Vector fy, void* user_data, N_Vector tmp1)
 {
   UserData userdata = (UserData)user_data; /* access problem data */
   sunindextype N    = userdata->N;         /* set variable shortcuts */
-  sunrealtype ep       = userdata->ep;
+  sunrealtype ep    = userdata->ep;
   sunrealtype *y_u = NULL, *y_v = NULL, *y_w = NULL;
   sunrealtype *v_u = NULL, *v_v = NULL, *v_w = NULL;
   sunrealtype *Ju_v = NULL, *Jv_v = NULL, *Jw_v = NULL;

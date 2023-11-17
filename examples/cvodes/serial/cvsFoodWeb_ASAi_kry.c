@@ -114,10 +114,10 @@
 
 /* Problem Specification Constants */
 
-#define AA    ONE            /* AA = a */
+#define AA    ONE                /* AA = a */
 #define EE    SUN_RCONST(1.0e4)  /* EE = e */
 #define GG    SUN_RCONST(0.5e-6) /* GG = g */
-#define BB    ONE            /* BB = b */
+#define BB    ONE                /* BB = b */
 #define DPREY ONE
 #define DPRED SUN_RCONST(0.5)
 #define ALPH  ONE
@@ -197,8 +197,8 @@ static int fB(sunrealtype t, N_Vector c, N_Vector cB, N_Vector cBdot,
               void* user_data);
 
 static int PrecondB(sunrealtype t, N_Vector c, N_Vector cB, N_Vector fcB,
-                    sunbooleantype jok, sunbooleantype* jcurPtr, sunrealtype gamma,
-                    void* user_data);
+                    sunbooleantype jok, sunbooleantype* jcurPtr,
+                    sunrealtype gamma, void* user_data);
 
 static int PSolveB(sunrealtype t, N_Vector c, N_Vector cB, N_Vector fcB,
                    N_Vector r, N_Vector z, sunrealtype gamma, sunrealtype delta,
@@ -212,11 +212,11 @@ static void SetGroups(int m, int ng, int jg[], int jig[], int jr[]);
 static void CInit(N_Vector c, WebData wdata);
 static void PrintOutput(N_Vector c, int ns, int mxns, WebData wdata);
 static void FreeUserData(WebData wdata);
-static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t, sunrealtype c[],
-                     sunrealtype rate[], WebData wdata);
-static void WebRatesB(sunrealtype x, sunrealtype y, sunrealtype t, sunrealtype c[],
-                      sunrealtype cB[], sunrealtype rate[], sunrealtype rateB[],
-                      WebData wdata);
+static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t,
+                     sunrealtype c[], sunrealtype rate[], WebData wdata);
+static void WebRatesB(sunrealtype x, sunrealtype y, sunrealtype t,
+                      sunrealtype c[], sunrealtype cB[], sunrealtype rate[],
+                      sunrealtype rateB[], WebData wdata);
 static void fblock(sunrealtype t, sunrealtype cdata[], int jx, int jy,
                    sunrealtype cdotdata[], WebData wdata);
 static void GSIter(sunrealtype gamma, N_Vector z, N_Vector x, WebData wdata);
@@ -225,9 +225,10 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Small Vector Kernels */
 
-static void v_inc_by_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[], int n);
-static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[], sunrealtype v[],
-                        sunrealtype w[], int n);
+static void v_inc_by_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[],
+                          int n);
+static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[],
+                        sunrealtype v[], sunrealtype w[], int n);
 static void v_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[], int n);
 static void v_zero(sunrealtype u[], int n);
 
@@ -624,10 +625,12 @@ static int PSolve(sunrealtype t, N_Vector c, N_Vector fc, N_Vector r, N_Vector z
  * interaction rates are computed by calls to WebRatesB.
  */
 
-static int fB(sunrealtype t, N_Vector c, N_Vector cB, N_Vector cBdot, void* user_data)
+static int fB(sunrealtype t, N_Vector c, N_Vector cB, N_Vector cBdot,
+              void* user_data)
 {
   int i, ic, ici, idxl, idxu, idyl, idyu, iyoff, jx, jy, ns, mxns;
-  sunrealtype dcxli, dcxui, dcyli, dcyui, x, y, *cox, *coy, *fsave, *fBsave, dx, dy;
+  sunrealtype dcxli, dcxui, dcyli, dcyui, x, y, *cox, *coy, *fsave, *fBsave, dx,
+    dy;
   sunrealtype *cdata, *cBdata, *cBdotdata;
   WebData wdata;
 
@@ -689,8 +692,8 @@ static int fB(sunrealtype t, N_Vector c, N_Vector cB, N_Vector cBdot, void* user
  */
 
 static int PrecondB(sunrealtype t, N_Vector c, N_Vector cB, N_Vector fcB,
-                    sunbooleantype jok, sunbooleantype* jcurPtr, sunrealtype gamma,
-                    void* user_data)
+                    sunbooleantype jok, sunbooleantype* jcurPtr,
+                    sunrealtype gamma, void* user_data)
 {
   sunrealtype*** P;
   sunindextype** pivot;
@@ -993,8 +996,8 @@ static void CInit(N_Vector c, WebData wdata)
  * and at time t.
  */
 
-static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t, sunrealtype c[],
-                     sunrealtype rate[], WebData wdata)
+static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t,
+                     sunrealtype c[], sunrealtype rate[], WebData wdata)
 {
   int i, j, ns;
   sunrealtype fac, *bcoef;
@@ -1019,9 +1022,9 @@ static void WebRates(sunrealtype x, sunrealtype y, sunrealtype t, sunrealtype c[
  * This routine computes the interaction rates for the backward problem
  */
 
-static void WebRatesB(sunrealtype x, sunrealtype y, sunrealtype t, sunrealtype c[],
-                      sunrealtype cB[], sunrealtype rate[], sunrealtype rateB[],
-                      WebData wdata)
+static void WebRatesB(sunrealtype x, sunrealtype y, sunrealtype t,
+                      sunrealtype c[], sunrealtype cB[], sunrealtype rate[],
+                      sunrealtype rateB[], WebData wdata)
 {
   int i, j, ns;
   sunrealtype fac, *bcoef;
@@ -1247,8 +1250,8 @@ static void v_inc_by_prod(sunrealtype u[], sunrealtype v[], sunrealtype w[], int
   for (i = 0; i < n; i++) { u[i] += v[i] * w[i]; }
 }
 
-static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[], sunrealtype v[],
-                        sunrealtype w[], int n)
+static void v_sum_prods(sunrealtype u[], sunrealtype p[], sunrealtype q[],
+                        sunrealtype v[], sunrealtype w[], int n)
 {
   int i;
   for (i = 0; i < n; i++) { u[i] = p[i] * q[i] + v[i] * w[i]; }

@@ -75,14 +75,14 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
 int main(void)
 {
   /* general problem parameters */
-  sunrealtype T0      = SUN_RCONST(0.0);           /* initial time */
-  sunrealtype Tf      = SUN_RCONST(1.0);           /* final time */
-  sunrealtype dTout   = SUN_RCONST(0.1);           /* time between outputs */
-  sunindextype NEQ = 3;                     /* number of dependent vars. */
-  int Nt           = (int)ceil(Tf / dTout); /* number of output times */
-  sunrealtype hs      = SUN_RCONST(0.001);         /* slow step size */
-  sunrealtype hf      = SUN_RCONST(0.0001);        /* fast step size */
-  sunrealtype u0, v0, w0;                      /* initial conditions */
+  sunrealtype T0    = SUN_RCONST(0.0);       /* initial time */
+  sunrealtype Tf    = SUN_RCONST(1.0);       /* final time */
+  sunrealtype dTout = SUN_RCONST(0.1);       /* time between outputs */
+  sunindextype NEQ  = 3;                     /* number of dependent vars. */
+  int Nt            = (int)ceil(Tf / dTout); /* number of output times */
+  sunrealtype hs    = SUN_RCONST(0.001);     /* slow step size */
+  sunrealtype hf    = SUN_RCONST(0.0001);    /* fast step size */
+  sunrealtype u0, v0, w0;                    /* initial conditions */
 
   /* general problem variables */
   int retval;                    /* reusable error-checking flag */
@@ -274,8 +274,8 @@ static int ff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 /* fs routine to compute the slow portion of the ODE RHS. */
 static int fs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  sunrealtype c1 = SUN_RCONST(50.0);   /* problem constant */
-  sunrealtype u  = NV_Ith_S(y, 0); /* access solution values */
+  sunrealtype c1 = SUN_RCONST(50.0); /* problem constant */
+  sunrealtype u  = NV_Ith_S(y, 0);   /* access solution values */
   sunrealtype v  = NV_Ith_S(y, 1);
 
   /* fill in the RHS function */

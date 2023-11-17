@@ -29,11 +29,12 @@
 extern "C" {
 #endif
 
-extern void FIDA_SPJAC(sunrealtype* T, sunrealtype* CJ, sunrealtype* Y, sunrealtype* YP,
-                       sunrealtype* R, long int* N, long int* NNZ, sunrealtype* JDATA,
-                       sunindextype* JRVALS, sunindextype* JCPTRS, sunrealtype* H,
-                       long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
-                       sunrealtype* V2, sunrealtype* V3, int* ier);
+extern void FIDA_SPJAC(sunrealtype* T, sunrealtype* CJ, sunrealtype* Y,
+                       sunrealtype* YP, sunrealtype* R, long int* N,
+                       long int* NNZ, sunrealtype* JDATA, sunindextype* JRVALS,
+                       sunindextype* JCPTRS, sunrealtype* H, long int* IPAR,
+                       sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2,
+                       sunrealtype* V3, int* ier);
 
 #ifdef __cplusplus
 }

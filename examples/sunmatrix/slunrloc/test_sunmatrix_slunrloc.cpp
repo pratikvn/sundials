@@ -53,13 +53,13 @@ int main(int argc, char* argv[])
   gridinfo_t grid;                /* SuperLU-DIST process grid        */
 
   sunindextype M, N;              /* matrix size                      */
-  sunrealtype* matdata;              /* pointer to matrix data           */
+  sunrealtype* matdata;           /* pointer to matrix data           */
   sunindextype *rowptrs, *colind; /* indexptrs and indexvals          */
   SUNMatrix D, A, I;              /* global and local matrices        */
   SuperMatrix *Asuper, *Isuper;   /* SLU_NR_loc SuperMatrices         */
   NRformat_loc* Istore;           /* SuperMatrix->Store               */
   N_Vector gx, gy, x, y;          /* test vectors                     */
-  sunrealtype *xdata, *ydata;        /* vector data                      */
+  sunrealtype *xdata, *ydata;     /* vector data                      */
   sunindextype M_local;           /* num rows in local matrix         */
   sunindextype Mnprocs;           /* M/nprocs                         */
   sunindextype Mrem;              /* M%nprocs                         */

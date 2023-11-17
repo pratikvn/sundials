@@ -318,7 +318,8 @@ void set_element(N_Vector X, sunindextype i, sunrealtype val)
   else { NV_Ith_S(Xsub[1], i - x0len) = val; }
 }
 
-void set_element_range(N_Vector X, sunindextype is, sunindextype ie, sunrealtype val)
+void set_element_range(N_Vector X, sunindextype is, sunindextype ie,
+                       sunrealtype val)
 {
   N_Vector Xsub[2];
   sunindextype x0len, i;

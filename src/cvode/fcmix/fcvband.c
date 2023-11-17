@@ -34,9 +34,10 @@
 extern "C" {
 #endif
 extern void FCV_BJAC(long int* N, long int* MU, long int* ML, long int* EBAND,
-                     sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* BJAC,
-                     sunrealtype* H, long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
-                     sunrealtype* V2, sunrealtype* V3, int* IER);
+                     sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                     sunrealtype* BJAC, sunrealtype* H, long int* IPAR,
+                     sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2,
+                     sunrealtype* V3, int* IER);
 #ifdef __cplusplus
 }
 #endif
@@ -59,8 +60,8 @@ void FCV_BANDSETJAC(int* flag, int* ier)
    index -mupper.  An extended bandwith equal to (J->smu) + mlower + 1 is
    passed as the column dimension of the corresponding array. */
 
-int FCVBandJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-               N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
+int FCVBandJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+               void* user_data, N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
 {
   int ier;
   sunrealtype *ydata, *fydata, *jacdata, *v1data, *v2data, *v3data;

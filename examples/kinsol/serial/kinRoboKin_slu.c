@@ -303,7 +303,7 @@ static int jac(N_Vector y, N_Vector f, SUNMatrix J, void* user_data,
   sunrealtype x1, x2, x3, x4, x5, x6, x7, x8;
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(J);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(J);
-  sunrealtype* data        = SUNSparseMatrix_Data(J);
+  sunrealtype* data     = SUNSparseMatrix_Data(J);
 
   yd = N_VGetArrayPointer(y);
 

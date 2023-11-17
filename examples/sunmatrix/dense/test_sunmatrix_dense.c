@@ -45,9 +45,9 @@ int main(int argc, char* argv[])
   int fails = 0;                 /* counter for test failures  */
   sunindextype matrows, matcols; /* vector length              */
   N_Vector x, y;                 /* test vectors               */
-  sunrealtype *xdata, *ydata;       /* pointers to vector data    */
+  sunrealtype *xdata, *ydata;    /* pointers to vector data    */
   SUNMatrix A, I;                /* test matrices              */
-  sunrealtype *Adata, *Idata;       /* pointers to matrix data    */
+  sunrealtype *Adata, *Idata;    /* pointers to matrix data    */
   int print_timing, square;
   sunindextype i, j, m, n;
   SUNContext sunctx;

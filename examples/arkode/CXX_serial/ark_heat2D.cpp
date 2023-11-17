@@ -102,21 +102,21 @@ struct UserData
   sunrealtype dy;
 
   // Integrator settings
-  sunrealtype rtol;    // relative tolerance
-  sunrealtype atol;    // absolute tolerance
-  sunrealtype hfixed;  // fixed step size
-  int order;        // ARKode method order
-  int controller;   // step size adaptivity method
-  int maxsteps;     // max number of steps between outputs
-  bool linear;      // enable/disable linearly implicit option
-  bool diagnostics; // output diagnostics
+  sunrealtype rtol;   // relative tolerance
+  sunrealtype atol;   // absolute tolerance
+  sunrealtype hfixed; // fixed step size
+  int order;          // ARKode method order
+  int controller;     // step size adaptivity method
+  int maxsteps;       // max number of steps between outputs
+  bool linear;        // enable/disable linearly implicit option
+  bool diagnostics;   // output diagnostics
 
   // Linear solver and preconditioner settings
-  bool pcg;        // use PCG (true) or GMRES (false)
-  bool prec;       // preconditioner on/off
-  bool lsinfo;     // output residual history
-  int liniters;    // number of linear iterations
-  int msbp;        // max number of steps between preconditioner setups
+  bool pcg;           // use PCG (true) or GMRES (false)
+  bool prec;          // preconditioner on/off
+  bool lsinfo;        // output residual history
+  int liniters;       // number of linear iterations
+  int msbp;           // max number of steps between preconditioner setups
   sunrealtype epslin; // linear solver tolerance factor
 
   // Inverse of Jacobian diagonal for preconditioner
@@ -200,12 +200,12 @@ static int check_flag(void* flagvalue, const string funcname, int opt);
 
 int main(int argc, char* argv[])
 {
-  int flag;                   // reusable error-checking flag
-  UserData *udata    = NULL;  // user data structure
-  N_Vector u         = NULL;  // vector for storing solution
-  SUNLinearSolver LS = NULL;  // linear solver memory structure
-  void *arkode_mem   = NULL;  // ARKODE memory structure
-  SUNAdaptController C = NULL;  // Adaptivity controller
+  int flag;                    // reusable error-checking flag
+  UserData* udata      = NULL; // user data structure
+  N_Vector u           = NULL; // vector for storing solution
+  SUNLinearSolver LS   = NULL; // linear solver memory structure
+  void* arkode_mem     = NULL; // ARKODE memory structure
+  SUNAdaptController C = NULL; // Adaptivity controller
 
   // Timing variables
   chrono::time_point<chrono::steady_clock> t1;
@@ -237,15 +237,15 @@ int main(int argc, char* argv[])
   if (udata->diagnostics || udata->lsinfo)
   {
     SUNLogger logger = NULL;
-  
+
     flag = SUNContext_GetLogger(ctx, &logger);
-    if (check_flag(&flag, "SUNContext_GetLogger", 1)) return 1;
+    if (check_flag(&flag, "SUNContext_GetLogger", 1)) { return 1; }
 
     flag = SUNLogger_SetInfoFilename(logger, "diagnostics.txt");
-    if (check_flag(&flag, "SUNLogger_SetInfoFilename", 1)) return 1;
+    if (check_flag(&flag, "SUNLogger_SetInfoFilename", 1)) { return 1; }
 
     flag = SUNLogger_SetDebugFilename(logger, "diagnostics.txt");
-    if (check_flag(&flag, "SUNLogger_SetInfoFilename", 1)) return 1;
+    if (check_flag(&flag, "SUNLogger_SetInfoFilename", 1)) { return 1; }
   }
 
   // ----------------------
@@ -274,12 +274,12 @@ int main(int argc, char* argv[])
   if (udata->pcg)
   {
     LS = SUNLinSol_PCG(u, prectype, udata->liniters, ctx);
-    if (check_flag((void *) LS, "SUNLinSol_PCG", 0)) return 1;
+    if (check_flag((void*)LS, "SUNLinSol_PCG", 0)) { return 1; }
   }
   else
   {
     LS = SUNLinSol_SPGMR(u, prectype, udata->liniters, ctx);
-    if (check_flag((void *) LS, "SUNLinSol_SPGMR", 0)) return 1;
+    if (check_flag((void*)LS, "SUNLinSol_SPGMR", 0)) { return 1; }
   }
 
   // Allocate preconditioner workspace
@@ -358,16 +358,17 @@ int main(int argc, char* argv[])
   }
   else
   {
-    switch (udata->controller) {
-    case (ARK_ADAPT_PID):      C = SUNAdaptController_PID(ctx);     break;
-    case (ARK_ADAPT_PI):       C = SUNAdaptController_PI(ctx);      break;
-    case (ARK_ADAPT_I):        C = SUNAdaptController_I(ctx);       break;
-    case (ARK_ADAPT_EXP_GUS):  C = SUNAdaptController_ExpGus(ctx);  break;
-    case (ARK_ADAPT_IMP_GUS):  C = SUNAdaptController_ImpGus(ctx);  break;
+    switch (udata->controller)
+    {
+    case (ARK_ADAPT_PID): C = SUNAdaptController_PID(ctx); break;
+    case (ARK_ADAPT_PI): C = SUNAdaptController_PI(ctx); break;
+    case (ARK_ADAPT_I): C = SUNAdaptController_I(ctx); break;
+    case (ARK_ADAPT_EXP_GUS): C = SUNAdaptController_ExpGus(ctx); break;
+    case (ARK_ADAPT_IMP_GUS): C = SUNAdaptController_ImpGus(ctx); break;
     case (ARK_ADAPT_IMEX_GUS): C = SUNAdaptController_ImExGus(ctx); break;
     }
     flag = ARKStepSetAdaptController(arkode_mem, C);
-    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
+    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) { return 1; }
   }
 
   // Specify linearly implicit non-time-dependent RHS
@@ -464,13 +465,13 @@ int main(int argc, char* argv[])
   // Clean up and return
   // --------------------
 
-  ARKStepFree(&arkode_mem);  // Free integrator memory
-  SUNLinSolFree(LS);         // Free linear solver
-  N_VDestroy(u);             // Free vectors
-  FreeUserData(udata);       // Free user data
+  ARKStepFree(&arkode_mem); // Free integrator memory
+  SUNLinSolFree(LS);        // Free linear solver
+  N_VDestroy(u);            // Free vectors
+  FreeUserData(udata);      // Free user data
   delete udata;
-  (void) SUNAdaptController_Destroy(C); // Free time adaptivity controller
-  SUNContext_Free(&ctx);     // Free context
+  (void)SUNAdaptController_Destroy(C); // Free time adaptivity controller
+  SUNContext_Free(&ctx);               // Free context
 
   return 0;
 }
@@ -665,20 +666,20 @@ static int InitUserData(UserData* udata)
   // Integrator settings
   udata->rtol        = SUN_RCONST(1.e-5);  // relative tolerance
   udata->atol        = SUN_RCONST(1.e-10); // absolute tolerance
-  udata->hfixed      = ZERO;           // using adaptive step sizes
-  udata->order       = 3;              // method order
-  udata->controller  = 0;              // PID controller
-  udata->maxsteps    = 0;              // use default
-  udata->linear      = true;           // linearly implicit problem
-  udata->diagnostics = false;          // output diagnostics
+  udata->hfixed      = ZERO;               // using adaptive step sizes
+  udata->order       = 3;                  // method order
+  udata->controller  = 0;                  // PID controller
+  udata->maxsteps    = 0;                  // use default
+  udata->linear      = true;               // linearly implicit problem
+  udata->diagnostics = false;              // output diagnostics
 
   // Linear solver and preconditioner options
-  udata->pcg       = true;       // use PCG (true) or GMRES (false)
-  udata->prec      = true;       // enable preconditioning
-  udata->lsinfo    = false;      // output residual history
-  udata->liniters  = 40;         // max linear iterations
-  udata->msbp      = 0;          // use default (20 steps)
-  udata->epslin    = ZERO;       // use default (0.05)
+  udata->pcg      = true;  // use PCG (true) or GMRES (false)
+  udata->prec     = true;  // enable preconditioning
+  udata->lsinfo   = false; // output residual history
+  udata->liniters = 40;    // max linear iterations
+  udata->msbp     = 0;     // use default (20 steps)
+  udata->epslin   = ZERO;  // use default (0.05)
 
   // Inverse of Jacobian diagonal for preconditioner
   udata->d = NULL;

@@ -61,11 +61,11 @@ static int FusedBuffer_CopyToDevice(N_Vector v);
 static int FusedBuffer_Free(N_Vector v);
 
 // Kernel launch parameters
-static int GetKernelParameters(N_Vector v, sunbooleantype reduction, size_t& grid,
-                               size_t& block, size_t& shMemSize,
+static int GetKernelParameters(N_Vector v, sunbooleantype reduction,
+                               size_t& grid, size_t& block, size_t& shMemSize,
                                cudaStream_t& stream, size_t n = 0);
-static int GetKernelParameters(N_Vector v, sunbooleantype reduction, size_t& grid,
-                               size_t& block, size_t& shMemSize,
+static int GetKernelParameters(N_Vector v, sunbooleantype reduction,
+                               size_t& grid, size_t& block, size_t& shMemSize,
                                cudaStream_t& stream, bool& atomic, size_t n = 0);
 static void PostKernelLaunch();
 
@@ -75,11 +75,13 @@ static void PostKernelLaunch();
 
 // Macros to access vector content
 #define NVEC_CUDA_CONTENT(x) ((N_VectorContent_Cuda)(x->content))
-#define NVEC_CUDA_MEMSIZE(x) (NVEC_CUDA_CONTENT(x)->length * sizeof(sunrealtype))
+#define NVEC_CUDA_MEMSIZE(x) \
+  (NVEC_CUDA_CONTENT(x)->length * sizeof(sunrealtype))
 #define NVEC_CUDA_MEMHELP(x) (NVEC_CUDA_CONTENT(x)->mem_helper)
 #define NVEC_CUDA_HDATAp(x)  ((sunrealtype*)NVEC_CUDA_CONTENT(x)->host_data->ptr)
-#define NVEC_CUDA_DDATAp(x)  ((sunrealtype*)NVEC_CUDA_CONTENT(x)->device_data->ptr)
-#define NVEC_CUDA_STREAM(x)  (NVEC_CUDA_CONTENT(x)->stream_exec_policy->stream())
+#define NVEC_CUDA_DDATAp(x) \
+  ((sunrealtype*)NVEC_CUDA_CONTENT(x)->device_data->ptr)
+#define NVEC_CUDA_STREAM(x) (NVEC_CUDA_CONTENT(x)->stream_exec_policy->stream())
 
 // Macros to access vector private content
 #define NVEC_CUDA_PRIVATE(x) \
@@ -260,7 +262,8 @@ N_Vector N_VNew_Cuda(sunindextype length, SUNContext sunctx)
   return (v);
 }
 
-N_Vector N_VNewWithMemHelp_Cuda(sunindextype length, sunbooleantype use_managed_mem,
+N_Vector N_VNewWithMemHelp_Cuda(sunindextype length,
+                                sunbooleantype use_managed_mem,
                                 SUNMemoryHelper helper, SUNContext sunctx)
 {
   N_Vector v;
@@ -334,8 +337,8 @@ N_Vector N_VNewManaged_Cuda(sunindextype length, SUNContext sunctx)
   return (v);
 }
 
-N_Vector N_VMake_Cuda(sunindextype length, sunrealtype* h_vdata, sunrealtype* d_vdata,
-                      SUNContext sunctx)
+N_Vector N_VMake_Cuda(sunindextype length, sunrealtype* h_vdata,
+                      sunrealtype* d_vdata, SUNContext sunctx)
 {
   N_Vector v;
 
@@ -758,7 +761,8 @@ void N_VConst_Cuda(sunrealtype a, N_Vector X)
   PostKernelLaunch();
 }
 
-void N_VLinearSum_Cuda(sunrealtype a, N_Vector X, sunrealtype b, N_Vector Y, N_Vector Z)
+void N_VLinearSum_Cuda(sunrealtype a, N_Vector X, sunrealtype b, N_Vector Y,
+                       N_Vector Z)
 {
   size_t grid, block, shMemSize;
   cudaStream_t stream;
@@ -1539,8 +1543,8 @@ int N_VDotProdMulti_Cuda(int nvec, N_Vector x, N_Vector* Y, sunrealtype* dots)
  * -----------------------------------------------------------------------------
  */
 
-int N_VLinearSumVectorArray_Cuda(int nvec, sunrealtype a, N_Vector* X, sunrealtype b,
-                                 N_Vector* Y, N_Vector* Z)
+int N_VLinearSumVectorArray_Cuda(int nvec, sunrealtype a, N_Vector* X,
+                                 sunrealtype b, N_Vector* Y, N_Vector* Z)
 {
   // Shortcuts to the fused op workspace
   sunrealtype** xdata = NULL;
@@ -2255,10 +2259,10 @@ static int AllocateData(N_Vector v)
  */
 static int InitializeReductionBuffer(N_Vector v, sunrealtype value, size_t n)
 {
-  int alloc_fail        = 0;
-  int copy_fail         = 0;
+  int alloc_fail           = 0;
+  int copy_fail            = 0;
   sunbooleantype alloc_mem = SUNFALSE;
-  size_t bytes          = n * sizeof(sunrealtype);
+  size_t bytes             = n * sizeof(sunrealtype);
 
   // Get the vector private memory structure
   N_PrivateVectorContent_Cuda vcp = NVEC_CUDA_PRIVATE(v);
@@ -2390,7 +2394,7 @@ static int CopyReductionBufferFromDevice(N_Vector v, size_t n)
 
 static int FusedBuffer_Init(N_Vector v, int nreal, int nptr)
 {
-  int alloc_fail        = 0;
+  int alloc_fail           = 0;
   sunbooleantype alloc_mem = SUNFALSE;
 
   // pad buffer with single precision data
@@ -2475,13 +2479,13 @@ static int FusedBuffer_CopyRealArray(N_Vector v, sunrealtype* rdata, int nval,
   }
 
   sunrealtype* h_buffer = (sunrealtype*)((char*)(vcp->fused_buffer_host->ptr) +
-                                   vcp->fused_buffer_offset);
+                                         vcp->fused_buffer_offset);
 
   for (int j = 0; j < nval; j++) { h_buffer[j] = rdata[j]; }
 
   // Set shortcut to the device buffer and update offset
-  *shortcut =
-    (sunrealtype*)((char*)(vcp->fused_buffer_dev->ptr) + vcp->fused_buffer_offset);
+  *shortcut = (sunrealtype*)((char*)(vcp->fused_buffer_dev->ptr) +
+                             vcp->fused_buffer_offset);
 
   // accounting for buffer padding
 #if defined(SUNDIALS_SINGLE_PRECISION)
@@ -2510,13 +2514,13 @@ static int FusedBuffer_CopyPtrArray1D(N_Vector v, N_Vector* X, int nvec,
   }
 
   sunrealtype** h_buffer = (sunrealtype**)((char*)(vcp->fused_buffer_host->ptr) +
-                                     vcp->fused_buffer_offset);
+                                           vcp->fused_buffer_offset);
 
   for (int j = 0; j < nvec; j++) { h_buffer[j] = NVEC_CUDA_DDATAp(X[j]); }
 
   // Set shortcut to the device buffer and update offset
   *shortcut = (sunrealtype**)((char*)(vcp->fused_buffer_dev->ptr) +
-                           vcp->fused_buffer_offset);
+                              vcp->fused_buffer_offset);
 
   vcp->fused_buffer_offset += nvec * sizeof(sunrealtype*);
 
@@ -2538,7 +2542,7 @@ static int FusedBuffer_CopyPtrArray2D(N_Vector v, N_Vector** X, int nvec,
   }
 
   sunrealtype** h_buffer = (sunrealtype**)((char*)(vcp->fused_buffer_host->ptr) +
-                                     vcp->fused_buffer_offset);
+                                           vcp->fused_buffer_offset);
 
   for (int j = 0; j < nvec; j++)
   {
@@ -2550,7 +2554,7 @@ static int FusedBuffer_CopyPtrArray2D(N_Vector v, N_Vector** X, int nvec,
 
   // Set shortcut to the device buffer and update offset
   *shortcut = (sunrealtype**)((char*)(vcp->fused_buffer_dev->ptr) +
-                           vcp->fused_buffer_offset);
+                              vcp->fused_buffer_offset);
 
   // Update the offset
   vcp->fused_buffer_offset += nvec * nsum * sizeof(sunrealtype*);
@@ -2637,8 +2641,8 @@ static int FreeDeviceCounter(N_Vector v)
 /* Get the kernel launch parameters based on the kernel type (reduction or not),
  * using the appropriate kernel execution policy.
  */
-static int GetKernelParameters(N_Vector v, sunbooleantype reduction, size_t& grid,
-                               size_t& block, size_t& shMemSize,
+static int GetKernelParameters(N_Vector v, sunbooleantype reduction,
+                               size_t& grid, size_t& block, size_t& shMemSize,
                                cudaStream_t& stream, bool& atomic, size_t n)
 {
   n = (n == 0) ? NVEC_CUDA_CONTENT(v)->length : n;
@@ -2701,8 +2705,8 @@ static int GetKernelParameters(N_Vector v, sunbooleantype reduction, size_t& gri
   return (0);
 }
 
-static int GetKernelParameters(N_Vector v, sunbooleantype reduction, size_t& grid,
-                               size_t& block, size_t& shMemSize,
+static int GetKernelParameters(N_Vector v, sunbooleantype reduction,
+                               size_t& grid, size_t& block, size_t& shMemSize,
                                cudaStream_t& stream, size_t n)
 {
   bool atomic;

@@ -35,7 +35,7 @@
 #include <math.h>
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_superlumt.h> /* access to SuperLUMT linear solver    */
 #include <sunmatrix/sunmatrix_sparse.h> /* access to sparse SUNMatrix           */
@@ -56,9 +56,9 @@ int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector resval,
 static int grob(sunrealtype t, N_Vector yy, N_Vector yp, sunrealtype* gout,
                 void* user_data);
 
-int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector resvec,
-           SUNMatrix JJ, void* user_data, N_Vector tempv1, N_Vector tempv2,
-           N_Vector tempv3);
+int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
+           N_Vector resvec, SUNMatrix JJ, void* user_data, N_Vector tempv1,
+           N_Vector tempv2, N_Vector tempv3);
 
 /* Prototypes of private functions */
 static void PrintHeader(sunrealtype rtol, N_Vector avtol, N_Vector y);
@@ -214,7 +214,8 @@ int main(void)
  * Define the system residual function.
  */
 
-int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
+int resrob(sunrealtype tres, N_Vector yy, N_Vector yp, N_Vector rr,
+           void* user_data)
 {
   sunrealtype *yval, *ypval, *rval;
 
@@ -252,14 +253,14 @@ static int grob(sunrealtype t, N_Vector yy, N_Vector yp, sunrealtype* gout,
  * Define the Jacobian function.
  */
 
-int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector resvec,
-           SUNMatrix JJ, void* user_data, N_Vector tempv1, N_Vector tempv2,
-           N_Vector tempv3)
+int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
+           N_Vector resvec, SUNMatrix JJ, void* user_data, N_Vector tempv1,
+           N_Vector tempv2, N_Vector tempv3)
 {
   sunrealtype* yval;
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(JJ);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(JJ);
-  sunrealtype* data        = SUNSparseMatrix_Data(JJ);
+  sunrealtype* data     = SUNSparseMatrix_Data(JJ);
 
   yval = N_VGetArrayPointer(yy);
 
@@ -281,7 +282,7 @@ int jacrob(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector re
   /* column 1 */
   data[3]    = SUN_RCONST(1.0e4) * yval[2];
   rowvals[3] = 0;
-  data[4]    = (SUN_RCONST(-1.0e4) * yval[2]) - (SUN_RCONST(6.0e7) * yval[1]) - cj;
+  data[4] = (SUN_RCONST(-1.0e4) * yval[2]) - (SUN_RCONST(6.0e7) * yval[1]) - cj;
   rowvals[4] = 1;
   data[5]    = ONE;
   rowvals[5] = 2;

@@ -37,10 +37,11 @@ extern "C" {
 #endif
 
 extern void FCV_GLOCFN(long int* NLOC, sunrealtype* T, sunrealtype* YLOC,
-                       sunrealtype* GLOC, long int* IPAR, sunrealtype* RPAR, int* ier);
+                       sunrealtype* GLOC, long int* IPAR, sunrealtype* RPAR,
+                       int* ier);
 
-extern void FCV_COMMFN(long int* NLOC, sunrealtype* T, sunrealtype* Y, long int* IPAR,
-                       sunrealtype* RPAR, int* ier);
+extern void FCV_COMMFN(long int* NLOC, sunrealtype* T, sunrealtype* Y,
+                       long int* IPAR, sunrealtype* RPAR, int* ier);
 
 #ifdef __cplusplus
 }

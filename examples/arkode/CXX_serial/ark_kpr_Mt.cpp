@@ -115,19 +115,20 @@ struct UserData
 static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int fn(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int Ji(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data, N_Vector tmp1,
-                      N_Vector tmp2, N_Vector tmp3);
+static int Ji(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
+static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
+static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data,
+                      N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 // Private utility functions
-static int adaptive_run(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtype Tf,
-                        sunrealtype dTout, sunrealtype reltol, sunrealtype abstol,
-                        int rk_type, int nls_type, UserData& udata);
-static int check_order(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtype Tf,
-                       int order, int rk_type, UserData& udata);
+static int adaptive_run(void* arkode_mem, N_Vector y, sunrealtype T0,
+                        sunrealtype Tf, sunrealtype dTout, sunrealtype reltol,
+                        sunrealtype abstol, int rk_type, int nls_type,
+                        UserData& udata);
+static int check_order(void* arkode_mem, N_Vector y, sunrealtype T0,
+                       sunrealtype Tf, int order, int rk_type, UserData& udata);
 static sunrealtype r(sunrealtype t);
 static sunrealtype s(sunrealtype t);
 static sunrealtype rdot(sunrealtype t);
@@ -144,29 +145,29 @@ int main(int argc, char* argv[])
   sunrealtype T0          = SUN_RCONST(-3.0); // initial time
   sunrealtype Tf          = SUN_RCONST(7.0);  // final time
   sunrealtype dTout       = SUN_RCONST(0.1);  // time between outputs
-  sunindextype NEQ     = 2;            // number of dependent vars.
-  int rk_type          = 0;        // type of RK method [ARK=0, DIRK=1, ERK=2]
-  int nls_type         = 0;        // type of nonlinear solver [Newton=0, FP=1]
-  int order            = 4;        // order of accuracy for RK method
+  sunindextype NEQ        = 2;                // number of dependent vars.
+  int rk_type             = 0; // type of RK method [ARK=0, DIRK=1, ERK=2]
+  int nls_type            = 0; // type of nonlinear solver [Newton=0, FP=1]
+  int order               = 4; // order of accuracy for RK method
   sunbooleantype deduce   = SUNFALSE; // deduce fi after a nonlinear solve
   sunbooleantype adaptive = SUNTRUE;  // adaptive run vs convergence order
   sunrealtype reltol      = SUN_RCONST(1e-5);  // relative tolerance
   sunrealtype abstol      = SUN_RCONST(1e-11); // absolute tolerance
 
   // general problem variables
-  int retval;                       // reusable error-checking flag
-  N_Vector y             = NULL;    // empty vector for the computed solution
-  void* arkode_mem       = NULL;    // empty ARKStep memory structure
-  SUNMatrix A            = NULL;    // empty system matrix
-  SUNMatrix M            = NULL;    // empty mass matrix
-  SUNLinearSolver LS     = NULL;    // empty system linear solver object
-  SUNLinearSolver MLS    = NULL;    // empty mass linear solver object
-  SUNNonlinearSolver NLS = NULL;    // empty nonlinear solver object
-  UserData udata;                   // user-data structure
+  int retval;                    // reusable error-checking flag
+  N_Vector y             = NULL; // empty vector for the computed solution
+  void* arkode_mem       = NULL; // empty ARKStep memory structure
+  SUNMatrix A            = NULL; // empty system matrix
+  SUNMatrix M            = NULL; // empty mass matrix
+  SUNLinearSolver LS     = NULL; // empty system linear solver object
+  SUNLinearSolver MLS    = NULL; // empty mass linear solver object
+  SUNNonlinearSolver NLS = NULL; // empty nonlinear solver object
+  UserData udata;                // user-data structure
   udata.G         = SUN_RCONST(-100.0); // stiffness parameter
   udata.g         = SUN_RCONST(10.0);   // mass matrix parameter
   udata.e         = SUN_RCONST(0.5);    // coupling strength
-  udata.M_timedep = SUNTRUE;        // time-dependence of mass matrix
+  udata.M_timedep = SUNTRUE;            // time-dependence of mass matrix
 
   //
   // Initialization
@@ -350,7 +351,7 @@ int main(int argc, char* argv[])
 // fe routine to compute the explicit portion of the ODE RHS.
 static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  UserData* udata  = (UserData*)user_data;
+  UserData* udata     = (UserData*)user_data;
   const sunrealtype u = NV_Ith_S(y, 0);
   const sunrealtype v = NV_Ith_S(y, 1);
   sunrealtype gcos, gsin, tmp1, tmp2;
@@ -372,7 +373,7 @@ static int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 // fi routine to compute the implicit portion of the ODE RHS.
 static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  UserData* udata  = (UserData*)user_data;
+  UserData* udata     = (UserData*)user_data;
   const sunrealtype u = NV_Ith_S(y, 0);
   const sunrealtype v = NV_Ith_S(y, 1);
   sunrealtype gcos, gsin, tmp1, tmp2, tmp3, tmp4;
@@ -395,7 +396,7 @@ static int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
 static int fn(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  UserData* udata  = (UserData*)user_data;
+  UserData* udata     = (UserData*)user_data;
   const sunrealtype u = NV_Ith_S(y, 0);
   const sunrealtype v = NV_Ith_S(y, 1);
   sunrealtype gcos, gsin, tmp1, tmp2, tmp3, tmp4;
@@ -416,10 +417,10 @@ static int fn(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   return 0;
 }
 
-static int Ji(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
+static int Ji(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
-  UserData* udata  = (UserData*)user_data;
+  UserData* udata     = (UserData*)user_data;
   const sunrealtype u = NV_Ith_S(y, 0);
   const sunrealtype v = NV_Ith_S(y, 1);
   sunrealtype gcos, gsin, t11, t12, t21, t22, m11, m12, m21, m22;
@@ -446,10 +447,10 @@ static int Ji(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_da
   return 0;
 }
 
-static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
+static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
-  UserData* udata  = (UserData*)user_data;
+  UserData* udata     = (UserData*)user_data;
   const sunrealtype u = NV_Ith_S(y, 0);
   const sunrealtype v = NV_Ith_S(y, 1);
   sunrealtype gcos, gsin, t11, t12, t21, t22, m11, m12, m21, m22;
@@ -477,8 +478,8 @@ static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_da
 }
 
 // Routine to compute the mass matrix multiplying y_t.
-static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data, N_Vector tmp1,
-                      N_Vector tmp2, N_Vector tmp3)
+static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data,
+                      N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   UserData* udata = (UserData*)user_data;
 
@@ -499,9 +500,10 @@ static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data, N_Vector tmp1
 // Private helper functions
 //------------------------------
 
-static int adaptive_run(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtype Tf,
-                        sunrealtype dTout, sunrealtype reltol, sunrealtype abstol,
-                        int rk_type, int nls_type, UserData& udata)
+static int adaptive_run(void* arkode_mem, N_Vector y, sunrealtype T0,
+                        sunrealtype Tf, sunrealtype dTout, sunrealtype reltol,
+                        sunrealtype abstol, int rk_type, int nls_type,
+                        UserData& udata)
 {
   // reused variables
   int retval;
@@ -524,7 +526,7 @@ static int adaptive_run(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtyp
 
   // Main time-stepping loop: calls ARKStepEvolve to perform integration,
   // then prints results. Stops when the final time has been reached
-  int Nt           = (int)ceil((Tf - T0) / dTout);
+  int Nt              = (int)ceil((Tf - T0) / dTout);
   sunrealtype t       = T0;
   sunrealtype tout    = T0 + dTout;
   sunrealtype uerr    = ZERO;
@@ -618,12 +620,12 @@ static int adaptive_run(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtyp
   return (0);
 }
 
-static int check_order(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtype Tf,
-                       int order, int rk_type, UserData& udata)
+static int check_order(void* arkode_mem, N_Vector y, sunrealtype T0,
+                       sunrealtype Tf, int order, int rk_type, UserData& udata)
 {
   // local variables
   int retval;
-  size_t Nout     = 20;
+  size_t Nout        = 20;
   sunrealtype reltol = SUN_RCONST(1.e-9);
   sunrealtype abstol = SUN_RCONST(1.e-12);
   sunrealtype a11, a12, a21, a22, b1, b2;
@@ -643,19 +645,20 @@ static int check_order(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtype
     retval = ARKStepSetLSetupFrequency(arkode_mem, 1);
     if (check_retval(&retval, "ARKStepSetLSetupFrequency", 1)) { return 1; }
     retval = ARKStepSetMaxNonlinIters(arkode_mem, 20);
-    if (check_retval(&retval, "ARKStepSetMaxNonlinIters", 1)) return 1;
+    if (check_retval(&retval, "ARKStepSetMaxNonlinIters", 1)) { return 1; }
     retval = ARKStepSetNonlinConvCoef(arkode_mem, SUN_RCONST(0.01));
-    if (check_retval(&retval, "ARKStepSetNonlinConvCoef", 1)) return 1;
+    if (check_retval(&retval, "ARKStepSetNonlinConvCoef", 1)) { return 1; }
   }
 
   // Set array of fixed step sizes to use, storage for corresponding errors/orders
   sunrealtype hmax = Tf - T0;
   if (rk_type == 2) { hmax = ONE / SUNRabs(udata.G); }
-  sunrealtype Nmin = SUNMAX((sunrealtype)Nout, (sunrealtype)ceil((Tf - T0) / hmax));
+  sunrealtype Nmin          = SUNMAX((sunrealtype)Nout,
+                                     (sunrealtype)ceil((Tf - T0) / hmax));
   vector<sunrealtype> hvals = {(Tf - T0) / Nmin,      (Tf - T0) / 2 / Nmin,
-                            (Tf - T0) / 4 / Nmin,  (Tf - T0) / 8 / Nmin,
-                            (Tf - T0) / 16 / Nmin, (Tf - T0) / 32 / Nmin,
-                            (Tf - T0) / 64 / Nmin, (Tf - T0) / 128 / Nmin};
+                               (Tf - T0) / 4 / Nmin,  (Tf - T0) / 8 / Nmin,
+                               (Tf - T0) / 16 / Nmin, (Tf - T0) / 32 / Nmin,
+                               (Tf - T0) / 64 / Nmin, (Tf - T0) / 128 / Nmin};
   vector<sunrealtype> errs(hvals.size());
   vector<sunrealtype> orders(hvals.size() - 1);
 
@@ -678,7 +681,7 @@ static int check_order(void* arkode_mem, N_Vector y, sunrealtype T0, sunrealtype
     sunrealtype tout  = T0 + dTout;
     sunrealtype uerr  = ZERO;
     sunrealtype verr  = ZERO;
-    errs[ih]       = ZERO;
+    errs[ih]          = ZERO;
     for (size_t iout = 0; iout < Nout; iout++)
     {
       // call integrator and update output time

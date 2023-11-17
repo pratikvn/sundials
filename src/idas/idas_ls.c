@@ -54,10 +54,12 @@ static int idaLsPrecSetupBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
 
 static int idaLsPrecSolveB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                            N_Vector rrB, N_Vector rvecB, N_Vector zvecB,
-                           sunrealtype c_jB, sunrealtype deltaB, void* idaadj_mem);
+                           sunrealtype c_jB, sunrealtype deltaB,
+                           void* idaadj_mem);
 static int idaLsPrecSolveBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                             N_Vector rrB, N_Vector rvecB, N_Vector zvecB,
-                            sunrealtype c_jB, sunrealtype deltaB, void* idaadj_mem);
+                            sunrealtype c_jB, sunrealtype deltaB,
+                            void* idaadj_mem);
 
 static int idaLsJacTimesSetupB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                                N_Vector rrB, sunrealtype c_jB, void* idaadj_mem);
@@ -70,8 +72,8 @@ static int idaLsJacTimesVecB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                              N_Vector tmp2B);
 static int idaLsJacTimesVecBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                               N_Vector rrB, N_Vector vB, N_Vector JvB,
-                              sunrealtype c_jB, void* idaadj_mem, N_Vector tmp1B,
-                              N_Vector tmp2B);
+                              sunrealtype c_jB, void* idaadj_mem,
+                              N_Vector tmp1B, N_Vector tmp2B);
 
 /*================================================================
   PART I - forward problems
@@ -938,9 +940,9 @@ int idaLsPSolve(void* ida_mem, N_Vector r, N_Vector z, sunrealtype tol, int lr)
   implementations of the difference quotient Jacobian
   approximation routines.
 ---------------------------------------------------------------*/
-int idaLsDQJac(sunrealtype t, sunrealtype c_j, N_Vector y, N_Vector yp, N_Vector r,
-               SUNMatrix Jac, void* ida_mem, N_Vector tmp1, N_Vector tmp2,
-               N_Vector tmp3)
+int idaLsDQJac(sunrealtype t, sunrealtype c_j, N_Vector y, N_Vector yp,
+               N_Vector r, SUNMatrix Jac, void* ida_mem, N_Vector tmp1,
+               N_Vector tmp2, N_Vector tmp3)
 {
   int retval;
   IDAMem IDA_mem;
@@ -1705,8 +1707,10 @@ int idaLsPerf(IDAMem IDA_mem, int perftask)
   nnid = IDA_mem->ida_nni - idals_mem->nni0;
   if (nstd == 0 || nnid == 0) { return (0); }
 
-  rcfn = ((sunrealtype)(IDA_mem->ida_ncfn - idals_mem->ncfn0)) / ((sunrealtype)nstd);
-  rcfl = ((sunrealtype)(idals_mem->ncfl - idals_mem->ncfl0)) / ((sunrealtype)nnid);
+  rcfn = ((sunrealtype)(IDA_mem->ida_ncfn - idals_mem->ncfn0)) /
+         ((sunrealtype)nstd);
+  rcfl = ((sunrealtype)(idals_mem->ncfl - idals_mem->ncfl0)) /
+         ((sunrealtype)nnid);
   lcfn = (rcfn > PT9);
   lcfl = (rcfl > PT9);
   if (!(lcfn || lcfl)) { return (0); }

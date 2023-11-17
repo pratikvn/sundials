@@ -58,7 +58,7 @@
 
 extern int IDAInitialSetup(IDAMem IDA_mem);
 extern sunrealtype IDAWrmsNorm(IDAMem IDA_mem, N_Vector x, N_Vector w,
-                            sunbooleantype mask);
+                               sunbooleantype mask);
 
 static int IDAnlsIC(IDAMem IDA_mem);
 static int IDANewtonIC(IDAMem IDA_mem);

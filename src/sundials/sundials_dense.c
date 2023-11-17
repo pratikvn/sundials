@@ -131,8 +131,8 @@ sunindextype denseGETRF(sunrealtype** a, sunindextype m, sunindextype n,
   return (SUNDlsMat_denseGETRF(a, m, n, p));
 }
 
-sunindextype SUNDlsMat_denseGETRF(sunrealtype** a, sunindextype m, sunindextype n,
-                                  sunindextype* p)
+sunindextype SUNDlsMat_denseGETRF(sunrealtype** a, sunindextype m,
+                                  sunindextype n, sunindextype* p)
 {
   sunindextype i, j, k, l;
   sunrealtype *col_j, *col_k;
@@ -334,8 +334,8 @@ void SUNDlsMat_densePOTRS(sunrealtype** a, sunindextype m, sunrealtype* b)
  *
  */
 
-int denseGEQRF(sunrealtype** a, sunindextype m, sunindextype n, sunrealtype* beta,
-               sunrealtype* v)
+int denseGEQRF(sunrealtype** a, sunindextype m, sunindextype n,
+               sunrealtype* beta, sunrealtype* v)
 {
   return (SUNDlsMat_denseGEQRF(a, m, n, beta, v));
 }
@@ -411,7 +411,8 @@ int denseORMQR(sunrealtype** a, sunindextype m, sunindextype n, sunrealtype* bet
 }
 
 int SUNDlsMat_denseORMQR(sunrealtype** a, sunindextype m, sunindextype n,
-                         sunrealtype* beta, sunrealtype* vn, sunrealtype* vm, sunrealtype* v)
+                         sunrealtype* beta, sunrealtype* vn, sunrealtype* vm,
+                         sunrealtype* v)
 {
   sunrealtype *col_j, s;
   sunindextype i, j;
@@ -464,7 +465,8 @@ void denseScale(sunrealtype c, sunrealtype** a, sunindextype m, sunindextype n)
   SUNDlsMat_denseScale(c, a, m, n);
 }
 
-void SUNDlsMat_denseScale(sunrealtype c, sunrealtype** a, sunindextype m, sunindextype n)
+void SUNDlsMat_denseScale(sunrealtype c, sunrealtype** a, sunindextype m,
+                          sunindextype n)
 {
   sunindextype i, j;
   sunrealtype* col_j;
@@ -488,8 +490,8 @@ void SUNDlsMat_denseAddIdentity(sunrealtype** a, sunindextype n)
   for (i = 0; i < n; i++) { a[i][i] += ONE; }
 }
 
-void denseMatvec(sunrealtype** a, sunrealtype* x, sunrealtype* y, sunindextype m,
-                 sunindextype n)
+void denseMatvec(sunrealtype** a, sunrealtype* x, sunrealtype* y,
+                 sunindextype m, sunindextype n)
 {
   SUNDlsMat_denseMatvec(a, x, y, m, n);
 }

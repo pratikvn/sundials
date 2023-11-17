@@ -112,9 +112,9 @@ int cvNlsResid_fused(const sunrealtype rl1, const sunrealtype ngamma,
  * -----------------------------------------------------------------
  */
 
-int cvDiagSetup_formY(const sunrealtype h, const sunrealtype r, const N_Vector fpred,
-                      const N_Vector zn1, const N_Vector ypred, N_Vector ftemp,
-                      N_Vector y)
+int cvDiagSetup_formY(const sunrealtype h, const sunrealtype r,
+                      const N_Vector fpred, const N_Vector zn1,
+                      const N_Vector ypred, N_Vector ftemp, N_Vector y)
 {
   SUNAssignSUNCTX(fpred->sunctx);
   SUNCheckCallLastErrNoRet(N_VLinearSum(h, fpred, -ONE, zn1, ftemp));

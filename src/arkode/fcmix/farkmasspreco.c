@@ -32,9 +32,11 @@
 extern "C" {
 #endif
 
-extern void FARK_MASSPSET(sunrealtype* T, long int* IPAR, sunrealtype* RPAR, int* IER);
-extern void FARK_MASSPSOL(sunrealtype* T, sunrealtype* R, sunrealtype* Z, sunrealtype* DELTA,
-                          int* LR, long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FARK_MASSPSET(sunrealtype* T, long int* IPAR, sunrealtype* RPAR,
+                          int* IER);
+extern void FARK_MASSPSOL(sunrealtype* T, sunrealtype* R, sunrealtype* Z,
+                          sunrealtype* DELTA, int* LR, long int* IPAR,
+                          sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -83,8 +85,8 @@ int FARKMassPSet(sunrealtype t, void* user_data)
 
 /* C interface to user-supplied Fortran routine FARKMASSPSOL; see 
    farkode.h for further details */
-int FARKMassPSol(sunrealtype t, N_Vector r, N_Vector z, sunrealtype delta, int lr,
-                 void* user_data)
+int FARKMassPSol(sunrealtype t, N_Vector r, N_Vector z, sunrealtype delta,
+                 int lr, void* user_data)
 {
   int ier = 0;
   sunrealtype *rdata, *zdata;

@@ -243,7 +243,8 @@ int laplacian_matrix_sludist(N_Vector u, sunrealtype cj, SUNMatrix L,
 #endif
 
 // DAE residual function
-int diffusion(sunrealtype t, N_Vector u, N_Vector up, N_Vector res, void* user_data);
+int diffusion(sunrealtype t, N_Vector u, N_Vector up, N_Vector res,
+              void* user_data);
 
 int diffusion_jac(sunrealtype t, sunrealtype cj, N_Vector u, N_Vector up,
                   N_Vector res, SUNMatrix Jac, void* user_data, N_Vector tmp1,

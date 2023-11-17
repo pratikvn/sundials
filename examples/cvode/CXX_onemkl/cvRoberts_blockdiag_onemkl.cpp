@@ -58,7 +58,7 @@ using namespace std;
 
 // Problem Constants
 
-#define GROUPSIZE 3           // number of equations per group
+#define GROUPSIZE 3               // number of equations per group
 #define Y1        SUN_RCONST(1.0) // initial y components
 #define Y2        SUN_RCONST(0.0)
 #define Y3        SUN_RCONST(0.0)
@@ -69,7 +69,7 @@ using namespace std;
 #define T0        SUN_RCONST(0.0)  // initial time
 #define T1        SUN_RCONST(0.1)  // first output time
 #define TMULT     SUN_RCONST(10.0) // output time factor
-#define NOUT      10           // number of output times
+#define NOUT      10               // number of output times
 
 #define ZERO SUN_RCONST(0.0)
 #define ONE  SUN_RCONST(1.0)

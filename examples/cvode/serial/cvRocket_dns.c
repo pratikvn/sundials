@@ -75,7 +75,7 @@
 #define T0    SUN_RCONST(0.0) /* initial time           */
 #define T1    SUN_RCONST(1.0) /* first output time      */
 #define TINC  SUN_RCONST(1.0) /* output time increment  */
-#define NOUT  70          /* number of output times */
+#define NOUT  70              /* number of output times */
 
 #define ZERO SUN_RCONST(0.0)
 

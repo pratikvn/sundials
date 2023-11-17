@@ -53,7 +53,7 @@
 #include <nvector/nvector_serial.h> /* serial N_Vector types, fcts., macros */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* def. of SUNRsqrt, etc.               */
+#include <sundials/sundials_math.h> /* def. of SUNRsqrt, etc.               */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype, etc */
 #include <sunlinsol/sunlinsol_klu.h> /* access to KLU SUNLinearSolver        */
 #include <sunmatrix/sunmatrix_sparse.h> /* access to sparse SUNMatrix           */
@@ -79,13 +79,13 @@
 typedef struct
 {
   sunindextype N; /* number of intervals     */
-  sunrealtype dx;    /* mesh spacing            */
-  sunrealtype a;     /* constant forcing on u   */
-  sunrealtype b;     /* steady-state value of w */
-  sunrealtype du;    /* diffusion coeff for u   */
-  sunrealtype dv;    /* diffusion coeff for v   */
-  sunrealtype dw;    /* diffusion coeff for w   */
-  sunrealtype ep;    /* stiffness parameter     */
+  sunrealtype dx; /* mesh spacing            */
+  sunrealtype a;  /* constant forcing on u   */
+  sunrealtype b;  /* steady-state value of w */
+  sunrealtype du; /* diffusion coeff for u   */
+  sunrealtype dv; /* diffusion coeff for v   */
+  sunrealtype dw; /* diffusion coeff for w   */
+  sunrealtype ep; /* stiffness parameter     */
   SUNMatrix R;    /* temporary storage       */
 }* UserData;
 
@@ -105,13 +105,13 @@ static int check_flag(void* flagvalue, const char* funcname, int opt);
 int main()
 {
   /* general problem parameters */
-  sunrealtype T0    = SUN_RCONST(0.0);  /* initial time */
-  sunrealtype Tf    = SUN_RCONST(10.0); /* final time */
-  int Nt         = 10;           /* total number of output times */
+  sunrealtype T0 = SUN_RCONST(0.0);  /* initial time */
+  sunrealtype Tf = SUN_RCONST(10.0); /* final time */
+  int Nt         = 10;               /* total number of output times */
   int Nvar       = 3;
   UserData udata = NULL;
   sunrealtype* data;
-  sunindextype N  = 201; /* spatial mesh size */
+  sunindextype N     = 201; /* spatial mesh size */
   sunrealtype a      = 0.6; /* problem parameters */
   sunrealtype b      = 2.0;
   sunrealtype du     = 0.025;
@@ -354,8 +354,8 @@ int main()
 /* f routine to compute the ODE RHS function f(t,y). */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  UserData udata  = (UserData)user_data; /* access problem data */
-  sunindextype N  = udata->N;            /* set variable shortcuts */
+  UserData udata     = (UserData)user_data; /* access problem data */
+  sunindextype N     = udata->N;            /* set variable shortcuts */
   sunrealtype a      = udata->a;
   sunrealtype b      = udata->b;
   sunrealtype ep     = udata->ep;
@@ -472,7 +472,7 @@ static int LaplaceMatrix(SUNMatrix Lap, UserData udata)
   sunrealtype uconst, uconst2, vconst, vconst2, wconst, wconst2;
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(Lap);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(Lap);
-  sunrealtype* data        = SUNSparseMatrix_Data(Lap);
+  sunrealtype* data     = SUNSparseMatrix_Data(Lap);
 
   /* clear out matrix */
   SUNMatZero(Lap);
@@ -560,11 +560,11 @@ static int ReactionJac(N_Vector y, SUNMatrix Jac, UserData udata)
   sunindextype N = udata->N; /* set shortcuts */
   sunindextype i, nz = 0;
   sunrealtype u, v, w;
-  sunrealtype ep           = udata->ep;
+  sunrealtype ep        = udata->ep;
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(Jac);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(Jac);
-  sunrealtype* data        = SUNSparseMatrix_Data(Jac);
-  sunrealtype* Ydata       = N_VGetArrayPointer(y); /* access solution array */
+  sunrealtype* data     = SUNSparseMatrix_Data(Jac);
+  sunrealtype* Ydata    = N_VGetArrayPointer(y); /* access solution array */
   if (check_flag((void*)Ydata, "N_VGetArrayPointer", 0)) { return 1; }
 
   /* clear out matrix */

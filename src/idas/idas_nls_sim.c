@@ -24,8 +24,9 @@
 #define TWENTY SUN_RCONST(20.0)   /* real 20.0   */
 
 /* nonlinear solver parameters */
-#define MAXIT   4           /* default max number of nonlinear iterations    */
-#define RATEMAX SUN_RCONST(0.9) /* max convergence rate used in divergence check */
+#define MAXIT 4 /* default max number of nonlinear iterations    */
+#define RATEMAX \
+  SUN_RCONST(0.9) /* max convergence rate used in divergence check */
 
 /* private functions passed to nonlinear solver */
 static int idaNlsResidualSensSim(N_Vector ycor, N_Vector res, void* ida_mem);
@@ -292,7 +293,8 @@ int idaNlsInitSensSim(IDAMem IDA_mem)
   return (IDA_SUCCESS);
 }
 
-static int idaNlsLSetupSensSim(sunbooleantype jbad, sunbooleantype* jcur, void* ida_mem)
+static int idaNlsLSetupSensSim(sunbooleantype jbad, sunbooleantype* jcur,
+                               void* ida_mem)
 {
   IDAMem IDA_mem;
   int retval;

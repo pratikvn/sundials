@@ -63,7 +63,7 @@ int PSolve(void* ProbData, N_Vector r, N_Vector z, realtype tol, int lr);
 /*    checks function return values  */
 static int check_flag(void* flagvalue, const char* funcname, int opt);
 /*    uniform random number generator in [0,1] */
-static realtype urand();
+static realtype urand(void);
 
 /* global copy of Nloc (for check_vector routine) */
 sunindextype local_problem_size;
@@ -102,16 +102,16 @@ sunindextype local_problem_size;
  * --------------------------------------------------------------------*/
 int main(int argc, char* argv[])
 {
-  int             fails=0;          /* counter for test failures */
-  int             passfail=0;       /* overall passfail flag     */
-  SUNLinearSolver LS;               /* linear solver object      */
-  N_Vector        xhat, x, b;       /* test vectors              */
-  UserData        ProbData;         /* problem data structure    */
-  int             maxl, print_timing;
-  sunindextype    i;
-  realtype        *vecdata;
-  double          tol;
-  SUNContext      sunctx;
+  int fails    = 0;    /* counter for test failures */
+  int passfail = 0;    /* overall passfail flag     */
+  SUNLinearSolver LS;  /* linear solver object      */
+  N_Vector xhat, x, b; /* test vectors              */
+  UserData ProbData;   /* problem data structure    */
+  int maxl, print_timing;
+  sunindextype i;
+  realtype* vecdata;
+  double tol;
+  SUNContext sunctx;
 
   /* Set up MPI environment */
   fails = MPI_Init(&argc, &argv);
@@ -165,8 +165,8 @@ int main(int argc, char* argv[])
   {
     printf("\nPCG linear solver test:\n");
     printf("  nprocs = %i\n", ProbData.nprocs);
-    printf("  local/global problem sizes = %ld/%ld\n", (long int) ProbData.Nloc,
-           (long int) ProbData.nprocs * ProbData.Nloc);
+    printf("  local/global problem sizes = %ld/%lld\n", (long int)ProbData.Nloc,
+           (long int)ProbData.nprocs * ProbData.Nloc);
     printf("  Maximum Krylov subspace dimension = %i\n", maxl);
     printf("  Solver Tolerance = %g\n", tol);
     printf("  timing output flag = %i\n\n", print_timing);
@@ -353,7 +353,7 @@ int main(int argc, char* argv[])
   }
 
   /* check if any other process failed */
-  (void) MPI_Allreduce(&passfail, &fails, 1, MPI_INT, MPI_MAX, ProbData.comm);
+  (void)MPI_Allreduce(&passfail, &fails, 1, MPI_INT, MPI_MAX, ProbData.comm);
 
   /* Free solver and vectors */
   SUNLinSolFree(LS);

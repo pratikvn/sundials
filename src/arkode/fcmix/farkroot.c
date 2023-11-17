@@ -31,8 +31,8 @@
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FARK_ROOTFN(sunrealtype* T, sunrealtype* Y, sunrealtype* G, long int* IPAR,
-                        sunrealtype* RPAR, int* ier);
+extern void FARK_ROOTFN(sunrealtype* T, sunrealtype* Y, sunrealtype* G,
+                        long int* IPAR, sunrealtype* RPAR, int* ier);
 
 #ifdef __cplusplus
 }

@@ -334,7 +334,8 @@ SUNErrCode SUNNonlinSolSetMaxIters_FixedPoint(SUNNonlinearSolver NLS, int maxite
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNNonlinSolSetDamping_FixedPoint(SUNNonlinearSolver NLS, sunrealtype beta)
+SUNErrCode SUNNonlinSolSetDamping_FixedPoint(SUNNonlinearSolver NLS,
+                                             sunrealtype beta)
 {
   SUNAssignSUNCTX(NLS->sunctx);
   SUNAssert(beta > 0, SUN_ERR_ARG_OUTOFRANGE);
@@ -608,7 +609,8 @@ static SUNErrCode AllocateContent(SUNNonlinearSolver NLS, N_Vector y)
     FP_CONTENT(NLS)->gamma = (sunrealtype*)malloc(m * sizeof(sunrealtype));
     SUNAssert(FP_CONTENT(NLS)->gamma, SUN_ERR_MALLOC_FAIL);
 
-    FP_CONTENT(NLS)->cvals = (sunrealtype*)malloc(2 * (m + 1) * sizeof(sunrealtype));
+    FP_CONTENT(NLS)->cvals =
+      (sunrealtype*)malloc(2 * (m + 1) * sizeof(sunrealtype));
     SUNAssert(FP_CONTENT(NLS)->cvals, SUN_ERR_MALLOC_FAIL);
 
     FP_CONTENT(NLS)->df = N_VCloneVectorArray(m, y);

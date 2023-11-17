@@ -31,8 +31,8 @@ static int cvNlsLSetupSensStg(sunbooleantype jbad, sunbooleantype* jcur,
                               void* cvode_mem);
 static int cvNlsLSolveSensStg(N_Vector deltaStg, void* cvode_mem);
 static int cvNlsConvTestSensStg(SUNNonlinearSolver NLS, N_Vector ycorStg,
-                                N_Vector delStg, sunrealtype tol, N_Vector ewtStg,
-                                void* cvode_mem);
+                                N_Vector delStg, sunrealtype tol,
+                                N_Vector ewtStg, void* cvode_mem);
 
 /* -----------------------------------------------------------------------------
  * Exported functions
@@ -264,7 +264,8 @@ int cvNlsInitSensStg(CVodeMem cvode_mem)
   return (CV_SUCCESS);
 }
 
-static int cvNlsLSetupSensStg(sunbooleantype jbad, sunbooleantype* jcur, void* cvode_mem)
+static int cvNlsLSetupSensStg(sunbooleantype jbad, sunbooleantype* jcur,
+                              void* cvode_mem)
 {
   CVodeMem cv_mem;
   int retval;

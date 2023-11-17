@@ -93,7 +93,8 @@ typedef struct
 
 /* User-supplied residual function */
 
-int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_data);
+int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+            void* user_data);
 int jacHeat(SNES snes, Vec x, Mat Jpre, Mat J, void* user_data);
 
 /* User-supplied preconditioner routines */
@@ -813,7 +814,8 @@ static void PrintHeader(sunindextype Neq, sunrealtype rtol, sunrealtype atol)
  * PrintOutput: print max norm of solution and current solver statistics
  */
 
-static void PrintOutput(int id, void* ida_mem, sunrealtype t, N_Vector uu, SNES snes)
+static void PrintOutput(int id, void* ida_mem, sunrealtype t, N_Vector uu,
+                        SNES snes)
 {
   sunrealtype hused, umax;
   long int nst, nni, njve, nre, nreLS, npe, nps;

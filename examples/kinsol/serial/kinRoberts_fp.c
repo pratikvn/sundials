@@ -47,7 +47,7 @@
 
 /* Problem Constants */
 
-#define NEQ   3           /* number of equations  */
+#define NEQ   3               /* number of equations  */
 #define Y10   SUN_RCONST(1.0) /* initial y components */
 #define Y20   SUN_RCONST(0.0)
 #define Y30   SUN_RCONST(0.0)
@@ -330,7 +330,7 @@ static int check_ans(N_Vector u, sunrealtype rtol, sunrealtype atol)
   int passfail = 0; /* answer pass (0) or fail (1) retval */
   N_Vector ref;     /* reference solution vector        */
   N_Vector ewt;     /* error weight vector              */
-  sunrealtype err;     /* wrms error                       */
+  sunrealtype err;  /* wrms error                       */
 
   /* create reference solution and error weight vectors */
   ref = N_VClone(u);

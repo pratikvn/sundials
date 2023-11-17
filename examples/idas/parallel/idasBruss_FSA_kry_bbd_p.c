@@ -125,14 +125,15 @@ typedef struct
 static int res(sunrealtype tt, N_Vector uv, N_Vector uvp, N_Vector rr,
                void* user_data);
 
-static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector uv, N_Vector uvp,
-                    N_Vector res, void* user_data);
+static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector uv,
+                    N_Vector uvp, N_Vector res, void* user_data);
 
-static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uv, N_Vector uvp,
-                   void* user_data);
+static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uv,
+                   N_Vector uvp, void* user_data);
 
 /* Integrate over spatial domain. */
-static int integr(MPI_Comm comm, N_Vector uv, void* user_data, sunrealtype* intval);
+static int integr(MPI_Comm comm, N_Vector uv, void* user_data,
+                  sunrealtype* intval);
 
 /* Prototypes for supporting functions */
 static void BSend(MPI_Comm comm, int thispe, int ixsub, int jysub, int dsizex,
@@ -600,8 +601,8 @@ static void PrintHeader(sunindextype SystemSize, int maxl, sunindextype mudq,
  * are printed for the bottom left and top right grid points only.
  */
 
-static void PrintOutput(void* ida_mem, N_Vector uv, sunrealtype tt, UserData data,
-                        MPI_Comm comm)
+static void PrintOutput(void* ida_mem, N_Vector uv, sunrealtype tt,
+                        UserData data, MPI_Comm comm)
 {
   MPI_Status status;
   sunrealtype *cdata, clast[2], hused;
@@ -843,8 +844,8 @@ static int res(sunrealtype tt, N_Vector uv, N_Vector uvp, N_Vector rr,
  * The message-passing uses blocking sends, non-blocking receives,
  * and receive-waiting, in routines BRecvPost, BSend, BRecvWait.
  */
-static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uv, N_Vector uvp,
-                   void* user_data)
+static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector uv,
+                   N_Vector uvp, void* user_data)
 {
   UserData data;
   sunrealtype *cdata, *gridext, buffer[2 * NUM_SPECIES * MYSUB];
@@ -1076,10 +1077,11 @@ static void BSend(MPI_Comm comm, int my_pe, int ixsub, int jysub, int dsizex,
  * for use by the preconditioner setup routine.
  */
 
-static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector uv, N_Vector uvp,
-                    N_Vector rr, void* user_data)
+static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector uv,
+                    N_Vector uvp, N_Vector rr, void* user_data)
 {
-  sunrealtype *uvdata, *uvpxy, *resxy, xx, yy, dcyli, dcyui, dcxli, dcxui, dx2, dy2;
+  sunrealtype *uvdata, *uvpxy, *resxy, xx, yy, dcyli, dcyui, dcxli, dcxui, dx2,
+    dy2;
   int ixend, ixstart, jystart, jyend;
   int ix, jy, is, i, locc, ylocce, locce;
   sunrealtype rates[2];

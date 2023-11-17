@@ -31,11 +31,12 @@
 #define ONE          SUN_RCONST(1.0)
 
 /* Prototypes of functions ARKBBDPrecSetup and ARKBBDPrecSolve */
-static int ARKBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                           sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data);
+static int ARKBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                           sunbooleantype jok, sunbooleantype* jcurPtr,
+                           sunrealtype gamma, void* bbd_data);
 static int ARKBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                           N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                           void* bbd_data);
+                           N_Vector z, sunrealtype gamma, sunrealtype delta,
+                           int lr, void* bbd_data);
 
 /* Prototype for ARKBBDPrecFree */
 static int ARKBBDPrecFree(ARKodeMem ark_mem);
@@ -433,8 +434,9 @@ int ARKBBDPrecGetNumGfnEvals(void* arkode_mem, long int* ngevalsBBDP)
 
  Return value is a int
 ---------------------------------------------------------------*/
-static int ARKBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                           sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data)
+static int ARKBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                           sunbooleantype jok, sunbooleantype* jcurPtr,
+                           sunrealtype gamma, void* bbd_data)
 {
   ARKBBDPrecData pdata;
   ARKodeMem ark_mem;
@@ -530,8 +532,8 @@ static int ARKBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantyp
  as the value returned from the linear solver object.
 ---------------------------------------------------------------*/
 static int ARKBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                           N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                           void* bbd_data)
+                           N_Vector z, sunrealtype gamma, sunrealtype delta,
+                           int lr, void* bbd_data)
 {
   int ls_status;
   ARKBBDPrecData pdata;

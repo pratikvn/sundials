@@ -58,7 +58,8 @@ int diffusion_jac(sunrealtype t, N_Vector u, N_Vector f, SUNMatrix Jac,
 
 #elif defined(BENCHMARK_DAE)
 
-int diffusion(sunrealtype t, N_Vector u, N_Vector up, N_Vector res, void* user_data)
+int diffusion(sunrealtype t, N_Vector u, N_Vector up, N_Vector res,
+              void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;

@@ -676,7 +676,7 @@ int CVodeGetAdjDataPointHermite(void* cvode_mem, int which, sunrealtype* t,
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVhermiteDataMem content;
 
   /* Check if cvode_mem exists */
@@ -708,7 +708,7 @@ int CVodeGetAdjDataPointHermite(void* cvode_mem, int which, sunrealtype* t,
 
   *t = dt_mem[which]->t;
 
-  content = (CVhermiteDataMem) (dt_mem[which]->content);
+  content = (CVhermiteDataMem)(dt_mem[which]->content);
 
   if (y != NULL) { SUNCheckCallLastErrNoRet(N_VScale(ONE, content->y, y)); }
 
@@ -729,7 +729,7 @@ int CVodeGetAdjDataPointPolynomial(void* cvode_mem, int which, sunrealtype* t,
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVpolynomialDataMem content;
 
   /* Check if cvode_mem exists */
@@ -761,7 +761,7 @@ int CVodeGetAdjDataPointPolynomial(void* cvode_mem, int which, sunrealtype* t,
 
   *t = dt_mem[which]->t;
 
-  content = (CVpolynomialDataMem) (dt_mem[which]->content);
+  content = (CVpolynomialDataMem)(dt_mem[which]->content);
 
   if (y != NULL) SUNCheckCallLastErrNoRet(N_VScale(ONE, content->y, y));
 

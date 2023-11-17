@@ -55,7 +55,8 @@ constexpr auto gpuAssert            = SUNDIALS_HIP_Assert;
  */
 
 __global__ void cvEwtSetSS_kernel(const sunindextype length,
-                                  const sunrealtype reltol, const sunrealtype Sabstol,
+                                  const sunrealtype reltol,
+                                  const sunrealtype Sabstol,
                                   const sunrealtype* ycur, sunrealtype* tempv,
                                   sunrealtype* weight)
 {
@@ -67,12 +68,13 @@ __global__ void cvEwtSetSS_kernel(const sunindextype length,
     // N_VAddConst(cv_mem->cv_tempv, cv_mem->cv_Sabstol, cv_mem->cv_tempv);
     // N_VInv(cv_mem->cv_tempv, weight);
     sunrealtype tmp = abs(ycur[i]);
-    tempv[i]     = reltol * tmp + Sabstol;
-    weight[i]    = one / tempv[i];
+    tempv[i]        = reltol * tmp + Sabstol;
+    weight[i]       = one / tempv[i];
   }
 }
 
-extern "C" int cvEwtSetSS_fused(const sunbooleantype atolMin0, const sunrealtype reltol,
+extern "C" int cvEwtSetSS_fused(const sunbooleantype atolMin0,
+                                const sunrealtype reltol,
                                 const sunrealtype Sabstol, const N_Vector ycur,
                                 N_Vector tempv, N_Vector weight)
 {
@@ -111,8 +113,9 @@ extern "C" int cvEwtSetSS_fused(const sunbooleantype atolMin0, const sunrealtype
 
 __global__ void cvEwtSetSV_kernel(const sunindextype length,
                                   const sunrealtype reltol,
-                                  const sunrealtype* Vabstol, const sunrealtype* ycur,
-                                  sunrealtype* tempv, sunrealtype* weight)
+                                  const sunrealtype* Vabstol,
+                                  const sunrealtype* ycur, sunrealtype* tempv,
+                                  sunrealtype* weight)
 {
   const sunrealtype one = 1.0;
   GRID_STRIDE_XLOOP(sunindextype, i, length)
@@ -122,12 +125,13 @@ __global__ void cvEwtSetSV_kernel(const sunindextype length,
     //             cv_mem->cv_Vabstol, cv_mem->cv_tempv);
     // N_VInv(cv_mem->cv_tempv, weight);
     sunrealtype tmp = abs(ycur[i]);
-    tempv[i]     = reltol * tmp + Vabstol[i];
-    weight[i]    = one / tempv[i];
+    tempv[i]        = reltol * tmp + Vabstol[i];
+    weight[i]       = one / tempv[i];
   }
 }
 
-extern "C" int cvEwtSetSV_fused(const sunbooleantype atolMin0, const sunrealtype reltol,
+extern "C" int cvEwtSetSV_fused(const sunbooleantype atolMin0,
+                                const sunrealtype reltol,
                                 const N_Vector Vabstol, const N_Vector ycur,
                                 N_Vector tempv, N_Vector weight)
 {
@@ -167,10 +171,9 @@ extern "C" int cvEwtSetSV_fused(const sunbooleantype atolMin0, const sunrealtype
  * -----------------------------------------------------------------
  */
 
-__global__ void cvCheckConstraints_kernel(const sunindextype length,
-                                          const sunrealtype* c, const sunrealtype* ewt,
-                                          const sunrealtype* y, const sunrealtype* mm,
-                                          sunrealtype* tempv)
+__global__ void cvCheckConstraints_kernel(
+  const sunindextype length, const sunrealtype* c, const sunrealtype* ewt,
+  const sunrealtype* y, const sunrealtype* mm, sunrealtype* tempv)
 {
   static const sunrealtype zero   = 0.0;
   static const sunrealtype pt1    = 0.1;
@@ -184,10 +187,10 @@ __global__ void cvCheckConstraints_kernel(const sunindextype length,
     // N_VLinearSum(ONE, cv_mem->cv_y, -PT1, tmp, tmp); /* y - 0.1 * a * c * wt  */
     // N_VProd(tmp, mm, tmp);                           /* v = mm*(y-0.1*a*c*wt) */
     sunrealtype tmp = (abs(c[i]) >= onept5) ? one : zero;
-    tmp          = tmp * c[i];
-    tmp          = tmp / ewt[i];
-    tmp          = y[i] - pt1 * tmp;
-    tempv[i]     = tmp * mm[i];
+    tmp             = tmp * c[i];
+    tmp             = tmp / ewt[i];
+    tmp             = y[i] - pt1 * tmp;
+    tempv[i]        = tmp * mm[i];
   }
 }
 
@@ -229,17 +232,17 @@ extern "C" int cvCheckConstraints_fused(const N_Vector c, const N_Vector ewt,
  * -----------------------------------------------------------------
  */
 
-__global__ void cvNlsResid_kernel(const sunindextype length, const sunrealtype rl1,
-                                  const sunrealtype ngamma, const sunrealtype* zn1,
-                                  const sunrealtype* ycor, const sunrealtype* ftemp,
-                                  sunrealtype* res)
+__global__ void cvNlsResid_kernel(const sunindextype length,
+                                  const sunrealtype rl1, const sunrealtype ngamma,
+                                  const sunrealtype* zn1, const sunrealtype* ycor,
+                                  const sunrealtype* ftemp, sunrealtype* res)
 {
   GRID_STRIDE_XLOOP(sunindextype, i, length)
   {
     // N_VLinearSum(cv_mem->cv_rl1, cv_mem->cv_zn[1], ONE, ycor, res);
     // N_VLinearSum(-cv_mem->cv_gamma, cv_mem->cv_ftemp, ONE, res, res);
     sunrealtype tmp = rl1 * zn1[i] + ycor[i];
-    res[i]       = ngamma * ftemp[i] + tmp;
+    res[i]          = ngamma * ftemp[i] + tmp;
   }
 }
 
@@ -284,8 +287,8 @@ __global__ void cvDiagSetup_formY_kernel(const sunindextype length,
                                          const sunrealtype h, const sunrealtype r,
                                          const sunrealtype* fpred,
                                          const sunrealtype* zn1,
-                                         const sunrealtype* ypred, sunrealtype* ftemp,
-                                         sunrealtype* y)
+                                         const sunrealtype* ypred,
+                                         sunrealtype* ftemp, sunrealtype* y)
 {
   // N_VLinearSum(h, fpred, -ONE, zn[1], ftemp);
   // N_VLinearSum(r, ftemp, ONE, ypred, y);
@@ -340,7 +343,8 @@ extern "C" int cvDiagSetup_formY(const sunrealtype h, const sunrealtype r,
 __global__ void cvDiagSetup_buildM_kernel(
   const sunindextype length, const sunrealtype fract, const sunrealtype uround,
   const sunrealtype h, const sunrealtype* ftemp, const sunrealtype* fpred,
-  const sunrealtype* ewt, sunrealtype* bit, sunrealtype* bitcomp, sunrealtype* y, sunrealtype* M)
+  const sunrealtype* ewt, sunrealtype* bit, sunrealtype* bitcomp,
+  sunrealtype* y, sunrealtype* M)
 {
   static const sunrealtype zero = 0.0;
   static const sunrealtype one  = 1.0;
@@ -368,11 +372,11 @@ __global__ void cvDiagSetup_buildM_kernel(
   }
 }
 
-extern "C" int cvDiagSetup_buildM(const sunrealtype fract, const sunrealtype uround,
-                                  const sunrealtype h, const N_Vector ftemp,
-                                  const N_Vector fpred, const N_Vector ewt,
-                                  N_Vector bit, N_Vector bitcomp, N_Vector y,
-                                  N_Vector M)
+extern "C" int cvDiagSetup_buildM(const sunrealtype fract,
+                                  const sunrealtype uround, const sunrealtype h,
+                                  const N_Vector ftemp, const N_Vector fpred,
+                                  const N_Vector ewt, N_Vector bit,
+                                  N_Vector bitcomp, N_Vector y, N_Vector M)
 {
   SUNAssignSUNCTX(ftemp->sunctx);
   const SUNExecPolicy* exec_policy =
@@ -428,7 +432,7 @@ __global__ void cvDiagSolve_updateM_kernel(const sunindextype length,
     // N_VScale(r, M, M);
     // N_VAddConst(M, ONE, M);
     sunrealtype a = one / M[i] - one;
-    M[i]       = r * a + one;
+    M[i]          = r * a + one;
   }
 }
 

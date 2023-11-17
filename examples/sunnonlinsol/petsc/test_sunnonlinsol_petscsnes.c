@@ -31,9 +31,9 @@
 #define FSYM "f"
 #endif
 
-#define NEQ   3              /* number of equations        */
+#define NEQ   3                  /* number of equations        */
 #define TOL   SUN_RCONST(1.0e-2) /* nonlinear solver tolerance */
-#define MAXIT 10             /* max nonlinear iterations   */
+#define MAXIT 10                 /* max nonlinear iterations   */
 
 #define ZERO  SUN_RCONST(0.0) /* real 0.0 */
 #define HALF  SUN_RCONST(0.5) /* real 0.5 */

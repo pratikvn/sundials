@@ -31,11 +31,12 @@
 #define ONE          SUN_RCONST(1.0)
 
 /* Prototypes of ARKBandPrecSetup and ARKBandPrecSolve */
-static int ARKBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                            sunbooleantype* jcurPtr, sunrealtype gamma, void* bp_data);
+static int ARKBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                            sunbooleantype jok, sunbooleantype* jcurPtr,
+                            sunrealtype gamma, void* bp_data);
 static int ARKBandPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                            N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                            void* bp_data);
+                            N_Vector z, sunrealtype gamma, sunrealtype delta,
+                            int lr, void* bp_data);
 
 /* Prototype for ARKBandPrecFree */
 static int ARKBandPrecFree(ARKodeMem ark_mem);
@@ -330,8 +331,9 @@ int ARKBandPrecGetNumRhsEvals(void* arkode_mem, long int* nfevalsBP)
 
  Returns a int.
 ---------------------------------------------------------------*/
-static int ARKBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                            sunbooleantype* jcurPtr, sunrealtype gamma, void* bp_data)
+static int ARKBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                            sunbooleantype jok, sunbooleantype* jcurPtr,
+                            sunrealtype gamma, void* bp_data)
 {
   ARKBandPrecData pdata;
   ARKodeMem ark_mem;
@@ -421,8 +423,8 @@ static int ARKBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleanty
  Returns a int.
 ---------------------------------------------------------------*/
 static int ARKBandPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                            N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                            void* bp_data)
+                            N_Vector z, sunrealtype gamma, sunrealtype delta,
+                            int lr, void* bp_data)
 {
   SUNAssignSUNCTX(y->sunctx);
 

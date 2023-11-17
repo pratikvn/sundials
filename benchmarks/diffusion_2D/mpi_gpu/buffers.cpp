@@ -32,9 +32,10 @@
 
 // Pack exchange buffers kernel
 __global__ void pack_buffers_kernel(const sunindextype nx_loc,
-                                    const sunindextype ny_loc, const sunrealtype* u,
-                                    sunrealtype* wbuf, sunrealtype* ebuf,
-                                    sunrealtype* sbuf, sunrealtype* nbuf)
+                                    const sunindextype ny_loc,
+                                    const sunrealtype* u, sunrealtype* wbuf,
+                                    sunrealtype* ebuf, sunrealtype* sbuf,
+                                    sunrealtype* nbuf)
 {
   // Thread ID
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -58,7 +59,8 @@ __global__ void pack_buffers_kernel(const sunindextype nx_loc,
 int UserData::pack_buffers(const N_Vector u)
 {
   // Access data array
-  const sunrealtype* uarray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
+  const sunrealtype* uarray =
+    N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
   if (check_flag((void*)uarray, "N_VGetDeviceArrayPointer", 0)) return -1;
 
   sunindextype maxdim = max(nx_loc, ny_loc);

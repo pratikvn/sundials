@@ -270,7 +270,7 @@ struct UserData
 
   // Fixed step size (slow and fast)
   sunrealtype h_slow = SUN_RCONST(-1.0); // use multiple of CFL
-  sunrealtype h_fast = ZERO;         // use adaptive stepping
+  sunrealtype h_fast = ZERO;             // use adaptive stepping
 
   // Inner ARKODE method order
   int order_fast = 3;
@@ -282,10 +282,10 @@ struct UserData
   // Shared IMEX and MRI settings
   // ----------------------------
 
-  int  controller  = 0;      // step size adaptivity method (0 = use default)
-  int  maxsteps    = 0;      // max steps between outputs (0 = use default)
-  bool linear      = true;   // enable/disable linearly implicit option
-  bool diagnostics = false;  // output diagnostics
+  int controller   = 0;     // step size adaptivity method (0 = use default)
+  int maxsteps     = 0;     // max steps between outputs (0 = use default)
+  bool linear      = true;  // enable/disable linearly implicit option
+  bool diagnostics = false; // output diagnostics
 
   // -----------------------------------------
   // Nonlinear solver settings
@@ -298,13 +298,13 @@ struct UserData
   // Linear solver and preconditioner settings
   // -----------------------------------------
 
-  bool     pcg      = true;   // use PCG (true) or GMRES (false)
-  bool     prec     = true;   // preconditioner on/off
-  bool     lsinfo   = false;  // output residual history
-  int      liniters = 10;     // number of linear iterations
-  int      msbp     = 0;      // preconditioner setup frequency (0 = default)
-  sunrealtype epslin   = ZERO;   // linear solver tolerance factor (ZERO = default)
-  N_Vector diag     = NULL;   // inverse of Jacobian diagonal
+  bool pcg           = true;  // use PCG (true) or GMRES (false)
+  bool prec          = true;  // preconditioner on/off
+  bool lsinfo        = false; // output residual history
+  int liniters       = 10;    // number of linear iterations
+  int msbp           = 0;     // preconditioner setup frequency (0 = default)
+  sunrealtype epslin = ZERO;  // linear solver tolerance factor (ZERO = default)
+  N_Vector diag      = NULL;  // inverse of Jacobian diagonal
 
   // ---------------
   // Ouput variables
@@ -378,15 +378,15 @@ static int PSolve(sunrealtype t, N_Vector u, N_Vector f, N_Vector r, N_Vector z,
 static int SetupDecomp(UserData* udata);
 
 // Integrator setup functions
-static int SetupARK(SUNContext ctx, UserData *udata, N_Vector u,
-                    SUNLinearSolver LS, SUNAdaptController *Ctrl,
-                    void **arkode_mem);
-static int SetupMRI(SUNContext ctx, UserData *udata, N_Vector u,
-                    SUNLinearSolver LS, SUNAdaptController *Ctrl,
-                    void **arkode_mem, MRIStepInnerStepper *stepper);
-static int SetupMRICVODE(SUNContext ctx, UserData *udata, N_Vector u,
-                         SUNLinearSolver LS, SUNNonlinearSolver *NLS,
-                         void **arkode_mem, MRIStepInnerStepper *stepper);
+static int SetupARK(SUNContext ctx, UserData* udata, N_Vector u,
+                    SUNLinearSolver LS, SUNAdaptController* Ctrl,
+                    void** arkode_mem);
+static int SetupMRI(SUNContext ctx, UserData* udata, N_Vector u,
+                    SUNLinearSolver LS, SUNAdaptController* Ctrl,
+                    void** arkode_mem, MRIStepInnerStepper* stepper);
+static int SetupMRICVODE(SUNContext ctx, UserData* udata, N_Vector u,
+                         SUNLinearSolver LS, SUNNonlinearSolver* NLS,
+                         void** arkode_mem, MRIStepInnerStepper* stepper);
 
 // Perform neighbor exchange
 static int StartExchange(N_Vector y, UserData* udata);
@@ -490,15 +490,15 @@ int main(int argc, char* argv[])
   if (udata.diagnostics || udata.lsinfo)
   {
     SUNLogger logger;
-  
+
     flag = SUNContext_GetLogger(ctx, &logger);
-    if (check_flag(&flag, "SUNContext_GetLogger", 1)) return 1;
+    if (check_flag(&flag, "SUNContext_GetLogger", 1)) { return 1; }
 
     flag = SUNLogger_SetInfoFilename(logger, "diagnostics.txt");
-    if (check_flag(&flag, "SUNLogger_SetInfoFilename", 1)) return 1;
+    if (check_flag(&flag, "SUNLogger_SetInfoFilename", 1)) { return 1; }
 
     flag = SUNLogger_SetDebugFilename(logger, "diagnostics.txt");
-    if (check_flag(&flag, "SUNLogger_SetDebugFilename", 1)) return 1;
+    if (check_flag(&flag, "SUNLogger_SetDebugFilename", 1)) { return 1; }
   }
 
   // --------------
@@ -522,12 +522,12 @@ int main(int argc, char* argv[])
   if (udata.pcg)
   {
     LS = SUNLinSol_PCG(u, prectype, udata.liniters, ctx);
-    if (check_flag((void *) LS, "SUNLinSol_PCG", 0)) return 1;
+    if (check_flag((void*)LS, "SUNLinSol_PCG", 0)) { return 1; }
   }
   else
   {
     LS = SUNLinSol_SPGMR(u, prectype, udata.liniters, ctx);
-    if (check_flag((void *) LS, "SUNLinSol_SPGMR", 0)) return 1;
+    if (check_flag((void*)LS, "SUNLinSol_SPGMR", 0)) { return 1; }
   }
 
   // Allocate preconditioner workspace
@@ -563,13 +563,13 @@ int main(int argc, char* argv[])
   // Create integrator
   switch (udata.integrator)
   {
-  case(0):
+  case (0):
     flag = SetupARK(ctx, &udata, u, LS, &Ctrl, &arkode_mem);
-    if (check_flag((void *) arkode_mem, "SetupARK", 0)) return 1;
+    if (check_flag((void*)arkode_mem, "SetupARK", 0)) { return 1; }
     break;
-  case(1):
+  case (1):
     flag = SetupMRI(ctx, &udata, u, LS, &Ctrl, &arkode_mem, &stepper);
-    if (check_flag((void *) arkode_mem, "SetupMRI", 0)) return 1;
+    if (check_flag((void*)arkode_mem, "SetupMRI", 0)) { return 1; }
     break;
   case (2):
   case (3):
@@ -676,7 +676,7 @@ int main(int argc, char* argv[])
   // Clean up and return
   // --------------------
 
-  switch(udata.integrator)
+  switch (udata.integrator)
   {
   case (0): ARKStepFree(&arkode_mem); break;
   case (1):
@@ -708,7 +708,7 @@ int main(int argc, char* argv[])
   N_VDestroy(N_VGetLocalVector_MPIPlusX(u));
   N_VDestroy(u);
   FreeUserData(&udata);
-  (void) SUNAdaptController_Destroy(Ctrl);
+  (void)SUNAdaptController_Destroy(Ctrl);
   SUNContext_Free(&ctx);
   flag = MPI_Finalize();
   return 0;
@@ -914,7 +914,7 @@ static int SetupDecomp(UserData* udata)
 // -----------------------------------------------------------------------------
 
 static int SetupARK(SUNContext ctx, UserData* udata, N_Vector u,
-                    SUNLinearSolver LS, SUNAdaptController *Ctrl,
+                    SUNLinearSolver LS, SUNAdaptController* Ctrl,
                     void** arkode_mem)
 {
   int flag;
@@ -976,16 +976,17 @@ static int SetupARK(SUNContext ctx, UserData* udata, N_Vector u,
   }
   else
   {
-    switch (udata->controller) {
-    case (ARK_ADAPT_PID):      *Ctrl = SUNAdaptController_PID(ctx);     break;
-    case (ARK_ADAPT_PI):       *Ctrl = SUNAdaptController_PI(ctx);      break;
-    case (ARK_ADAPT_I):        *Ctrl = SUNAdaptController_I(ctx);       break;
-    case (ARK_ADAPT_EXP_GUS):  *Ctrl = SUNAdaptController_ExpGus(ctx);  break;
-    case (ARK_ADAPT_IMP_GUS):  *Ctrl = SUNAdaptController_ImpGus(ctx);  break;
+    switch (udata->controller)
+    {
+    case (ARK_ADAPT_PID): *Ctrl = SUNAdaptController_PID(ctx); break;
+    case (ARK_ADAPT_PI): *Ctrl = SUNAdaptController_PI(ctx); break;
+    case (ARK_ADAPT_I): *Ctrl = SUNAdaptController_I(ctx); break;
+    case (ARK_ADAPT_EXP_GUS): *Ctrl = SUNAdaptController_ExpGus(ctx); break;
+    case (ARK_ADAPT_IMP_GUS): *Ctrl = SUNAdaptController_ImpGus(ctx); break;
     case (ARK_ADAPT_IMEX_GUS): *Ctrl = SUNAdaptController_ImExGus(ctx); break;
     }
     flag = ARKStepSetAdaptController(*arkode_mem, *Ctrl);
-    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
+    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) { return 1; }
   }
 
   // Set max steps between outputs
@@ -1000,7 +1001,7 @@ static int SetupARK(SUNContext ctx, UserData* udata, N_Vector u,
 }
 
 static int SetupMRI(SUNContext ctx, UserData* udata, N_Vector y,
-                    SUNLinearSolver LS, SUNAdaptController *Ctrl,
+                    SUNLinearSolver LS, SUNAdaptController* Ctrl,
                     void** arkode_mem, MRIStepInnerStepper* stepper)
 {
   int flag;
@@ -1034,16 +1035,17 @@ static int SetupMRI(SUNContext ctx, UserData* udata, N_Vector y,
   }
   else
   {
-    switch (udata->controller) {
-    case (ARK_ADAPT_PID):      *Ctrl = SUNAdaptController_PID(ctx);     break;
-    case (ARK_ADAPT_PI):       *Ctrl = SUNAdaptController_PI(ctx);      break;
-    case (ARK_ADAPT_I):        *Ctrl = SUNAdaptController_I(ctx);       break;
-    case (ARK_ADAPT_EXP_GUS):  *Ctrl = SUNAdaptController_ExpGus(ctx);  break;
-    case (ARK_ADAPT_IMP_GUS):  *Ctrl = SUNAdaptController_ImpGus(ctx);  break;
+    switch (udata->controller)
+    {
+    case (ARK_ADAPT_PID): *Ctrl = SUNAdaptController_PID(ctx); break;
+    case (ARK_ADAPT_PI): *Ctrl = SUNAdaptController_PI(ctx); break;
+    case (ARK_ADAPT_I): *Ctrl = SUNAdaptController_I(ctx); break;
+    case (ARK_ADAPT_EXP_GUS): *Ctrl = SUNAdaptController_ExpGus(ctx); break;
+    case (ARK_ADAPT_IMP_GUS): *Ctrl = SUNAdaptController_ImpGus(ctx); break;
     case (ARK_ADAPT_IMEX_GUS): *Ctrl = SUNAdaptController_ImExGus(ctx); break;
     }
     flag = ARKStepSetAdaptController(inner_arkode_mem, *Ctrl);
-    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
+    if (check_flag(&flag, "ARKStepSetAdaptController", 1)) { return 1; }
   }
 
   // Set max steps between outputs
@@ -2285,11 +2287,13 @@ static int ReadInputs(int* argc, char*** argv, UserData* udata)
   // Compute slow step size based on CFL if not set by input
   if (udata->h_slow < ZERO)
   {
-    sunrealtype cfl_u = SUN_RCONST(0.5) / ((udata->Dux / (udata->dx * udata->dx)) +
-                                    (udata->Duy / (udata->dy * udata->dy)));
-    sunrealtype cfl_v = SUN_RCONST(0.5) / ((udata->Dvx / (udata->dx * udata->dx)) +
-                                    (udata->Dvy / (udata->dy * udata->dy)));
-    udata->h_slow  = SUN_RCONST(5.0) * min(cfl_u, cfl_v);
+    sunrealtype cfl_u = SUN_RCONST(0.5) /
+                        ((udata->Dux / (udata->dx * udata->dx)) +
+                         (udata->Duy / (udata->dy * udata->dy)));
+    sunrealtype cfl_v = SUN_RCONST(0.5) /
+                        ((udata->Dvx / (udata->dx * udata->dx)) +
+                         (udata->Dvy / (udata->dy * udata->dy)));
+    udata->h_slow = SUN_RCONST(5.0) * min(cfl_u, cfl_v);
   }
 
   // Return success

@@ -117,8 +117,8 @@ SUNErrCode SUNNonlinSolSetup(SUNNonlinearSolver NLS, N_Vector y, void* mem)
   return (ier);
 }
 
-int SUNNonlinSolSolve(SUNNonlinearSolver NLS, N_Vector y0, N_Vector y,
-                      N_Vector w, sunrealtype tol, sunbooleantype callLSetup, void* mem)
+int SUNNonlinSolSolve(SUNNonlinearSolver NLS, N_Vector y0, N_Vector y, N_Vector w,
+                      sunrealtype tol, sunbooleantype callLSetup, void* mem)
 {
   int status;
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(NLS));

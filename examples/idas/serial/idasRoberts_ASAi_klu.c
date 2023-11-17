@@ -53,7 +53,7 @@
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_klu.h> /* access to KLU linear solver          */
 #include <sunmatrix/sunmatrix_sparse.h> /* access to sparse SUNMatrix           */
@@ -79,7 +79,7 @@
 #define TOUT SUN_RCONST(4e10) /* final time                           */
 
 #define TB1 SUN_RCONST(50.0) /* starting point for adjoint problem   */
-#define TB2 TOUT         /* starting point for adjoint problem   */
+#define TB2 TOUT             /* starting point for adjoint problem   */
 
 #define T1B SUN_RCONST(49.0) /* for IDACalcICB                       */
 
@@ -120,7 +120,8 @@ static int rhsQB(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector yyB,
                  N_Vector ypB, N_Vector rrQB, void* user_dataB);
 
 /* Prototypes of private functions */
-static void PrintOutput(sunrealtype tfinal, N_Vector yB, N_Vector ypB, N_Vector qB);
+static void PrintOutput(sunrealtype tfinal, N_Vector yB, N_Vector ypB,
+                        N_Vector qB);
 static int check_retval(void* returnvalue, char* funcname, int opt);
 
 /*
@@ -555,7 +556,7 @@ static int Jac(sunrealtype t, sunrealtype cj, N_Vector yy, N_Vector yp,
   sunrealtype* yval;
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(JJ);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(JJ);
-  sunrealtype* data        = SUNSparseMatrix_Data(JJ);
+  sunrealtype* data     = SUNSparseMatrix_Data(JJ);
 
   UserData userdata;
   sunrealtype p1, p2, p3;
@@ -690,7 +691,7 @@ static int JacB(sunrealtype tt, sunrealtype cjB, N_Vector yy, N_Vector yp,
   sunrealtype* yvalB;
   sunindextype* colptrsB = SUNSparseMatrix_IndexPointers(JB);
   sunindextype* rowvalsB = SUNSparseMatrix_IndexValues(JB);
-  sunrealtype* dataB        = SUNSparseMatrix_Data(JB);
+  sunrealtype* dataB     = SUNSparseMatrix_Data(JB);
 
   UserData userdata;
   sunrealtype p1, p2, p3;

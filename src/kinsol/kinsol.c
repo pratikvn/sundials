@@ -160,10 +160,10 @@ static int KINConstraint(KINMem kin_mem);
 static void KINForcingTerm(KINMem kin_mem, sunrealtype fnormp);
 static void KINFreeVectors(KINMem kin_mem);
 
-static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1normp,
-                         sunbooleantype* maxStepTaken);
-static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1normp,
-                         sunbooleantype* maxStepTaken);
+static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp,
+                         sunrealtype* f1normp, sunbooleantype* maxStepTaken);
+static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp,
+                         sunrealtype* f1normp, sunbooleantype* maxStepTaken);
 static int KINPicardAA(KINMem kin_mem);
 static int KINFP(KINMem kin_mem);
 
@@ -291,7 +291,7 @@ void* KINCreate(SUNContext sunctx)
   kin_mem->kin_omega_min        = OMEGA_MIN;
   kin_mem->kin_omega_max        = OMEGA_MAX;
 
-  kin_mem->kin_errfp            = stderr;
+  kin_mem->kin_errfp = stderr;
 #if SUNDIALS_LOGGING_LEVEL > 0
   kin_mem->kin_errfp = (kin_mem->kin_sunctx->logger->error_fp)
                          ? kin_mem->kin_sunctx->logger->error_fp
@@ -541,8 +541,8 @@ int KINSol(void* kinmem, N_Vector u, int strategy_in, N_Vector u_scale,
     }
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_TOL, "KINSOL", "KINSol", INFO_TOL, kin_mem->kin_scsteptol,              
-                 kin_mem->kin_fnormtol);
+    KINPrintInfo(kin_mem, PRNT_TOL, "KINSOL", "KINSol", INFO_TOL,
+                 kin_mem->kin_scsteptol, kin_mem->kin_fnormtol);
 #endif
 
     kin_mem->kin_nfe = kin_mem->kin_nnilset = kin_mem->kin_nnilset_sub =
@@ -713,16 +713,15 @@ int KINSol(void* kinmem, N_Vector u, int strategy_in, N_Vector u_scale,
     /* print the current nni, fnorm, and nfe values */
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_NNI, "KINSOL", "KINSol", INFO_NNI, kin_mem->kin_nni, kin_mem->kin_nfe, 
-                 kin_mem->kin_fnorm);
+    KINPrintInfo(kin_mem, PRNT_NNI, "KINSOL", "KINSol", INFO_NNI,
+                 kin_mem->kin_nni, kin_mem->kin_nfe, kin_mem->kin_fnorm);
 #endif
 
     if (ret != CONTINUE_ITERATIONS) { break; }
 
     fflush(kin_mem->kin_errfp);
 
-  }  /* end of loop; return */
-
+  } /* end of loop; return */
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
   KINPrintInfo(kin_mem, PRNT_RETVAL, "KINSOL", "KINSol", INFO_RETVAL, ret);
@@ -1556,8 +1555,8 @@ static int KINSolInit(KINMem kin_mem)
 
   /* all error checking is complete at this point */
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_TOL, "KINSOL", "KINSolInit", INFO_TOL, kin_mem->kin_scsteptol,         
-                 kin_mem->kin_fnormtol);
+  KINPrintInfo(kin_mem, PRNT_TOL, "KINSOL", "KINSolInit", INFO_TOL,
+               kin_mem->kin_scsteptol, kin_mem->kin_fnormtol);
 #endif
 
   /* calculate the default value for mxnewtstep (maximum Newton step) */
@@ -1653,8 +1652,8 @@ static int KINSolInit(KINMem kin_mem)
   kin_mem->kin_f1norm    = HALF * kin_mem->kin_fnorm * kin_mem->kin_fnorm;
   kin_mem->kin_fnorm_sub = kin_mem->kin_fnorm;
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_NNI, "KINSOL", "KINSolInit",
-                 INFO_NNI, kin_mem->kin_nni, kin_mem->kin_nfe, kin_mem->kin_fnorm);
+  KINPrintInfo(kin_mem, PRNT_NNI, "KINSOL", "KINSolInit", INFO_NNI,
+               kin_mem->kin_nni, kin_mem->kin_nfe, kin_mem->kin_fnorm);
 #endif
 
   /* problem has now been successfully initialized */
@@ -1741,8 +1740,8 @@ static int KINLinSolDrv(KINMem kin_mem)
  * violated, or if the norm of pp is greater than mxnewtstep.
  */
 
-static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1normp,
-                         sunbooleantype* maxStepTaken)
+static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp,
+                         sunrealtype* f1normp, sunbooleantype* maxStepTaken)
 {
   SUNAssignSUNCTX(kin_mem->kin_sunctx);
 
@@ -1761,7 +1760,7 @@ static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
     pnorm = kin_mem->kin_mxnewtstep;
   }
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_PNORM, "KINSOL", "KINFullNewton", INFO_PNORM, pnorm);
+  KINPrintInfo(kin_mem, PRNT_PNORM, "KINSOL", "KINFullNewton", INFO_PNORM, pnorm);
 #endif
 
   /* If constraints are active, then constrain the step accordingly */
@@ -1779,12 +1778,16 @@ static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
         N_VScale(kin_mem->kin_stepmul, kin_mem->kin_pp, kin_mem->kin_pp));
       pnorm *= kin_mem->kin_stepmul;
       kin_mem->kin_stepl = pnorm;
-  #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-      KINPrintInfo(kin_mem, PRNT_PNORM, "KINSOL", "KINFullNewton", INFO_PNORM, pnorm);
-  #endif
-      if (pnorm <= kin_mem->kin_scsteptol) {
-        N_VLinearSum(ONE, kin_mem->kin_uu, ONE, kin_mem->kin_pp, kin_mem->kin_unew);
-        return(STEP_TOO_SMALL);}
+#if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
+      KINPrintInfo(kin_mem, PRNT_PNORM, "KINSOL", "KINFullNewton", INFO_PNORM,
+                   pnorm);
+#endif
+      if (pnorm <= kin_mem->kin_scsteptol)
+      {
+        N_VLinearSum(ONE, kin_mem->kin_uu, ONE, kin_mem->kin_pp,
+                     kin_mem->kin_unew);
+        return (STEP_TOO_SMALL);
+      }
     }
   }
 
@@ -1836,7 +1839,8 @@ static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
   kin_mem->kin_sJpnorm *= ratio;
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-  KINPrintInfo(kin_mem, PRNT_FNORM, "KINSOL", "KINFullNewton", INFO_FNORM, *fnormp);
+  KINPrintInfo(kin_mem, PRNT_FNORM, "KINSOL", "KINFullNewton", INFO_FNORM,
+               *fnormp);
 #endif
 
   if (pnorm > (POINT99 * kin_mem->kin_mxnewtstep)) { *maxStepTaken = SUNTRUE; }
@@ -1891,8 +1895,8 @@ static int KINFullNewton(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
  * condition, as rl can only decrease from 1 at that stage)
  */
 
-static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1normp,
-                         sunbooleantype* maxStepTaken)
+static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp,
+                         sunrealtype* f1normp, sunbooleantype* maxStepTaken)
 {
   SUNAssignSUNCTX(kin_mem->kin_sunctx);
 
@@ -1948,12 +1952,16 @@ static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
       pnorm *= kin_mem->kin_stepmul;
       rlmax              = ONE;
       kin_mem->kin_stepl = pnorm;
-  #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-      KINPrintInfo(kin_mem, PRNT_PNORM1, "KINSOL", "KINLineSearch", INFO_PNORM1, pnorm);
-  #endif
-      if (pnorm <= kin_mem->kin_scsteptol) {
-        N_VLinearSum(ONE, kin_mem->kin_uu, ONE, kin_mem->kin_pp, kin_mem->kin_unew);
-        return(STEP_TOO_SMALL);}
+#if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
+      KINPrintInfo(kin_mem, PRNT_PNORM1, "KINSOL", "KINLineSearch", INFO_PNORM1,
+                   pnorm);
+#endif
+      if (pnorm <= kin_mem->kin_scsteptol)
+      {
+        N_VLinearSum(ONE, kin_mem->kin_uu, ONE, kin_mem->kin_pp,
+                     kin_mem->kin_unew);
+        return (STEP_TOO_SMALL);
+      }
     }
   }
 
@@ -2008,7 +2016,8 @@ static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
   rl      = ONE;
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-  KINPrintInfo(kin_mem, PRNT_LAM, "KINSOL", "KINLineSearch", INFO_LAM, rlmin, kin_mem->kin_f1norm, pnorm);
+  KINPrintInfo(kin_mem, PRNT_LAM, "KINSOL", "KINLineSearch", INFO_LAM, rlmin,
+               kin_mem->kin_f1norm, pnorm);
 #endif
 
   /* Loop until the ALPHA condition is satisfied. Terminate if rl becomes too small */
@@ -2020,8 +2029,8 @@ static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
     alpha_cond = kin_mem->kin_f1norm + (alpha * slpi * rl);
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_ALPHA, "KINSOL", "KINLinesearch",
-                 INFO_ALPHA, *fnormp, *f1normp, alpha_cond, rl);
+    KINPrintInfo(kin_mem, PRNT_ALPHA, "KINSOL", "KINLinesearch", INFO_ALPHA,
+                 *fnormp, *f1normp, alpha_cond, rl);
 #endif
 
     /* If ALPHA condition is satisfied, break out from loop */
@@ -2122,12 +2131,12 @@ static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
         beta_cond  = kin_mem->kin_f1norm + (beta * slpi * rl);
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-        KINPrintInfo(kin_mem, PRNT_BETA, "KINSOL", "KINLineSearch",
-                     INFO_BETA, *f1normp, beta_cond, rl);
+        KINPrintInfo(kin_mem, PRNT_BETA, "KINSOL", "KINLineSearch", INFO_BETA,
+                     *f1normp, beta_cond, rl);
 #endif
-
-      } while (((*f1normp) <= alpha_cond) &&
-               ((*f1normp) < beta_cond) && (rl < rlmax));
+      }
+      while (((*f1normp) <= alpha_cond) && ((*f1normp) < beta_cond) &&
+             (rl < rlmax));
 
     } /* end if (rl == ONE) block */
 
@@ -2159,9 +2168,10 @@ static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
                      INFO_ALPHABETA, *f1normp, alpha_cond, beta_cond, rl);
 #endif
 
-        if ((*f1normp) > alpha_cond) rldiff = rlinc;
-        else if (*f1normp < beta_cond) {
-          rllo = rl;
+        if ((*f1normp) > alpha_cond) { rldiff = rlinc; }
+        else if (*f1normp < beta_cond)
+        {
+          rllo   = rl;
           rldiff = rldiff - rlinc;
         }
 
@@ -2205,7 +2215,7 @@ static int KINLineSearch(KINMem kin_mem, sunrealtype* fnormp, sunrealtype* f1nor
   kin_mem->kin_nbktrk += nbktrk_l;
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_ADJ, "KINSOL", "KINLineSearch", INFO_ADJ, nbktrk_l);
+  KINPrintInfo(kin_mem, PRNT_ADJ, "KINSOL", "KINLineSearch", INFO_ADJ, nbktrk_l);
 #endif
 
   /* scale sFdotJp and sJpnorm by rl * ratio for later use in KINForcingTerm */
@@ -2396,7 +2406,9 @@ static int KINStop(KINMem kin_mem, sunbooleantype maxStepTaken, int sflag)
           kin_mem->kin_sthrsh = TWO;
           return (CONTINUE_ITERATIONS);
         }
-        else { /* Otherwise, we cannot do anything, so just return. */ }
+        else
+        { /* Otherwise, we cannot do anything, so just return. */
+        }
       }
       else
       {
@@ -2605,8 +2617,7 @@ void KINPrintInfo(KINMem kin_mem, int info_code, const char* module,
   }
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_INFO
-  SUNLogger_QueueMsg(KIN_LOGGER, SUN_LOGLEVEL_INFO,
-    "KINSOL", fname, "%s", msg);
+  SUNLogger_QueueMsg(KIN_LOGGER, SUN_LOGLEVEL_INFO, "KINSOL", fname, "%s", msg);
 #endif
 
   /* finalize argument processing */
@@ -2849,9 +2860,9 @@ static int KINPicardAA(KINMem kin_mem)
 
     fflush(kin_mem->kin_errfp);
 
-  }  /* end of loop; return */
+  } /* end of loop; return */
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGLEVEL_INFO
-    KINPrintInfo(kin_mem, PRNT_RETVAL, "KINSOL", "KINPicardAA", INFO_RETVAL, ret);
+  KINPrintInfo(kin_mem, PRNT_RETVAL, "KINSOL", "KINPicardAA", INFO_RETVAL, ret);
 #endif
 
   return (ret);
@@ -2933,11 +2944,11 @@ static int KINFP(KINMem kin_mem)
 {
   SUNAssignSUNCTX(kin_mem->kin_sunctx);
 
-  int retval;       /* return value from user func */
-  int ret;          /* iteration status            */
-  long int iter_aa; /* iteration count for AA      */
-  sunrealtype tolfac;  /* tolerance adjustment factor */
-  N_Vector delta;   /* temporary workspace vector  */
+  int retval;         /* return value from user func */
+  int ret;            /* iteration status            */
+  long int iter_aa;   /* iteration count for AA      */
+  sunrealtype tolfac; /* tolerance adjustment factor */
+  N_Vector delta;     /* temporary workspace vector  */
 
   delta  = kin_mem->kin_vtemp1;
   ret    = CONTINUE_ITERATIONS;
@@ -3081,7 +3092,8 @@ static int KINFP(KINMem kin_mem)
  */
 
 static int AndersonAcc(KINMem kin_mem, N_Vector gval, N_Vector fv, N_Vector x,
-                       N_Vector xold, long int iter, sunrealtype* R, sunrealtype* gamma)
+                       N_Vector xold, long int iter, sunrealtype* R,
+                       sunrealtype* gamma)
 {
   SUNAssignSUNCTX(kin_mem->kin_sunctx);
 
@@ -3094,9 +3106,9 @@ static int AndersonAcc(KINMem kin_mem, N_Vector gval, N_Vector fv, N_Vector x,
   sunbooleantype dotprodSB = SUNFALSE;
 
   /* local shortcuts for fused vector operation */
-  int nvec     = 0;
+  int nvec        = 0;
   sunrealtype* cv = kin_mem->kin_cv;
-  N_Vector* Xv = kin_mem->kin_Xv;
+  N_Vector* Xv    = kin_mem->kin_Xv;
 
   /* local dot product flag for single buffer reductions */
   if ((kin_mem->kin_vtemp2->ops->nvdotprodlocal ||

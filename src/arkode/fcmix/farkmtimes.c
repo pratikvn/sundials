@@ -33,9 +33,10 @@
 extern "C" {
 #endif
 
-extern void FARK_MTSETUP(sunrealtype* T, long int* IPAR, sunrealtype* RPAR, int* IER);
-extern void FARK_MTIMES(sunrealtype* V, sunrealtype* MV, sunrealtype* T, long int* IPAR,
-                        sunrealtype* RPAR, int* IER);
+extern void FARK_MTSETUP(sunrealtype* T, long int* IPAR, sunrealtype* RPAR,
+                         int* IER);
+extern void FARK_MTIMES(sunrealtype* V, sunrealtype* MV, sunrealtype* T,
+                        long int* IPAR, sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }

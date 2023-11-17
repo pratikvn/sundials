@@ -62,8 +62,8 @@
 /* Problem Constants */
 
 #define XMAX SUN_RCONST(2.0)   /* domain boundary            */
-#define MX   20            /* mesh dimension             */
-#define NEQ  MX            /* number of equations        */
+#define MX   20                /* mesh dimension             */
+#define NEQ  MX                /* number of equations        */
 #define ATOL SUN_RCONST(1.e-5) /* scalar absolute tolerance  */
 #define T0   SUN_RCONST(0.0)   /* initial time               */
 #define TOUT SUN_RCONST(2.5)   /* output time increment      */
@@ -87,7 +87,7 @@ typedef struct
   sunindextype local_N;
   int npes, my_pe; /* total number of processes and current ID */
   sunindextype nperpe, nrem;
-  MPI_Comm comm;     /* MPI communicator                         */
+  MPI_Comm comm;        /* MPI communicator                         */
   sunrealtype *z1, *z2; /* work space                               */
 }* UserData;
 

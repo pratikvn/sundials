@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
   if (check_flag(flag, "true_sol")) { return 1; }
 
   sunrealtype* ydata = N_VGetArrayPointer(y);
-  ydata[0]        = utrue;
-  ydata[1]        = vtrue;
+  ydata[0]           = utrue;
+  ydata[1]           = vtrue;
 
   // Create Ginkgo dense matrix and linear solver
 #if defined(USE_OMP)
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
 
   // Attach user data pointer
   sunrealtype udata[4] = {-TWO, HALF, HALF, -ONE};
-  flag              = CVodeSetUserData(cvode_mem, udata);
+  flag                 = CVodeSetUserData(cvode_mem, udata);
   if (check_flag(flag, "CVodeSetUserData")) { return 1; }
 
   // Initial time and fist output time
@@ -199,8 +199,8 @@ int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   const sunrealtype tmp2 = (-TWO + v * v - s(t)) / (TWO * v);
 
   sunrealtype* fdata = N_VGetArrayPointer(ydot);
-  fdata[0]        = a * tmp1 + b * tmp2 + rdot(t) / (TWO * u);
-  fdata[1]        = c * tmp1 + d * tmp2 + sdot(t) / (TWO * v);
+  fdata[0]           = a * tmp1 + b * tmp2 + rdot(t) / (TWO * u);
+  fdata[1]           = c * tmp1 + d * tmp2 + sdot(t) / (TWO * v);
 
   return 0;
 }
@@ -221,8 +221,8 @@ int J(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
   const sunrealtype d = udata[3];
 
   sunrealtype* ydata = N_VGetArrayPointer(y);
-  auto J_gko      = static_cast<SUNGkoMatrixType*>(J->content)->GkoMtx();
-  auto J_data     = J_gko->get_values();
+  auto J_gko         = static_cast<SUNGkoMatrixType*>(J->content)->GkoMtx();
+  auto J_data        = J_gko->get_values();
 
   const sunrealtype u = ydata[0];
   const sunrealtype v = ydata[1];

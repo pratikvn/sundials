@@ -32,7 +32,7 @@
 /* Private function prototypes */
 static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
 static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
-                                              N_Vector y);
+                                                 N_Vector y);
 static SUNErrCode SMScaleAddNew_Band(sunrealtype c, SUNMatrix A, SUNMatrix B);
 
 /*
@@ -313,7 +313,7 @@ SUNErrCode SUNMatCopy_Band(SUNMatrix A, SUNMatrix B)
     SM_CONTENT_B(B)->ldata = SM_COLUMNS_B(B) * colSize;
     SM_CONTENT_B(B)->data =
       (sunrealtype*)realloc(SM_CONTENT_B(B)->data,
-                         SM_COLUMNS_B(B) * colSize * sizeof(sunrealtype));
+                            SM_COLUMNS_B(B) * colSize * sizeof(sunrealtype));
     for (j = 0; j < SM_COLUMNS_B(B); j++)
     {
       SM_CONTENT_B(B)->cols[j] = SM_CONTENT_B(B)->data + j * colSize;
@@ -426,7 +426,8 @@ static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
   return SUNTRUE;
 }
 
-static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
+static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
+                                                 N_Vector y)
 {
   /* Vectors must provide nvgetarraypointer */
   if (!x->ops->nvgetarraypointer || !y->ops->nvgetarraypointer)

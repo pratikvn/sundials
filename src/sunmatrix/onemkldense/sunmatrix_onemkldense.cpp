@@ -150,8 +150,8 @@ SUNMatrix SUNMatrix_OneMklDenseBlock(sunindextype num_blocks, sunindextype M,
   {
     // Allocate array of pointers to block data
     retval = SUNMemoryHelper_Alloc(MAT_MEMHELPER(A), &(MAT_BLOCKS(A)),
-                                   sizeof(sunrealtype*) * MAT_NBLOCKS(A), mem_type,
-                                   queue);
+                                   sizeof(sunrealtype*) * MAT_NBLOCKS(A),
+                                   mem_type, queue);
     if (retval)
     {
       SUNDIALS_DEBUG_ERROR("SUNMemory allocation failed\n");
@@ -250,7 +250,7 @@ extern sunrealtype* SUNMatrix_OneMklDense_Block(SUNMatrix A, sunindextype k);
 extern sunrealtype* SUNMatrix_OneMklDense_Column(SUNMatrix A, sunindextype j);
 
 extern sunrealtype* SUNMatrix_OneMklDense_BlockColumn(SUNMatrix A, sunindextype k,
-                                                   sunindextype j);
+                                                      sunindextype j);
 
 /* --------------------------------------------------------------------------
  * Utility functions
@@ -408,7 +408,7 @@ int SUNMatZero_OneMklDense(SUNMatrix A)
   }
 
   const sunindextype ldata = MAT_LDATA(A);
-  sunrealtype* Adata          = MAT_DATAp(A);
+  sunrealtype* Adata       = MAT_DATAp(A);
   sycl::queue* Q           = MAT_QUEUE(A);
   size_t nthreads_total, nthreads_per_block;
 
@@ -448,8 +448,8 @@ int SUNMatCopy_OneMklDense(SUNMatrix A, SUNMatrix B)
   }
 
   const sunindextype ldata = MAT_LDATA(A);
-  sunrealtype* Adata          = MAT_DATAp(A);
-  sunrealtype* Bdata          = MAT_DATAp(B);
+  sunrealtype* Adata       = MAT_DATAp(A);
+  sunrealtype* Bdata       = MAT_DATAp(B);
   sycl::queue* Q           = MAT_QUEUE(A);
   size_t nthreads_total, nthreads_per_block;
 
@@ -481,11 +481,11 @@ int SUNMatScaleAddI_OneMklDense(sunrealtype c, SUNMatrix A)
     return SUNMAT_ILL_INPUT;
   }
 
-  const size_t M  = static_cast<size_t>(MAT_BLOCK_ROWS(A));
-  const size_t N  = static_cast<size_t>(MAT_BLOCK_COLS(A));
-  const size_t B  = static_cast<size_t>(MAT_NBLOCKS(A));
+  const size_t M     = static_cast<size_t>(MAT_BLOCK_ROWS(A));
+  const size_t N     = static_cast<size_t>(MAT_BLOCK_COLS(A));
+  const size_t B     = static_cast<size_t>(MAT_NBLOCKS(A));
   sunrealtype* Adata = MAT_DATAp(A);
-  sycl::queue* Q  = MAT_QUEUE(A);
+  sycl::queue* Q     = MAT_QUEUE(A);
 
   // Compute A = c * A + I
   Q->submit(
@@ -524,8 +524,8 @@ int SUNMatScaleAdd_OneMklDense(sunrealtype c, SUNMatrix A, SUNMatrix B)
   }
 
   const sunindextype ldata = MAT_LDATA(A);
-  sunrealtype* Adata          = MAT_DATAp(A);
-  sunrealtype* Bdata          = MAT_DATAp(B);
+  sunrealtype* Adata       = MAT_DATAp(A);
+  sunrealtype* Bdata       = MAT_DATAp(B);
   sycl::queue* Q           = MAT_QUEUE(A);
   size_t nthreads_total, nthreads_per_block;
 
@@ -577,9 +577,9 @@ int SUNMatMatvec_OneMklDense(SUNMatrix A, N_Vector x, N_Vector y)
   }
   else
   {
-    sycl::queue* Q        = MAT_QUEUE(A);
-    sunindextype M        = MAT_ROWS(A);
-    sunindextype N        = MAT_COLS(A);
+    sycl::queue* Q           = MAT_QUEUE(A);
+    sunindextype M           = MAT_ROWS(A);
+    sunindextype N           = MAT_COLS(A);
     const sunrealtype* Adata = MAT_DATAp(A);
     const sunrealtype* xdata = N_VGetDeviceArrayPointer(x);
     sunrealtype* ydata       = N_VGetDeviceArrayPointer(y);

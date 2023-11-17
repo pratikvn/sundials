@@ -67,11 +67,11 @@ static int check_flag(void* flagvalue, const char* funcname, int opt);
 int main(void)
 {
   /* general problem parameters */
-  sunrealtype T0      = SUN_RCONST(0.0);  /* initial time */
-  sunrealtype T1      = SUN_RCONST(0.4);  /* first output time */
-  sunrealtype TMult   = SUN_RCONST(10.0); /* output time multiplication factor */
-  int Nt           = 12;           /* total number of output times */
-  sunindextype NEQ = 3;            /* number of dependent vars. */
+  sunrealtype T0    = SUN_RCONST(0.0);  /* initial time */
+  sunrealtype T1    = SUN_RCONST(0.4);  /* first output time */
+  sunrealtype TMult = SUN_RCONST(10.0); /* output time multiplication factor */
+  int Nt            = 12;               /* total number of output times */
+  sunindextype NEQ  = 3;                /* number of dependent vars. */
 
   /* rootfinding variables */
   int rootsfound[2];

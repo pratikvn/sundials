@@ -500,7 +500,10 @@ int arkLSSetMassLinearSolver(void* arkode_mem, SUNLinearSolver LS, SUNMatrix M,
   {
     arkProcessError(ark_mem, ARKLS_MEM_FAIL, __LINE__, __func__, __FILE__,
                     MSG_LS_MEM_FAIL);
-    if (!iterative) SUNCheckCallLastErrNoRet(SUNMatDestroy(arkls_mem->M_lu));
+    if (!iterative)
+    {
+      SUNCheckCallLastErrNoRet(SUNMatDestroy(arkls_mem->M_lu));
+    }
     free(arkls_mem);
     arkls_mem = NULL;
     return (ARKLS_MEM_FAIL);
@@ -523,7 +526,10 @@ int arkLSSetMassLinearSolver(void* arkode_mem, SUNLinearSolver LS, SUNMatrix M,
     arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
                     "Failed to attach to time stepper module");
     SUNCheckCallLastErrNoRet(N_VDestroy(arkls_mem->x));
-    if (!iterative) SUNCheckCallLastErrNoRet(SUNMatDestroy(arkls_mem->M_lu));
+    if (!iterative)
+    {
+      SUNCheckCallLastErrNoRet(SUNMatDestroy(arkls_mem->M_lu));
+    }
     free(arkls_mem);
     arkls_mem = NULL;
     return (retval);
@@ -2222,8 +2228,8 @@ int arkLsBandDQJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
   Jv = [fi(y + v*sig) - fi(y)]/sig, where sig = 1 / ||v||_WRMS,
   i.e. the WRMS norm of v*sig is 1.
   ---------------------------------------------------------------*/
-int arkLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                  void* arkode_mem, N_Vector work)
+int arkLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                  N_Vector fy, void* arkode_mem, N_Vector work)
 {
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
@@ -2568,9 +2574,9 @@ int arkLsInitialize(void* arkode_mem)
 
   This routine then calls the LS 'setup' routine with A.
   ---------------------------------------------------------------*/
-int arkLsSetup(void* arkode_mem, int convfail, sunrealtype tpred, N_Vector ypred,
-               N_Vector fpred, sunbooleantype* jcurPtr, N_Vector vtemp1,
-               N_Vector vtemp2, N_Vector vtemp3)
+int arkLsSetup(void* arkode_mem, int convfail, sunrealtype tpred,
+               N_Vector ypred, N_Vector fpred, sunbooleantype* jcurPtr,
+               N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
 {
   ARKodeMem ark_mem      = NULL;
   ARKLsMem arkls_mem     = NULL;
@@ -2748,7 +2754,7 @@ int arkLsSolve(void* arkode_mem, N_Vector b, sunrealtype tnow, N_Vector ynow,
     bnorm  = SUNCheckCallLastErrNoRet(N_VWrmsNorm(b, ark_mem->rwt));
     if (bnorm <= deltar)
     {
-      if (mnewt > 0) SUNCheckCallLastErrNoRet(N_VConst(ZERO, b));
+      if (mnewt > 0) { SUNCheckCallLastErrNoRet(N_VConst(ZERO, b)); }
       arkls_mem->last_flag = ARKLS_SUCCESS;
       return (arkls_mem->last_flag);
     }
@@ -2862,13 +2868,14 @@ int arkLsSolve(void* arkode_mem, N_Vector b, sunrealtype tnow, N_Vector ynow,
   /* Log solver statistics to diagnostics file (if requested) */
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
   SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::arkLsSolve",
-                     "ls-stats", "bnorm = %"RSYM", resnorm = %"RSYM
+                     "ls-stats",
+                     "bnorm = %" RSYM ", resnorm = %" RSYM
                      ", ls_iters = %i, prec_solves = %i",
-                     bnorm, resnorm, nli_inc, (int) (arkls_mem->nps - nps_inc));
+                     bnorm, resnorm, nli_inc, (int)(arkls_mem->nps - nps_inc));
 #else
   /* Suppress warning about set but unused variables due to logging ifdef. */
-  (void) nps_inc;
-  (void) resnorm;
+  (void)nps_inc;
+  (void)resnorm;
 #endif
 
   /* Interpret solver return value  */
@@ -3313,14 +3320,14 @@ int arkLsMassSolve(void* arkode_mem, N_Vector b, sunrealtype nlscoef)
 
   /* Log solver statistics to diagnostics file (if requested) */
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
-  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
-                     "ARKODE::arkLsMassSolve", "mass-ls-stats",
-                     "resnorm = %"RSYM", ls_iters = %i, prec_solves = %i",
-                     resnorm, nli_inc, (int) (arkls_mem->nps - nps_inc));
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::arkLsMassSolve",
+                     "mass-ls-stats",
+                     "resnorm = %" RSYM ", ls_iters = %i, prec_solves = %i",
+                     resnorm, nli_inc, (int)(arkls_mem->nps - nps_inc));
 #else
   /* Suppress warning about set but unused variables due to logging ifdef. */
-  (void) nps_inc;
-  (void) resnorm;
+  (void)nps_inc;
+  (void)resnorm;
 #endif
 
   /* Interpret solver return value  */

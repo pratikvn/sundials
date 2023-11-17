@@ -41,7 +41,7 @@
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_types.h>  /* definition of type sunrealtype          */
+#include <sundials/sundials_types.h> /* definition of type sunrealtype          */
 #include <sunlinsol/sunlinsol_band.h> /* access to band SUNLinearSolver       */
 #include <sunmatrix/sunmatrix_band.h> /* access to band SUNMatrix             */
 
@@ -296,7 +296,8 @@ static int SetInitialProfile(UserData data, N_Vector uu, N_Vector up,
     {
       xfact      = data->dx * i;
       loc        = offset + i;
-      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                   (ONE - yfact);
     }
   }
 

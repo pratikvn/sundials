@@ -71,10 +71,12 @@ static constexpr sunindextype zeroIdx = 0;
 
 // Helpful macros
 #define NVEC_RAJA_CONTENT(x) ((N_VectorContent_Raja)(x->content))
-#define NVEC_RAJA_MEMSIZE(x) (NVEC_RAJA_CONTENT(x)->length * sizeof(sunrealtype))
+#define NVEC_RAJA_MEMSIZE(x) \
+  (NVEC_RAJA_CONTENT(x)->length * sizeof(sunrealtype))
 #define NVEC_RAJA_MEMHELP(x) (NVEC_RAJA_CONTENT(x)->mem_helper)
 #define NVEC_RAJA_HDATAp(x)  ((sunrealtype*)NVEC_RAJA_CONTENT(x)->host_data->ptr)
-#define NVEC_RAJA_DDATAp(x)  ((sunrealtype*)NVEC_RAJA_CONTENT(x)->device_data->ptr)
+#define NVEC_RAJA_DDATAp(x) \
+  ((sunrealtype*)NVEC_RAJA_CONTENT(x)->device_data->ptr)
 
 // Macros to access vector private content
 #define NVEC_RAJA_PRIVATE(x) \
@@ -252,7 +254,8 @@ N_Vector N_VNew_Raja(sunindextype length, SUNContext sunctx)
   return (v);
 }
 
-N_Vector N_VNewWithMemHelp_Raja(sunindextype length, sunbooleantype use_managed_mem,
+N_Vector N_VNewWithMemHelp_Raja(sunindextype length,
+                                sunbooleantype use_managed_mem,
                                 SUNMemoryHelper helper, SUNContext sunctx)
 {
   N_Vector v;
@@ -332,8 +335,8 @@ N_Vector N_VNewManaged_Raja(sunindextype length, SUNContext sunctx)
   return (v);
 }
 
-N_Vector N_VMake_Raja(sunindextype length, sunrealtype* h_vdata, sunrealtype* d_vdata,
-                      SUNContext sunctx)
+N_Vector N_VMake_Raja(sunindextype length, sunrealtype* h_vdata,
+                      sunrealtype* d_vdata, SUNContext sunctx)
 {
   N_Vector v;
 
@@ -748,18 +751,19 @@ void N_VSpace_Raja(N_Vector X, sunindextype* lrw, sunindextype* liw)
 void N_VConst_Raja(sunrealtype c, N_Vector Z)
 {
   const sunindextype N = NVEC_RAJA_CONTENT(Z)->length;
-  sunrealtype* zdata      = NVEC_RAJA_DDATAp(Z);
+  sunrealtype* zdata   = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
                                           [=] RAJA_DEVICE(sunindextype i)
                                           { zdata[i] = c; });
 }
 
-void N_VLinearSum_Raja(sunrealtype a, N_Vector X, sunrealtype b, N_Vector Y, N_Vector Z)
+void N_VLinearSum_Raja(sunrealtype a, N_Vector X, sunrealtype b, N_Vector Y,
+                       N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
   const sunrealtype* ydata = NVEC_RAJA_DDATAp(Y);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -773,7 +777,7 @@ void N_VProd_Raja(N_Vector X, N_Vector Y, N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
   const sunrealtype* ydata = NVEC_RAJA_DDATAp(Y);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -785,7 +789,7 @@ void N_VDiv_Raja(N_Vector X, N_Vector Y, N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
   const sunrealtype* ydata = NVEC_RAJA_DDATAp(Y);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -796,7 +800,7 @@ void N_VDiv_Raja(N_Vector X, N_Vector Y, N_Vector Z)
 void N_VScale_Raja(sunrealtype c, N_Vector X, N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -807,7 +811,7 @@ void N_VScale_Raja(sunrealtype c, N_Vector X, N_Vector Z)
 void N_VAbs_Raja(N_Vector X, N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -818,7 +822,7 @@ void N_VAbs_Raja(N_Vector X, N_Vector Z)
 void N_VInv_Raja(N_Vector X, N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -829,7 +833,7 @@ void N_VInv_Raja(N_Vector X, N_Vector Z)
 void N_VAddConst_Raja(N_Vector X, sunrealtype b, N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -841,7 +845,7 @@ sunrealtype N_VDotProd_Raja(N_Vector X, N_Vector Y)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
   const sunrealtype* ydata = NVEC_RAJA_DDATAp(Y);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
 
   RAJA::ReduceSum<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(0.0);
   RAJA::forall<SUNDIALS_RAJA_EXEC_REDUCE>(RAJA::RangeSegment(zeroIdx, N),
@@ -854,7 +858,7 @@ sunrealtype N_VDotProd_Raja(N_Vector X, N_Vector Y)
 sunrealtype N_VMaxNorm_Raja(N_Vector X)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
 
   RAJA::ReduceMax<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(0.0);
   RAJA::forall<SUNDIALS_RAJA_EXEC_REDUCE>(RAJA::RangeSegment(zeroIdx, N),
@@ -868,7 +872,7 @@ sunrealtype N_VWSqrSumLocal_Raja(N_Vector X, N_Vector W)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
   const sunrealtype* wdata = NVEC_RAJA_DDATAp(W);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
 
   RAJA::ReduceSum<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(0.0);
   RAJA::forall<SUNDIALS_RAJA_EXEC_REDUCE>(RAJA::RangeSegment(zeroIdx, N),
@@ -882,8 +886,8 @@ sunrealtype N_VWSqrSumLocal_Raja(N_Vector X, N_Vector W)
 
 sunrealtype N_VWrmsNorm_Raja(N_Vector X, N_Vector W)
 {
-  const sunrealtype sum   = N_VWSqrSumLocal_Raja(X, W);
-  const sunindextype N = NVEC_RAJA_CONTENT(X)->length;
+  const sunrealtype sum = N_VWSqrSumLocal_Raja(X, W);
+  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
   return std::sqrt(sum / N);
 }
 
@@ -892,7 +896,7 @@ sunrealtype N_VWSqrSumMaskLocal_Raja(N_Vector X, N_Vector W, N_Vector ID)
   const sunrealtype* xdata  = NVEC_RAJA_DDATAp(X);
   const sunrealtype* wdata  = NVEC_RAJA_DDATAp(W);
   const sunrealtype* iddata = NVEC_RAJA_DDATAp(ID);
-  const sunindextype N   = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N      = NVEC_RAJA_CONTENT(X)->length;
 
   RAJA::ReduceSum<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(0.0);
   RAJA::forall<SUNDIALS_RAJA_EXEC_REDUCE>(RAJA::RangeSegment(zeroIdx, N),
@@ -908,15 +912,15 @@ sunrealtype N_VWSqrSumMaskLocal_Raja(N_Vector X, N_Vector W, N_Vector ID)
 
 sunrealtype N_VWrmsNormMask_Raja(N_Vector X, N_Vector W, N_Vector ID)
 {
-  const sunrealtype sum   = N_VWSqrSumMaskLocal_Raja(X, W, ID);
-  const sunindextype N = NVEC_RAJA_CONTENT(X)->length;
+  const sunrealtype sum = N_VWSqrSumMaskLocal_Raja(X, W, ID);
+  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
   return std::sqrt(sum / N);
 }
 
 sunrealtype N_VMin_Raja(N_Vector X)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
 
   RAJA::ReduceMin<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(
     std::numeric_limits<sunrealtype>::max());
@@ -935,7 +939,7 @@ sunrealtype N_VWL2Norm_Raja(N_Vector X, N_Vector W)
 sunrealtype N_VL1Norm_Raja(N_Vector X)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
 
   RAJA::ReduceSum<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(0.0);
   RAJA::forall<SUNDIALS_RAJA_EXEC_REDUCE>(RAJA::RangeSegment(zeroIdx, N),
@@ -948,7 +952,7 @@ sunrealtype N_VL1Norm_Raja(N_Vector X)
 void N_VCompare_Raja(sunrealtype c, N_Vector X, N_Vector Z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(X);
-  const sunindextype N  = NVEC_RAJA_CONTENT(X)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(X)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(Z);
 
   RAJA::forall<SUNDIALS_RAJA_EXEC_STREAM>(RAJA::RangeSegment(zeroIdx, N),
@@ -961,7 +965,7 @@ void N_VCompare_Raja(sunrealtype c, N_Vector X, N_Vector Z)
 sunbooleantype N_VInvTest_Raja(N_Vector x, N_Vector z)
 {
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(x);
-  const sunindextype N  = NVEC_RAJA_CONTENT(x)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(x)->length;
   sunrealtype* zdata       = NVEC_RAJA_DDATAp(z);
 
   RAJA::ReduceSum<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(ZERO);
@@ -982,7 +986,7 @@ sunbooleantype N_VConstrMask_Raja(N_Vector c, N_Vector x, N_Vector m)
 {
   const sunrealtype* cdata = NVEC_RAJA_DDATAp(c);
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(x);
-  const sunindextype N  = NVEC_RAJA_CONTENT(x)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(x)->length;
   sunrealtype* mdata       = NVEC_RAJA_DDATAp(m);
 
   RAJA::ReduceSum<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(ZERO);
@@ -1006,7 +1010,7 @@ sunrealtype N_VMinQuotient_Raja(N_Vector num, N_Vector denom)
 {
   const sunrealtype* ndata = NVEC_RAJA_DDATAp(num);
   const sunrealtype* ddata = NVEC_RAJA_DDATAp(denom);
-  const sunindextype N  = NVEC_RAJA_CONTENT(num)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(num)->length;
 
   RAJA::ReduceMin<SUNDIALS_RAJA_REDUCE, sunrealtype> gpu_result(
     std::numeric_limits<sunrealtype>::max());
@@ -1028,7 +1032,7 @@ sunrealtype N_VMinQuotient_Raja(N_Vector num, N_Vector denom)
 int N_VLinearCombination_Raja(int nvec, sunrealtype* c, N_Vector* X, N_Vector z)
 {
   const sunindextype N = NVEC_RAJA_CONTENT(z)->length;
-  sunrealtype* zdata      = NVEC_RAJA_DDATAp(z);
+  sunrealtype* zdata   = NVEC_RAJA_DDATAp(z);
 
   // Fused op workspace shortcuts
   sunrealtype* cdata  = NULL;
@@ -1077,7 +1081,7 @@ int N_VLinearCombination_Raja(int nvec, sunrealtype* c, N_Vector* X, N_Vector z)
 int N_VScaleAddMulti_Raja(int nvec, sunrealtype* c, N_Vector x, N_Vector* Y,
                           N_Vector* Z)
 {
-  const sunindextype N  = NVEC_RAJA_CONTENT(x)->length;
+  const sunindextype N     = NVEC_RAJA_CONTENT(x)->length;
   const sunrealtype* xdata = NVEC_RAJA_DDATAp(x);
 
   // Shortcuts to the fused op workspace
@@ -1138,8 +1142,8 @@ int N_VScaleAddMulti_Raja(int nvec, sunrealtype* c, N_Vector x, N_Vector* Y,
  * -----------------------------------------------------------------------------
  */
 
-int N_VLinearSumVectorArray_Raja(int nvec, sunrealtype a, N_Vector* X, sunrealtype b,
-                                 N_Vector* Y, N_Vector* Z)
+int N_VLinearSumVectorArray_Raja(int nvec, sunrealtype a, N_Vector* X,
+                                 sunrealtype b, N_Vector* Y, N_Vector* Z)
 {
   const sunindextype N = NVEC_RAJA_CONTENT(Z[0])->length;
 
@@ -1738,9 +1742,9 @@ int AllocateData(N_Vector v)
 
 static int FusedBuffer_Init(N_Vector v, int nreal, int nptr)
 {
-  int alloc_fail        = 0;
+  int alloc_fail           = 0;
   sunbooleantype alloc_mem = SUNFALSE;
-  size_t bytes          = nreal * sizeof(sunrealtype) + nptr * sizeof(sunrealtype*);
+  size_t bytes = nreal * sizeof(sunrealtype) + nptr * sizeof(sunrealtype*);
 
   // Get the vector private memory structure
   N_PrivateVectorContent_Raja vcp = NVEC_RAJA_PRIVATE(v);
@@ -1818,13 +1822,13 @@ static int FusedBuffer_CopyRealArray(N_Vector v, sunrealtype* rdata, int nval,
   }
 
   sunrealtype* h_buffer = (sunrealtype*)((char*)(vcp->fused_buffer_host->ptr) +
-                                   vcp->fused_buffer_offset);
+                                         vcp->fused_buffer_offset);
 
   for (int j = 0; j < nval; j++) { h_buffer[j] = rdata[j]; }
 
   // Set shortcut to the device buffer and update offset
-  *shortcut =
-    (sunrealtype*)((char*)(vcp->fused_buffer_dev->ptr) + vcp->fused_buffer_offset);
+  *shortcut = (sunrealtype*)((char*)(vcp->fused_buffer_dev->ptr) +
+                             vcp->fused_buffer_offset);
 
   vcp->fused_buffer_offset += nval * sizeof(sunrealtype);
 
@@ -1847,13 +1851,13 @@ static int FusedBuffer_CopyPtrArray1D(N_Vector v, N_Vector* X, int nvec,
   }
 
   sunrealtype** h_buffer = (sunrealtype**)((char*)(vcp->fused_buffer_host->ptr) +
-                                     vcp->fused_buffer_offset);
+                                           vcp->fused_buffer_offset);
 
   for (int j = 0; j < nvec; j++) { h_buffer[j] = NVEC_RAJA_DDATAp(X[j]); }
 
   // Set shortcut to the device buffer and update offset
   *shortcut = (sunrealtype**)((char*)(vcp->fused_buffer_dev->ptr) +
-                           vcp->fused_buffer_offset);
+                              vcp->fused_buffer_offset);
 
   vcp->fused_buffer_offset += nvec * sizeof(sunrealtype*);
 
@@ -1875,7 +1879,7 @@ static int FusedBuffer_CopyPtrArray2D(N_Vector v, N_Vector** X, int nvec,
   }
 
   sunrealtype** h_buffer = (sunrealtype**)((char*)(vcp->fused_buffer_host->ptr) +
-                                     vcp->fused_buffer_offset);
+                                           vcp->fused_buffer_offset);
 
   for (int j = 0; j < nvec; j++)
   {
@@ -1887,7 +1891,7 @@ static int FusedBuffer_CopyPtrArray2D(N_Vector v, N_Vector** X, int nvec,
 
   // Set shortcut to the device buffer and update offset
   *shortcut = (sunrealtype**)((char*)(vcp->fused_buffer_dev->ptr) +
-                           vcp->fused_buffer_offset);
+                              vcp->fused_buffer_offset);
 
   // Update the offset
   vcp->fused_buffer_offset += nvec * nsum * sizeof(sunrealtype*);

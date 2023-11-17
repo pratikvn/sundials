@@ -69,11 +69,12 @@ typedef struct
 int resHeat(sunrealtype tres, N_Vector uu, N_Vector up, N_Vector resval,
             void* user_data);
 
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data);
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data);
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data);
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data);
 
 /* Prototypes for private functions */
 
@@ -362,8 +363,8 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  * pp etc.) are used from the PsetupdHeat argument list.
  */
 
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data)
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data)
 {
   sunindextype i, j, offset, loc, mm;
   sunrealtype *ppv, pelinv;
@@ -400,8 +401,9 @@ int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtyp
  * computed in PrecondHeateq), returning the result in zvec.
  */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data)
 {
   UserData data;
   data = (UserData)prec_data;
@@ -439,7 +441,8 @@ static int SetInitialProfile(UserData data, N_Vector uu, N_Vector up, N_Vector r
     {
       xfact      = data->dx * i;
       loc        = offset + i;
-      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                   (ONE - yfact);
     }
   }
 

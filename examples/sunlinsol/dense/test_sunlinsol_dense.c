@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
   int print_timing;
   int print_on_fail;
   sunindextype j, k;
-  realtype *colj, *xdata, *colIj;
+  realtype *cols, *xdata, *colIj;
   SUNContext sunctx;
 
   if (SUNContext_Create(NULL, &sunctx))
@@ -94,10 +94,10 @@ int main(int argc, char* argv[])
   /* Fill A matrix with uniform random data in [0,1/cols] */
   for (j = 0; j < cols; j++)
   {
-    colj = SUNDenseMatrix_Column(A, j);
+    cols = SUNDenseMatrix_Column(A, j);
     for (k = 0; k < rows; k++)
     {
-      colj[k] = (realtype)rand() / (realtype)RAND_MAX / cols;
+      cols[k] = (realtype)rand() / (realtype)RAND_MAX / cols;
     }
   }
 
@@ -105,8 +105,8 @@ int main(int argc, char* argv[])
   j = cols - 1;
   for (k = 0; k < rows; k++)
   {
-    colj    = SUNDenseMatrix_Column(I, j);
-    colj[k] = 1;
+    cols    = SUNDenseMatrix_Column(I, j);
+    cols[k] = 1;
     j       = j - 1;
   }
 
@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
   {
     for (j = 0; j < cols; j++)
     {
-      colj    = SUNDenseMatrix_Column(A, j);
+      cols    = SUNDenseMatrix_Column(A, j);
       colIj   = SUNDenseMatrix_Column(I, j);
       colj[k] = colj[k] + colIj[k];
     }

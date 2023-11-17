@@ -39,11 +39,12 @@
 extern "C" {
 #endif
 
-extern void FK_PSET(sunrealtype* uudata, sunrealtype* uscaledata, sunrealtype* fvaldata,
-                    sunrealtype* fscaledata, int* ier);
+extern void FK_PSET(sunrealtype* uudata, sunrealtype* uscaledata,
+                    sunrealtype* fvaldata, sunrealtype* fscaledata, int* ier);
 
-extern void FK_PSOL(sunrealtype* uudata, sunrealtype* uscaledata, sunrealtype* fvaldata,
-                    sunrealtype* fscaledata, sunrealtype* vvdata, int* ier);
+extern void FK_PSOL(sunrealtype* uudata, sunrealtype* uscaledata,
+                    sunrealtype* fvaldata, sunrealtype* fscaledata,
+                    sunrealtype* vvdata, int* ier);
 
 #ifdef __cplusplus
 }

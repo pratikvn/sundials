@@ -32,14 +32,16 @@
 extern "C" {
 #endif
 
-extern void FIDA_JTSETUP(sunrealtype* T, sunrealtype* Y, sunrealtype* YP, sunrealtype* R,
-                         sunrealtype* CJ, sunrealtype* EWT, sunrealtype* H,
-                         long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FIDA_JTSETUP(sunrealtype* T, sunrealtype* Y, sunrealtype* YP,
+                         sunrealtype* R, sunrealtype* CJ, sunrealtype* EWT,
+                         sunrealtype* H, long int* IPAR, sunrealtype* RPAR,
+                         int* IER);
 
-extern void FIDA_JTIMES(sunrealtype* T, sunrealtype* Y, sunrealtype* YP, sunrealtype* R,
-                        sunrealtype* V, sunrealtype* FJV, sunrealtype* CJ, sunrealtype* EWT,
-                        sunrealtype* H, long int* IPAR, sunrealtype* RPAR,
-                        sunrealtype* WK1, sunrealtype* WK2, int* IER);
+extern void FIDA_JTIMES(sunrealtype* T, sunrealtype* Y, sunrealtype* YP,
+                        sunrealtype* R, sunrealtype* V, sunrealtype* FJV,
+                        sunrealtype* CJ, sunrealtype* EWT, sunrealtype* H,
+                        long int* IPAR, sunrealtype* RPAR, sunrealtype* WK1,
+                        sunrealtype* WK2, int* IER);
 
 #ifdef __cplusplus
 }
@@ -75,8 +77,8 @@ void FIDA_LSSETJAC(int* flag, int* ier)
 
 /* C interface to user-supplied Fortran routine FIDAJTSETUP; see
    fida.h for further information */
-int FIDAJTSetup(sunrealtype t, N_Vector y, N_Vector yp, N_Vector r, sunrealtype cj,
-                void* user_data)
+int FIDAJTSetup(sunrealtype t, N_Vector y, N_Vector yp, N_Vector r,
+                sunrealtype cj, void* user_data)
 {
   sunrealtype *ydata, *ypdata, *rdata, *ewtdata;
   sunrealtype h;

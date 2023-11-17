@@ -45,9 +45,9 @@ static void VScaleDiff_OpenMPDEV(sunrealtype c, N_Vector x, N_Vector y,
 static void VLin1_OpenMPDEV(sunrealtype a, N_Vector x, N_Vector y,
                             N_Vector z); /* z=ax+y    */
 static void VLin2_OpenMPDEV(sunrealtype a, N_Vector x, N_Vector y,
-                            N_Vector z);                         /* z=ax-y    */
+                            N_Vector z); /* z=ax-y    */
 static void Vaxpy_OpenMPDEV(sunrealtype a, N_Vector x, N_Vector y); /* y <- ax+y */
-static void VScaleBy_OpenMPDEV(sunrealtype a, N_Vector x);          /* x <- ax   */
+static void VScaleBy_OpenMPDEV(sunrealtype a, N_Vector x); /* x <- ax   */
 
 /* Private functions for special cases of vector array operations */
 static int VSumVectorArray_OpenMPDEV(int nvec, N_Vector* X, N_Vector* Y,
@@ -525,8 +525,8 @@ void N_VSpace_OpenMPDEV(N_Vector v, sunindextype* lrw, sunindextype* liw)
  * Compute linear combination z[i] = a*x[i]+b*y[i]
  */
 
-void N_VLinearSum_OpenMPDEV(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y,
-                            N_Vector z)
+void N_VLinearSum_OpenMPDEV(sunrealtype a, N_Vector x, sunrealtype b,
+                            N_Vector y, N_Vector z)
 {
   sunindextype i, N;
   sunrealtype c, *xd_dev, *yd_dev, *zd_dev;
@@ -1189,7 +1189,8 @@ sunrealtype N_VMinQuotient_OpenMPDEV(N_Vector num, N_Vector denom)
  * -----------------------------------------------------------------
  */
 
-int N_VLinearCombination_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X, N_Vector z)
+int N_VLinearCombination_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X,
+                                   N_Vector z)
 {
   int i, dev;
   sunrealtype to_add; /* temporary variable to hold sum being added in atomic operation */
@@ -1314,8 +1315,8 @@ int N_VLinearCombination_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X, N_Vect
   return (0);
 }
 
-int N_VScaleAddMulti_OpenMPDEV(int nvec, sunrealtype* a, N_Vector x, N_Vector* Y,
-                               N_Vector* Z)
+int N_VScaleAddMulti_OpenMPDEV(int nvec, sunrealtype* a, N_Vector x,
+                               N_Vector* Y, N_Vector* Z)
 {
   int i, dev;
   sunindextype j, N;
@@ -1573,7 +1574,8 @@ int N_VLinearSumVectorArray_OpenMPDEV(int nvec, sunrealtype a, N_Vector* X,
   return (0);
 }
 
-int N_VScaleVectorArray_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X, N_Vector* Z)
+int N_VScaleVectorArray_OpenMPDEV(int nvec, sunrealtype* c, N_Vector* X,
+                                  N_Vector* Z)
 {
   int i, dev;
   sunindextype j, N;

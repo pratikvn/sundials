@@ -323,7 +323,8 @@ void set_element(N_Vector X, sunindextype i, sunrealtype val)
   set_element_range(X, i, i, val);
 }
 
-void set_element_range(N_Vector X, sunindextype is, sunindextype ie, sunrealtype val)
+void set_element_range(N_Vector X, sunindextype is, sunindextype ie,
+                       sunrealtype val)
 {
   Vec xv;
   PetscScalar* a;

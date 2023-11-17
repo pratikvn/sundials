@@ -406,7 +406,8 @@ N_Vector MVAPPEND(N_VGetSubvector)(N_Vector v, sunindextype vec_num)
    the N_Vector array.  If vec_num is outside of applicable bounds, or if
    the subvector does not support the N_VGetArrayPointer routine, then
    NULL is returned. */
-sunrealtype* MVAPPEND(N_VGetSubvectorArrayPointer)(N_Vector v, sunindextype vec_num)
+sunrealtype* MVAPPEND(N_VGetSubvectorArrayPointer)(N_Vector v,
+                                                   sunindextype vec_num)
 {
   SUNAssignSUNCTX(v->sunctx);
   MVASSERT(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
@@ -591,8 +592,8 @@ sunindextype MVAPPEND(N_VGetSubvectorLocalLength)(N_Vector v, sunindextype vec_n
 /* Performs the linear sum z = a*x + b*y by calling N_VLinearSum on all subvectors;
    this routine does not check that x, y and z are ManyVectors, if they have the
    same number of subvectors, or if these subvectors are compatible. */
-void MVAPPEND(N_VLinearSum)(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y,
-                            N_Vector z)
+void MVAPPEND(N_VLinearSum)(sunrealtype a, N_Vector x, sunrealtype b,
+                            N_Vector y, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
   sunindextype i;
@@ -1530,8 +1531,9 @@ SUNErrCode MVAPPEND(N_VDotProdMulti)(int nvec, N_Vector x, N_Vector* Y,
    N_Vectors that comprise X, Y and Z.  This routine will be passed arrays of
    ManyVectors, so to call the subvector-specific routines we must unravel
    the subvectors while retaining arrays of outer vectors. */
-SUNErrCode MVAPPEND(N_VLinearSumVectorArray)(int nvec, sunrealtype a, N_Vector* X,
-                                             sunrealtype b, N_Vector* Y, N_Vector* Z)
+SUNErrCode MVAPPEND(N_VLinearSumVectorArray)(int nvec, sunrealtype a,
+                                             N_Vector* X, sunrealtype b,
+                                             N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
   sunindextype i, j;
@@ -1937,7 +1939,8 @@ SUNErrCode MVAPPEND(N_VEnableWrmsNormVectorArray)(N_Vector v, sunbooleantype tf)
   return SUN_SUCCESS;
 }
 
-SUNErrCode MVAPPEND(N_VEnableWrmsNormMaskVectorArray)(N_Vector v, sunbooleantype tf)
+SUNErrCode MVAPPEND(N_VEnableWrmsNormMaskVectorArray)(N_Vector v,
+                                                      sunbooleantype tf)
 {
   /* enable/disable operation */
   if (tf)

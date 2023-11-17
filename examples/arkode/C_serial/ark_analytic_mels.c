@@ -60,19 +60,20 @@ static int MatrixEmbeddedLSFree(SUNLinearSolver S);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /* Private function to check computed solution */
-static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol, sunrealtype atol);
+static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol,
+                     sunrealtype atol);
 
 /* Main Program */
 int main(void)
 {
   /* general problem parameters */
-  sunrealtype T0      = SUN_RCONST(0.0);    /* initial time */
-  sunrealtype Tf      = SUN_RCONST(10.0);   /* final time */
-  sunrealtype dTout   = SUN_RCONST(1.0);    /* time between outputs */
-  sunindextype NEQ = 1;              /* number of dependent vars. */
-  sunrealtype reltol  = SUN_RCONST(1.0e-6); /* tolerances */
-  sunrealtype abstol  = SUN_RCONST(1.0e-10);
-  sunrealtype lamda   = SUN_RCONST(-100.0); /* stiffness parameter */
+  sunrealtype T0     = SUN_RCONST(0.0);    /* initial time */
+  sunrealtype Tf     = SUN_RCONST(10.0);   /* final time */
+  sunrealtype dTout  = SUN_RCONST(1.0);    /* time between outputs */
+  sunindextype NEQ   = 1;                  /* number of dependent vars. */
+  sunrealtype reltol = SUN_RCONST(1.0e-6); /* tolerances */
+  sunrealtype abstol = SUN_RCONST(1.0e-10);
+  sunrealtype lamda  = SUN_RCONST(-100.0); /* stiffness parameter */
 
   /* general problem variables */
   int retval;                /* reusable error-checking flag */
@@ -198,8 +199,8 @@ int main(void)
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   sunrealtype* rdata = (sunrealtype*)user_data; /* cast user_data to sunrealtype */
-  sunrealtype lamda  = rdata[0];       /* set shortcut for stiffness parameter */
-  sunrealtype u      = NV_Ith_S(y, 0); /* access current solution value */
+  sunrealtype lamda = rdata[0];       /* set shortcut for stiffness parameter */
+  sunrealtype u     = NV_Ith_S(y, 0); /* access current solution value */
 
   /* fill in the RHS function: "NV_Ith_S" accesses the 0th entry of ydot */
   NV_Ith_S(ydot, 0) = lamda * u + SUN_RCONST(1.0) / (SUN_RCONST(1.0) + t * t) -
@@ -327,7 +328,7 @@ static int check_retval(void* returnvalue, const char* funcname, int opt)
 /* check the computed solution */
 static int check_ans(N_Vector y, sunrealtype t, sunrealtype rtol, sunrealtype atol)
 {
-  int passfail = 0;       /* answer pass (0) or fail (1) flag     */
+  int passfail = 0;          /* answer pass (0) or fail (1) flag     */
   sunrealtype ans, err, ewt; /* answer data, error, and error weight */
 
   /* compute solution error */

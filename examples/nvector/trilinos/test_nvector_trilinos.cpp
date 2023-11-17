@@ -22,10 +22,6 @@
 #include <Tpetra_Vector.hpp>
 #include <Tpetra_Version.hpp>
 #include <Trilinos_version.h>
-
-#include <sundials/sundials_types.h>
-#include <sundials/sundials_math.h>
-#include <nvector/trilinos/SundialsTpetraVectorInterface.hpp>
 #include <nvector/nvector_trilinos.h>
 #include <nvector/trilinos/SundialsTpetraVectorInterface.hpp>
 #include <sundials/sundials_math.h>
@@ -93,9 +89,8 @@ int main(int argc, char* argv[])
   const sunindextype index_base = 0;
 
   /* Construct an MPI Map */
-  RCP<const map_type> testMap =
-    rcp(new map_type (global_length, index_base, comm,
-                      Tpetra::GloballyDistributed));
+  RCP<const map_type> testMap = rcp(
+    new map_type(global_length, index_base, comm, Tpetra::GloballyDistributed));
 
   /* Construct a Tpetra vector and return refernce counting pointer to it. */
   RCP<vector_type> px = rcp(new vector_type(testMap));
@@ -280,7 +275,8 @@ void set_element(N_Vector X, sunindextype i, sunrealtype val)
 /*
  * Sets elements [is, ie] of vector X to val
  */
-void set_element_range(N_Vector X, sunindextype is, sunindextype ie, sunrealtype val)
+void set_element_range(N_Vector X, sunindextype is, sunindextype ie,
+                       sunrealtype val)
 {
   typedef TpetraVectorInterface::vector_type vector_type;
 #if TRILINOS_MAJOR_VERSION < 14
@@ -339,4 +335,6 @@ double max_time(N_Vector X, double time)
   return maxtime;
 }
 
-void sync_device(N_Vector x) { /* Kokkos should take care of this */ }
+void sync_device(N_Vector x)
+{ /* Kokkos should take care of this */
+}

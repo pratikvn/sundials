@@ -75,7 +75,7 @@
 #define ONE  SUN_RCONST(1.0)
 #define TWO  SUN_RCONST(2.0)
 
-#define NUM_SPECIES 2                /* number of species         */
+#define NUM_SPECIES 2                    /* number of species         */
 #define KH          SUN_RCONST(4.0e-6)   /* horizontal diffusivity Kh */
 #define VEL         SUN_RCONST(0.001)    /* advection velocity V      */
 #define KV0         SUN_RCONST(1.0e-8)   /* coefficient in Kv(y)      */
@@ -87,10 +87,10 @@
 #define C1_SCALE    SUN_RCONST(1.0e6) /* coefficients in initial profiles    */
 #define C2_SCALE    SUN_RCONST(1.0e12)
 
-#define T0      ZERO                    /* initial time */
-#define NOUT    12                      /* number of output times */
-#define TWOHR   SUN_RCONST(7200.0)          /* number of seconds in two hours  */
-#define HALFDAY SUN_RCONST(4.32e4)          /* number of seconds in a half day */
+#define T0      ZERO               /* initial time */
+#define NOUT    12                 /* number of output times */
+#define TWOHR   SUN_RCONST(7200.0) /* number of seconds in two hours  */
+#define HALFDAY SUN_RCONST(4.32e4) /* number of seconds in a half day */
 #define PI      SUN_RCONST(3.1415926535898) /* pi */
 
 #define XMIN ZERO /* grid boundaries in x  */
@@ -107,11 +107,11 @@
 
 /* CVodeInit Constants */
 
-#define RTOL  SUN_RCONST(1.0e-5)    /* scalar relative tolerance */
-#define FLOOR SUN_RCONST(100.0)     /* value of C1 or C2 at which tolerances */
-                                /* change from relative to absolute      */
-#define ATOL (RTOL * FLOOR)     /* scalar absolute tolerance */
-#define NEQ  (NUM_SPECIES * MM) /* NEQ = number of equations */
+#define RTOL  SUN_RCONST(1.0e-5) /* scalar relative tolerance */
+#define FLOOR SUN_RCONST(100.0)  /* value of C1 or C2 at which tolerances */
+                                 /* change from relative to absolute      */
+#define ATOL (RTOL * FLOOR)      /* scalar absolute tolerance */
+#define NEQ  (NUM_SPECIES * MM)  /* NEQ = number of equations */
 
 /* Linear Solver Loop Constants */
 
@@ -189,9 +189,9 @@ int main(int argc, char* argv[])
   SUNNonlinearSolver NLS;
   void* cvode_mem;
   int linsolver, iout, retval;
-  int nrmfactor;   /* LS norm conversion factor flag */
+  int nrmfactor;      /* LS norm conversion factor flag */
   sunrealtype nrmfac; /* LS norm conversion factor      */
-  int monitor;     /* LS resiudal monitoring flag    */
+  int monitor;        /* LS resiudal monitoring flag    */
   SUNContext sunctx;
   SUNLogger logger;
   const char* info_fname = "cvKrylovDemo_ls-info.txt";
@@ -209,20 +209,21 @@ int main(int argc, char* argv[])
 
   /* Create SUNDIALS context and a logger which will record
      nonlinear solver info (e.g., residual) amongst other things. */
-  
+
   retval = SUNContext_Create(NULL, &sunctx);
-  if (check_retval(&retval, "SUNContext_Create", 1)) return 1;
+  if (check_retval(&retval, "SUNContext_Create", 1)) { return 1; }
 
   retval = SUNLogger_Create(NULL, 0, &logger);
-  if (check_retval(&retval, "SUNLogger_Create", 1)) return 1;
+  if (check_retval(&retval, "SUNLogger_Create", 1)) { return 1; }
 
-  if (monitor) {
-    retval = SUNLogger_SetInfoFilename(logger, info_fname);   
-    if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) return 1;
+  if (monitor)
+  {
+    retval = SUNLogger_SetInfoFilename(logger, info_fname);
+    if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) { return 1; }
   }
 
   retval = SUNContext_SetLogger(sunctx, logger);
-  if (check_retval(&retval, "SUNContext_SetLogger", 1)) return 1;
+  if (check_retval(&retval, "SUNContext_SetLogger", 1)) { return 1; }
 
   /* Allocate memory, and set problem data, initial values, tolerances */
   u = N_VNew_Serial(NEQ, sunctx);
@@ -256,7 +257,7 @@ int main(int argc, char* argv[])
 
   /* Create the SUNNonlinearSolver */
   NLS = SUNNonlinSol_Newton(u, sunctx);
-  if (check_retval(&retval, "SUNNonlinSol_Newton", 0)) return(1);
+  if (check_retval(&retval, "SUNNonlinSol_Newton", 0)) { return (1); }
 
   /* Call CVodeSetNonlinearSolver to attach the nonlinear solver to CVode */
   retval = CVodeSetNonlinearSolver(cvode_mem, NLS);
@@ -293,7 +294,7 @@ int main(int argc, char* argv[])
       /* Call SUNLinSol_SPGMR to specify the linear solver SPGMR with
          left preconditioning and the default maximum Krylov dimension */
       LS = SUNLinSol_SPGMR(u, SUN_PREC_LEFT, 0, sunctx);
-      if (check_retval((void *)LS, "SUNLinSol_SPGMR", 0)) return(1);
+      if (check_retval((void*)LS, "SUNLinSol_SPGMR", 0)) { return (1); }
 
       retval = CVodeSetLinearSolver(cvode_mem, LS, NULL);
       if (check_retval(&retval, "CVodeSetLinearSolver", 1)) { return 1; }
@@ -311,7 +312,7 @@ int main(int argc, char* argv[])
       /* Call SUNLinSol_SPFGMR to specify the linear solver SPFGMR with
          left preconditioning and the default maximum Krylov dimension */
       LS = SUNLinSol_SPFGMR(u, SUN_PREC_LEFT, 0, sunctx);
-      if (check_retval((void *)LS, "SUNLinSol_SPFGMR", 0)) return(1);
+      if (check_retval((void*)LS, "SUNLinSol_SPFGMR", 0)) { return (1); }
 
       retval = CVodeSetLinearSolver(cvode_mem, LS, NULL);
       if (check_retval(&retval, "CVodeSetLinearSolver", 1)) { return 1; }
@@ -329,7 +330,7 @@ int main(int argc, char* argv[])
       /* Call SUNLinSol_SPBCGS to specify the linear solver SPBCGS with
          left preconditioning and the default maximum Krylov dimension */
       LS = SUNLinSol_SPBCGS(u, SUN_PREC_LEFT, 0, sunctx);
-      if (check_retval((void *)LS, "SUNLinSol_SPBCGS", 0)) return(1);
+      if (check_retval((void*)LS, "SUNLinSol_SPBCGS", 0)) { return (1); }
 
       retval = CVodeSetLinearSolver(cvode_mem, LS, NULL);
       if (check_retval(&retval, "CVodeSetLinearSolver", 1)) { return 1; }
@@ -347,7 +348,7 @@ int main(int argc, char* argv[])
       /* Call SUNLinSol_SPTFQMR to specify the linear solver SPTFQMR with
          left preconditioning and the default maximum Krylov dimension */
       LS = SUNLinSol_SPTFQMR(u, SUN_PREC_LEFT, 0, sunctx);
-      if (check_retval((void *)LS, "SUNLinSol_SPTFQMR", 0)) return(1);
+      if (check_retval((void*)LS, "SUNLinSol_SPTFQMR", 0)) { return (1); }
 
       retval = CVodeSetLinearSolver(cvode_mem, LS, NULL);
       if (check_retval(&retval, "CVodeSetLinearSolver", 1)) { return 1; }

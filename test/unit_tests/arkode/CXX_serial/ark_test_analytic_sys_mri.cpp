@@ -22,18 +22,16 @@
  *-----------------------------------------------------------------*/
 
 // Header files
-#include <cstdio>
-#include <iostream>
-#include <cstring>
-#include <string>
-#include <cmath>
 #include <arkode/arkode_arkstep.h>
 #include <arkode/arkode_mristep.h>
 #include <cmath>
+#include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <nvector/nvector_serial.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <sundials/sundials_types.h>
 #include <sunlinsol/sunlinsol_dense.h>
 #include <sunmatrix/sunmatrix_dense.h>
@@ -55,9 +53,9 @@ using namespace std;
 #define ONE  SUN_RCONST(1.0)
 
 // User-supplied Functions Called by the Solver
-static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int f0(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int Jac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+static int f(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
+static int f0(decltype( t, N_Vector y, N_Vector ydot, void* user_data);
+static int Jac(decltype( t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 // Private function to perform matrix-matrix product
@@ -79,13 +77,13 @@ int main(int argc, char* argv[])
   SUNContext_Create(NULL, &sunctx);
 
   // general problem parameters
-  realtype T0      = SUN_RCONST(0.0);    // initial time
-  realtype Tf      = SUN_RCONST(0.05);   // final time
+  decltype( T0      = SUN_RCONST(0.0);    // initial time
+  decltype( Tf      = SUN_RCONST(0.05);   // final time
   int Nt           = 1000;           // total number of internal steps
   sunindextype NEQ = 3;              // number of dependent vars.
-  realtype reltol  = SUN_RCONST(1.0e-6); // tolerances
-  realtype abstol  = SUN_RCONST(1.0e-10);
-  realtype lamda   = SUN_RCONST(-100.0); // stiffness parameter
+  decltype( reltol  = SUN_RCONST(1.0e-6); // tolerances
+  decltype( abstol  = SUN_RCONST(1.0e-10);
+  decltype lamda   = SUN_RCONST(-100.0); // stiffness parameter
 
   // general problem variables
   int flag;                       // reusable error-checking flag
@@ -109,39 +107,51 @@ int main(int argc, char* argv[])
 
   // if an argument supplied, set fixedpoint (otherwise use SUNFALSE)
   fixedpoint = SUNFALSE;
-  if (argc > 1)  fixedpoint = std::stoi(argv[1], NULL);
-  if (argc > 2)  Nt = std::stoi(argv[2], NULL);
+  if (argc > 1) {
+    fixedpoint = std::stoi(argv[1], NULL);
+}
+  if (argc > 2) {
+    Nt = std::stoi(argv[2], NULL);
+}
 
   // Initial problem output
   cout << "\nAnalytical ODE test problem:\n";
   cout << "   lamda  = " << lamda << "\n";
   cout << "   reltol = " << reltol << "\n";
   cout << "   abstol = " << abstol << "\n\n";
-  if (fixedpoint) { cout << "   Fixed-point nonlinear solver\n"; }
-  else { cout << "   Newton nonlinear solver\n"; }
+  if (fixedpoint) {
+    cout << "   Fixed-point nonlinear solver\n"; }
+  else {
+    cout << "   Newton nonlinear solver\n"; }
 
   // Initialize vector data structure and specify initial condition
   y = N_VNew_Serial(NEQ, sunctx);
-  if (check_flag((void*)y, "N_VNew_Serial", 0)) { return 1; }
+  if (check_flag((void*)y, "N_VNew_Serial", 0)) {
+    return 1; }
   N_VConst(ONE, y);
 
   /* Call ARKStepCreate and MRIStepCreate to initialize the timesteppers */
   arkstep_mem = ARKStepCreate(NULL, f, T0, y, sunctx);
-  if (check_flag((void*)arkstep_mem, "ARKStepCreate", 0)) { return 1; }
+  if (check_flag((void*)arkstep_mem, "ARKStepCreate", 0)) {
+    return 1; }
 
   inner_mem = ARKStepCreate(f0, NULL, T0, y, sunctx);
-  if (check_flag((void*)inner_mem, "ARKStepCreate", 0)) { return 1; }
+  if (check_flag((void*)inner_mem, "ARKStepCreate", 0)) {
+    return 1; }
 
   MRIStepInnerStepper inner_stepper = NULL;
   flag = ARKStepCreateMRIStepInnerStepper(inner_mem, &inner_stepper);
-  if (check_flag(&flag, "ARKStepCreateMRIStepInnerStepper", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepCreateMRIStepInnerStepper", 1)) {
+    return 1; }
 
   mristep_mem = MRIStepCreate(NULL, f, T0, y, inner_stepper, sunctx);
-  if (check_flag((void*)mristep_mem, "MRIStepCreate", 0)) { return 1; }
+  if (check_flag((void*)mristep_mem, "MRIStepCreate", 0)) {
+    return 1; }
 
   // Create DIRK2 (trapezoidal) Butcher table
   ARKodeButcherTable B = ARKodeButcherTable_Alloc(2, SUNFALSE);
-  if (check_flag((void*)B, "ARKodeButcherTable_Alloc", 0)) { return 1; }
+  if (check_flag((void*)B, "ARKodeButcherTable_Alloc", 0)) {
+    return 1; }
   B->A[1][0] = SUN_RCONST(0.5);
   B->A[1][1] = SUN_RCONST(0.5);
   B->b[0]    = SUN_RCONST(0.5);
@@ -151,7 +161,8 @@ int main(int argc, char* argv[])
 
   // Create solve-decoupled DIRK2 (trapezoidal) Butcher table
   ARKodeButcherTable Bc = ARKodeButcherTable_Alloc(3, SUNFALSE);
-  if (check_flag((void*)Bc, "ARKodeButcherTable_Alloc", 0)) { return 1; }
+  if (check_flag((void*)Bc, "ARKodeButcherTable_Alloc", 0)) {
+    return 1; }
   Bc->A[1][0] = ONE;
   Bc->A[2][0] = SUN_RCONST(0.5);
   Bc->A[2][2] = SUN_RCONST(0.5);
@@ -163,34 +174,46 @@ int main(int argc, char* argv[])
 
   // Create the MIS coupling table
   MRIStepCoupling C = MRIStepCoupling_MIStoMRI(Bc, 2, 0);
-  if (check_flag((void*)C, "MRIStepCoupling_MIStoMRI", 0)) { return 1; }
+  if (check_flag((void*)C, "MRIStepCoupling_MIStoMRI", 0)) {
+    return 1; }
 
   // Set routines
   flag = ARKStepSetUserData(arkstep_mem,
                             (void*)&lamda); // Pass lamda to user functions
-  if (check_flag(&flag, "ARKStepSetUserData", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepSetUserData", 1)) {
+    return 1; }
   flag = ARKStepSStolerances(arkstep_mem, reltol, abstol); // Specify tolerances
-  if (check_flag(&flag, "ARKStepSStolerances", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepSStolerances", 1)) {
+    return 1; }
   flag = ARKStepSetFixedStep(arkstep_mem, Tf / Nt); // Specify fixed time step size
-  if (check_flag(&flag, "ARKStepSetFixedStep", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepSetFixedStep", 1)) {
+    return 1; }
   flag = ARKStepSetTables(arkstep_mem, 2, 0, B, NULL); // Specify Butcher table
-  if (check_flag(&flag, "ARKStepSetTables", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepSetTables", 1)) {
+    return 1; }
   flag = ARKStepSetMaxNumSteps(arkstep_mem, 2 * Nt); // Increase num internal steps
-  if (check_flag(&flag, "ARKStepSetMaxNumSteps", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepSetMaxNumSteps", 1)) {
+    return 1; }
 
   flag = MRIStepSetUserData(mristep_mem,
                             (void*)&lamda); // Pass lamda to user functions
-  if (check_flag(&flag, "MRIStepSetUserData", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepSetUserData", 1)) {
+    return 1; }
   flag = MRIStepSStolerances(mristep_mem, reltol, abstol); // Specify tolerances
-  if (check_flag(&flag, "MRIStepSStolerances", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepSStolerances", 1)) {
+    return 1; }
   flag = MRIStepSetFixedStep(mristep_mem, Tf / Nt); // Specify fixed time step sizes
-  if (check_flag(&flag, "MRIStepSetFixedStep", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepSetFixedStep", 1)) {
+    return 1; }
   flag = ARKStepSetFixedStep(inner_mem, Tf / Nt / 10);
-  if (check_flag(&flag, "ARKStepSetFixedStep", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepSetFixedStep", 1)) {
+    return 1; }
   flag = MRIStepSetCoupling(mristep_mem, C); // Specify Butcher table
-  if (check_flag(&flag, "MRIStepSetCoupling", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepSetCoupling", 1)) {
+    return 1; }
   flag = MRIStepSetMaxNumSteps(mristep_mem, 2 * Nt); // Increase num internal steps
-  if (check_flag(&flag, "MRIStepSetMaxNumSteps", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepSetMaxNumSteps", 1)) {
+    return 1; }
 
   // Initialize implicit solver data structures
   if (fixedpoint)
@@ -242,17 +265,23 @@ int main(int argc, char* argv[])
   t = T0;
   N_VConst(ONE, y);
   flag = ARKStepEvolve(arkstep_mem, Tf, y, &t, ARK_NORMAL);
-  if (check_flag(&flag, "ARKStepEvolve", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepEvolve", 1)) {
+    return 1; }
   flag = ARKStepGetCurrentTime(arkstep_mem, &tcur);
-  if (check_flag(&flag, "ARKStepGetCurrentTime", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepGetCurrentTime", 1)) {
+    return 1; }
   flag = ARKStepGetNumSteps(arkstep_mem, &ark_nst);
-  if (check_flag(&flag, "ARKStepGetNumSteps", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepGetNumSteps", 1)) {
+    return 1; }
   flag = ARKStepGetNumRhsEvals(arkstep_mem, &ark_nfe, &ark_nfi);
-  if (check_flag(&flag, "ARKStepGetNumRhsEvals", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepGetNumRhsEvals", 1)) {
+    return 1; }
   flag = ARKStepGetNumNonlinSolvIters(arkstep_mem, &ark_nni);
-  if (check_flag(&flag, "ARKStepGetNumNonlinSolvIters", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepGetNumNonlinSolvIters", 1)) {
+    return 1; }
   flag = ARKStepGetNumNonlinSolvConvFails(arkstep_mem, &ark_ncfn);
-  if (check_flag(&flag, "ARKStepGetNumNonlinSolvConvFails", 1)) { return 1; }
+  if (check_flag(&flag, "ARKStepGetNumNonlinSolvConvFails", 1)) {
+    return 1; }
   if (!fixedpoint)
   {
     flag = ARKStepGetNumLinSolvSetups(arkstep_mem, &ark_nsetups);
@@ -283,17 +312,23 @@ int main(int argc, char* argv[])
   t = T0;
   N_VConst(ZERO, y);
   flag = MRIStepEvolve(mristep_mem, Tf, y, &t, ARK_NORMAL);
-  if (check_flag(&flag, "MRIStepEvolve", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepEvolve", 1)) {
+    return 1; }
   flag = MRIStepGetCurrentTime(arkstep_mem, &tcur);
-  if (check_flag(&flag, "MRIStepGetCurrentTime", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepGetCurrentTime", 1)) {
+    return 1; }
   flag = MRIStepGetNumSteps(mristep_mem, &mri_nst);
-  if (check_flag(&flag, "MRIStepGetNumSteps", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepGetNumSteps", 1)) {
+    return 1; }
   flag = MRIStepGetNumRhsEvals(mristep_mem, &mri_nfse, &mri_nfsi);
-  if (check_flag(&flag, "MRIStepGetNumRhsEvals", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepGetNumRhsEvals", 1)) {
+    return 1; }
   flag = MRIStepGetNumNonlinSolvIters(mristep_mem, &mri_nni);
-  if (check_flag(&flag, "MRIStepGetNumNonlinSolvIters", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepGetNumNonlinSolvIters", 1)) {
+    return 1; }
   flag = MRIStepGetNumNonlinSolvConvFails(mristep_mem, &mri_ncfn);
-  if (check_flag(&flag, "MRIStepGetNumNonlinSolvConvFails", 1)) { return 1; }
+  if (check_flag(&flag, "MRIStepGetNumNonlinSolvConvFails", 1)) {
+    return 1; }
   if (!fixedpoint)
   {
     flag = MRIStepGetNumLinSolvSetups(mristep_mem, &mri_nsetups);
@@ -364,8 +399,10 @@ int main(int argc, char* argv[])
            << "\n";
     }
   }
-  if (numfails) { cout << "Failed " << numfails << " tests\n"; }
-  else { cout << "All tests pass!\n"; }
+  if (numfails) {
+    cout << "Failed " << numfails << " tests\n"; }
+  else {
+    cout << "All tests pass!\n"; }
 
   // Clean up and return with successful completion
   ARKodeButcherTable_Free(B);  // Free Butcher table
@@ -408,14 +445,17 @@ static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   realtype yd0, yd1, yd2;
 
   // fill in the RHS function: f(t,y) = V*D*Vi*y
-  yd0 = SUN_RCONST(0.25) *
-        (SUN_RCONST(5.0) * y0 + SUN_RCONST(1.0) * y1 - SUN_RCONST(3.0) * y2); // yd = Vi*y
-  yd1 = SUN_RCONST(0.25) * (SUN_RCONST(2.0) * y0 + SUN_RCONST(2.0) * y1 - SUN_RCONST(2.0) * y2);
-  yd2 = SUN_RCONST(0.25) * (SUN_RCONST(1.0) * y0 + SUN_RCONST(1.0) * y1 + SUN_RCONST(1.0) * y2);
+  yd0 = SUN_RCONST(0.25) * (SUN_RCONST(5.0) * y0 + SUN_RCONST(1.0) * y1 -
+                            SUN_RCONST(3.0) * y2); // yd = Vi*y
+  yd1 = SUN_RCONST(0.25) *
+        (SUN_RCONST(2.0) * y0 + SUN_RCONST(2.0) * y1 - SUN_RCONST(2.0) * y2);
+  yd2 = SUN_RCONST(0.25) *
+        (SUN_RCONST(1.0) * y0 + SUN_RCONST(1.0) * y1 + SUN_RCONST(1.0) * y2);
   y0  = -SUN_RCONST(0.5) * yd0; //  y = D*yd
   y1  = -SUN_RCONST(0.1) * yd1;
   y2  = lam * yd2;
-  yd0 = SUN_RCONST(1.0) * y0 - SUN_RCONST(1.0) * y1 + SUN_RCONST(1.0) * y2; // yd = V*y
+  yd0 = SUN_RCONST(1.0) * y0 - SUN_RCONST(1.0) * y1 +
+        SUN_RCONST(1.0) * y2; // yd = V*y
   yd1 = -SUN_RCONST(1.0) * y0 + SUN_RCONST(2.0) * y1 + SUN_RCONST(1.0) * y2;
   yd2 = SUN_RCONST(0.0) * y0 - SUN_RCONST(1.0) * y1 + SUN_RCONST(2.0) * y2;
   NV_Ith_S(ydot, 0) = yd0;
@@ -578,8 +618,8 @@ static int check_flag(void* flagvalue, const string funcname, int opt)
 // Check if relative difference of a and b is less than tolerance
 static bool Compare(long int a, long int b, sunrealtype tol)
 {
-  sunrealtype rel_diff = SUN_RCONST(100.0) *
-    abs(static_cast<sunrealtype>(a - b) / static_cast<sunrealtype>(a));
+  sunrealtype rel_diff = SUN_RCONST(100.0) * abs(static_cast<sunrealtype>(a - b) /
+                                                 static_cast<sunrealtype>(a));
 
   return (rel_diff > tol) ? false : true;
 }

@@ -84,11 +84,11 @@
 typedef struct
 {
   sunindextype N; /* number of intervals      */
-  sunrealtype dx;    /* mesh spacing             */
-  sunrealtype a;     /* constant forcing on u    */
-  sunrealtype b;     /* steady-state value of w  */
-  sunrealtype c;     /* advection coefficient    */
-  sunrealtype ep;    /* stiffness parameter      */
+  sunrealtype dx; /* mesh spacing             */
+  sunrealtype a;  /* constant forcing on u    */
+  sunrealtype b;  /* steady-state value of w  */
+  sunrealtype c;  /* advection coefficient    */
+  sunrealtype ep; /* stiffness parameter      */
 }* UserData;
 
 /* user-provided functions called by the integrator */
@@ -109,9 +109,9 @@ int main(int argc, char* argv[])
   /* general problem parameters */
   sunrealtype T0     = SUN_RCONST(0.0);  /* initial time                    */
   sunrealtype Tf     = SUN_RCONST(10.0); /* final time                      */
-  int Nt          = 100;          /* total number of output times    */
-  int Nvar        = 3;            /* number of solution fields       */
-  sunindextype N  = 200;          /* spatial mesh size (N intervals) */
+  int Nt             = 100;              /* total number of output times    */
+  int Nvar           = 3;                /* number of solution fields       */
+  sunindextype N     = 200;              /* spatial mesh size (N intervals) */
   sunrealtype a      = SUN_RCONST(1.0);  /* problem parameters              */
   sunrealtype b      = SUN_RCONST(3.5);
   sunrealtype c      = SUN_RCONST(0.25);
@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
   sunrealtype abstol = SUN_RCONST(1.0e-10);
 
   /* general problem variables */
-  sunrealtype hs;                              /* slow step size                 */
+  sunrealtype hs;                           /* slow step size                 */
   int retval;                               /* reusable return flag           */
   N_Vector y                        = NULL; /* empty solution vector          */
   N_Vector umask                    = NULL; /* empty mask vectors             */
@@ -131,8 +131,8 @@ int main(int argc, char* argv[])
   void* arkode_mem                  = NULL; /* empty ARKode memory structure  */
   void* inner_arkode_mem            = NULL; /* empty ARKode memory structure  */
   MRIStepInnerStepper inner_stepper = NULL; /* inner stepper                  */
-  sunrealtype t, dTout, tout;                  /* current/output time data       */
-  sunrealtype u, v, w;                         /* temp data values               */
+  sunrealtype t, dTout, tout;               /* current/output time data       */
+  sunrealtype u, v, w;                      /* temp data values               */
   FILE *FID, *UFID, *VFID, *WFID;           /* output file pointers           */
   int iout;                                 /* output counter                 */
   long int nsts, nstf, nstf_a, netf;        /* step stats                     */
@@ -141,8 +141,8 @@ int main(int argc, char* argv[])
   long int nni, ncfn;                       /* nonlinear solver stats         */
   sunindextype NEQ;                         /* number of equations            */
   sunindextype i;                           /* counter                        */
-  UserData udata = NULL;                    /* user data pointer              */
-  sunrealtype* data = NULL;                    /* array for vector data          */
+  UserData udata    = NULL;                 /* user data pointer              */
+  sunrealtype* data = NULL;                 /* array for vector data          */
 
   /* Create the SUNDIALS context object for this simulation */
   SUNContext ctx;
@@ -408,8 +408,8 @@ int main(int argc, char* argv[])
 /* ff routine to compute the fast portion of the ODE RHS. */
 static int ff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  UserData udata   = (UserData)user_data; /* access problem data    */
-  sunindextype N   = udata->N;            /* set variable shortcuts */
+  UserData udata      = (UserData)user_data; /* access problem data    */
+  sunindextype N      = udata->N;            /* set variable shortcuts */
   sunrealtype a       = udata->a;
   sunrealtype b       = udata->b;
   sunrealtype ep      = udata->ep;
@@ -450,8 +450,8 @@ static int ff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 /* fs routine to compute the slow portion of the ODE RHS. */
 static int fs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  UserData udata   = (UserData)user_data; /* access problem data    */
-  sunindextype N   = udata->N;            /* set variable shortcuts */
+  UserData udata      = (UserData)user_data; /* access problem data    */
+  sunindextype N      = udata->N;            /* set variable shortcuts */
   sunrealtype c       = udata->c;
   sunrealtype dx      = udata->dx;
   sunrealtype* Ydata  = NULL;
@@ -518,7 +518,7 @@ static int Jf(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
 {
   UserData udata = (UserData)user_data; /* access problem data */
   sunindextype N = udata->N;            /* set shortcuts */
-  sunrealtype ep    = udata->ep;
+  sunrealtype ep = udata->ep;
   sunindextype i;
   sunrealtype u, v, w;
   sunrealtype* Ydata = NULL;
@@ -561,8 +561,8 @@ static int Jf(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
 /* Set the initial condition */
 static int SetIC(N_Vector y, void* user_data)
 {
-  UserData udata = (UserData)user_data; /* access problem data    */
-  sunindextype N = udata->N;            /* set variable shortcuts */
+  UserData udata    = (UserData)user_data; /* access problem data    */
+  sunindextype N    = udata->N;            /* set variable shortcuts */
   sunrealtype a     = udata->a;
   sunrealtype b     = udata->b;
   sunrealtype dx    = udata->dx;
@@ -578,7 +578,8 @@ static int SetIC(N_Vector y, void* user_data)
   for (i = 0; i < N; i++)
   {
     x = i * dx;
-    p = SUN_RCONST(0.1) * SUNRexp(-(SUNSQR(x - SUN_RCONST(0.5))) / SUN_RCONST(0.1));
+    p = SUN_RCONST(0.1) *
+        SUNRexp(-(SUNSQR(x - SUN_RCONST(0.5))) / SUN_RCONST(0.1));
     data[IDX(i, 0)] = a + p;
     data[IDX(i, 1)] = b / a + p;
     data[IDX(i, 2)] = b + p;

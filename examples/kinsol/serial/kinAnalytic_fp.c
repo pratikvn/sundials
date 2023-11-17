@@ -96,10 +96,10 @@
 typedef struct
 {
   sunrealtype tol;        /* solve tolerance                  */
-  long int maxiter;    /* max number of iterations         */
-  long int m_aa;       /* number of acceleration vectors   */
-  long int delay_aa;   /* number of iterations to delay AA */
-  int orth_aa;         /* orthogonalization method         */
+  long int maxiter;       /* max number of iterations         */
+  long int m_aa;          /* number of acceleration vectors   */
+  long int delay_aa;      /* number of iterations to delay AA */
+  int orth_aa;            /* orthogonalization method         */
   sunrealtype damping_fp; /* damping parameter for FP         */
   sunrealtype damping_aa; /* damping parameter for AA         */
 }* UserOpt;
@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
   N_Vector scale = NULL; /* scaling vector      */
   FILE* infofp   = NULL; /* KINSOL log file     */
   long int nni, nfe;     /* solver outputs      */
-  sunrealtype* data;        /* vector data array   */
+  sunrealtype* data;     /* vector data array   */
   void* kmem;            /* KINSOL memory       */
 
   /* Set default options */
@@ -230,7 +230,6 @@ int main(int argc, char* argv[])
   /* Set info log file and print level */
   infofp = fopen("kinsol.log", "w");
   if (check_retval((void*)infofp, "fopen", 0)) { return (1); }
-
 
   /* -------------
    * Initial guess
@@ -386,9 +385,9 @@ static int SetDefaults(UserOpt* uopt)
   /* Set default options values */
   (*uopt)->tol        = 100 * SQRT(SUN_UNIT_ROUNDOFF);
   (*uopt)->maxiter    = 30;
-  (*uopt)->m_aa       = 0;           /* no acceleration */
-  (*uopt)->delay_aa   = 0;           /* no delay        */
-  (*uopt)->orth_aa    = 0;           /* MGS             */
+  (*uopt)->m_aa       = 0;               /* no acceleration */
+  (*uopt)->delay_aa   = 0;               /* no delay        */
+  (*uopt)->orth_aa    = 0;               /* MGS             */
   (*uopt)->damping_fp = SUN_RCONST(1.0); /* no FP dampig    */
   (*uopt)->damping_aa = SUN_RCONST(1.0); /* no AA damping   */
 

@@ -91,12 +91,12 @@
 
 /* Problem Constants */
 
-#define NVARS    2             /* number of species                    */
+#define NVARS    2                 /* number of species                    */
 #define C1_SCALE SUN_RCONST(1.0e6) /* coefficients in initial profiles     */
 #define C2_SCALE SUN_RCONST(1.0e12)
 
 #define T0      SUN_RCONST(0.0)    /* initial time                         */
-#define NOUT    12             /* number of output times               */
+#define NOUT    12                 /* number of output times               */
 #define TWOHR   SUN_RCONST(7200.0) /* number of seconds in two hours       */
 #define HALFDAY SUN_RCONST(4.32e4) /* number of seconds in a half day      */
 #define PI      SUN_RCONST(3.1415926535898) /* pi                        */
@@ -120,8 +120,8 @@
 
 #define RTOL  SUN_RCONST(1.0e-5) /* scalar relative tolerance             */
 #define FLOOR SUN_RCONST(100.0)  /* value of C1 or C2 at which tols.      */
-                             /* change from relative to absolute      */
-#define ATOL (RTOL * FLOOR)  /* scalar absolute tolerance             */
+                                 /* change from relative to absolute      */
+#define ATOL (RTOL * FLOOR)      /* scalar absolute tolerance             */
 
 /* Sensitivity constants */
 #define NP 8 /* number of problem parameters          */
@@ -183,16 +183,18 @@ static void SetInitialProfiles(N_Vector u, UserData data);
 
 static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
                   sunindextype dsizex, sunindextype dsizey, sunrealtype udata[]);
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[]);
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[]);
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[]);
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[]);
 static void ucomm(sunrealtype t, N_Vector u, UserData data);
-static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[], UserData data);
+static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[],
+                  UserData data);
 
-static void PrintOutput(void* cvode_mem, int my_pe, MPI_Comm comm, sunrealtype t,
-                        N_Vector u);
+static void PrintOutput(void* cvode_mem, int my_pe, MPI_Comm comm,
+                        sunrealtype t, N_Vector u);
 static void PrintOutputS(int my_pe, MPI_Comm comm, N_Vector* uS);
 static void PrintFinalStats(void* cvode_mem, sunbooleantype sensi,
                             sunbooleantype err_con, int sensi_meth);
@@ -680,13 +682,13 @@ static void InitUserData(int my_pe, MPI_Comm comm, UserData data)
   sunrealtype KH, VEL, KV0;
 
   /* Set problem parameters */
-  data->p[0] = SUN_RCONST(1.63e-16);     /* Q1  coeffs. q1, q2, c3             */
-  data->p[1] = SUN_RCONST(4.66e-16);     /* Q2                                 */
-  data->p[2] = SUN_RCONST(3.7e16);       /* C3                                 */
-  data->p[3] = SUN_RCONST(22.62);        /* A3  coeff. in expression for q3(t) */
-  data->p[4] = SUN_RCONST(7.601);        /* A4  coeff. in expression for q4(t) */
-  KH = data->p[5] = SUN_RCONST(4.0e-6);  /* KH  horizontal diffusivity Kh      */
-  VEL = data->p[6] = SUN_RCONST(0.001);  /* VEL advection velocity V           */
+  data->p[0] = SUN_RCONST(1.63e-16);    /* Q1  coeffs. q1, q2, c3             */
+  data->p[1] = SUN_RCONST(4.66e-16);    /* Q2                                 */
+  data->p[2] = SUN_RCONST(3.7e16);      /* C3                                 */
+  data->p[3] = SUN_RCONST(22.62);       /* A3  coeff. in expression for q3(t) */
+  data->p[4] = SUN_RCONST(7.601);       /* A4  coeff. in expression for q4(t) */
+  KH = data->p[5] = SUN_RCONST(4.0e-6); /* KH  horizontal diffusivity Kh      */
+  VEL = data->p[6] = SUN_RCONST(0.001); /* VEL advection velocity V           */
   KV0 = data->p[7] = SUN_RCONST(1.0e-8); /* KV0 coeff. in Kv(z)                */
 
   /* Set problem constants */
@@ -856,9 +858,9 @@ static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
  *  2) request should have 4 entries, and should be passed in both calls also.
  */
 
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[])
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[])
 {
   sunindextype offsetue;
 
@@ -905,7 +907,8 @@ static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
  */
 
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[])
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[])
 {
   int i, ly;
   sunindextype dsizex2, offsetue, offsetbuf;
@@ -995,7 +998,8 @@ static void ucomm(sunrealtype t, N_Vector u, UserData data)
  * and this data is in the work array uext.
  */
 
-static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[], UserData data)
+static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[],
+                  UserData data)
 {
   sunrealtype* uext;
   sunrealtype q3, c1, c2, c1dn, c2dn, c1up, c2up, c1lt, c2lt;
@@ -1143,8 +1147,8 @@ static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[], User
  * Print current t, step count, order, stepsize, and sampled c1,c2 values.
  */
 
-static void PrintOutput(void* cvode_mem, int my_pe, MPI_Comm comm, sunrealtype t,
-                        N_Vector u)
+static void PrintOutput(void* cvode_mem, int my_pe, MPI_Comm comm,
+                        sunrealtype t, N_Vector u)
 {
   long int nst;
   int qu, npelast, retval;

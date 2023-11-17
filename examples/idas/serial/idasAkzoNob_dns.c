@@ -25,7 +25,7 @@
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver      */
 #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix            */
@@ -39,7 +39,7 @@
 #define T1  SUN_RCONST(1e-8) /* first time for output */
 
 #define TF SUN_RCONST(180.0) /* Final time. */
-#define NF 25            /* Total number of outputs. */
+#define NF 25                /* Total number of outputs. */
 
 #define RTOL  SUN_RCONST(1.0e-08)
 #define ATOL  SUN_RCONST(1.0e-10)

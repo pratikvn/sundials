@@ -40,28 +40,34 @@ int check_ptr(const void* ptr, const std::string funcname)
 }
 
 // Functions for parsing vectors of command line inputs
-inline void find_arg(std::vector<std::string>& args, const std::string key, float& dest)
+inline void find_arg(std::vector<std::string>& args, const std::string key,
+                     float& dest)
 {
   auto it = std::find(args.begin(), args.end(), key);
-  if (it != args.end()) {
+  if (it != args.end())
+  {
     dest = stof(*(it + 1));
     args.erase(it, it + 2);
   }
 }
 
-inline void find_arg(std::vector<std::string>& args, const std::string key, double& dest)
+inline void find_arg(std::vector<std::string>& args, const std::string key,
+                     double& dest)
 {
   auto it = std::find(args.begin(), args.end(), key);
-  if (it != args.end()) {
+  if (it != args.end())
+  {
     dest = stod(*(it + 1));
     args.erase(it, it + 2);
   }
 }
 
-inline void find_arg(std::vector<std::string>& args, const std::string key, long double& dest)
+inline void find_arg(std::vector<std::string>& args, const std::string key,
+                     long double& dest)
 {
   auto it = std::find(args.begin(), args.end(), key);
-  if (it != args.end()) {
+  if (it != args.end())
+  {
     dest = stold(*(it + 1));
     args.erase(it, it + 2);
   }

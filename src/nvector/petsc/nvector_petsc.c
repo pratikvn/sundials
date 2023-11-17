@@ -420,7 +420,8 @@ void* N_VGetCommunicator_Petsc(N_Vector v)
 
 sunindextype N_VGetLength_Petsc(N_Vector v) { return (NV_GLOBLENGTH_PTC(v)); }
 
-void N_VLinearSum_Petsc(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y, N_Vector z)
+void N_VLinearSum_Petsc(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y,
+                        N_Vector z)
 {
   Vec xv = NV_PVEC_PTC(x);
   Vec yv = NV_PVEC_PTC(y);
@@ -620,7 +621,7 @@ sunrealtype N_VWrmsNorm_Petsc(N_Vector x, N_Vector w)
 {
   sunrealtype global_sum;
   sunindextype N_global = NV_GLOBLENGTH_PTC(x);
-  sunrealtype sum          = N_VWSqrSumLocal_Petsc(x, w);
+  sunrealtype sum       = N_VWSqrSumLocal_Petsc(x, w);
   (void)MPI_Allreduce(&sum, &global_sum, 1, MPI_SUNREALTYPE, MPI_SUM,
                       NV_COMM_PTC(x));
   return (SUNRsqrt(global_sum / N_global));
@@ -656,7 +657,7 @@ sunrealtype N_VWrmsNormMask_Petsc(N_Vector x, N_Vector w, N_Vector id)
 {
   sunrealtype global_sum;
   sunindextype N_global = NV_GLOBLENGTH_PTC(x);
-  sunrealtype sum          = N_VWSqrSumMaskLocal_Petsc(x, w, id);
+  sunrealtype sum       = N_VWSqrSumMaskLocal_Petsc(x, w, id);
   (void)MPI_Allreduce(&sum, &global_sum, 1, MPI_SUNREALTYPE, MPI_SUM,
                       NV_COMM_PTC(x));
   return (SUNRsqrt(global_sum / N_global));
@@ -1055,8 +1056,8 @@ int N_VDotProdMultiAllReduce_Petsc(int nvec, N_Vector x, sunrealtype* dotprods)
  * -----------------------------------------------------------------------------
  */
 
-int N_VLinearSumVectorArray_Petsc(int nvec, sunrealtype a, N_Vector* X, sunrealtype b,
-                                  N_Vector* Y, N_Vector* Z)
+int N_VLinearSumVectorArray_Petsc(int nvec, sunrealtype a, N_Vector* X,
+                                  sunrealtype b, N_Vector* Y, N_Vector* Z)
 {
   int i;
   sunindextype j, N;
@@ -1167,7 +1168,8 @@ int N_VConstVectorArray_Petsc(int nvec, sunrealtype c, N_Vector* Z)
   return (0);
 }
 
-int N_VWrmsNormVectorArray_Petsc(int nvec, N_Vector* X, N_Vector* W, sunrealtype* nrm)
+int N_VWrmsNormVectorArray_Petsc(int nvec, N_Vector* X, N_Vector* W,
+                                 sunrealtype* nrm)
 {
   int i, retval;
   sunindextype j, Nl, Ng;

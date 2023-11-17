@@ -103,12 +103,12 @@ static int fs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int ff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int fn(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int f0(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int Js(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
+static int Js(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 static int Jsi(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
+static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 /* Private function to check function return values */
 static sunrealtype r(sunrealtype t, void* user_data);
@@ -126,18 +126,18 @@ int main(int argc, char* argv[])
   SUNContext ctx;
 
   /* general problem parameters */
-  sunrealtype T0      = SUN_RCONST(0.0);           /* initial time */
-  sunrealtype Tf      = SUN_RCONST(5.0);           /* final time */
-  sunrealtype dTout   = SUN_RCONST(0.1);           /* time between outputs */
-  sunindextype NEQ = 2;                     /* number of dependent vars. */
-  int Nt           = (int)ceil(Tf / dTout); /* number of output times */
-  int solve_type   = 0;                     /* problem configuration type */
-  sunrealtype hs      = SUN_RCONST(0.01);          /* slow step size */
-  sunrealtype e       = SUN_RCONST(0.5);           /* fast/slow coupling strength */
-  sunrealtype G       = SUN_RCONST(-100.0);        /* stiffness at slow time scale */
-  sunrealtype w       = SUN_RCONST(100.0);         /* time-scale separation factor */
-  sunrealtype reltol  = SUN_RCONST(0.01);
-  sunrealtype abstol  = 1e-11;
+  sunrealtype T0     = SUN_RCONST(0.0);       /* initial time */
+  sunrealtype Tf     = SUN_RCONST(5.0);       /* final time */
+  sunrealtype dTout  = SUN_RCONST(0.1);       /* time between outputs */
+  sunindextype NEQ   = 2;                     /* number of dependent vars. */
+  int Nt             = (int)ceil(Tf / dTout); /* number of output times */
+  int solve_type     = 0;                     /* problem configuration type */
+  sunrealtype hs     = SUN_RCONST(0.01);      /* slow step size */
+  sunrealtype e      = SUN_RCONST(0.5);       /* fast/slow coupling strength */
+  sunrealtype G      = SUN_RCONST(-100.0);    /* stiffness at slow time scale */
+  sunrealtype w      = SUN_RCONST(100.0);     /* time-scale separation factor */
+  sunrealtype reltol = SUN_RCONST(0.01);
+  sunrealtype abstol = 1e-11;
 
   /* general problem variables */
   int retval;                               /* reusable error-checking flag */
@@ -804,8 +804,8 @@ static int f0(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
   return (0);
 }
 
-static int Js(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
+static int Js(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   sunrealtype* rpar   = (sunrealtype*)user_data;
   const sunrealtype G = rpar[0];
@@ -847,8 +847,8 @@ static int Jsi(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
   return 0;
 }
 
-static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-              N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
+static int Jn(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+              void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   sunrealtype* rpar   = (sunrealtype*)user_data;
   const sunrealtype G = rpar[0];

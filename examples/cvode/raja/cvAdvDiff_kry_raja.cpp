@@ -68,7 +68,7 @@
 #define T0    SUN_RCONST(0.0)    /* initial time              */
 #define T1    SUN_RCONST(0.1)    /* first output time         */
 #define DTOUT SUN_RCONST(0.1)    /* output time increment     */
-#define NOUT  10             /* number of output times    */
+#define NOUT  10                 /* number of output times    */
 
 #define ZERO SUN_RCONST(0.0)
 #define HALF SUN_RCONST(0.5)

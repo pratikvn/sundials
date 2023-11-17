@@ -185,7 +185,8 @@ int main(int argc, char* argv[])
   sunrealtype* Idata = NULL;
   if (square)
   {
-    Idata = (sunrealtype*)malloc(sizeof(sunrealtype) * SUNMatrix_OneMklDense_LData(I));
+    Idata = (sunrealtype*)malloc(sizeof(sunrealtype) *
+                                 SUNMatrix_OneMklDense_LData(I));
     if (!Idata)
     {
       printf("Data allocation failed\n");
@@ -291,8 +292,8 @@ int check_matrix(SUNMatrix A, SUNMatrix B, sunrealtype tol)
   sunindextype i      = 0;
   sunindextype Aldata = SUNMatrix_OneMklDense_LData(A);
   sunindextype Bldata = SUNMatrix_OneMklDense_LData(B);
-  sunrealtype* Adata     = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
-  sunrealtype* Bdata     = (sunrealtype*)malloc(sizeof(sunrealtype) * Bldata);
+  sunrealtype* Adata  = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
+  sunrealtype* Bdata  = (sunrealtype*)malloc(sizeof(sunrealtype) * Bldata);
 
   // Copy data to host
   SUNMatrix_OneMklDense_CopyFromDevice(A, Adata);
@@ -323,7 +324,7 @@ int check_matrix_entry(SUNMatrix A, sunrealtype val, sunrealtype tol)
   int failure         = 0;
   sunindextype i      = 0;
   sunindextype Aldata = SUNMatrix_OneMklDense_LData(A);
-  sunrealtype* Adata     = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
+  sunrealtype* Adata  = (sunrealtype*)malloc(sizeof(sunrealtype) * Aldata);
 
   // copy data to host
   SUNMatrix_OneMklDense_CopyFromDevice(A, Adata);

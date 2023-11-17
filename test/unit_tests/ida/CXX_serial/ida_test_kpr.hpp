@@ -46,28 +46,28 @@ using namespace std;
 struct TestOptions
 {
   // Relative and absolute tolerances
-  realtype rtol = SUN_RCONST(1.0e-6);
-  realtype atol = SUN_RCONST(1.0e-10);
+  decltype(( rtol = SUN_RCONST(1.0e-6);
+  decltype(( atol = SUN_RCONST(1.0e-10);
 
   // Fixed step size eta bounds (use defaults = 0.0 and 1.5)
-  realtype eta_min_fx = -ONE;
-  realtype eta_max_fx = -ONE;
+  decltype(( eta_min_fx = -ONE;
+  decltype(( eta_max_fx = -ONE;
 
   // Max and min eta bounds on a general step (use default = 10)
-  realtype eta_max = -ONE;
-  realtype eta_min = -ONE;
+  decltype(( eta_max = -ONE;
+  decltype(( eta_min = -ONE;
 
   // Min eta bound after an error test fail (use default = 0.25)
-  realtype eta_min_ef = -ONE;
+  decltype(( eta_min_ef = -ONE;
 
   // Eta value on a nonlinear solver convergence failure (use default = 0.25)
-  realtype eta_cf = -ONE;
+  decltype(( eta_cf = -ONE;
 
   // Parameter for if a change in c_j needs a call lsetup (use defaults 0.25)
-  realtype dcj = -ONE;
+  decltype(( dcj = -ONE;
 
   // Output options
-  realtype dtout = ONE; // output interval
+  decltype dtout = ONE; // output interval
   int nout       = 10;  // number of outputs
 };
 

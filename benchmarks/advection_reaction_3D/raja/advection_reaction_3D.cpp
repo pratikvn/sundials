@@ -63,11 +63,9 @@
 
 #define STENCIL_WIDTH 1
 
-
 /* Main Program */
 int main(int argc, char* argv[])
 {
-
   SUNContext ctx;
 
   /* Initialize MPI */
@@ -88,10 +86,10 @@ int main(int argc, char* argv[])
 
   {
     /* general problem variables */
-    N_Vector     y = NULL;      /* empty solution vector        */
-    UserData     udata(ctx);    /* user data                    */
-    UserOptions  uopt;          /* user options                 */
-    int          retval;        /* reusable error-checking flag */
+    N_Vector y = NULL;   /* empty solution vector        */
+    UserData udata(ctx); /* user data                    */
+    UserOptions uopt;    /* user options                 */
+    int retval;          /* reusable error-checking flag */
 
     SUNDIALS_CXX_MARK_FUNCTION(udata.prof);
 
@@ -132,13 +130,31 @@ int main(int argc, char* argv[])
     }
 
     /* Integrate in time */
-    if (uopt.method == "ERK")           retval = EvolveProblemExplicit(y, &udata, &uopt);
-    else if (uopt.method == "ARK-DIRK") retval = EvolveProblemDIRK(y, &udata, &uopt);
-    else if (uopt.method == "ARK-IMEX") retval = EvolveProblemIMEX(y, &udata, &uopt);
-    else if (uopt.method == "CV-BDF")   retval = EvolveProblemBDF(y, &udata, &uopt);
-    else if (uopt.method == "CV-ADAMS") retval = EvolveProblemAdams(y, &udata, &uopt);
-    else if (uopt.method == "IDA")      retval = EvolveDAEProblem(y, &udata, &uopt);
-    if (check_retval(&retval, "Evolve", 1, udata.myid)) MPI_Abort(comm, 1);
+    if (uopt.method == "ERK")
+    {
+      retval = EvolveProblemExplicit(y, &udata, &uopt);
+    }
+    else if (uopt.method == "ARK-DIRK")
+    {
+      retval = EvolveProblemDIRK(y, &udata, &uopt);
+    }
+    else if (uopt.method == "ARK-IMEX")
+    {
+      retval = EvolveProblemIMEX(y, &udata, &uopt);
+    }
+    else if (uopt.method == "CV-BDF")
+    {
+      retval = EvolveProblemBDF(y, &udata, &uopt);
+    }
+    else if (uopt.method == "CV-ADAMS")
+    {
+      retval = EvolveProblemAdams(y, &udata, &uopt);
+    }
+    else if (uopt.method == "IDA")
+    {
+      retval = EvolveDAEProblem(y, &udata, &uopt);
+    }
+    if (check_retval(&retval, "Evolve", 1, udata.myid)) { MPI_Abort(comm, 1); }
 
     /* Clean up */
     N_VDestroy(N_VGetLocalVector_MPIPlusX(y));
@@ -164,16 +180,19 @@ UserData::~UserData()
   }
 
   /* free solution masks */
-  if (umask != nullptr) {
+  if (umask != nullptr)
+  {
     N_VDestroy(N_VGetLocalVector_MPIPlusX(umask));
     N_VDestroy(umask);
     umask = nullptr;
   }
-  if (vmask != nullptr) {
+  if (vmask != nullptr)
+  {
     N_VDestroy(vmask);
     vmask = nullptr;
   }
-  if (wmask != nullptr) {
+  if (wmask != nullptr)
+  {
     N_VDestroy(wmask);
     wmask = nullptr;
   }
@@ -189,96 +208,85 @@ UserData::~UserData()
 /* Fills send buffers before exchanging neighbor information */
 int FillSendBuffers(N_Vector y, UserData* udata)
 {
-
   /* shortcuts */
   const sunrealtype c = udata->c;
-  const int nxl = udata->grid->nxl;
-  const int nyl = udata->grid->nyl;
-  const int nzl = udata->grid->nzl;
-  const int dof = udata->grid->dof;
+  const int nxl       = udata->grid->nxl;
+  const int nyl       = udata->grid->nyl;
+  const int nzl       = udata->grid->nzl;
+  const int dof       = udata->grid->dof;
 
   /* Create a 4D view of the vector */
-  RAJA::View<sunrealtype, RAJA::Layout<4> > Yview(GetVecData(y),
-                                               nxl, nyl, nzl, dof);
+  RAJA::View<sunrealtype, RAJA::Layout<4>> Yview(GetVecData(y), nxl, nyl, nzl,
+                                                 dof);
 
   if (c > 0.0)
   {
-
     /* Flow moving in the positive directions uses backward difference. */
 
     /* Fill 3D views of send buffers on device */
-    RAJA::View<sunrealtype, RAJA::Layout<3> >
-      Esend(udata->grid->getSendBuffer("EAST"),  nyl, nzl, dof);
-    RAJA::View<sunrealtype, RAJA::Layout<3> >
-      Nsend(udata->grid->getSendBuffer("NORTH"), nxl, nzl, dof);
-    RAJA::View<sunrealtype, RAJA::Layout<3> >
-      Fsend(udata->grid->getSendBuffer("FRONT"), nxl, nyl, dof);
+    RAJA::View<sunrealtype, RAJA::Layout<3>> Esend(udata->grid->getSendBuffer(
+                                                     "EAST"),
+                                                   nyl, nzl, dof);
+    RAJA::View<sunrealtype, RAJA::Layout<3>> Nsend(udata->grid->getSendBuffer(
+                                                     "NORTH"),
+                                                   nxl, nzl, dof);
+    RAJA::View<sunrealtype, RAJA::Layout<3>> Fsend(udata->grid->getSendBuffer(
+                                                     "FRONT"),
+                                                   nxl, nyl, dof);
 
     auto east_face = RAJA::make_tuple(RAJA::RangeSegment(0, nyl),
                                       RAJA::RangeSegment(0, nzl),
                                       RAJA::RangeSegment(0, dof));
-    RAJA::kernel<XYZ_KERNEL_POL>(east_face,
-      [=] DEVICE_FUNC (int j, int k, int l) {
-        Esend(j,k,l) = Yview(nxl-1,j,k,l);
-    });
+    RAJA::kernel<XYZ_KERNEL_POL>(east_face, [=] DEVICE_FUNC(int j, int k, int l)
+                                 { Esend(j, k, l) = Yview(nxl - 1, j, k, l); });
 
     auto north_face = RAJA::make_tuple(RAJA::RangeSegment(0, nxl),
                                        RAJA::RangeSegment(0, nzl),
                                        RAJA::RangeSegment(0, dof));
-    RAJA::kernel<XYZ_KERNEL_POL>(north_face,
-      [=] DEVICE_FUNC (int i, int k, int l) {
-        Nsend(i,k,l) = Yview(i,nyl-1,k,l);
-    });
+    RAJA::kernel<XYZ_KERNEL_POL>(north_face, [=] DEVICE_FUNC(int i, int k, int l)
+                                 { Nsend(i, k, l) = Yview(i, nyl - 1, k, l); });
 
     auto front_face = RAJA::make_tuple(RAJA::RangeSegment(0, nxl),
                                        RAJA::RangeSegment(0, nyl),
                                        RAJA::RangeSegment(0, dof));
-    RAJA::kernel<XYZ_KERNEL_POL>(front_face,
-      [=] DEVICE_FUNC (int i, int j, int l) {
-        Fsend(i,j,l) = Yview(i,j,nzl-1,l);
-    });
-
+    RAJA::kernel<XYZ_KERNEL_POL>(front_face, [=] DEVICE_FUNC(int i, int j, int l)
+                                 { Fsend(i, j, l) = Yview(i, j, nzl - 1, l); });
   }
   else if (c < 0.0)
   {
-
     /* Flow moving in the negative directions uses forward difference. */
 
     /* Fill 3D views of send buffers on device */
-    RAJA::View<sunrealtype, RAJA::Layout<3> >
-      Wsend(udata->grid->getSendBuffer("WEST"),  nyl, nzl, dof);
-    RAJA::View<sunrealtype, RAJA::Layout<3> >
-      Ssend(udata->grid->getSendBuffer("SOUTH"), nxl, nzl, dof);
-    RAJA::View<sunrealtype, RAJA::Layout<3> >
-      Bsend(udata->grid->getSendBuffer("BACK"),  nxl, nyl, dof);
+    RAJA::View<sunrealtype, RAJA::Layout<3>> Wsend(udata->grid->getSendBuffer(
+                                                     "WEST"),
+                                                   nyl, nzl, dof);
+    RAJA::View<sunrealtype, RAJA::Layout<3>> Ssend(udata->grid->getSendBuffer(
+                                                     "SOUTH"),
+                                                   nxl, nzl, dof);
+    RAJA::View<sunrealtype, RAJA::Layout<3>> Bsend(udata->grid->getSendBuffer(
+                                                     "BACK"),
+                                                   nxl, nyl, dof);
 
     auto west_face = RAJA::make_tuple(RAJA::RangeSegment(0, nyl),
                                       RAJA::RangeSegment(0, nzl),
                                       RAJA::RangeSegment(0, dof));
-    RAJA::kernel<XYZ_KERNEL_POL>(west_face,
-      [=] DEVICE_FUNC (int j, int k, int l) {
-        Wsend(j,k,l) = Yview(0,j,k,l);
-    });
+    RAJA::kernel<XYZ_KERNEL_POL>(west_face, [=] DEVICE_FUNC(int j, int k, int l)
+                                 { Wsend(j, k, l) = Yview(0, j, k, l); });
 
     auto south_face = RAJA::make_tuple(RAJA::RangeSegment(0, nxl),
                                        RAJA::RangeSegment(0, nzl),
                                        RAJA::RangeSegment(0, dof));
-    RAJA::kernel<XYZ_KERNEL_POL>(south_face,
-      [=] DEVICE_FUNC (int i, int k, int l) {
-        Ssend(i,k,l) = Yview(i,0,k,l);
-    });
+    RAJA::kernel<XYZ_KERNEL_POL>(south_face, [=] DEVICE_FUNC(int i, int k, int l)
+                                 { Ssend(i, k, l) = Yview(i, 0, k, l); });
 
     auto back_face = RAJA::make_tuple(RAJA::RangeSegment(0, nxl),
                                       RAJA::RangeSegment(0, nyl),
                                       RAJA::RangeSegment(0, dof));
-    RAJA::kernel<XYZ_KERNEL_POL>(back_face,
-      [=] DEVICE_FUNC (int i, int j, int l) {
-        Bsend(i,j,l) = Yview(i,j,0,l);
-    });
-
+    RAJA::kernel<XYZ_KERNEL_POL>(back_face, [=] DEVICE_FUNC(int i, int j, int l)
+                                 { Bsend(i, j, l) = Yview(i, j, 0, l); });
   }
 
-  return(0);
+  return (0);
 }
 
 /* --------------------------------------------------------------
@@ -413,20 +421,17 @@ int ComponentMask(N_Vector mask, int component, const UserData* udata)
   N_VConst(0.0, mask);
 
   /* Create 4D view of mask data */
-  RAJA::View<sunrealtype, RAJA::Layout<4> > mask_view(GetVecData(mask),
-                                                   udata->grid->nxl,
-                                                   udata->grid->nyl,
-                                                   udata->grid->nzl,
-                                                   udata->grid->dof);
+  RAJA::View<sunrealtype, RAJA::Layout<4>> mask_view(GetVecData(mask),
+                                                     udata->grid->nxl,
+                                                     udata->grid->nyl,
+                                                     udata->grid->nzl,
+                                                     udata->grid->dof);
   /* Fill mask data */
   auto range = RAJA::make_tuple(RAJA::RangeSegment(0, udata->grid->nxl),
                                 RAJA::RangeSegment(0, udata->grid->nyl),
                                 RAJA::RangeSegment(0, udata->grid->nzl));
-  RAJA::kernel<XYZ_KERNEL_POL>(range,
-    [=] DEVICE_FUNC (int i, int j, int k)
-  {
-    mask_view(i,j,k,component) = 1.0;
-  });
+  RAJA::kernel<XYZ_KERNEL_POL>(range, [=] DEVICE_FUNC(int i, int j, int k)
+                               { mask_view(i, j, k, component) = 1.0; });
 
   return 0;
 }
@@ -435,7 +440,6 @@ int ComponentMask(N_Vector mask, int component, const UserData* udata)
 int SetupProblem(int argc, char* argv[], UserData* udata, UserOptions* uopt,
                  SUNMemoryHelper memhelper, SUNContext ctx)
 {
-
   SUNDIALS_CXX_MARK_FUNCTION(udata->prof);
 
   /* MPI variables */
@@ -483,15 +487,18 @@ int SetupProblem(int argc, char* argv[], UserData* udata, UserOptions* uopt,
 
   /* Parse CLI args and set udata/uopt appropriately */
   int retval = ParseArgs(argc, argv, udata, uopt);
-  if (check_retval((void*)&retval, "ParseArgs", 1, udata->myid)) return -1;
+  if (check_retval((void*)&retval, "ParseArgs", 1, udata->myid)) { return -1; }
 
   /* Setup the parallel decomposition */
   const sunindextype npts[] = {uopt->npts, uopt->npts, uopt->npts};
-  const sunrealtype amax[] = {0.0, 0.0, 0.0};
-  const sunrealtype bmax[] = {udata->xmax, udata->xmax, udata->xmax};
-  udata->grid = new ParallelGrid<sunrealtype,sunindextype>(memhelper, &udata->comm,
-    amax, bmax, npts, 3, BoundaryType::PERIODIC, StencilType::UPWIND, udata->c,
-    STENCIL_WIDTH, uopt->npxyz);
+  const sunrealtype amax[]  = {0.0, 0.0, 0.0};
+  const sunrealtype bmax[]  = {udata->xmax, udata->xmax, udata->xmax};
+  udata->grid =
+    new ParallelGrid<sunrealtype, sunindextype>(memhelper, &udata->comm, amax,
+                                                bmax, npts, 3,
+                                                BoundaryType::PERIODIC,
+                                                StencilType::UPWIND, udata->c,
+                                                STENCIL_WIDTH, uopt->npxyz);
 
   /* Create the solution masks */
   udata->umask = N_VMake_MPIPlusX(udata->comm,
@@ -527,7 +534,7 @@ int SetupProblem(int argc, char* argv[], UserData* udata, UserOptions* uopt,
   {
     printf("\n\t\tAdvection-Reaction Test Problem\n\n");
     printf("Using the MPI+%s NVECTOR\n", NVECTOR_ID_STRING);
-    printf("Number of Processors = %li\n", (long int) udata->nprocs);
+    printf("Number of Processors = %li\n", (long int)udata->nprocs);
     udata->grid->PrintInfo();
     printf("Problem Parameters:\n");
     printf("  A = %g\n", udata->A);
@@ -558,9 +565,11 @@ DEVICE_FUNC
 void Gaussian3D(sunrealtype& x, sunrealtype& y, sunrealtype& z, sunrealtype xmax)
 {
   /* Gaussian distribution defaults */
-  const sunrealtype alpha = 0.1;
-  const sunrealtype mu[] = { xmax/SUN_RCONST(2.0), xmax/SUN_RCONST(2.0), xmax/SUN_RCONST(2.0) };
-  const sunrealtype sigma[] = { xmax/SUN_RCONST(4.0), xmax/SUN_RCONST(4.0), xmax/SUN_RCONST(4.0) }; // Sigma = diag(sigma)
+  const sunrealtype alpha   = 0.1;
+  const sunrealtype mu[]    = {xmax / SUN_RCONST(2.0), xmax / SUN_RCONST(2.0),
+                               xmax / SUN_RCONST(2.0)};
+  const sunrealtype sigma[] = {xmax / SUN_RCONST(4.0), xmax / SUN_RCONST(4.0),
+                               xmax / SUN_RCONST(4.0)}; // Sigma = diag(sigma)
 
   /* denominator = 2*sqrt(|Sigma|*(2pi)^3) */
   const sunrealtype denom =
@@ -576,10 +585,10 @@ int SetIC(N_Vector y, UserData* udata)
   SUNDIALS_CXX_MARK_FUNCTION(udata->prof);
 
   /* Variable shortcuts */
-  const int      nxl  = udata->grid->nxl;
-  const int      nyl  = udata->grid->nyl;
-  const int      nzl  = udata->grid->nzl;
-  const int      dof  = udata->grid->dof;
+  const int nxl          = udata->grid->nxl;
+  const int nyl          = udata->grid->nyl;
+  const int nzl          = udata->grid->nzl;
+  const int dof          = udata->grid->dof;
   const sunrealtype dx   = udata->grid->dx;
   const sunrealtype dy   = udata->grid->dy;
   const sunrealtype dz   = udata->grid->dz;
@@ -590,9 +599,9 @@ int SetIC(N_Vector y, UserData* udata)
   const sunrealtype k2   = udata->k2;
   const sunrealtype k3   = udata->k3;
   const sunrealtype k4   = udata->k4;
-  const int xcrd      = udata->grid->coords[0];
-  const int ycrd      = udata->grid->coords[1];
-  const int zcrd      = udata->grid->coords[2];
+  const int xcrd         = udata->grid->coords[0];
+  const int ycrd         = udata->grid->coords[1];
+  const int zcrd         = udata->grid->coords[2];
 
   /* Steady state solution */
   const sunrealtype us = k1 * A / k4;
@@ -600,25 +609,25 @@ int SetIC(N_Vector y, UserData* udata)
   const sunrealtype ws = 3.0;
 
   /* Create 4D view of y */
-  RAJA::View<sunrealtype, RAJA::Layout<4> > yview(GetVecData(y),
-                                               nxl, nyl, nzl, dof);
+  RAJA::View<sunrealtype, RAJA::Layout<4>> yview(GetVecData(y), nxl, nyl, nzl,
+                                                 dof);
 
   /* Gaussian perturbation of the steady state solution */
   auto range = RAJA::make_tuple(RAJA::RangeSegment(0, nxl),
                                 RAJA::RangeSegment(0, nyl),
                                 RAJA::RangeSegment(0, nzl));
   RAJA::kernel<XYZ_KERNEL_POL>(range,
-    [=] DEVICE_FUNC (int i, int j, int k)
-  {
-    sunrealtype x = (xcrd * nxl + i) * dx;
-    sunrealtype y = (ycrd * nyl + j) * dy;
-    sunrealtype z = (zcrd * nzl + k) * dz;
-    Gaussian3D(x,y,z,xmax);
-    const sunrealtype p = x + y + z;
-    yview(i,j,k,0) = us + p;
-    yview(i,j,k,1) = vs + p;
-    yview(i,j,k,2) = ws + p;
-  });
+                               [=] DEVICE_FUNC(int i, int j, int k)
+                               {
+                                 sunrealtype x = (xcrd * nxl + i) * dx;
+                                 sunrealtype y = (ycrd * nyl + j) * dy;
+                                 sunrealtype z = (zcrd * nzl + k) * dz;
+                                 Gaussian3D(x, y, z, xmax);
+                                 const sunrealtype p = x + y + z;
+                                 yview(i, j, k, 0)   = us + p;
+                                 yview(i, j, k, 1)   = vs + p;
+                                 yview(i, j, k, 2)   = ws + p;
+                               });
 
   /* Return success */
   return (0);
@@ -633,14 +642,15 @@ int WriteOutput(sunrealtype t, N_Vector y, UserData* udata, UserOptions* uopt)
   CopyVecFromDevice(N_VGetLocalVector_MPIPlusX(y));
 
   /* output current solution norm to screen */
-  sunrealtype N = (sunrealtype) udata->grid->npts();
+  sunrealtype N = (sunrealtype)udata->grid->npts();
   sunrealtype u = N_VWL2Norm(y, udata->umask);
-  u = sqrt(u*u/N);
+  u             = sqrt(u * u / N);
   sunrealtype v = N_VWL2Norm(y, udata->vmask);
-  v = sqrt(v*v/N);
+  v             = sqrt(v * v / N);
   sunrealtype w = N_VWL2Norm(y, udata->wmask);
-  w = sqrt(w*w/N);
-  if (udata->myid == 0) {
+  w             = sqrt(w * w / N);
+  if (udata->myid == 0)
+  {
     printf("     %10.6f   %10.6f   %10.6f   %10.6f\n", t, u, v, w);
     std::fflush(stdout);
   }
@@ -648,39 +658,48 @@ int WriteOutput(sunrealtype t, N_Vector y, UserData* udata, UserOptions* uopt)
   if (uopt->save)
   {
     /* output the times to disk */
-    if (udata->myid == 0 && udata->TFID) {
-      fprintf(udata->TFID," %.16e\n", t);
+    if (udata->myid == 0 && udata->TFID)
+    {
+      fprintf(udata->TFID, " %.16e\n", t);
       std::fflush(udata->TFID);
     }
 
     /* create 4D view of host data */
     sunrealtype* ydata = NULL;
-    ydata = N_VGetArrayPointer(y);
-    if (check_retval((void *) ydata, "N_VGetArrayPointer", 0, udata->myid)) return -1;
+    ydata              = N_VGetArrayPointer(y);
+    if (check_retval((void*)ydata, "N_VGetArrayPointer", 0, udata->myid))
+    {
+      return -1;
+    }
     const int nxl = udata->grid->nxl;
     const int nyl = udata->grid->nyl;
     const int nzl = udata->grid->nzl;
     const int dof = udata->grid->dof;
-    RAJA::View<sunrealtype, RAJA::Layout<4> > Yview(ydata, nxl, nyl, nzl, dof);
+    RAJA::View<sunrealtype, RAJA::Layout<4>> Yview(ydata, nxl, nyl, nzl, dof);
 
     /* output results to disk */
     for (int i = 0; i < nxl; i++)
+    {
       for (int j = 0; j < nyl; j++)
-        for (int k = 0; k < nzl; k++) {
-          fprintf(udata->UFID," %.16e", Yview(i,j,k,0));
-          fprintf(udata->VFID," %.16e", Yview(i,j,k,1));
-          fprintf(udata->WFID," %.16e", Yview(i,j,k,2));
+      {
+        for (int k = 0; k < nzl; k++)
+        {
+          fprintf(udata->UFID, " %.16e", Yview(i, j, k, 0));
+          fprintf(udata->VFID, " %.16e", Yview(i, j, k, 1));
+          fprintf(udata->WFID, " %.16e", Yview(i, j, k, 2));
         }
+      }
+    }
 
-    fprintf(udata->UFID,"\n");
-    fprintf(udata->VFID,"\n");
-    fprintf(udata->WFID,"\n");
+    fprintf(udata->UFID, "\n");
+    fprintf(udata->VFID, "\n");
+    fprintf(udata->WFID, "\n");
     std::fflush(udata->UFID);
     std::fflush(udata->VFID);
     std::fflush(udata->WFID);
   }
 
-  return(0);
+  return (0);
 }
 
 void InputError(char* name)
@@ -715,8 +734,9 @@ void InputError(char* name)
                     "direction\n");
     fprintf(stderr, "  --npxyz <int> <int> <int> number of processors in each "
                     "direction (0 forces MPI to decide)\n");
-    fprintf(stderr, "  --xmax <sunrealtype>         maximum value of x (size of "
-                    "domain)\n");
+    fprintf(stderr,
+            "  --xmax <sunrealtype>         maximum value of x (size of "
+            "domain)\n");
     fprintf(stderr, "  --tf <sunrealtype>           final time\n");
     fprintf(stderr, "  --A <sunrealtype>            A parameter value\n");
     fprintf(stderr, "  --B <sunrealtype>            B parameter value\n");

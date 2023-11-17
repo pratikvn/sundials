@@ -32,11 +32,12 @@
 #define TWO          SUN_RCONST(2.0)
 
 /* Prototypes of cvBandPrecSetup and cvBandPrecSolve */
-static int cvBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                           sunbooleantype* jcurPtr, sunrealtype gamma, void* bp_data);
+static int cvBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                           sunbooleantype jok, sunbooleantype* jcurPtr,
+                           sunrealtype gamma, void* bp_data);
 static int cvBandPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                           N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                           void* bp_data);
+                           N_Vector z, sunrealtype gamma, sunrealtype delta,
+                           int lr, void* bp_data);
 
 /* Prototype for cvBandPrecFree */
 static int cvBandPrecFree(CVodeMem cv_mem);
@@ -360,8 +361,9 @@ int CVBandPrecGetNumRhsEvals(void* cvode_mem, long int* nfevalsBP)
     0  if successful, or
     1  if the band factorization failed.
   -----------------------------------------------------------------*/
-static int cvBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
-                           sunbooleantype* jcurPtr, sunrealtype gamma, void* bp_data)
+static int cvBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy,
+                           sunbooleantype jok, sunbooleantype* jcurPtr,
+                           sunrealtype gamma, void* bp_data)
 {
   CVBandPrecData pdata;
   CVodeMem cv_mem;
@@ -453,8 +455,8 @@ static int cvBandPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantyp
   The value returned is a int.
   -----------------------------------------------------------------*/
 static int cvBandPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
-                           N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
-                           void* bp_data)
+                           N_Vector z, sunrealtype gamma, sunrealtype delta,
+                           int lr, void* bp_data)
 {
   SUNAssignSUNCTX(y->sunctx);
 

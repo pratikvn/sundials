@@ -67,7 +67,7 @@
 #include <sunlinsol/sunlinsol_spgmr.h> /* access to SPGMR SUNLinearSolver  */
 
 /* Problem Constants */
-#define NVARS    2                /* number of species         */
+#define NVARS    2                    /* number of species         */
 #define KH       SUN_RCONST(4.0e-6)   /* horizontal diffusivity Kh */
 #define VEL      SUN_RCONST(0.001)    /* advection velocity V      */
 #define KV0      SUN_RCONST(1.0e-8)   /* coefficient in Kv(y)      */
@@ -79,10 +79,10 @@
 #define C1_SCALE SUN_RCONST(1.0e6) /* coefficients in initial profiles    */
 #define C2_SCALE SUN_RCONST(1.0e12)
 
-#define T0      SUN_RCONST(0.0)             /* initial time */
-#define NOUT    12                      /* number of output times */
-#define TWOHR   SUN_RCONST(7200.0)          /* number of seconds in two hours  */
-#define HALFDAY SUN_RCONST(4.32e4)          /* number of seconds in a half day */
+#define T0      SUN_RCONST(0.0)    /* initial time */
+#define NOUT    12                 /* number of output times */
+#define TWOHR   SUN_RCONST(7200.0) /* number of seconds in two hours  */
+#define HALFDAY SUN_RCONST(4.32e4) /* number of seconds in a half day */
 #define PI      SUN_RCONST(3.1415926535898) /* pi */
 
 #define XMIN SUN_RCONST(0.0) /* grid boundaries in x  */
@@ -103,8 +103,8 @@
 /* initialization constants */
 #define RTOL  SUN_RCONST(1.0e-5) /* scalar relative tolerance */
 #define FLOOR SUN_RCONST(100.0)  /* value of C1 or C2 at which tolerances */
-                             /* change from relative to absolute      */
-#define ATOL (RTOL * FLOOR)  /* scalar absolute tolerance */
+                                 /* change from relative to absolute      */
+#define ATOL (RTOL * FLOOR)      /* scalar absolute tolerance */
 
 /* User-defined matrix accessor macro: IJth
 
@@ -145,13 +145,15 @@ static void PrintOutput(void* arkode_mem, int my_pe, MPI_Comm comm, N_Vector u,
 static void PrintFinalStats(void* arkode_mem);
 static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
                   sunindextype dsizex, sunindextype dsizey, sunrealtype udata[]);
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[]);
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[]);
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[]);
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[]);
 static void ucomm(sunrealtype t, N_Vector u, UserData data);
-static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[], UserData data);
+static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[],
+                  UserData data);
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data);
@@ -578,9 +580,9 @@ static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
    be manipulated between the two calls.
    2) request should have 4 entries, and should be passed in both calls also. */
 
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[])
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[])
 {
   sunindextype offsetue;
   /* Have bufleft and bufright use the same buffer */
@@ -624,7 +626,8 @@ static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
    2) request should have 4 entries, and should be passed in both calls also. */
 
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[])
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[])
 {
   int i, ly;
   sunindextype dsizex2, offsetue, offsetbuf;
@@ -712,7 +715,8 @@ static void ucomm(sunrealtype t, N_Vector u, UserData data)
    between processors of data needed to calculate f has already been done,
    and this data is in the work array uext. */
 
-static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[], UserData data)
+static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[],
+                  UserData data)
 {
   sunrealtype* uext;
   sunrealtype q3, c1, c2, c1dn, c2dn, c1up, c2up, c1lt, c2lt;

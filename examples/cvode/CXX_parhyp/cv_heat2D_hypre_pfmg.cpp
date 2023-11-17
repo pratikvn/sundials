@@ -169,15 +169,15 @@ struct UserData
   // Integrator settings
   sunrealtype rtol; // relative tolerance
   sunrealtype atol; // absolute tolerance
-  int maxsteps;  // max number of steps between outputs
+  int maxsteps;     // max number of steps between outputs
 
   // Linear solver and preconditioner settings
-  bool     pcg;       // use PCG (true) or GMRES (false)
-  bool     prec;      // preconditioner on/off
-  bool     matvec;    // use hypre matrix-vector product
-  int      liniters;  // number of linear iterations
-  int      msbp;      // max number of steps between preconditioner setups
-  sunrealtype epslin;    // linear solver tolerance factor
+  bool pcg;           // use PCG (true) or GMRES (false)
+  bool prec;          // preconditioner on/off
+  bool matvec;        // use hypre matrix-vector product
+  int liniters;       // number of linear iterations
+  int msbp;           // max number of steps between preconditioner setups
+  sunrealtype epslin; // linear solver tolerance factor
 
   // hypre objects
   HYPRE_StructGrid grid;
@@ -235,8 +235,8 @@ struct UserData
 static int f(sunrealtype t, N_Vector u, N_Vector f, void* user_data);
 
 // Jacobian-vector product function
-static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                  void* user_data, N_Vector tmp);
+static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                  N_Vector fy, void* user_data, N_Vector tmp);
 
 // Preconditioner setup and solve functions
 static int PSetup(sunrealtype t, N_Vector u, N_Vector f, sunbooleantype jok,
@@ -327,10 +327,10 @@ int main(int argc, char* argv[])
   // Create a new scope so that sundials::Context is deleted
   // prior to the MPI_Finalize() call.
   {
-    UserData *udata    = NULL;  // user data structure
-    N_Vector u         = NULL;  // vector for storing solution
-    SUNLinearSolver LS = NULL;  // linear solver memory structure
-    void *cvode_mem    = NULL;  // CVODE memory structure
+    UserData* udata    = NULL; // user data structure
+    N_Vector u         = NULL; // vector for storing solution
+    SUNLinearSolver LS = NULL; // linear solver memory structure
+    void* cvode_mem    = NULL; // CVODE memory structure
 
     // SUNDIALS context
     sundials::Context sunctx(&comm_w);
@@ -358,7 +358,7 @@ int main(int argc, char* argv[])
     if (outproc)
     {
       flag = PrintUserData(udata);
-      if (check_flag(&flag, "PrintUserData", 1)) return 1;
+      if (check_flag(&flag, "PrintUserData", 1)) { return 1; }
     }
 
     // ------------------------
@@ -387,12 +387,12 @@ int main(int argc, char* argv[])
     if (udata->pcg)
     {
       LS = SUNLinSol_PCG(u, prectype, udata->liniters, sunctx);
-      if (check_flag((void *) LS, "SUNLinSol_PCG", 0)) return 1;
+      if (check_flag((void*)LS, "SUNLinSol_PCG", 0)) { return 1; }
     }
     else
     {
       LS = SUNLinSol_SPGMR(u, prectype, udata->liniters, sunctx);
-      if (check_flag((void *) LS, "SUNLinSol_SPGMR", 0)) return 1;
+      if (check_flag((void*)LS, "SUNLinSol_SPGMR", 0)) { return 1; }
     }
 
     // ---------------------
@@ -541,9 +541,9 @@ int main(int argc, char* argv[])
     // Clean up and return
     // --------------------
 
-    CVodeFree(&cvode_mem);     // Free integrator memory
-    SUNLinSolFree(LS);         // Free linear solver
-    N_VDestroy(u);             // Free vectors
+    CVodeFree(&cvode_mem); // Free integrator memory
+    SUNLinSolFree(LS);     // Free linear solver
+    N_VDestroy(u);         // Free vectors
     delete udata;
   }
 
@@ -944,8 +944,8 @@ static int f(sunrealtype t, N_Vector u, N_Vector f, void* user_data)
 }
 
 // Jacobian-vector product function
-static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                  void* user_data, N_Vector tmp)
+static int JTimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                  N_Vector fy, void* user_data, N_Vector tmp)
 {
   int flag;
 
@@ -2041,15 +2041,15 @@ UserData::UserData(sundials::Context& sunctx) : sunctx(sunctx)
   // Integrator settings
   rtol     = SUN_RCONST(1.e-5);  // relative tolerance
   atol     = SUN_RCONST(1.e-10); // absolute tolerance
-  maxsteps = 0;              // use default
+  maxsteps = 0;                  // use default
 
   // Linear solver and preconditioner options
-  pcg       = true;       // use PCG (true) or GMRES (false)
-  prec      = true;       // enable preconditioning
-  matvec    = false;      // use hypre matrix-vector product
-  liniters  = 10;         // max linear iterations
-  msbp      = 0;          // use default (20 steps)
-  epslin    = ZERO;       // use default (0.05)
+  pcg      = true;  // use PCG (true) or GMRES (false)
+  prec     = true;  // enable preconditioning
+  matvec   = false; // use hypre matrix-vector product
+  liniters = 10;    // max linear iterations
+  msbp     = 0;     // use default (20 steps)
+  epslin   = ZERO;  // use default (0.05)
 
   // hypre objects
   grid    = NULL;
@@ -2174,14 +2174,8 @@ static int ReadInputs(int* argc, char*** argv, UserData* udata, bool outproc)
     else if (arg == "--rtol") { udata->rtol = stod((*argv)[arg_idx++]); }
     else if (arg == "--atol") { udata->atol = stod((*argv)[arg_idx++]); }
     // Linear solver settings
-    else if (arg == "--gmres")
-    {
-      udata->pcg = false;
-    }
-    else if (arg == "--matvec")
-    {
-      udata->matvec = true;
-    }
+    else if (arg == "--gmres") { udata->pcg = false; }
+    else if (arg == "--matvec") { udata->matvec = true; }
     else if (arg == "--liniters")
     {
       udata->liniters = stoi((*argv)[arg_idx++]);

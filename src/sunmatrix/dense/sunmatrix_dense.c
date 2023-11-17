@@ -30,7 +30,7 @@
 /* Private function prototypes */
 static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
 static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
-                                              N_Vector y);
+                                                 N_Vector y);
 
 /*
  * -----------------------------------------------------------------
@@ -346,7 +346,8 @@ static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
   return SUNTRUE;
 }
 
-static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
+static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
+                                                 N_Vector y)
 {
   /* Vectors must provide nvgetarraypointer and cannot be a parallel vector */
   if (!x->ops->nvgetarraypointer || !y->ops->nvgetarraypointer)

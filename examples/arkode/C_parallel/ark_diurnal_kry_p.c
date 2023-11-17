@@ -68,7 +68,7 @@
 #endif
 
 /* Problem Constants */
-#define NVARS    2                /* number of species         */
+#define NVARS    2                    /* number of species         */
 #define KH       SUN_RCONST(4.0e-6)   /* horizontal diffusivity Kh */
 #define VEL      SUN_RCONST(0.001)    /* advection velocity V      */
 #define KV0      SUN_RCONST(1.0e-8)   /* coefficient in Kv(y)      */
@@ -80,10 +80,10 @@
 #define C1_SCALE SUN_RCONST(1.0e6) /* coefficients in initial profiles    */
 #define C2_SCALE SUN_RCONST(1.0e12)
 
-#define T0      SUN_RCONST(0.0)             /* initial time */
-#define NOUT    12                      /* number of output times */
-#define TWOHR   SUN_RCONST(7200.0)          /* number of seconds in two hours  */
-#define HALFDAY SUN_RCONST(4.32e4)          /* number of seconds in a half day */
+#define T0      SUN_RCONST(0.0)    /* initial time */
+#define NOUT    12                 /* number of output times */
+#define TWOHR   SUN_RCONST(7200.0) /* number of seconds in two hours  */
+#define HALFDAY SUN_RCONST(4.32e4) /* number of seconds in a half day */
 #define PI      SUN_RCONST(3.1415926535898) /* pi */
 
 #define XMIN SUN_RCONST(0.0) /* grid boundaries in x  */
@@ -104,8 +104,8 @@
 /* initialization constants */
 #define RTOL  SUN_RCONST(1.0e-5) /* scalar relative tolerance */
 #define FLOOR SUN_RCONST(100.0)  /* value of C1 or C2 at which tolerances */
-                             /* change from relative to absolute      */
-#define ATOL (RTOL * FLOOR)  /* scalar absolute tolerance */
+                                 /* change from relative to absolute      */
+#define ATOL (RTOL * FLOOR)      /* scalar absolute tolerance */
 
 /* User-defined matrix accessor macro: IJth
 
@@ -145,13 +145,15 @@ static void PrintOutput(void* arkode_mem, int my_pe, MPI_Comm comm, N_Vector u,
 static void PrintFinalStats(void* arkode_mem);
 static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
                   sunindextype dsizex, sunindextype dsizey, sunrealtype udata[]);
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[]);
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[]);
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[]);
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[]);
 static void ucomm(sunrealtype t, N_Vector u, UserData data);
-static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[], UserData data);
+static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[],
+                  UserData data);
 
 /* Functions Called by the Solver */
 static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data);
@@ -270,7 +272,10 @@ int main(int argc, char* argv[])
 
   /* Tighten nonlinear solver tolerance */
   flag = ARKStepSetNonlinConvCoef(arkode_mem, SUN_RCONST(0.01));
-  if(check_flag(&flag, "ARKStepSetNonlinConvCoef", 1, my_pe)) MPI_Abort(comm, 1);
+  if (check_flag(&flag, "ARKStepSetNonlinConvCoef", 1, my_pe))
+  {
+    MPI_Abort(comm, 1);
+  }
 
   /* Print heading */
   if (my_pe == 0)
@@ -564,9 +569,9 @@ static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
    be manipulated between the two calls.
    2) request should have 4 entries, and should be passed in both calls also. */
 
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[])
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[])
 {
   sunindextype offsetue;
   /* Have bufleft and bufright use the same buffer */
@@ -610,7 +615,8 @@ static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
    2) request should have 4 entries, and should be passed in both calls also. */
 
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[])
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[])
 {
   int i, ly;
   sunindextype dsizex2, offsetue, offsetbuf;
@@ -696,7 +702,8 @@ static void ucomm(sunrealtype t, N_Vector u, UserData data)
    between processors of data needed to calculate f has already been done,
    and this data is in the work array uext. */
 
-static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[], UserData data)
+static void fcalc(sunrealtype t, sunrealtype udata[], sunrealtype dudata[],
+                  UserData data)
 {
   sunrealtype* uext;
   sunrealtype q3, c1, c2, c1dn, c2dn, c1up, c2up, c1lt, c2lt;
@@ -885,114 +892,121 @@ static int Precond(sunrealtype tn, N_Vector u, N_Vector fu, sunbooleantype jok,
     for (ly = 0; ly < MYSUB; ly++)
     {
       for (lx = 0; lx < MXSUB; lx++)
+      {
         SUNDlsMat_denseCopy(Jbd[lx][ly], P[lx][ly], NVARS, NVARS);
-
-    *jcurPtr = SUNFALSE;
-  }
-
-  else
-  {
-    /* jok = SUNFALSE: Generate Jbd from scratch and copy to P */
-
-    /* Make local copies of problem variables, for efficiency */
-    q4coef = data->q4;
-    dely   = data->dy;
-    verdco = data->vdco;
-    hordco = data->hdco;
-
-    /* Compute 2x2 diagonal Jacobian blocks (using q4 values
-     computed on the last f call).  Load into P. */
-    for (ly = 0; ly < MYSUB; ly++) {
-      jy = ly + isuby*MYSUB;
-      ydn = YMIN + (jy - SUN_RCONST(0.5))*dely;
-      yup = ydn + dely;
-      cydn = verdco*exp(SUN_RCONST(0.2)*ydn);
-      cyup = verdco*exp(SUN_RCONST(0.2)*yup);
-      diag = -(cydn + cyup + SUN_RCONST(2.0)*hordco);
-      for (lx = 0; lx < MXSUB; lx++) {
-        offset = lx*NVARS + ly*nvmxsub;
-        c1 = udata[offset];
-        c2 = udata[offset+1];
-        j = Jbd[lx][ly];
-        a = P[lx][ly];
-        IJth(j,1,1) = (-Q1*C3 - Q2*c2) + diag;
-        IJth(j,1,2) = -Q2*c1 + q4coef;
-        IJth(j,2,1) = Q1*C3 - Q2*c2;
-        IJth(j,2,2) = (-Q2*c1 - q4coef) + diag;
-        SUNDlsMat_denseCopy(j, a, NVARS, NVARS);
       }
+
+      *jcurPtr = SUNFALSE;
     }
 
-    *jcurPtr = SUNTRUE;
-  }
+    else
+    {
+      /* jok = SUNFALSE: Generate Jbd from scratch and copy to P */
 
-  /* Scale by -gamma */
-  for (ly = 0; ly < MYSUB; ly++)
-  {
-    for (lx = 0; lx < MXSUB; lx++)
-      SUNDlsMat_denseScale(-gamma, P[lx][ly], NVARS, NVARS);
+      /* Make local copies of problem variables, for efficiency */
+      q4coef = data->q4;
+      dely   = data->dy;
+      verdco = data->vdco;
+      hordco = data->hdco;
 
-  /* Add identity matrix and do LU decompositions on blocks in place */
-  for (lx = 0; lx < MXSUB; lx++) {
-    for (ly = 0; ly < MYSUB; ly++) {
-      SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
-      ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
-      if (ier != 0) return(1);
+      /* Compute 2x2 diagonal Jacobian blocks (using q4 values
+     computed on the last f call).  Load into P. */
+      for (ly = 0; ly < MYSUB; ly++)
+      {
+        jy   = ly + isuby * MYSUB;
+        ydn  = YMIN + (jy - SUN_RCONST(0.5)) * dely;
+        yup  = ydn + dely;
+        cydn = verdco * exp(SUN_RCONST(0.2) * ydn);
+        cyup = verdco * exp(SUN_RCONST(0.2) * yup);
+        diag = -(cydn + cyup + SUN_RCONST(2.0) * hordco);
+        for (lx = 0; lx < MXSUB; lx++)
+        {
+          offset        = lx * NVARS + ly * nvmxsub;
+          c1            = udata[offset];
+          c2            = udata[offset + 1];
+          j             = Jbd[lx][ly];
+          a             = P[lx][ly];
+          IJth(j, 1, 1) = (-Q1 * C3 - Q2 * c2) + diag;
+          IJth(j, 1, 2) = -Q2 * c1 + q4coef;
+          IJth(j, 2, 1) = Q1 * C3 - Q2 * c2;
+          IJth(j, 2, 2) = (-Q2 * c1 - q4coef) + diag;
+          SUNDlsMat_denseCopy(j, a, NVARS, NVARS);
+        }
+      }
+
+      *jcurPtr = SUNTRUE;
     }
-  }
 
-  /* Add identity matrix and do LU decompositions on blocks in place */
-  for (lx = 0; lx < MXSUB; lx++)
-  {
+    /* Scale by -gamma */
     for (ly = 0; ly < MYSUB; ly++)
     {
-      SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
-      ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
-      if (ier != 0) { return (1); }
+      for (lx = 0; lx < MXSUB; lx++)
+        SUNDlsMat_denseScale(-gamma, P[lx][ly], NVARS, NVARS);
+
+      /* Add identity matrix and do LU decompositions on blocks in place */
+      for (lx = 0; lx < MXSUB; lx++)
+      {
+        for (ly = 0; ly < MYSUB; ly++)
+        {
+          SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
+          ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
+          if (ier != 0) return (1);
+        }
+      }
+
+      /* Add identity matrix and do LU decompositions on blocks in place */
+      for (lx = 0; lx < MXSUB; lx++)
+      {
+        for (ly = 0; ly < MYSUB; ly++)
+        {
+          SUNDlsMat_denseAddIdentity(P[lx][ly], NVARS);
+          ier = SUNDlsMat_denseGETRF(P[lx][ly], NVARS, NVARS, pivot[lx][ly]);
+          if (ier != 0) { return (1); }
+        }
+      }
+
+      return (0);
     }
-  }
 
-  return (0);
-}
+    /* Preconditioner solve routine */
+    static int PSolve(sunrealtype tn, N_Vector u, N_Vector fu, N_Vector r,
+                      N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
+                      void* user_data)
+    {
+      sunrealtype**(*P)[MYSUB];
+      int nvmxsub;
+      sunindextype*(*pivot)[MYSUB];
+      int lx, ly;
+      sunrealtype *zdata, *v;
+      UserData data;
 
-/* Preconditioner solve routine */
-static int PSolve(sunrealtype tn, N_Vector u, N_Vector fu, N_Vector r, N_Vector z,
-                  sunrealtype gamma, sunrealtype delta, int lr, void* user_data)
-{
-  sunrealtype**(*P)[MYSUB];
-  int nvmxsub;
-  sunindextype*(*pivot)[MYSUB];
-  int lx, ly;
-  sunrealtype *zdata, *v;
-  UserData data;
+      /* Extract the P and pivot arrays from user_data */
+      data  = (UserData)user_data;
+      P     = data->P;
+      pivot = data->pivot;
 
-  /* Extract the P and pivot arrays from user_data */
-  data  = (UserData)user_data;
-  P     = data->P;
-  pivot = data->pivot;
-
-  /* Solve the block-diagonal system Px = r using LU factors stored
+      /* Solve the block-diagonal system Px = r using LU factors stored
      in P and pivot data in pivot, and return the solution in z.
      First copy vector r to z. */
-  N_VScale(SUN_RCONST(1.0), r, z);
-  nvmxsub = data->nvmxsub;
-  zdata   = N_VGetArrayPointer(z);
+      N_VScale(SUN_RCONST(1.0), r, z);
+      nvmxsub = data->nvmxsub;
+      zdata   = N_VGetArrayPointer(z);
 
-  for (lx = 0; lx < MXSUB; lx++)
-  {
-    for (ly = 0; ly < MYSUB; ly++)
-    {
-      v = &(zdata[lx * NVARS + ly * nvmxsub]);
-      SUNDlsMat_denseGETRS(P[lx][ly], NVARS, pivot[lx][ly], v);
+      for (lx = 0; lx < MXSUB; lx++)
+      {
+        for (ly = 0; ly < MYSUB; ly++)
+        {
+          v = &(zdata[lx * NVARS + ly * nvmxsub]);
+          SUNDlsMat_denseGETRS(P[lx][ly], NVARS, pivot[lx][ly], v);
+        }
+      }
+
+      return (0);
     }
-  }
 
-  return (0);
-}
+    /*********************** Private Helper Function ************************/
 
-/*********************** Private Helper Function ************************/
-
-/* Check function return value...
+    /* Check function return value...
      opt == 0 means SUNDIALS function allocates memory so check if
               returned NULL pointer
      opt == 1 means SUNDIALS function returns a flag so check if
@@ -1000,34 +1014,35 @@ static int PSolve(sunrealtype tn, N_Vector u, N_Vector fu, N_Vector r, N_Vector 
      opt == 2 means function allocates memory so check if returned
               NULL pointer */
 
-static int check_flag(void* flagvalue, const char* funcname, int opt, int id)
-{
-  int* errflag;
-
-  /* Check if SUNDIALS function returned NULL pointer - no memory allocated */
-  if (opt == 0 && flagvalue == NULL)
-  {
-    fprintf(stderr,
-            "\nSUNDIALS_ERROR(%d): %s() failed - returned NULL pointer\n\n", id,
-            funcname);
-    return (1);
-  }
-  else if (opt == 1)
-  { /* Check if flag < 0 */
-    errflag = (int*)flagvalue;
-    if (*errflag < 0)
+    static int check_flag(void* flagvalue, const char* funcname, int opt, int id)
     {
-      fprintf(stderr, "\nSUNDIALS_ERROR(%d): %s() failed with flag = %d\n\n",
-              id, funcname, *errflag);
-      return (1);
-    }
-  }
-  else if (opt == 2 && flagvalue == NULL)
-  { /* Check if function returned NULL pointer - no memory allocated */
-    fprintf(stderr, "\nMEMORY_ERROR(%d): %s() failed - returned NULL pointer\n\n",
-            id, funcname);
-    return (1);
-  }
+      int* errflag;
 
-  return (0);
-}
+      /* Check if SUNDIALS function returned NULL pointer - no memory allocated */
+      if (opt == 0 && flagvalue == NULL)
+      {
+        fprintf(stderr,
+                "\nSUNDIALS_ERROR(%d): %s() failed - returned NULL pointer\n\n",
+                id, funcname);
+        return (1);
+      }
+      else if (opt == 1)
+      { /* Check if flag < 0 */
+        errflag = (int*)flagvalue;
+        if (*errflag < 0)
+        {
+          fprintf(stderr, "\nSUNDIALS_ERROR(%d): %s() failed with flag = %d\n\n",
+                  id, funcname, *errflag);
+          return (1);
+        }
+      }
+      else if (opt == 2 && flagvalue == NULL)
+      { /* Check if function returned NULL pointer - no memory allocated */
+        fprintf(stderr,
+                "\nMEMORY_ERROR(%d): %s() failed - returned NULL pointer\n\n",
+                id, funcname);
+        return (1);
+      }
+
+      return (0);
+    }

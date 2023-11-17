@@ -71,8 +71,9 @@
 // Cuda Kernels
 // -----------------------------------------------------------------------------
 
-__global__ void PxKernel(sunrealtype* mu, sunrealtype* Px, sunrealtype* x, sunrealtype a1,
-                         sunrealtype a2, sunrealtype a3, sunrealtype scale, sunindextype N)
+__global__ void PxKernel(sunrealtype* mu, sunrealtype* Px, sunrealtype* x,
+                         sunrealtype a1, sunrealtype a2, sunrealtype a3,
+                         sunrealtype scale, sunindextype N)
 {
   // Calculate all P(x_k) for each x value
   sunrealtype val1, val2, val3;
@@ -91,8 +92,9 @@ __global__ void PxKernel(sunrealtype* mu, sunrealtype* Px, sunrealtype* x, sunre
   }
 }
 
-__global__ void EMKernel(sunrealtype* mu, sunrealtype* mu_top, sunrealtype* mu_bottom,
-                         sunrealtype* x, sunrealtype* Px, sunrealtype a1, sunrealtype a2,
+__global__ void EMKernel(sunrealtype* mu, sunrealtype* mu_top,
+                         sunrealtype* mu_bottom, sunrealtype* x,
+                         sunrealtype* Px, sunrealtype a1, sunrealtype a2,
                          sunrealtype a3, sunrealtype scale, sunindextype N)
 {
   sunrealtype val1, val2, val3;
@@ -120,8 +122,8 @@ __global__ void EMKernel(sunrealtype* mu, sunrealtype* mu_top, sunrealtype* mu_b
   }
 }
 
-__global__ void EMKernelFin(sunrealtype* mu, sunrealtype* mu_top, sunrealtype* mu_bottom,
-                            sunindextype localn)
+__global__ void EMKernelFin(sunrealtype* mu, sunrealtype* mu_top,
+                            sunrealtype* mu_bottom, sunindextype localn)
 {
   int tid = blockDim.x * blockIdx.x + threadIdx.x;
 
@@ -542,7 +544,8 @@ static int EM(N_Vector u, N_Vector f, void* user_data)
   sunrealtype scale = ONE / sqrt(TWO * PI);
 
   // Get input device pointers
-  sunrealtype* u_dev = N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(u));
+  sunrealtype* u_dev =
+    N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(u));
   sunrealtype* x_dev = N_VGetDeviceArrayPointer_Cuda(udata->samples_local);
 
   // Get output device pointer
@@ -572,7 +575,8 @@ static int EM(N_Vector u, N_Vector f, void* user_data)
   // EM FINALIZE KERNEL
   // ------------------
 
-  sunrealtype* f_dev = N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(f));
+  sunrealtype* f_dev =
+    N_VGetDeviceArrayPointer_Cuda(N_VGetLocalVector_MPIPlusX(f));
 
   EMKernelFin<<<grid2, block>>>(f_dev, mu_top_dev, mu_bottom_dev,
                                 udata->nodes_loc);
@@ -625,10 +629,10 @@ static int InitUserData(UserData* udata)
 
   // Integrator settings
   udata->rtol    = SUN_RCONST(1.e-8); // relative tolerance
-  udata->maa     = 3;             // 3 vectors in Anderson Acceleration space
-  udata->damping = ONE;           // no damping for Anderson Acceleration
-  udata->orthaa  = 0;             // use MGS for Anderson Acceleration
-  udata->maxits  = 200;           // max number of fixed point iterations
+  udata->maa     = 3;   // 3 vectors in Anderson Acceleration space
+  udata->damping = ONE; // no damping for Anderson Acceleration
+  udata->orthaa  = 0;   // use MGS for Anderson Acceleration
+  udata->maxits  = 200; // max number of fixed point iterations
 
   // Vectors
   udata->samples_local = NULL;

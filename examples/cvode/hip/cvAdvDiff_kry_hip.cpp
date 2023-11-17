@@ -51,7 +51,7 @@
 #define T0    SUN_RCONST(0.0)    /* initial time              */
 #define T1    SUN_RCONST(0.1)    /* first output time         */
 #define DTOUT SUN_RCONST(0.1)    /* output time increment     */
-#define NOUT  10             /* number of output times    */
+#define NOUT  10                 /* number of output times    */
 
 #define ZERO SUN_RCONST(0.0)
 #define HALF SUN_RCONST(0.5)
@@ -79,9 +79,9 @@
  * HIP kernels
  */
 
-__global__ void fKernel(const sunrealtype* u, sunrealtype* udot, sunindextype MX,
-                        sunindextype MY, sunrealtype hordc, sunrealtype horac,
-                        sunrealtype verdc)
+__global__ void fKernel(const sunrealtype* u, sunrealtype* udot,
+                        sunindextype MX, sunindextype MY, sunrealtype hordc,
+                        sunrealtype horac, sunrealtype verdc)
 {
   sunrealtype uij, udn, uup, ult, urt, hdiff, hadv, vdiff;
   sunindextype i, j, tid;
@@ -153,8 +153,8 @@ static int jtv(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector u, N_Vector fu,
                void* user_data, N_Vector tmp);
 
 /* Private Helper Functions */
-static void PrintHeader(sunrealtype reltol, sunrealtype abstol, sunrealtype umax,
-                        UserData data);
+static void PrintHeader(sunrealtype reltol, sunrealtype abstol,
+                        sunrealtype umax, UserData data);
 static void PrintOutput(sunrealtype t, sunrealtype umax, long int nst);
 static void PrintFinalStats(void* cvode_mem);
 
@@ -290,10 +290,10 @@ int main(int argc, char** argv)
 
 UserData SetUserData(int argc, char* argv[])
 {
-  const sunindextype MX = 10;
-  const sunindextype MY = 5;
-  const sunrealtype XMAX   = SUN_RCONST(2.0); /* domain boundaries         */
-  const sunrealtype YMAX   = SUN_RCONST(1.0);
+  const sunindextype MX  = 10;
+  const sunindextype MY  = 5;
+  const sunrealtype XMAX = SUN_RCONST(2.0); /* domain boundaries         */
+  const sunrealtype YMAX = SUN_RCONST(1.0);
 
   /* Allocate user data structure */
   UserData ud = (UserData)malloc(sizeof *ud);
@@ -319,10 +319,10 @@ static void SetIC(N_Vector u, UserData data)
 {
   /* Extract needed constants from data */
 
-  const sunrealtype dx      = data->dx;
-  const sunrealtype dy      = data->dy;
-  const sunrealtype xmax    = data->XMAX;
-  const sunrealtype ymax    = data->YMAX;
+  const sunrealtype dx   = data->dx;
+  const sunrealtype dy   = data->dy;
+  const sunrealtype xmax = data->XMAX;
+  const sunrealtype ymax = data->YMAX;
   const sunindextype MY  = data->MY;
   const sunindextype NEQ = data->NEQ;
 
@@ -360,11 +360,11 @@ static int f(sunrealtype t, N_Vector u, N_Vector udot, void* user_data)
   UserData data = (UserData)user_data;
 
   /* Extract needed constants from data */
-  const sunindextype MX = data->MX;
-  const sunindextype MY = data->MY;
-  const sunrealtype hordc  = data->hdcoef;
-  const sunrealtype horac  = data->hacoef;
-  const sunrealtype verdc  = data->vdcoef;
+  const sunindextype MX   = data->MX;
+  const sunindextype MY   = data->MY;
+  const sunrealtype hordc = data->hdcoef;
+  const sunrealtype horac = data->hacoef;
+  const sunrealtype verdc = data->vdcoef;
 
   /* Extract pointers to vector data */
   const sunrealtype* udata = N_VGetDeviceArrayPointer_Hip(u);
@@ -386,11 +386,11 @@ static int jtv(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector u, N_Vector fu,
   UserData data = (UserData)user_data;
 
   /* Extract needed constants from data */
-  const sunindextype MX = data->MX;
-  const sunindextype MY = data->MY;
-  const sunrealtype hordc  = data->hdcoef;
-  const sunrealtype horac  = data->hacoef;
-  const sunrealtype verdc  = data->vdcoef;
+  const sunindextype MX   = data->MX;
+  const sunindextype MY   = data->MY;
+  const sunrealtype hordc = data->hdcoef;
+  const sunrealtype horac = data->hacoef;
+  const sunrealtype verdc = data->vdcoef;
 
   /* Extract pointers to vector data */
   const sunrealtype* vdata = N_VGetDeviceArrayPointer_Hip(v);
@@ -414,8 +414,8 @@ static int jtv(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector u, N_Vector fu,
 
 /* Print first lines of output (problem description) */
 
-static void PrintHeader(sunrealtype reltol, sunrealtype abstol, sunrealtype umax,
-                        UserData data)
+static void PrintHeader(sunrealtype reltol, sunrealtype abstol,
+                        sunrealtype umax, UserData data)
 {
   printf("\n2-D Advection-Diffusion Equation\n");
   printf("Mesh dimensions = %" DSYM " X %" DSYM "\n", data->MX, data->MY);

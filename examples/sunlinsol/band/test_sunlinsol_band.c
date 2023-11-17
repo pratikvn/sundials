@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
   N_Vector x, y, b;                /* test vectors               */
   int print_timing;
   sunindextype j, k, kstart, kend;
-  realtype *colj, *xdata;
+  realtype *cols, *xdata;
   SUNContext sunctx;
 
   if (SUNContext_Create(NULL, &sunctx))
@@ -107,12 +107,12 @@ int main(int argc, char* argv[])
   for (j = 0; j < cols; j++)
   {
     /* A matrix column */
-    colj   = SUNBandMatrix_Column(A, j);
+    cols   = SUNBandMatrix_Column(A, j);
     kstart = (j < uband) ? -j : -uband;
     kend   = (j > cols - 1 - lband) ? cols - 1 - j : lband;
     for (k = kstart; k <= kend; k++)
     {
-      colj[k] = (realtype)rand() / (realtype)RAND_MAX;
+      cols[k] = (realtype)rand() / (realtype)RAND_MAX;
     }
 
     /* x entry */

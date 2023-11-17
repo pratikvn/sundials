@@ -739,17 +739,19 @@ int CVodeSetStopTime(void* cvode_mem, sunrealtype tstop)
  * Specifies to use interpolation to fill the returned solution at the stop time (instead of a copy).
  */
 
-int CVodeSetInterpolateStopTime(void *cvode_mem, sunbooleantype interp)
+int CVodeSetInterpolateStopTime(void* cvode_mem, sunbooleantype interp)
 {
   CVodeMem cv_mem;
 
-  if (cvode_mem==NULL) {
-    cvProcessError(NULL, CV_MEM_NULL, "CVODES", "CVodeSetInterpolateStopTime", MSGCV_NO_MEM);
+  if (cvode_mem == NULL)
+  {
+    cvProcessError(NULL, CV_MEM_NULL, "CVODES", "CVodeSetInterpolateStopTime",
+                   MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
-  cv_mem = (CVodeMem) cvode_mem;
+  cv_mem                 = (CVodeMem)cvode_mem;
   cv_mem->cv_tstopinterp = interp;
-  return(CV_SUCCESS);
+  return (CV_SUCCESS);
 }
 
 /*
@@ -1186,7 +1188,8 @@ int CVodeSetSensMaxNonlinIters(void* cvode_mem, int maxcorS)
 
 /*-----------------------------------------------------------------*/
 
-int CVodeSetSensParams(void* cvode_mem, sunrealtype* p, sunrealtype* pbar, int* plist)
+int CVodeSetSensParams(void* cvode_mem, sunrealtype* p, sunrealtype* pbar,
+                       int* plist)
 {
   CVodeMem cv_mem;
   int is, Ns;
@@ -1751,9 +1754,9 @@ int CVodeGetWorkSpace(void* cvode_mem, long int* lenrw, long int* leniw)
  */
 
 int CVodeGetIntegratorStats(void* cvode_mem, long int* nsteps, long int* nfevals,
-                            long int* nlinsetups, long int* netfails,
-                            int* qlast, int* qcur, sunrealtype* hinused,
-                            sunrealtype* hlast, sunrealtype* hcur, sunrealtype* tcur)
+                            long int* nlinsetups, long int* netfails, int* qlast,
+                            int* qcur, sunrealtype* hinused, sunrealtype* hlast,
+                            sunrealtype* hcur, sunrealtype* tcur)
 {
   CVodeMem cv_mem;
 

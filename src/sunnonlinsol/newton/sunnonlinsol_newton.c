@@ -170,8 +170,8 @@ SUNErrCode SUNNonlinSolInitialize_Newton(SUNNonlinearSolver NLS)
   the Sys, LSetup, and LSolve functions provided to the nonlinear solver.
   ----------------------------------------------------------------------------*/
 int SUNNonlinSolSolve_Newton(SUNNonlinearSolver NLS, N_Vector y0, N_Vector ycor,
-                             N_Vector w, sunrealtype tol, sunbooleantype callLSetup,
-                             void* mem)
+                             N_Vector w, sunrealtype tol,
+                             sunbooleantype callLSetup, void* mem)
 {
   SUNAssignSUNCTX(NLS->sunctx);
   /* local variables */

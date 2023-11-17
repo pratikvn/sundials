@@ -30,8 +30,8 @@
 extern "C" {
 #endif
 
-extern void FKIN_SPJAC(sunrealtype* Y, sunrealtype* FY, long int* N, long int* NNZ,
-                       sunrealtype* JDATA, sunindextype* JRVALS,
+extern void FKIN_SPJAC(sunrealtype* Y, sunrealtype* FY, long int* N,
+                       long int* NNZ, sunrealtype* JDATA, sunindextype* JRVALS,
                        sunindextype* JCPTRS, sunrealtype* V1, sunrealtype* V2,
                        int* ier);
 

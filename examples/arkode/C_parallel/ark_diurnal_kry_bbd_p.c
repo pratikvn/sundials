@@ -72,7 +72,7 @@
 
 /* Problem Constants */
 #define ZERO     SUN_RCONST(0.0)
-#define NVARS    2                /* number of species         */
+#define NVARS    2                    /* number of species         */
 #define KH       SUN_RCONST(4.0e-6)   /* horizontal diffusivity Kh */
 #define VEL      SUN_RCONST(0.001)    /* advection velocity V      */
 #define KV0      SUN_RCONST(1.0e-8)   /* coefficient in Kv(y)      */
@@ -84,10 +84,10 @@
 #define C1_SCALE SUN_RCONST(1.0e6) /* coefficients in initial profiles    */
 #define C2_SCALE SUN_RCONST(1.0e12)
 
-#define T0      ZERO                    /* initial time */
-#define NOUT    12                      /* number of output times */
-#define TWOHR   SUN_RCONST(7200.0)          /* number of seconds in two hours  */
-#define HALFDAY SUN_RCONST(4.32e4)          /* number of seconds in a half day */
+#define T0      ZERO               /* initial time */
+#define NOUT    12                 /* number of output times */
+#define TWOHR   SUN_RCONST(7200.0) /* number of seconds in two hours  */
+#define HALFDAY SUN_RCONST(4.32e4) /* number of seconds in a half day */
 #define PI      SUN_RCONST(3.1415926535898) /* pi */
 
 #define XMIN ZERO /* grid boundaries in x  */
@@ -107,8 +107,8 @@
 /* initialization constants */
 #define RTOL  SUN_RCONST(1.0e-5) /* scalar relative tolerance */
 #define FLOOR SUN_RCONST(100.0)  /* value of C1 or C2 at which tolerances */
-                             /* change from relative to absolute      */
-#define ATOL (RTOL * FLOOR)  /* scalar absolute tolerance */
+                                 /* change from relative to absolute      */
+#define ATOL (RTOL * FLOOR)      /* scalar absolute tolerance */
 
 /* Type : UserData
    contains problem constants, extended dependent variable array,
@@ -133,11 +133,12 @@ static void PrintOutput(void* arkode_mem, int my_pe, MPI_Comm comm, N_Vector u,
 static void PrintFinalStats(void* arkode_mem);
 static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
                   sunindextype dsizex, sunindextype dsizey, sunrealtype uarray[]);
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[]);
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[]);
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[]);
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[]);
 static void fucomm(sunrealtype t, N_Vector u, void* user_data);
 
 /* Prototype of function called by the solver */
@@ -256,7 +257,10 @@ int main(int argc, char* argv[])
 
   /* Tighten nonlinear solver tolerance */
   flag = ARKStepSetNonlinConvCoef(arkode_mem, SUN_RCONST(0.01));
-  if(check_flag(&flag, "ARKStepSetNonlinConvCoef", 1, my_pe)) MPI_Abort(comm, 1);
+  if (check_flag(&flag, "ARKStepSetNonlinConvCoef", 1, my_pe))
+  {
+    MPI_Abort(comm, 1);
+  }
 
   /* Print heading */
   if (my_pe == 0) { PrintIntro(npes, mudq, mldq, mukeep, mlkeep); }
@@ -579,9 +583,9 @@ static void BSend(MPI_Comm comm, int my_pe, int isubx, int isuby,
    passed to both the BRecvPost and BRecvWait functions, and should not
    be manipulated between the two calls.
    2) request should have 4 entries, and should be passed in both calls also. */
-static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
-                      int isubx, int isuby, sunindextype dsizex,
-                      sunindextype dsizey, sunrealtype uext[], sunrealtype buffer[])
+static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe, int isubx,
+                      int isuby, sunindextype dsizex, sunindextype dsizey,
+                      sunrealtype uext[], sunrealtype buffer[])
 {
   sunindextype offsetue;
   /* Have bufleft and bufright use the same buffer */
@@ -624,7 +628,8 @@ static void BRecvPost(MPI_Comm comm, MPI_Request request[], int my_pe,
    be manipulated between the two calls.
    2) request should have 4 entries, and should be passed in both calls also. */
 static void BRecvWait(MPI_Request request[], int isubx, int isuby,
-                      sunindextype dsizex, sunrealtype uext[], sunrealtype buffer[])
+                      sunindextype dsizex, sunrealtype uext[],
+                      sunrealtype buffer[])
 {
   int i, ly;
   sunindextype dsizex2, offsetue, offsetbuf;

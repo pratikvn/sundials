@@ -108,14 +108,15 @@ static int proj(sunrealtype t, N_Vector yy, N_Vector corr, sunrealtype epsProj,
 
 /* Functions to integrate the Cartesian and reference solutions */
 int GetSol(void* cvode_mem, N_Vector yy0, sunrealtype rtol, sunrealtype atol,
-           sunrealtype tf, int nout, sunbooleantype proj, sunbooleantype projerr,
-           N_Vector yref);
+           sunrealtype tf, int nout, sunbooleantype proj,
+           sunbooleantype projerr, N_Vector yref);
 
 int RefSol(sunrealtype tf, N_Vector yref, int nout);
 
 /* Utility functions */
-static int ReadInputs(int* argc, char*** argv, sunrealtype* rtol, sunrealtype* atol,
-                      sunrealtype* tf, int* nout, sunbooleantype* projerr);
+static int ReadInputs(int* argc, char*** argv, sunrealtype* rtol,
+                      sunrealtype* atol, sunrealtype* tf, int* nout,
+                      sunbooleantype* projerr);
 static void InputHelp(void);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
@@ -129,19 +130,19 @@ static SUNContext sunctx = NULL;
 int main(int argc, char* argv[])
 {
   int i;
-  int retval;                           /* reusable return flag    */
-  int nout            = 1;              /* number of outputs       */
+  int retval;                                  /* reusable return flag    */
+  int nout               = 1;                  /* number of outputs       */
   sunrealtype rtol       = SUN_RCONST(1.0e-5); /* base relative tolerance */
   sunrealtype atol       = SUN_RCONST(1.0e-5); /* base absolute tolerance */
   sunrealtype tf         = SUN_RCONST(30.0);   /* final integration time  */
-  sunbooleantype projerr = SUNTRUE;        /* enable error projection */
+  sunbooleantype projerr = SUNTRUE;            /* enable error projection */
 
-  void* cvode_mem    = NULL; /* CVODES memory             */
-  N_Vector yy0       = NULL; /* initial condition vector  */
-  sunrealtype* yy0data  = NULL; /* vector data               */
-  N_Vector yref      = NULL; /* reference solution vector */
-  SUNMatrix A        = NULL; /* Jacobian matrix           */
-  SUNLinearSolver LS = NULL; /* linear solver             */
+  void* cvode_mem      = NULL; /* CVODES memory             */
+  N_Vector yy0         = NULL; /* initial condition vector  */
+  sunrealtype* yy0data = NULL; /* vector data               */
+  N_Vector yref        = NULL; /* reference solution vector */
+  SUNMatrix A          = NULL; /* Jacobian matrix           */
+  SUNLinearSolver LS   = NULL; /* linear solver             */
 
   /* Create the SUNDIALS context */
   retval = SUNContext_Create(NULL, &sunctx);
@@ -237,16 +238,16 @@ int main(int argc, char* argv[])
 
 /* Compute the Cartesian system solution */
 int GetSol(void* cvode_mem, N_Vector yy0, sunrealtype rtol, sunrealtype atol,
-           sunrealtype tf, int nout, sunbooleantype proj, sunbooleantype projerr,
-           N_Vector yref)
+           sunrealtype tf, int nout, sunbooleantype proj,
+           sunbooleantype projerr, N_Vector yref)
 {
-  char outname[100];       /* output file name */
-  FILE* FID        = NULL; /* output file      */
-  N_Vector yy      = NULL; /* solution vector  */
+  char outname[100];          /* output file name */
+  FILE* FID           = NULL; /* output file      */
+  N_Vector yy         = NULL; /* solution vector  */
   sunrealtype* yydata = NULL; /* vector data      */
 
-  int retval;      /* reusable return flag */
-  int out;         /* output counter       */
+  int retval;         /* reusable return flag */
+  int out;            /* output counter       */
   sunrealtype dtout;  /* output frequency     */
   sunrealtype tout;   /* output time          */
   sunrealtype t;      /* return time          */
@@ -415,19 +416,19 @@ int GetSol(void* cvode_mem, N_Vector yy0, sunrealtype rtol, sunrealtype atol,
 /* Compute the reference system solution */
 int RefSol(sunrealtype tf, N_Vector yref, int nout)
 {
-  FILE* FID          = NULL; /* output file     */
-  void* cvode_mem    = NULL; /* CVODES memory   */
-  N_Vector yy        = NULL; /* solution vector */
-  sunrealtype* yydata   = NULL; /* vector data     */
-  SUNMatrix A        = NULL; /* Jacobian matrix */
-  SUNLinearSolver LS = NULL; /* linear solver   */
+  FILE* FID           = NULL; /* output file     */
+  void* cvode_mem     = NULL; /* CVODES memory   */
+  N_Vector yy         = NULL; /* solution vector */
+  sunrealtype* yydata = NULL; /* vector data     */
+  SUNMatrix A         = NULL; /* Jacobian matrix */
+  SUNLinearSolver LS  = NULL; /* linear solver   */
 
-  int retval;                     /* reusable return flag  */
-  int out;                        /* output counter        */
-  sunrealtype dtout;                 /* output frequency      */
-  sunrealtype tout;                  /* output time           */
-  sunrealtype t;                     /* return time           */
-  sunrealtype th, thd;               /* theta and theta dot   */
+  int retval;                            /* reusable return flag  */
+  int out;                               /* output counter        */
+  sunrealtype dtout;                     /* output frequency      */
+  sunrealtype tout;                      /* output time           */
+  sunrealtype t;                         /* return time           */
+  sunrealtype th, thd;                   /* theta and theta dot   */
   sunrealtype tol = SUN_RCONST(1.0e-14); /* integration tolerance */
 
   /* Create the solution vector */
@@ -683,8 +684,9 @@ static int proj(sunrealtype t, N_Vector yy, N_Vector corr, sunrealtype epsProj,
  * ---------------------------------------------------------------------------*/
 
 /* Read command line unputs */
-static int ReadInputs(int* argc, char*** argv, sunrealtype* rtol, sunrealtype* atol,
-                      sunrealtype* tf, int* nout, sunbooleantype* projerr)
+static int ReadInputs(int* argc, char*** argv, sunrealtype* rtol,
+                      sunrealtype* atol, sunrealtype* tf, int* nout,
+                      sunbooleantype* projerr)
 {
   int arg_idx = 1;
 

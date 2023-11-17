@@ -466,7 +466,9 @@ extern "C" int check_vector(N_Vector expected, N_Vector computed, sunrealtype to
 
   /* check vector data */
   for (sunindextype i = 0; i < xldata; i++)
+  {
     failure += SUNRCompareTol(xdata[i], ydata[i], tol);
+  }
 
   if (failure > ZERO)
   {
@@ -474,14 +476,16 @@ extern "C" int check_vector(N_Vector expected, N_Vector computed, sunrealtype to
     for (sunindextype i = 0; i < xldata; i++)
     {
       if (SUNRCompareTol(xdata[i], ydata[i], tol) != 0)
+      {
         std::cerr << "  computed[" << i << "] = " << xdata[i]
                   << " != " << ydata[i]
                   << " (err = " << SUNRabs(xdata[i] - ydata[i]) << ")\n";
       }
     }
   }
+}
 
-  return failure > 0;
+return failure > 0;
 }
 
 extern "C" sunbooleantype has_data(SUNMatrix A)

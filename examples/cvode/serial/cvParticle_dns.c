@@ -79,7 +79,7 @@ typedef struct UserData_
 {
   sunrealtype alpha; /* particle velocity */
 
-  int orbits;      /* number of orbits */
+  int orbits;         /* number of orbits */
   sunrealtype torbit; /* orbit time       */
 
   sunrealtype rtol; /* integration tolerances */
@@ -97,8 +97,8 @@ typedef struct UserData_
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-static int Proj(sunrealtype t, N_Vector ycur, N_Vector corr, sunrealtype epsProj,
-                N_Vector err, void* user_data);
+static int Proj(sunrealtype t, N_Vector ycur, N_Vector corr,
+                sunrealtype epsProj, N_Vector err, void* user_data);
 
 /* Utility functions */
 static int InitUserData(int* argc, char*** argv, UserData udata);
@@ -118,19 +118,19 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 int main(int argc, char* argv[])
 {
-  int retval;            /* reusable return flag       */
-  int out        = 0;    /* output counter             */
-  int totalout   = 0;    /* output counter             */
+  int retval;               /* reusable return flag       */
+  int out           = 0;    /* output counter             */
+  int totalout      = 0;    /* output counter             */
   sunrealtype t     = ZERO; /* current integration time   */
   sunrealtype dtout = ZERO; /* output spacing             */
   sunrealtype tout  = ZERO; /* next output time           */
   sunrealtype ec    = ZERO; /* constraint error           */
-  UserData udata = NULL; /* user data structure        */
+  UserData udata    = NULL; /* user data structure        */
 
   SUNContext sunctx  = NULL; /* SUNDIALS context     */
   void* cvode_mem    = NULL; /* CVODE memory         */
   N_Vector y         = NULL; /* solution vector      */
-  sunrealtype* ydata    = NULL; /* solution vector data */
+  sunrealtype* ydata = NULL; /* solution vector data */
   N_Vector e         = NULL; /* error vector         */
   SUNMatrix A        = NULL; /* Jacobian matrix      */
   SUNLinearSolver LS = NULL; /* linear solver        */
@@ -304,7 +304,7 @@ int main(int argc, char* argv[])
 /* Compute the right-hand side function, y' = f(t,y) */
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  UserData udata  = (UserData)user_data;
+  UserData udata     = (UserData)user_data;
   sunrealtype* ydata = N_VGetArrayPointer(y);
   sunrealtype* fdata = N_VGetArrayPointer(ydot);
 
@@ -318,7 +318,7 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
-  UserData udata  = (UserData)user_data;
+  UserData udata     = (UserData)user_data;
   sunrealtype* Jdata = SUNDenseMatrix_Data(J);
 
   Jdata[0] = ZERO;
@@ -330,8 +330,8 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 /* Project the solution onto the constraint manifold */
-static int Proj(sunrealtype t, N_Vector ycur, N_Vector corr, sunrealtype epsProj,
-                N_Vector err, void* user_data)
+static int Proj(sunrealtype t, N_Vector ycur, N_Vector corr,
+                sunrealtype epsProj, N_Vector err, void* user_data)
 {
   sunrealtype* ydata = N_VGetArrayPointer(ycur);
   sunrealtype* cdata = N_VGetArrayPointer(corr);

@@ -46,7 +46,7 @@
 
 /* Problem Constants */
 
-#define GROUPSIZE 3           /* number of equations per group */
+#define GROUPSIZE 3               /* number of equations per group */
 #define Y1        SUN_RCONST(1.0) /* initial y components */
 #define Y2        SUN_RCONST(0.0)
 #define Y3        SUN_RCONST(0.0)
@@ -57,7 +57,7 @@
 #define T0        SUN_RCONST(0.0)  /* initial time           */
 #define T1        SUN_RCONST(0.4)  /* first output time      */
 #define TMULT     SUN_RCONST(10.0) /* output time factor     */
-#define NOUT      12           /* number of output times */
+#define NOUT      12               /* number of output times */
 
 #define ZERO SUN_RCONST(0.0)
 
@@ -423,7 +423,8 @@ __global__ static void j_kernel(int ngroups, int nnzper, realtype* ydata,
 
     /* second row of block */
     Jdata[nnzper * groupj + 3] = SUN_RCONST(0.04);
-    Jdata[nnzper * groupj + 4] = (SUN_RCONST(-1.0e4) * y3) - (SUN_RCONST(6.0e7) * y2);
+    Jdata[nnzper * groupj + 4] = (SUN_RCONST(-1.0e4) * y3) -
+                                 (SUN_RCONST(6.0e7) * y2);
     Jdata[nnzper * groupj + 5] = SUN_RCONST(-1.0e4) * y2;
 
     /* third row of block */

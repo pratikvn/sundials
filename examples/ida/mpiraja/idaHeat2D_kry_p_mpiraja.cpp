@@ -89,7 +89,8 @@ typedef struct
 
 /* User-supplied residual function and supporting routines */
 
-int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_data);
+int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+            void* user_data);
 
 static int rescomm(N_Vector uu, N_Vector up, void* user_data);
 
@@ -112,11 +113,12 @@ static int BRecvWait(MPI_Request request[], int ixsub, int jysub, int npex,
 
 /* User-supplied preconditioner routines */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data);
-
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
                void* user_data);
+
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data);
 
 /* Private function to check function return values */
 
@@ -373,8 +375,8 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  *
  */
 
-int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
-               void* user_data)
+int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+               sunrealtype c_j, void* user_data)
 {
   const sunindextype zero = 0;
   sunindextype ibc, i0, jbc, j0;
@@ -421,8 +423,9 @@ int PsetupHeat(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtyp
  * computed in PsetupHeat), returning the result in zvec.
  */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* user_data)
 {
   UserData data = (UserData)user_data;
 
@@ -504,16 +507,17 @@ static int reslocal(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
   const sunindextype mxsub  = data->mxsub;
   const sunindextype mxsub2 = data->mxsub + 2;
   const sunindextype mysub  = data->mysub;
-  const sunrealtype coeffx     = data->coeffx;
-  const sunrealtype coeffy     = data->coeffy;
-  const sunrealtype coeffxy    = data->coeffxy;
+  const sunrealtype coeffx  = data->coeffx;
+  const sunrealtype coeffy  = data->coeffy;
+  const sunrealtype coeffxy = data->coeffxy;
 
   /* Vector data arrays, extended work array uext. */
   const sunrealtype* uuv =
     N_VGetDeviceArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(uu));
   const sunrealtype* upv =
     N_VGetDeviceArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(up));
-  sunrealtype* resv = N_VGetDeviceArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(rr));
+  sunrealtype* resv =
+    N_VGetDeviceArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(rr));
   sunrealtype* uext = data->uext;
 
   const sunindextype zero = 0;
@@ -553,10 +557,10 @@ static int reslocal(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
                           sunindextype locu  = i + j * mxsub;
                           sunindextype locue = (i + 1) + (j + 1) * mxsub2;
 
-                          sunrealtype termx = coeffx *
-                                           (uext[locue - 1] + uext[locue + 1]);
+                          sunrealtype termx =
+                            coeffx * (uext[locue - 1] + uext[locue + 1]);
                           sunrealtype termy   = coeffy * (uext[locue - mxsub2] +
-                                                     uext[locue + mxsub2]);
+                                                        uext[locue + mxsub2]);
                           sunrealtype termctr = coeffxy * uext[locue];
                           resv[locu] = upv[locu] - (termx + termy - termctr);
                         });
@@ -898,7 +902,8 @@ static int AllocUserData(MPI_Comm comm, N_Vector uu, UserData data)
   }
 
   /* Allocate local host send buffer */
-  data->host_send_buff = (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
+  data->host_send_buff =
+    (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
   if (data->host_send_buff == NULL)
   {
     N_VDestroy(data->pp);
@@ -907,7 +912,8 @@ static int AllocUserData(MPI_Comm comm, N_Vector uu, UserData data)
     return -1;
   }
 
-  data->host_recv_buff = (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
+  data->host_recv_buff =
+    (sunrealtype*)malloc(2 * (mxsub + mysub) * sizeof(sunrealtype));
   if (data->host_recv_buff == NULL)
   {
     N_VDestroy(data->pp);
@@ -973,14 +979,16 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
   /* Initialize uu. */
 
   // Get host pointer
-  sunrealtype* uudata = N_VGetHostArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(uu));
-  sunrealtype* iddata = N_VGetHostArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(id));
+  sunrealtype* uudata =
+    N_VGetHostArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(uu));
+  sunrealtype* iddata =
+    N_VGetHostArrayPointer_Raja(N_VGetLocalVector_MPIPlusX(id));
 
   /* Set mesh spacings and subgrid indices for this PE. */
   const sunrealtype dx = data->dx;
   const sunrealtype dy = data->dy;
-  const int ixsub   = data->ixsub;
-  const int jysub   = data->jysub;
+  const int ixsub      = data->ixsub;
+  const int jysub      = data->jysub;
 
   /* Set beginning and ending locations in the global array corresponding
      to the portion of that array assigned to this processor. */
@@ -1000,9 +1008,10 @@ static int SetInitialProfile(N_Vector uu, N_Vector up, N_Vector id,
     yfact = dy * j;
     for (i = ixbegin, iloc = 0; i <= ixend; i++, iloc++)
     {
-      xfact = dx * i;
-      loc   = iloc + jloc * mxsub;
-      uudata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      xfact       = dx * i;
+      loc         = iloc + jloc * mxsub;
+      uudata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                    (ONE - yfact);
 
       if (i == 0 || i == data->mx - 1 || j == 0 || j == data->my - 1)
       {

@@ -29,13 +29,15 @@
 extern "C" {
 #endif
 
-extern void FIDA_PSET(sunrealtype* t, sunrealtype* yy, sunrealtype* yp, sunrealtype* rr,
-                      sunrealtype* c_j, sunrealtype* ewt, sunrealtype* h, long int* ipar,
-                      sunrealtype* rpar, int* ier);
+extern void FIDA_PSET(sunrealtype* t, sunrealtype* yy, sunrealtype* yp,
+                      sunrealtype* rr, sunrealtype* c_j, sunrealtype* ewt,
+                      sunrealtype* h, long int* ipar, sunrealtype* rpar,
+                      int* ier);
 
-extern void FIDA_PSOL(sunrealtype* t, sunrealtype* yy, sunrealtype* yp, sunrealtype* rr,
-                      sunrealtype* r, sunrealtype* z, sunrealtype* c_j, sunrealtype* delta,
-                      sunrealtype* ewt, long int* ipar, sunrealtype* rpar, int* ier);
+extern void FIDA_PSOL(sunrealtype* t, sunrealtype* yy, sunrealtype* yp,
+                      sunrealtype* rr, sunrealtype* r, sunrealtype* z,
+                      sunrealtype* c_j, sunrealtype* delta, sunrealtype* ewt,
+                      long int* ipar, sunrealtype* rpar, int* ier);
 
 #ifdef __cplusplus
 }
@@ -71,8 +73,8 @@ void FIDA_LSSETPREC(int* flag, int* ier)
 
 /*************************************************/
 
-int FIDAPSet(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
-             void* user_data)
+int FIDAPSet(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr,
+             sunrealtype c_j, void* user_data)
 {
   sunrealtype *yy_data, *yp_data, *rr_data, *ewtdata;
   sunrealtype h;

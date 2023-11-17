@@ -26,7 +26,7 @@ int laplacian(sunrealtype t, N_Vector u, N_Vector f, UserData* udata)
 
   // Start exchange
   flag = udata->start_exchange(u);
-  if (check_flag(&flag, "SendData", 1)) return -1;
+  if (check_flag(&flag, "SendData", 1)) { return -1; }
 
   // Shortcuts to local number of nodes
   sunindextype nx_loc = udata->nx_loc;
@@ -45,10 +45,10 @@ int laplacian(sunrealtype t, N_Vector u, N_Vector f, UserData* udata)
 
   // Access data arrays
   sunrealtype* uarray = N_VGetArrayPointer(u);
-  if (check_flag((void*)uarray, "N_VGetArrayPointer", 0)) return -1;
+  if (check_flag((void*)uarray, "N_VGetArrayPointer", 0)) { return -1; }
 
   sunrealtype* farray = N_VGetArrayPointer(f);
-  if (check_flag((void*)farray, "N_VGetArrayPointer", 0)) return -1;
+  if (check_flag((void*)farray, "N_VGetArrayPointer", 0)) { return -1; }
 
   // Initialize rhs vector to zero (handles boundary conditions)
   N_VConst(ZERO, f);
@@ -101,7 +101,7 @@ int laplacian(sunrealtype t, N_Vector u, N_Vector f, UserData* udata)
 
   // Wait for exchange receives
   flag = udata->end_exchange();
-  if (check_flag(&flag, "UserData::end_excahnge", 1)) return -1;
+  if (check_flag(&flag, "UserData::end_excahnge", 1)) { return -1; }
 
   // Iterate over subdomain boundaries and add rhs diffusion term
   sunrealtype* Warray = udata->Wrecv;

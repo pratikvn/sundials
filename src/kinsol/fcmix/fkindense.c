@@ -35,7 +35,8 @@ extern "C" {
 #endif
 
 extern void FK_DJAC(long int* N, sunrealtype* uudata, sunrealtype* fdata,
-                    sunrealtype* jacdata, sunrealtype* v1, sunrealtype* v2, int* ier);
+                    sunrealtype* jacdata, sunrealtype* v1, sunrealtype* v2,
+                    int* ier);
 
 #ifdef __cplusplus
 }

@@ -47,24 +47,26 @@
 
 static CVckpntMem CVAckpntInit(CVodeMem cv_mem);
 static CVckpntMem CVAckpntNew(CVodeMem cv_mem);
-static void CVAckpntDelete(CVckpntMem *ck_memPtr);
+static void CVAckpntDelete(CVckpntMem* ck_memPtr);
 
 static void CVAbckpbDelete(CVodeBMem* cvB_memPtr);
 
-static int  CVAdataStore(CVodeMem cv_mem, CVckpntMem ck_mem);
-static int  CVAckpntGet(CVodeMem cv_mem, CVckpntMem ck_mem);
+static int CVAdataStore(CVodeMem cv_mem, CVckpntMem ck_mem);
+static int CVAckpntGet(CVodeMem cv_mem, CVckpntMem ck_mem);
 
 static int CVAfindIndex(CVodeMem cv_mem, sunrealtype t, long int* indx,
                         sunbooleantype* newpoint);
 
 static sunbooleantype CVAhermiteMalloc(CVodeMem cv_mem);
 static void CVAhermiteFree(CVodeMem cv_mem);
-static int CVAhermiteGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vector *yS);
+static int CVAhermiteGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y,
+                          N_Vector* yS);
 static int CVAhermiteStorePnt(CVodeMem cv_mem, CVdtpntMem d);
 
 static sunbooleantype CVApolynomialMalloc(CVodeMem cv_mem);
 static void CVApolynomialFree(CVodeMem cv_mem);
-static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vector *yS);
+static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y,
+                             N_Vector* yS);
 static int CVApolynomialStorePnt(CVodeMem cv_mem, CVdtpntMem d);
 
 /* Wrappers */
@@ -170,25 +172,36 @@ int CVodeAdjInit(void* cvode_mem, long int steps, int interp)
   /* Allocate space for the array of Data Point structures */
 
   ca_mem->dt_mem = NULL;
-  ca_mem->dt_mem = (CVdtpntMem *) malloc((steps+1)*sizeof(struct CVdtpntMemRec *));
-  if (ca_mem->dt_mem == NULL) {
-    free(ca_mem); ca_mem = NULL;
+  ca_mem->dt_mem =
+    (CVdtpntMem*)malloc((steps + 1) * sizeof(struct CVdtpntMemRec*));
+  if (ca_mem->dt_mem == NULL)
+  {
+    free(ca_mem);
+    ca_mem = NULL;
     cvProcessError(cv_mem, CV_MEM_FAIL, "CVODEA", "CVodeAdjInit", MSGCV_MEM_FAIL);
     SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
-    return(CV_MEM_FAIL);
+    return (CV_MEM_FAIL);
   }
 
   for (i = 0; i <= steps; i++)
   {
     ca_mem->dt_mem[i] = NULL;
-    ca_mem->dt_mem[i] = (CVdtpntMem) malloc(sizeof(struct CVdtpntMemRec));
-    if (ca_mem->dt_mem[i] == NULL) {
-      for(ii=0; ii<i; ii++) {free(ca_mem->dt_mem[ii]); ca_mem->dt_mem[ii] = NULL;}
-      free(ca_mem->dt_mem); ca_mem->dt_mem = NULL;
-      free(ca_mem); ca_mem = NULL;
-      cvProcessError(cv_mem, CV_MEM_FAIL, "CVODEA", "CVodeAdjInit", MSGCV_MEM_FAIL);
+    ca_mem->dt_mem[i] = (CVdtpntMem)malloc(sizeof(struct CVdtpntMemRec));
+    if (ca_mem->dt_mem[i] == NULL)
+    {
+      for (ii = 0; ii < i; ii++)
+      {
+        free(ca_mem->dt_mem[ii]);
+        ca_mem->dt_mem[ii] = NULL;
+      }
+      free(ca_mem->dt_mem);
+      ca_mem->dt_mem = NULL;
+      free(ca_mem);
+      ca_mem = NULL;
+      cvProcessError(cv_mem, CV_MEM_FAIL, "CVODEA", "CVodeAdjInit",
+                     MSGCV_MEM_FAIL);
       SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
-      return(CV_MEM_FAIL);
+      return (CV_MEM_FAIL);
     }
   }
 
@@ -376,7 +389,7 @@ int CVodeF(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret,
   CVadjMem ca_mem;
   CVodeMem cv_mem;
   CVckpntMem tmp;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   long int nstloc;
   int flag, i;
   sunbooleantype allocOK, earlyret;
@@ -732,7 +745,8 @@ int CVodeCreateB(void* cvode_mem, int lmmB, int* which)
   return (CV_SUCCESS);
 }
 
-int CVodeInitB(void* cvode_mem, int which, CVRhsFnB fB, sunrealtype tB0, N_Vector yB0)
+int CVodeInitB(void* cvode_mem, int which, CVRhsFnB fB, sunrealtype tB0,
+               N_Vector yB0)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -1352,7 +1366,7 @@ int CVodeB(void* cvode_mem, sunrealtype tBout, int itaskB)
   CVadjMem ca_mem;
   CVodeBMem cvB_mem, tmp_cvB_mem;
   CVckpntMem ck_mem;
-  int sign, flag=0;
+  int sign, flag = 0;
   sunrealtype tfuzz, tBret, tBn;
   sunbooleantype gotCheckpoint, isActive, reachedTBout;
 
@@ -1753,8 +1767,8 @@ static CVckpntMem CVAckpntInit(CVodeMem cv_mem)
 
   /* Allocate space for ckdata */
   ck_mem = NULL;
-  ck_mem = (CVckpntMem) malloc(sizeof(struct CVckpntMemRec));
-  if (ck_mem == NULL) return(NULL);
+  ck_mem = (CVckpntMem)malloc(sizeof(struct CVckpntMemRec));
+  if (ck_mem == NULL) { return (NULL); }
 
   ck_mem->ck_zn[0] = SUNCheckCallLastErrNoRet(N_VClone(cv_mem->cv_tempv));
   if (ck_mem->ck_zn[0] == NULL)
@@ -1875,8 +1889,8 @@ static CVckpntMem CVAckpntNew(CVodeMem cv_mem)
 
   /* Allocate space for ckdata */
   ck_mem = NULL;
-  ck_mem = (CVckpntMem) malloc(sizeof(struct CVckpntMemRec));
-  if (ck_mem == NULL) return(NULL);
+  ck_mem = (CVckpntMem)malloc(sizeof(struct CVckpntMemRec));
+  if (ck_mem == NULL) { return (NULL); }
 
   /* Set cv_next to NULL */
   ck_mem->ck_next = NULL;
@@ -2231,7 +2245,7 @@ static CVckpntMem CVAckpntNew(CVodeMem cv_mem)
  * the new list head
  */
 
-static void CVAckpntDelete(CVckpntMem *ck_memPtr)
+static void CVAckpntDelete(CVckpntMem* ck_memPtr)
 {
   CVckpntMem tmp;
   int j;
@@ -2390,7 +2404,7 @@ static void CVAbckpbDelete(CVodeBMem* cvB_memPtr)
 static int CVAdataStore(CVodeMem cv_mem, CVckpntMem ck_mem)
 {
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   sunrealtype t;
   long int i;
   int flag, sign;
@@ -2616,7 +2630,7 @@ static int CVAfindIndex(CVodeMem cv_mem, sunrealtype t, long int* indx,
                         sunbooleantype* newpoint)
 {
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   int sign;
   sunbooleantype to_left, to_right;
 
@@ -2737,9 +2751,9 @@ static sunbooleantype CVAhermiteMalloc(CVodeMem cv_mem)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVhermiteDataMem content;
-  long int i, ii=0;
+  long int i, ii = 0;
   sunbooleantype allocOK;
 
   allocOK = SUNTRUE;
@@ -2769,9 +2783,10 @@ static sunbooleantype CVAhermiteMalloc(CVodeMem cv_mem)
   for (i = 0; i <= ca_mem->ca_nsteps; i++)
   {
     content = NULL;
-    content = (CVhermiteDataMem) malloc(sizeof(struct CVhermiteDataMemRec));
-    if (content == NULL) {
-      ii = i;
+    content = (CVhermiteDataMem)malloc(sizeof(struct CVhermiteDataMemRec));
+    if (content == NULL)
+    {
+      ii      = i;
       allocOK = SUNFALSE;
       break;
     }
@@ -2843,11 +2858,13 @@ static sunbooleantype CVAhermiteMalloc(CVodeMem cv_mem)
         N_VDestroyVectorArray(ca_mem->ca_yStmp, cv_mem->cv_Ns));
     }
 
-    for (i=0; i<ii; i++) {
-      content = (CVhermiteDataMem) (dt_mem[i]->content);
+    for (i = 0; i < ii; i++)
+    {
+      content = (CVhermiteDataMem)(dt_mem[i]->content);
       N_VDestroy(content->y);
       N_VDestroy(content->yd);
-      if (ca_mem->ca_IMstoreSensi) {
+      if (ca_mem->ca_IMstoreSensi)
+      {
         N_VDestroyVectorArray(content->yS, cv_mem->cv_Ns);
         N_VDestroyVectorArray(content->ySd, cv_mem->cv_Ns);
       }
@@ -2869,7 +2886,7 @@ static void CVAhermiteFree(CVodeMem cv_mem)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVhermiteDataMem content;
   long int i;
 
@@ -2885,11 +2902,13 @@ static void CVAhermiteFree(CVodeMem cv_mem)
 
   dt_mem = ca_mem->dt_mem;
 
-  for (i=0; i<=ca_mem->ca_nsteps; i++) {
-    content = (CVhermiteDataMem) (dt_mem[i]->content);
+  for (i = 0; i <= ca_mem->ca_nsteps; i++)
+  {
+    content = (CVhermiteDataMem)(dt_mem[i]->content);
     N_VDestroy(content->y);
     N_VDestroy(content->yd);
-    if (ca_mem->ca_IMstoreSensi) {
+    if (ca_mem->ca_IMstoreSensi)
+    {
       N_VDestroyVectorArray(content->yS, cv_mem->cv_Ns);
       N_VDestroyVectorArray(content->ySd, cv_mem->cv_Ns);
     }
@@ -2914,7 +2933,7 @@ static int CVAhermiteStorePnt(CVodeMem cv_mem, CVdtpntMem d)
 
   ca_mem = cv_mem->cv_adj_mem;
 
-  content = (CVhermiteDataMem) d->content;
+  content = (CVhermiteDataMem)d->content;
 
   /* Load solution */
 
@@ -2978,7 +2997,7 @@ static int CVAhermiteGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vector* 
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVhermiteDataMem content0, content1;
 
   sunrealtype t0, t1, delta;
@@ -3012,8 +3031,9 @@ static int CVAhermiteGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vector* 
   /* If we are beyond the left limit but close enough,
      then return y at the left limit. */
 
-  if (indx == 0) {
-    content0 = (CVhermiteDataMem) (dt_mem[0]->content);
+  if (indx == 0)
+  {
+    content0 = (CVhermiteDataMem)(dt_mem[0]->content);
     N_VScale(ONE, content0->y, y);
 
     if (NS > 0)
@@ -3033,10 +3053,11 @@ static int CVAhermiteGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vector* 
   t1    = dt_mem[indx]->t;
   delta = t1 - t0;
 
-  content0 = (CVhermiteDataMem) (dt_mem[indx-1]->content);
-  y0  = content0->y;
-  yd0 = content0->yd;
-  if (ca_mem->ca_IMinterpSensi) {
+  content0 = (CVhermiteDataMem)(dt_mem[indx - 1]->content);
+  y0       = content0->y;
+  yd0      = content0->yd;
+  if (ca_mem->ca_IMinterpSensi)
+  {
     yS0  = content0->yS;
     ySd0 = content0->ySd;
   }
@@ -3045,7 +3066,7 @@ static int CVAhermiteGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vector* 
   {
     /* Recompute Y0 and Y1 */
 
-    content1 = (CVhermiteDataMem) (dt_mem[indx]->content);
+    content1 = (CVhermiteDataMem)(dt_mem[indx]->content);
 
     y1  = content1->y;
     yd1 = content1->yd;
@@ -3172,9 +3193,9 @@ static sunbooleantype CVApolynomialMalloc(CVodeMem cv_mem)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVpolynomialDataMem content;
-  long int i, ii=0;
+  long int i, ii = 0;
   sunbooleantype allocOK;
 
   allocOK = SUNTRUE;
@@ -3204,9 +3225,10 @@ static sunbooleantype CVApolynomialMalloc(CVodeMem cv_mem)
   for (i = 0; i <= ca_mem->ca_nsteps; i++)
   {
     content = NULL;
-    content = (CVpolynomialDataMem) malloc(sizeof(struct CVpolynomialDataMemRec));
-    if (content == NULL) {
-      ii = i;
+    content = (CVpolynomialDataMem)malloc(sizeof(struct CVpolynomialDataMemRec));
+    if (content == NULL)
+    {
+      ii      = i;
       allocOK = SUNFALSE;
       break;
     }
@@ -3251,10 +3273,12 @@ static sunbooleantype CVApolynomialMalloc(CVodeMem cv_mem)
         N_VDestroyVectorArray(ca_mem->ca_yStmp, cv_mem->cv_Ns));
     }
 
-    for (i=0; i<ii; i++) {
-      content = (CVpolynomialDataMem) (dt_mem[i]->content);
+    for (i = 0; i < ii; i++)
+    {
+      content = (CVpolynomialDataMem)(dt_mem[i]->content);
       N_VDestroy(content->y);
-      if (ca_mem->ca_IMstoreSensi) {
+      if (ca_mem->ca_IMstoreSensi)
+      {
         N_VDestroyVectorArray(content->yS, cv_mem->cv_Ns);
       }
       free(dt_mem[i]->content);
@@ -3275,7 +3299,7 @@ static void CVApolynomialFree(CVodeMem cv_mem)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVpolynomialDataMem content;
   long int i;
 
@@ -3291,10 +3315,12 @@ static void CVApolynomialFree(CVodeMem cv_mem)
 
   dt_mem = ca_mem->dt_mem;
 
-  for (i=0; i<=ca_mem->ca_nsteps; i++) {
-    content = (CVpolynomialDataMem) (dt_mem[i]->content);
+  for (i = 0; i <= ca_mem->ca_nsteps; i++)
+  {
+    content = (CVpolynomialDataMem)(dt_mem[i]->content);
     N_VDestroy(content->y);
-    if (ca_mem->ca_IMstoreSensi) {
+    if (ca_mem->ca_IMstoreSensi)
+    {
       N_VDestroyVectorArray(content->yS, cv_mem->cv_Ns);
     }
     free(dt_mem[i]->content);
@@ -3319,7 +3345,7 @@ static int CVApolynomialStorePnt(CVodeMem cv_mem, CVdtpntMem d)
 
   ca_mem = cv_mem->cv_adj_mem;
 
-  content = (CVpolynomialDataMem) d->content;
+  content = (CVpolynomialDataMem)d->content;
 
   SUNCheckCallLastErrNoRet(N_VScale(ONE, cv_mem->cv_zn[0], content->y));
 
@@ -3345,11 +3371,12 @@ static int CVApolynomialStorePnt(CVodeMem cv_mem, CVdtpntMem d)
  * can be directly called by the user through CVodeGetAdjY.
  */
 
-static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vector* yS)
+static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y,
+                             N_Vector* yS)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
   CVadjMem ca_mem;
-  CVdtpntMem *dt_mem;
+  CVdtpntMem* dt_mem;
   CVpolynomialDataMem content;
 
   int flag, dir, order, i, j, is, NS, retval;
@@ -3372,8 +3399,9 @@ static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vecto
   /* If we are beyond the left limit but close enough,
      then return y at the left limit. */
 
-  if (indx == 0) {
-    content = (CVpolynomialDataMem) (dt_mem[0]->content);
+  if (indx == 0)
+  {
+    content = (CVpolynomialDataMem)(dt_mem[0]->content);
     N_VScale(ONE, content->y, y);
 
     if (NS > 0)
@@ -3398,16 +3426,19 @@ static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vecto
   /* Establish the base point depending on the integration direction.
      Modify the base if there are not enough points for the current order */
 
-  if (dir == 1) {
-    base = indx;
-    content = (CVpolynomialDataMem) (dt_mem[base]->content);
-    order = content->order;
-    if(indx < order) base += order-indx;
-  } else {
-    base = indx-1;
-    content = (CVpolynomialDataMem) (dt_mem[base]->content);
-    order = content->order;
-    if (ca_mem->ca_np-indx > order) base -= indx+order-ca_mem->ca_np;
+  if (dir == 1)
+  {
+    base    = indx;
+    content = (CVpolynomialDataMem)(dt_mem[base]->content);
+    order   = content->order;
+    if (indx < order) { base += order - indx; }
+  }
+  else
+  {
+    base    = indx - 1;
+    content = (CVpolynomialDataMem)(dt_mem[base]->content);
+    order   = content->order;
+    if (ca_mem->ca_np - indx > order) { base -= indx + order - ca_mem->ca_np; }
   }
 
   /* Recompute Y (divided differences for Newton polynomial) if needed */
@@ -3415,10 +3446,12 @@ static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vecto
   if (newpoint)
   {
     /* Store 0-th order DD */
-    if (dir == 1) {
-      for(j=0;j<=order;j++) {
-        ca_mem->ca_T[j] = dt_mem[base-j]->t;
-        content = (CVpolynomialDataMem) (dt_mem[base-j]->content);
+    if (dir == 1)
+    {
+      for (j = 0; j <= order; j++)
+      {
+        ca_mem->ca_T[j] = dt_mem[base - j]->t;
+        content         = (CVpolynomialDataMem)(dt_mem[base - j]->content);
         N_VScale(ONE, content->y, ca_mem->ca_Y[j]);
 
         if (NS > 0)
@@ -3429,17 +3462,20 @@ static int CVApolynomialGetY(CVodeMem cv_mem, sunrealtype t, N_Vector y, N_Vecto
           if (retval != CV_SUCCESS) { return (CV_VECTOROP_ERR); }
         }
       }
-    } else {
-      for(j=0;j<=order;j++) {
-        ca_mem->ca_T[j] = dt_mem[base-1+j]->t;
-        content = (CVpolynomialDataMem) (dt_mem[base-1+j]->content);
+    }
+    else
+    {
+      for (j = 0; j <= order; j++)
+      {
+        ca_mem->ca_T[j] = dt_mem[base - 1 + j]->t;
+        content         = (CVpolynomialDataMem)(dt_mem[base - 1 + j]->content);
         N_VScale(ONE, content->y, ca_mem->ca_Y[j]);
-        if (NS > 0) {
-          for (is=0; is<NS; is++)
-            cv_mem->cv_cvals[is] = ONE;
-          retval = N_VScaleVectorArray(NS, cv_mem->cv_cvals,
-                                       content->yS, ca_mem->ca_YS[j]);
-          if (retval != CV_SUCCESS) return (CV_VECTOROP_ERR);
+        if (NS > 0)
+        {
+          for (is = 0; is < NS; is++) { cv_mem->cv_cvals[is] = ONE; }
+          retval = N_VScaleVectorArray(NS, cv_mem->cv_cvals, content->yS,
+                                       ca_mem->ca_YS[j]);
+          if (retval != CV_SUCCESS) { return (CV_VECTOROP_ERR); }
         }
       }
     }
@@ -3571,7 +3607,10 @@ static int CVArhsQ(sunrealtype t, N_Vector yB, N_Vector qBdot, void* cvode_mem)
   {
     /* flag = */ ca_mem->ca_IMget(cv_mem, t, ca_mem->ca_ytmp, ca_mem->ca_yStmp);
   }
-  else { /* flag = */ ca_mem->ca_IMget(cv_mem, t, ca_mem->ca_ytmp, NULL); }
+  else
+  { /* flag = */
+    ca_mem->ca_IMget(cv_mem, t, ca_mem->ca_ytmp, NULL);
+  }
 
   /* Call the user's RHS function */
 

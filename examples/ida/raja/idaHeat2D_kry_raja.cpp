@@ -79,11 +79,12 @@ typedef _UserData* UserData;
 int resHeat(sunrealtype tres, N_Vector uu, N_Vector up, N_Vector resval,
             void* user_data);
 
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data);
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data);
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data);
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data);
 
 /* Prototypes for private functions */
 
@@ -357,11 +358,12 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
                           else
                           {
                             /* Loop over interior points; set res = up - (central difference). */
-                            sunrealtype dif1 = uu_data[loc - 1] + uu_data[loc + 1] -
-                                            TWO * uu_data[loc];
+                            sunrealtype dif1 = uu_data[loc - 1] +
+                                               uu_data[loc + 1] -
+                                               TWO * uu_data[loc];
                             sunrealtype dif2 = uu_data[loc - mm] +
-                                            uu_data[loc + mm] -
-                                            TWO * uu_data[loc];
+                                               uu_data[loc + mm] -
+                                               TWO * uu_data[loc];
                             rr_data[loc] = up_data[loc] - coeff * (dif1 + dif2);
                           }
                         });
@@ -386,17 +388,17 @@ int resHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, void* user_da
  * pp etc.) are used from the PsetupdHeat argument list.
  */
 
-int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtype c_j,
-               void* prec_data)
+int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               sunrealtype c_j, void* prec_data)
 {
   const sunindextype zero = 0;
   sunindextype mm;
   sunrealtype* ppv;
   UserData data;
 
-  data           = (UserData)prec_data;
-  ppv            = N_VGetDeviceArrayPointer_Raja(data->pp);
-  mm             = data->mm;
+  data              = (UserData)prec_data;
+  ppv               = N_VGetDeviceArrayPointer_Raja(data->pp);
+  mm                = data->mm;
   sunrealtype coeff = data->coeff;
 
   RAJA::forall<MY_EXEC>(RAJA::RangeSegment(zero, mm * mm),
@@ -426,8 +428,9 @@ int PsetupHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, sunrealtyp
  * computed in PrecondHeateq), returning the result in zvec.
  */
 
-int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr, N_Vector rvec,
-               N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* prec_data)
+int PsolveHeat(sunrealtype tt, N_Vector uu, N_Vector up, N_Vector rr,
+               N_Vector rvec, N_Vector zvec, sunrealtype c_j, sunrealtype delta,
+               void* prec_data)
 {
   UserData data;
   data = (UserData)prec_data;

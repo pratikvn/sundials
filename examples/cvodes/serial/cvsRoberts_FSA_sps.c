@@ -55,7 +55,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_superlumt.h> /* access to SuperLUMT linear solver    */
 #include <sunmatrix/sunmatrix_sparse.h> /* access to sparse SUNMatrix           */
@@ -74,8 +74,8 @@
 
 /* Problem Constants */
 
-#define NEQ   3           /* number of equations  */
-#define NNZ   7           /* number of non-zero entries in the Jacobian */
+#define NEQ   3               /* number of equations  */
+#define NNZ   7               /* number of non-zero entries in the Jacobian */
 #define Y1    SUN_RCONST(1.0) /* initial y components */
 #define Y2    SUN_RCONST(0.0)
 #define Y3    SUN_RCONST(0.0)
@@ -86,7 +86,7 @@
 #define T0    SUN_RCONST(0.0)  /* initial time           */
 #define T1    SUN_RCONST(0.4)  /* first output time      */
 #define TMULT SUN_RCONST(10.0) /* output time factor     */
-#define NOUT  12           /* number of output times */
+#define NOUT  12               /* number of output times */
 
 #define NP 3 /* number of problem parameters */
 #define NS 3 /* number of sensitivities computed */
@@ -107,8 +107,9 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
-static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS, N_Vector yS,
-              N_Vector ySdot, void* user_data, N_Vector tmp1, N_Vector tmp2);
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS,
+              N_Vector yS, N_Vector ySdot, void* user_data, N_Vector tmp1,
+              N_Vector tmp2);
 
 static int ewt(N_Vector y, N_Vector w, void* user_data);
 
@@ -358,13 +359,13 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
      rowvals = row index for each non-zero matrix entry (length NNZ)
      colptrs = i-th entry is the index in data where the first non-zero matrix
                entry of the i-th column is stored (length NEQ + 1) */
-  sunrealtype* data        = SUNSparseMatrix_Data(J);
+  sunrealtype* data     = SUNSparseMatrix_Data(J);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(J);
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(J);
   UserData userdata     = (UserData)user_data;
-  sunrealtype p1           = userdata->p[0];
-  sunrealtype p2           = userdata->p[1];
-  sunrealtype p3           = userdata->p[2];
+  sunrealtype p1        = userdata->p[0];
+  sunrealtype p2        = userdata->p[1];
+  sunrealtype p3        = userdata->p[2];
 
   /* first column entries start at data[0], two entries (rows 0 and 1) */
   colptrs[0] = 0;
@@ -406,8 +407,9 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
  * fS routine. Compute sensitivity r.h.s.
  */
 
-static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS, N_Vector yS,
-              N_Vector ySdot, void* user_data, N_Vector tmp1, N_Vector tmp2)
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int iS,
+              N_Vector yS, N_Vector ySdot, void* user_data, N_Vector tmp1,
+              N_Vector tmp2)
 {
   UserData data;
   sunrealtype p1, p2, p3;

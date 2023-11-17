@@ -133,15 +133,15 @@ struct UserData
 
   // Fixed Point Solver settings
   sunrealtype rtol;    // relative tolerance
-  int maa;          // m for Anderson Acceleration
+  int maa;             // m for Anderson Acceleration
   sunrealtype damping; // daming for Anderson Acceleration
-  int orthaa;       // orthogonalization routine for AA
-  int maxits;       // max number of fixed point iterations
+  int orthaa;          // orthogonalization routine for AA
+  int maxits;          // max number of fixed point iterations
 
   // Linear solver and preconditioner settings
-  int      liniters;  // number of linear iterations
-  int      msbp;      // max number of steps between preconditioner setups
-  sunrealtype epslin;    // linear solver tolerance factor
+  int liniters;       // number of linear iterations
+  int msbp;           // max number of steps between preconditioner setups
+  sunrealtype epslin; // linear solver tolerance factor
 
   // Linear solver object
   SUNLinearSolver LS; // linear solver memory structure
@@ -216,7 +216,8 @@ static int JTimes(void* user_data, N_Vector v, N_Vector Jv);
 // Preconditioner setup and solve functions
 static int PSetup(void* user_data);
 
-static int PSolve(void* user_data, N_Vector r, N_Vector z, sunrealtype tol, int lr);
+static int PSolve(void* user_data, N_Vector r, N_Vector z, sunrealtype tol,
+                  int lr);
 
 // -----------------------------------------------------------------------------
 // Helper functions

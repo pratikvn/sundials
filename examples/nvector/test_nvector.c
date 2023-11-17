@@ -393,9 +393,9 @@ int Test_N_VGetArrayPointer(N_Vector W, sunindextype local_length, int myid)
 
   /* get vector data, time it and set it to NULL */
   start_time = get_time();
-  Wdata = N_VGetArrayPointer(W);
-  stop_time = get_time();
-  Wdata[0] = ONE; /* Do something with pointer to surpress warning */
+  Wdata      = N_VGetArrayPointer(W);
+  stop_time  = get_time();
+  Wdata[0]   = ONE; /* Do something with pointer to surpress warning */
 
   /* check vector data */
   if (!has_data(W))
@@ -1554,7 +1554,8 @@ int Test_N_VWrmsNormMask(N_Vector X, N_Vector W, N_Vector ID,
   global_length = N_VGetLength(X);
 
   /* factor used in checking solutions */
-  fac = SUNRsqrt((sunrealtype)(global_length - 1) / (global_length)) * HALF * HALF;
+  fac = SUNRsqrt((sunrealtype)(global_length - 1) / (global_length)) * HALF *
+        HALF;
 
   /* fill vector data */
   N_VConst(NEG_HALF, X);
@@ -1673,7 +1674,8 @@ int Test_N_VWL2Norm(N_Vector X, N_Vector W, sunindextype local_length, int myid)
   /* ans should equal 1/4 * sqrt(global_length) */
   failure = (ans < ZERO)
               ? 1
-              : SUNRCompare(ans, HALF * HALF * SUNRsqrt((sunrealtype)global_length));
+              : SUNRCompare(ans,
+                            HALF * HALF * SUNRsqrt((sunrealtype)global_length));
 
   if (failure)
   {
@@ -5052,8 +5054,8 @@ int Test_N_VMaxNormLocal(N_Vector X, sunindextype local_length, int myid)
   stop_time = get_time();
 
   /* ans should equal myidp1 */
-  failure = (ans < ZERO) ? 1
-                         : SUNRCompareTol(ans, myidp1, SUNRsqrt(SUN_UNIT_ROUNDOFF));
+  failure =
+    (ans < ZERO) ? 1 : SUNRCompareTol(ans, myidp1, SUNRsqrt(SUN_UNIT_ROUNDOFF));
 
   if (failure)
   {
@@ -5124,9 +5126,9 @@ int Test_N_VL1NormLocal(N_Vector X, sunindextype local_length, int myid)
   stop_time = get_time();
 
   /* ans should equal myid */
-  failure = (ans < ZERO)
-              ? 1
-              : SUNRCompareTol(ans, (sunrealtype)myid, SUNRsqrt(SUN_UNIT_ROUNDOFF));
+  failure = (ans < ZERO) ? 1
+                         : SUNRCompareTol(ans, (sunrealtype)myid,
+                                          SUNRsqrt(SUN_UNIT_ROUNDOFF));
 
   if (failure)
   {
@@ -5164,9 +5166,9 @@ int Test_N_VWSqrSumLocal(N_Vector X, N_Vector W, sunindextype local_length,
   stop_time = get_time();
 
   /* ans should equal myid */
-  failure = (ans < ZERO)
-              ? 1
-              : SUNRCompareTol(ans, (sunrealtype)myid, SUNRsqrt(SUN_UNIT_ROUNDOFF));
+  failure = (ans < ZERO) ? 1
+                         : SUNRCompareTol(ans, (sunrealtype)myid,
+                                          SUNRsqrt(SUN_UNIT_ROUNDOFF));
 
   if (failure)
   {
@@ -5208,9 +5210,9 @@ int Test_N_VWSqrSumMaskLocal(N_Vector X, N_Vector W, N_Vector ID,
   stop_time = get_time();
 
   /* ans should equal myid */
-  failure = (ans < ZERO)
-              ? 1
-              : SUNRCompareTol(ans, (sunrealtype)myid, SUNRsqrt(SUN_UNIT_ROUNDOFF));
+  failure = (ans < ZERO) ? 1
+                         : SUNRCompareTol(ans, (sunrealtype)myid,
+                                          SUNRsqrt(SUN_UNIT_ROUNDOFF));
 
   if (failure)
   {
@@ -5597,7 +5599,10 @@ int Test_N_VDotProdMultiLocal(N_Vector X, sunindextype local_length, int myid)
   stop_time = get_time();
 
   /* dotprod[0] should equal the local vector length */
-  if (ierr == 0) { failure = SUNRCompare(dotprods[0], (sunrealtype)local_length); }
+  if (ierr == 0)
+  {
+    failure = SUNRCompare(dotprods[0], (sunrealtype)local_length);
+  }
   else { failure = 1; }
 
   if (failure)
@@ -5694,7 +5699,10 @@ int Test_N_VDotProdMultiAllReduce(N_Vector X, sunindextype local_length, int myi
   stop_time = get_time();
 
   /* dotprod[0] should equal the local vector length */
-  if (ierr == 0) { failure = SUNRCompare(dotprods[0], (sunrealtype)local_length); }
+  if (ierr == 0)
+  {
+    failure = SUNRCompare(dotprods[0], (sunrealtype)local_length);
+  }
   else { failure = 1; }
 
   if (failure)

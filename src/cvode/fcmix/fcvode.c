@@ -57,9 +57,9 @@ extern "C" {
 extern void FCV_FUN(sunrealtype*, /* T    */
                     sunrealtype*, /* Y    */
                     sunrealtype*, /* YDOT */
-                    long int*, /* IPAR */
+                    long int*,    /* IPAR */
                     sunrealtype*, /* RPAR */
-                    int*);     /* IER  */
+                    int*);        /* IER  */
 #ifdef __cplusplus
 }
 #endif
@@ -67,8 +67,8 @@ extern void FCV_FUN(sunrealtype*, /* T    */
 /**************************************************************************/
 
 void FCV_MALLOC(sunrealtype* t0, sunrealtype* y0, int* meth, int* iatol,
-                sunrealtype* rtol, sunrealtype* atol, long int* iout, sunrealtype* rout,
-                long int* ipar, sunrealtype* rpar, int* ier)
+                sunrealtype* rtol, sunrealtype* atol, long int* iout,
+                sunrealtype* rout, long int* ipar, sunrealtype* rpar, int* ier)
 {
   int lmm;
   N_Vector Vatol;
@@ -387,7 +387,8 @@ void FCV_DIAG(int* ier)
 
 /***************************************************************************/
 
-void FCV_CVODE(sunrealtype* tout, sunrealtype* t, sunrealtype* y, int* itask, int* ier)
+void FCV_CVODE(sunrealtype* tout, sunrealtype* t, sunrealtype* y, int* itask,
+               int* ier)
 {
   /*
      tout          is the t value where output is desired

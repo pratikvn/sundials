@@ -356,7 +356,8 @@ void set_element(N_Vector X, sunindextype i, sunrealtype val)
   data[i] = val;
 }
 
-void set_element_range(N_Vector X, sunindextype is, sunindextype ie, sunrealtype val)
+void set_element_range(N_Vector X, sunindextype is, sunindextype ie,
+                       sunrealtype val)
 {
   sunindextype x0len, i;
   sunrealtype* data;

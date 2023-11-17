@@ -32,9 +32,10 @@ extern "C" {
 #endif
 
 extern void FARK_BJAC(long int* N, long int* MU, long int* ML, long int* EBAND,
-                      sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* BJAC,
-                      sunrealtype* H, long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
-                      sunrealtype* V2, sunrealtype* V3, int* IER);
+                      sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                      sunrealtype* BJAC, sunrealtype* H, long int* IPAR,
+                      sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2,
+                      sunrealtype* V3, int* IER);
 
 #ifdef __cplusplus
 }
@@ -55,8 +56,9 @@ void FARK_BANDSETJAC(int* flag, int* ier)
 
 /* C interface to user-supplied Fortran subroutine FARKBJAC; see
    farkode.h for further details */
-int FARKBandJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-                N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
+int FARKBandJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+                void* user_data, N_Vector vtemp1, N_Vector vtemp2,
+                N_Vector vtemp3)
 {
   sunrealtype *ydata, *fydata, *jacdata, *v1data, *v2data, *v3data;
   sunrealtype h;

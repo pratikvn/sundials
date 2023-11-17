@@ -136,7 +136,7 @@ int res(sunrealtype t, N_Vector y, N_Vector yp, N_Vector res, void* user_data)
  *   [2 a u - 2 u' - 2 cj u   2 b v                 ]
  *   [2 c u                   2 d v - 2 v' - 2 cj v ]
  * ---------------------------------------------------------------------------*/
-int J(sunrealtype t, realtype cj, N_Vector y, N_Vector yp, N_Vector res,
+int J(sunrealtype t, decltype( cj, N_Vector y, N_Vector yp, N_Vector res,
       SUNMatrix J, void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   sunrealtype* udata  = (sunrealtype*)user_data;

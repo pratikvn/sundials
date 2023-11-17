@@ -31,9 +31,10 @@
 #endif
 
 // Forcing device function
-__device__ void add_forcing(const sunrealtype t, const sunrealtype x, const sunrealtype y,
-                            const sunrealtype kx, const sunrealtype ky,
-                            const sunindextype c, sunrealtype* udot)
+__device__ void add_forcing(const sunrealtype t, const sunrealtype x,
+                            const sunrealtype y, const sunrealtype kx,
+                            const sunrealtype ky, const sunindextype c,
+                            sunrealtype* udot)
 {
   sunrealtype sin_sqr_x = sin(PI * x) * sin(PI * x);
   sunrealtype sin_sqr_y = sin(PI * y) * sin(PI * y);
@@ -54,10 +55,10 @@ __device__ void add_forcing(const sunrealtype t, const sunrealtype x, const sunr
 
 // Interior diffusion kernel
 __global__ void diffusion_interior_kernel(
-  const sunrealtype t, const sunrealtype* u, sunrealtype* udot, const sunindextype is,
-  const sunindextype js, const sunindextype nx_loc, const sunindextype ny_loc,
-  const sunrealtype dx, const sunrealtype dy, const sunrealtype kx, const sunrealtype ky,
-  const bool forcing)
+  const sunrealtype t, const sunrealtype* u, sunrealtype* udot,
+  const sunindextype is, const sunindextype js, const sunindextype nx_loc,
+  const sunindextype ny_loc, const sunrealtype dx, const sunrealtype dy,
+  const sunrealtype kx, const sunrealtype ky, const bool forcing)
 {
   // Thread location in the local grid
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -93,11 +94,12 @@ __global__ void diffusion_interior_kernel(
 
 // Interior boundary kernel
 __global__ void diffusion_boundary_kernel(
-  const sunrealtype t, const sunrealtype* u, sunrealtype* udot, const sunindextype is,
-  const sunindextype js, const sunindextype nx_loc, const sunindextype ny_loc,
-  const sunrealtype dx, const sunrealtype dy, const sunrealtype kx, const sunrealtype ky,
-  const bool forcing, const sunrealtype* wbuf, const sunrealtype* ebuf,
-  const sunrealtype* sbuf, const sunrealtype* nbuf)
+  const sunrealtype t, const sunrealtype* u, sunrealtype* udot,
+  const sunindextype is, const sunindextype js, const sunindextype nx_loc,
+  const sunindextype ny_loc, const sunrealtype dx, const sunrealtype dy,
+  const sunrealtype kx, const sunrealtype ky, const bool forcing,
+  const sunrealtype* wbuf, const sunrealtype* ebuf, const sunrealtype* sbuf,
+  const sunrealtype* nbuf)
 {
   // Thread ID
   int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -348,14 +350,15 @@ int laplacian(sunrealtype t, N_Vector u, N_Vector f, UserData* udata)
   const sunindextype js     = udata->js;
   const sunindextype nx_loc = udata->nx_loc;
   const sunindextype ny_loc = udata->ny_loc;
-  const sunrealtype dx         = udata->dx;
-  const sunrealtype dy         = udata->dy;
-  const sunrealtype kx         = udata->kx;
-  const sunrealtype ky         = udata->ky;
+  const sunrealtype dx      = udata->dx;
+  const sunrealtype dy      = udata->dy;
+  const sunrealtype kx      = udata->kx;
+  const sunrealtype ky      = udata->ky;
   const bool forcing        = udata->forcing;
 
   // Access data arrays
-  const sunrealtype* uarray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
+  const sunrealtype* uarray =
+    N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
   if (check_flag((void*)uarray, "N_VGetDeviceArrayPointer", 0)) { return -1; }
 
   sunrealtype* farray = N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(f));

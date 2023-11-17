@@ -59,7 +59,7 @@
 
 /* Problem Constants */
 
-#define NEQ   3           /* number of equations  */
+#define NEQ   3               /* number of equations  */
 #define Y1    SUN_RCONST(1.0) /* initial y components */
 #define Y2    SUN_RCONST(0.0)
 #define Y3    SUN_RCONST(0.0)
@@ -70,7 +70,7 @@
 #define T0    SUN_RCONST(0.0)  /* initial time           */
 #define T1    SUN_RCONST(0.4)  /* first output time      */
 #define TMULT SUN_RCONST(10.0) /* output time factor     */
-#define NOUT  12           /* number of output times */
+#define NOUT  12               /* number of output times */
 
 #define ZERO SUN_RCONST(0.0)
 
@@ -85,7 +85,8 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 
 /* Private functions to output results */
 
-static void PrintOutput(sunrealtype t, sunrealtype y1, sunrealtype y2, sunrealtype y3);
+static void PrintOutput(sunrealtype t, sunrealtype y1, sunrealtype y2,
+                        sunrealtype y3);
 static void PrintRootInfo(int root_f1, int root_f2);
 
 /* Private function to print final statistics */
@@ -294,7 +295,8 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
  *-------------------------------
  */
 
-static void PrintOutput(sunrealtype t, sunrealtype y1, sunrealtype y2, sunrealtype y3)
+static void PrintOutput(sunrealtype t, sunrealtype y1, sunrealtype y2,
+                        sunrealtype y3)
 {
 #if defined(SUNDIALS_EXTENDED_PRECISION)
   printf("At t = %0.4Le      y =%14.6Le  %14.6Le  %14.6Le\n", t, y1, y2, y3);

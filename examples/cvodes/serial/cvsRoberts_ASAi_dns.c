@@ -56,7 +56,7 @@
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver      */
 #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix            */
@@ -110,8 +110,9 @@ static int ewt(N_Vector y, N_Vector w, void* user_data);
 
 static int fB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector yBdot,
               void* user_dataB);
-static int JacB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector fyB, SUNMatrix JB,
-                void* user_dataB, N_Vector tmp1B, N_Vector tmp2B, N_Vector tmp3B);
+static int JacB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector fyB,
+                SUNMatrix JB, void* user_dataB, N_Vector tmp1B, N_Vector tmp2B,
+                N_Vector tmp3B);
 static int fQB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector qBdot,
                void* user_dataB);
 
@@ -119,7 +120,8 @@ static int fQB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector qBdot,
 
 static void PrintHead(sunrealtype tB0);
 static void PrintOutput(sunrealtype tfinal, N_Vector y, N_Vector yB, N_Vector qB);
-static void PrintOutput1(sunrealtype time, sunrealtype t, N_Vector y, N_Vector yB);
+static void PrintOutput1(sunrealtype time, sunrealtype t, N_Vector y,
+                         N_Vector yB);
 static int check_retval(void* returnvalue, const char* funcname, int opt);
 
 /*
@@ -673,8 +675,9 @@ static int fB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector yBdot,
  * JacB routine. Compute JB(t,y,yB).
  */
 
-static int JacB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector fyB, SUNMatrix JB,
-                void* user_dataB, N_Vector tmp1B, N_Vector tmp2B, N_Vector tmp3B)
+static int JacB(sunrealtype t, N_Vector y, N_Vector yB, N_Vector fyB,
+                SUNMatrix JB, void* user_dataB, N_Vector tmp1B, N_Vector tmp2B,
+                N_Vector tmp3B)
 {
   UserData data;
   sunrealtype y2, y3;

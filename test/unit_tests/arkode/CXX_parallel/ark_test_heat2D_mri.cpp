@@ -63,23 +63,23 @@ typedef struct
   sunindextype ie;
   sunindextype js; // global y indices of this subdomain
   sunindextype je;
-  sunindextype nxl;    // local number of x grid points
-  sunindextype nyl;    // local number of y grid points
-  realtype dx;         // x-directional mesh spacing
-  realtype dy;         // y-directional mesh spacing
-  realtype kx;         // x-directional diffusion coefficient
-  realtype ky;         // y-directional diffusion coefficient
+  sunindextype nxl;     // local number of x grid points
+  sunindextype nyl;     // local number of y grid points
+  decltype( dx;         // x-directional mesh spacing
+  decltype( dy;         // y-directional mesh spacing
+  decltype( kx;         // x-directional diffusion coefficient
+  decltype( ky;         // y-directional diffusion coefficient
   N_Vector h;          // heat source vector
   N_Vector d;          // inverse of Jacobian diagonal
   MPI_Comm comm;       // communicator object
   int myid;            // MPI process ID
   int nprocs;          // total number of MPI processes
   bool HaveBdry[2][2]; // flags denoting if on physical boundary
-  realtype* Erecv;     // receive buffers for neighbor exchange
-  realtype* Wrecv;
-  realtype* Nrecv;
-  realtype* Srecv;
-  realtype* Esend; // send buffers for neighbor exchange
+  decltype(* Erecv;     // receive buffers for neighbor exchange
+  decltype(* Wrecv;
+  decltype(* Nrecv;
+  decltype(* Srecv;
+  decltype(* Esend; // send buffers for neighbor exchange
   realtype* Wsend;
   realtype* Nsend;
   realtype* Ssend;
@@ -103,7 +103,7 @@ static int SetupDecomp(UserData* udata);
 //    performs neighbor exchange
 static int Exchange(N_Vector y, UserData* udata);
 //    frees memory allocated within UserData
-static int FreeUserData(UserData *udata);
+static int FreeUserData(UserData* udata);
 //    check if relative difference is within tolerance
 static bool Compare(long int a, long int b, sunrealtype tol);
 
@@ -117,8 +117,8 @@ int main(int argc, char* argv[])
   // general problem parameters
   realtype T0     = SUN_RCONST(0.0); // initial time
   realtype Tf     = SUN_RCONST(0.3); // final time
-  int Nt          = 1000;        // total number of internal steps
-  sunindextype nx = 60;          // spatial mesh size
+  int Nt          = 1000;            // total number of internal steps
+  sunindextype nx = 60;              // spatial mesh size
   sunindextype ny = 120;
   realtype kx     = SUN_RCONST(0.5); // heat conductivity coefficients
   realtype ky     = SUN_RCONST(0.75);
@@ -405,54 +405,86 @@ int main(int argc, char* argv[])
   {
     numfails += 1;
     if (outproc)
-      cout << "  Internal solver steps error: " << ark_nst << " vs " << mri_nst << "\n";
-  }
-  if (ark_nfi != mri_nfsi) {
-    numfails += 1;
-    if (outproc)
-      cout << "  RHS evals error: " << ark_nfi << " vs " << mri_nfsi << "\n";
-  }
-  if (ark_nsetups != mri_nsetups) {
-    numfails += 1;
-    if (outproc)
-      cout << "  Linear solver setups error: " << ark_nsetups << " vs " << mri_nsetups << "\n";
-  }
-  if (!Compare(ark_nli, mri_nli, ONE)) {
-    numfails += 1;
-    if (outproc)
-      cout << "  Linear iterations error: " << ark_nli << " vs " << mri_nli << "\n";
-  }
-  if (!Compare(ark_nJv, mri_nJv, ONE)) {
-    numfails += 1;
-    if (outproc)
-      cout << "  Jacobian-vector products error: " << ark_nJv << " vs " << mri_nJv << "\n";
-  }
-  if (!Compare(ark_nps, mri_nps, ONE)) {
-    numfails += 1;
-    if (outproc)
-      cout << "  Preconditioner solves error: " << ark_nps << " vs " << mri_nps << "\n";
-  }
-  if (ark_nlcf != mri_nlcf) {
-    numfails += 1;
-    if (outproc)
-      cout << "  Linear convergence failures error: " << ark_nlcf << " vs " << mri_nlcf << "\n";
-  }
-  if (ark_nni != mri_nni) {
-    numfails += 1;
-    if (outproc)
-      cout << "  Newton iterations error: " << ark_nni << " vs " << mri_nni << "\n";
-  }
-  if (ark_ncfn != mri_ncfn) {
-    numfails += 1;
-    if (outproc)
-      cout << "  Nonlinear convergence failures error: " << ark_ncfn << " vs " << mri_ncfn << "\n";
-  }
-  if (outproc) {
-    if (numfails) {
-      cout << "Failed " << numfails << " tests\n";
-    } else {
-      cout << "All tests pass!\n";
+    {
+      cout << "  Internal solver steps error: " << ark_nst << " vs " << mri_nst
+           << "\n";
     }
+  }
+  if (ark_nfi != mri_nfsi)
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  RHS evals error: " << ark_nfi << " vs " << mri_nfsi << "\n";
+    }
+  }
+  if (ark_nsetups != mri_nsetups)
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  Linear solver setups error: " << ark_nsetups << " vs "
+           << mri_nsetups << "\n";
+    }
+  }
+  if (!Compare(ark_nli, mri_nli, ONE))
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  Linear iterations error: " << ark_nli << " vs " << mri_nli
+           << "\n";
+    }
+  }
+  if (!Compare(ark_nJv, mri_nJv, ONE))
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  Jacobian-vector products error: " << ark_nJv << " vs "
+           << mri_nJv << "\n";
+    }
+  }
+  if (!Compare(ark_nps, mri_nps, ONE))
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  Preconditioner solves error: " << ark_nps << " vs " << mri_nps
+           << "\n";
+    }
+  }
+  if (ark_nlcf != mri_nlcf)
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  Linear convergence failures error: " << ark_nlcf << " vs "
+           << mri_nlcf << "\n";
+    }
+  }
+  if (ark_nni != mri_nni)
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  Newton iterations error: " << ark_nni << " vs " << mri_nni
+           << "\n";
+    }
+  }
+  if (ark_ncfn != mri_ncfn)
+  {
+    numfails += 1;
+    if (outproc)
+    {
+      cout << "  Nonlinear convergence failures error: " << ark_ncfn << " vs "
+           << mri_ncfn << "\n";
+    }
+  }
+  if (outproc)
+  {
+    if (numfails) { cout << "Failed " << numfails << " tests\n"; }
+    else { cout << "All tests pass!\n"; }
   }
   if ((ark_nfi - ark_nst) != mri_nfsi)
   {
@@ -1117,8 +1149,8 @@ static int FreeUserData(UserData* udata)
 // Check if relative difference of a and b is less than tolerance
 static bool Compare(long int a, long int b, sunrealtype tol)
 {
-  sunrealtype rel_diff = SUN_RCONST(100.0) *
-    abs(static_cast<sunrealtype>(a - b) / static_cast<sunrealtype>(a));
+  sunrealtype rel_diff = SUN_RCONST(100.0) * abs(static_cast<sunrealtype>(a - b) /
+                                                 static_cast<sunrealtype>(a));
 
   return (rel_diff > tol) ? false : true;
 }

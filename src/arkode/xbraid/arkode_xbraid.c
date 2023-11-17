@@ -283,9 +283,9 @@ int ARKBraid_Step(braid_App app, braid_Vector ustop, braid_Vector fstop,
   int flag;                /* arkode function return flag */
   int level;               /* current level               */
   int rfac;                /* refinement factor           */
-  sunrealtype tstart;         /* current time                */
-  sunrealtype tstop;          /* evolve to this time         */
-  sunrealtype hacc;           /* accuracy based step size    */
+  sunrealtype tstart;      /* current time                */
+  sunrealtype tstop;       /* evolve to this time         */
+  sunrealtype hacc;        /* accuracy based step size    */
   ARKBraidContent content; /* ARKBraid app content        */
 
   /* Check input */
@@ -442,8 +442,8 @@ int ARKBraid_Access(braid_App app, braid_Vector u, braid_AccessStatus astatus)
 int ARKBraid_TakeStep(void* arkode_mem, sunrealtype tstart, sunrealtype tstop,
                       N_Vector y, int* ark_flag)
 {
-  int flag;      /* generic return flag      */
-  int tmp_flag;  /* evolve return flag       */
+  int flag;         /* generic return flag      */
+  int tmp_flag;     /* evolve return flag       */
   sunrealtype tret; /* return time              */
 
   /* Check inputs */

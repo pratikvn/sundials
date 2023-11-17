@@ -65,26 +65,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
-#include <mpi.h>
 
-#include "arkode/arkode_arkstep.h"             /* ARKStep                   */
-#include "arkode/arkode_erkstep.h"             /* ERKStep                   */
-#include "nvector/nvector_mpiplusx.h"          /* MPI+X N_Vector            */
-#include "nvector/nvector_serial.h"            /* serial N_Vector           */
+#include "arkode/arkode_arkstep.h"    /* ARKStep                   */
+#include "arkode/arkode_arkstep.h"    /* ARKStep                   */
+#include "arkode/arkode_erkstep.h"    /* ERKStep                   */
+#include "arkode/arkode_erkstep.h"    /* ERKStep                   */
+#include "nvector/nvector_mpiplusx.h" /* MPI+X N_Vector            */
+#include "nvector/nvector_mpiplusx.h" /* MPI+X N_Vector            */
+#include "nvector/nvector_serial.h"   /* serial N_Vector           */
+#include "nvector/nvector_serial.h"   /* serial N_Vector           */
 #include "sundials/sundials_logger.h"
-#include "sunmatrix/sunmatrix_dense.h"         /* dense SUNMatrix           */
-#include "sunlinsol/sunlinsol_dense.h"         /* dense SUNLinearSolver     */
-#include "sunlinsol/sunlinsol_spgmr.h"         /* GMRES SUNLinearSolver     */
-#include "sunnonlinsol/sunnonlinsol_newton.h"  /* Newton SUNNonlinearSolver */
-
-#include "arkode/arkode_arkstep.h"            /* ARKStep                   */
-#include "arkode/arkode_erkstep.h"            /* ERKStep                   */
-#include "nvector/nvector_mpiplusx.h"         /* MPI+X N_Vector            */
-#include "nvector/nvector_serial.h"           /* serial N_Vector           */
+#include "sunlinsol/sunlinsol_dense.h"        /* dense SUNLinearSolver     */
 #include "sunlinsol/sunlinsol_dense.h"        /* dense SUNLinearSolver     */
 #include "sunlinsol/sunlinsol_spgmr.h"        /* GMRES SUNLinearSolver     */
+#include "sunlinsol/sunlinsol_spgmr.h"        /* GMRES SUNLinearSolver     */
 #include "sunmatrix/sunmatrix_dense.h"        /* dense SUNMatrix           */
+#include "sunmatrix/sunmatrix_dense.h"        /* dense SUNMatrix           */
+#include "sunnonlinsol/sunnonlinsol_newton.h" /* Newton SUNNonlinearSolver */
 #include "sunnonlinsol/sunnonlinsol_newton.h" /* Newton SUNNonlinearSolver */
 
 /* Maximum size of output directory string */
@@ -287,17 +284,17 @@ int main(int argc, char* argv[])
   if (uopt->monitor)
   {
     SUNLogger logger;
-    
+
     sprintf(fname, "%s/diagnostics.%06d.txt", uopt->outputdir, udata->myid);
 
     retval = SUNContext_GetLogger(ctx, &logger);
-    if (check_retval(&retval, "SUNContext_GetLogger", 1)) return 1;
+    if (check_retval(&retval, "SUNContext_GetLogger", 1)) { return 1; }
 
     retval = SUNLogger_SetInfoFilename(logger, fname);
-    if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) return 1;
+    if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) { return 1; }
 
     retval = SUNLogger_SetDebugFilename(logger, fname);
-    if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) return 1;
+    if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) { return 1; }
   }
 
   /* Create solution vector */
@@ -369,13 +366,13 @@ int EvolveProblemIMEX(N_Vector y, UserData udata, UserOptions uopt, SUNContext c
   SUNNonlinearSolver NLS = NULL; /* empty nonlinear solver structure */
   SUNLinearSolver LS     = NULL; /* empty linear solver structure    */
 
-  double   t, dtout, tout;    /* current/output time data     */
-  int      retval;            /* reusable error-checking flag */
-  int      iout;              /* output counter               */
-  long int nst, nst_a, netf;  /* step stats                   */
-  long int nfe, nfi;          /* RHS stats                    */
-  long int nni, ncnf;         /* nonlinear solver stats       */
-  long int nli, npre, npsol;  /* linear solver stats          */
+  double t, dtout, tout;     /* current/output time data     */
+  int retval;                /* reusable error-checking flag */
+  int iout;                  /* output counter               */
+  long int nst, nst_a, netf; /* step stats                   */
+  long int nfe, nfi;         /* RHS stats                    */
+  long int nni, ncnf;        /* nonlinear solver stats       */
+  long int nli, npre, npsol; /* linear solver stats          */
 
   /* Create the ARK timestepper module */
   arkode_mem = ARKStepCreate(Advection, Reaction, uopt->t0, y, ctx);
@@ -425,7 +422,7 @@ int EvolveProblemIMEX(N_Vector y, UserData udata, UserOptions uopt, SUNContext c
     /* The custom task-local nonlinear solver handles the linear solve
       as well, so we do not need a SUNLinearSolver */
     NLS = TaskLocalNewton(ctx, y);
-    if (check_retval((void *)NLS, "TaskLocalNewton", 0)) return 1;
+    if (check_retval((void*)NLS, "TaskLocalNewton", 0)) { return 1; }
 
     /* Attach nonlinear solver */
     retval = ARKStepSetNonlinearSolver(arkode_mem, NLS);
@@ -517,12 +514,12 @@ int EvolveProblemIMEX(N_Vector y, UserData udata, UserOptions uopt, SUNContext c
 int EvolveProblemExplicit(N_Vector y, UserData udata, UserOptions uopt,
                           SUNContext ctx)
 {
-  void*    arkode_mem = NULL; /* empty ARKODE memory structure */
-  double   t, dtout, tout;    /* current/output time data      */
-  int      retval;            /* reusable error-checking flag  */
-  int      iout;              /* output counter                */
-  long int nst, nst_a, netf;  /* step stats                    */
-  long int nfe;               /* RHS stats                     */
+  void* arkode_mem = NULL;   /* empty ARKODE memory structure */
+  double t, dtout, tout;     /* current/output time data      */
+  int retval;                /* reusable error-checking flag  */
+  int iout;                  /* output counter                */
+  long int nst, nst_a, netf; /* step stats                    */
+  long int nfe;              /* RHS stats                     */
 
   /* Create the ERK timestepper module */
   arkode_mem = ERKStepCreate(AdvectionReaction, uopt->t0, y, ctx);
@@ -1142,7 +1139,6 @@ int TaskLocalNewton_GetNumConvFails(SUNNonlinearSolver NLS, long int* nconvfails
 
   return (GET_NLS_CONTENT(NLS)->ncnf);
 }
-
 
 SUNNonlinearSolver TaskLocalNewton(SUNContext ctx, N_Vector y)
 {

@@ -50,7 +50,7 @@
 #define T0    SUN_RCONST(0.0)    // initial time
 #define T1    SUN_RCONST(0.1)    // first output time
 #define DTOUT SUN_RCONST(0.1)    // output time increment
-#define NOUT  10             // number of output times
+#define NOUT  10                 // number of output times
 
 #define ZERO SUN_RCONST(0.0)
 #define HALF SUN_RCONST(0.5)
@@ -81,8 +81,8 @@ struct UserData
   sunindextype MX      = 10;                // interior nodes in the x-direction
   sunindextype MY      = 5;                 // interior nodes in the y-direction
   sunindextype NEQ     = MX * MY;           // number of equations
-  realtype xmax        = SUN_RCONST(2.0);       // x-domain boundary
-  realtype ymax        = SUN_RCONST(1.0);       // y-domain boundary
+  realtype xmax        = SUN_RCONST(2.0);   // x-domain boundary
+  realtype ymax        = SUN_RCONST(1.0);   // y-domain boundary
   realtype dx          = xmax / (MX + 1);   // x-direction mesh spacing
   realtype dy          = ymax / (MY + 1);   // y-directino mesh spacing
   realtype hdcoef      = ONE / (dx * dx);   // x-diffusion

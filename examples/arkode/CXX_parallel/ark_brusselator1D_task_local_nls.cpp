@@ -148,14 +148,14 @@ int main(int argc, char* argv[])
     if (uopt.monitor)
     {
       SUNLogger logger;
-      
+
       sprintf(fname, "%s/diagnostics.%06d.txt", uopt.outputdir, udata.myid);
 
       retval = SUNContext_GetLogger(ctx, &logger);
-      if (check_retval(&retval, "SUNContext_GetLogger", 1)) return 1;
+      if (check_retval(&retval, "SUNContext_GetLogger", 1)) { return 1; }
 
       retval = SUNLogger_SetInfoFilename(logger, fname);
-      if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) return 1;
+      if (check_retval(&retval, "SUNLogger_SetInfoFilename", 1)) { return 1; }
     }
 
     /* Create solution vector */
@@ -233,13 +233,13 @@ int EvolveProblemIMEX(SUNContext ctx, N_Vector y, UserData* udata,
   SUNNonlinearSolver NLS = NULL; /* empty nonlinear solver structure */
   SUNLinearSolver LS     = NULL; /* empty linear solver structure    */
 
-  double   t, dtout, tout;    /* current/output time data     */
-  int      retval;            /* reusable error-checking flag */
-  int      iout;              /* output counter               */
-  long int nst, nst_a, netf;  /* step stats                   */
-  long int nfe, nfi;          /* RHS stats                    */
-  long int nni, ncnf;         /* nonlinear solver stats       */
-  long int nli, npsol;        /* linear solver stats          */
+  double t, dtout, tout;     /* current/output time data     */
+  int retval;                /* reusable error-checking flag */
+  int iout;                  /* output counter               */
+  long int nst, nst_a, netf; /* step stats                   */
+  long int nfe, nfi;         /* RHS stats                    */
+  long int nni, ncnf;        /* nonlinear solver stats       */
+  long int nli, npsol;       /* linear solver stats          */
 
   /* Create the ARK timestepper module */
   arkode_mem = ARKStepCreate(Advection, Reaction, uopt->t0, y, ctx);
@@ -289,7 +289,7 @@ int EvolveProblemIMEX(SUNContext ctx, N_Vector y, UserData* udata,
     /* The custom task-local nonlinear solver handles the linear solve
        as well, so we do not need a SUNLinearSolver. */
     NLS = TaskLocalNewton(ctx, y);
-    if (check_retval((void *)NLS, "TaskLocalNewton", 0)) return 1;
+    if (check_retval((void*)NLS, "TaskLocalNewton", 0)) { return 1; }
 
     /* Attach nonlinear solver */
     retval = ARKStepSetNonlinearSolver(arkode_mem, NLS);
@@ -378,12 +378,12 @@ int EvolveProblemIMEX(SUNContext ctx, N_Vector y, UserData* udata,
 int EvolveProblemExplicit(SUNContext ctx, N_Vector y, UserData* udata,
                           UserOptions* uopt)
 {
-  void*    arkode_mem = NULL; /* empty ARKODE memory structure */
-  double   t, dtout, tout;    /* current/output time data      */
-  int      retval;            /* reusable error-checking flag  */
-  int      iout;              /* output counter                */
-  long int nst, nst_a, netf;  /* step stats                    */
-  long int nfe;               /* RHS stats                     */
+  void* arkode_mem = NULL;   /* empty ARKODE memory structure */
+  double t, dtout, tout;     /* current/output time data      */
+  int retval;                /* reusable error-checking flag  */
+  int iout;                  /* output counter                */
+  long int nst, nst_a, netf; /* step stats                    */
+  long int nfe;              /* RHS stats                     */
 
   /* Create the ERK timestepper module */
   arkode_mem = ERKStepCreate(AdvectionReaction, uopt->t0, y, ctx);
@@ -1083,7 +1083,6 @@ int TaskLocalNewton_GetNumConvFails(SUNNonlinearSolver NLS, long int* nconvfails
   *nconvfails = GET_NLS_CONTENT(NLS)->ncnf;
   return (0);
 }
-
 
 SUNNonlinearSolver TaskLocalNewton(SUNContext ctx, N_Vector y)
 {

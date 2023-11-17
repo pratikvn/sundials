@@ -43,9 +43,9 @@
   =================================================================*/
 
 static int cvLsLinSys(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix A,
-                      sunbooleantype jok, sunbooleantype* jcur, sunrealtype gamma,
-                      void* user_data, N_Vector tmp1, N_Vector tmp2,
-                      N_Vector tmp3);
+                      sunbooleantype jok, sunbooleantype* jcur,
+                      sunrealtype gamma, void* user_data, N_Vector tmp1,
+                      N_Vector tmp2, N_Vector tmp3);
 
 /*=================================================================
   PRIVATE FUNCTION PROTOTYPES - backward problems
@@ -54,13 +54,13 @@ static int cvLsLinSys(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix A,
 /* cvLsJacBWrapper and cvLsJacBSWrapper have type CVLsJacFn, and
    wrap around user-provided functions of type CVLsJacFnB and
    CVLsJacFnBS, respectively */
-static int cvLsJacBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB, SUNMatrix JB,
-                           void* cvode_mem, N_Vector tmp1B, N_Vector tmp2B,
-                           N_Vector tmp3B);
+static int cvLsJacBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
+                           SUNMatrix JB, void* cvode_mem, N_Vector tmp1B,
+                           N_Vector tmp2B, N_Vector tmp3B);
 
-static int cvLsJacBSWrapper(sunrealtype t, N_Vector yB, N_Vector fyB, SUNMatrix JB,
-                            void* cvode_mem, N_Vector tmp1B, N_Vector tmp2B,
-                            N_Vector tmp3B);
+static int cvLsJacBSWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
+                            SUNMatrix JB, void* cvode_mem, N_Vector tmp1B,
+                            N_Vector tmp2B, N_Vector tmp3B);
 
 /* cvLsPrecSetupBWrapper and cvLsPrecSetupBSWrapper have type
    CVLsPrecSetupFn, and wrap around user-provided functions of
@@ -104,13 +104,15 @@ static int cvLsJacTimesVecBSWrapper(N_Vector vB, N_Vector JvB, sunrealtype t,
    wrap around user-provided functions of type CVLsLinSysFnB and CVLsLinSysFnBS,
    respectively */
 static int cvLsLinSysBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
-                              SUNMatrix AB, sunbooleantype jokB, sunbooleantype* jcurB,
-                              sunrealtype gammaB, void* user_dataB, N_Vector tmp1B,
-                              N_Vector tmp2B, N_Vector tmp3B);
+                              SUNMatrix AB, sunbooleantype jokB,
+                              sunbooleantype* jcurB, sunrealtype gammaB,
+                              void* user_dataB, N_Vector tmp1B, N_Vector tmp2B,
+                              N_Vector tmp3B);
 static int cvLsLinSysBSWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
-                               SUNMatrix AB, sunbooleantype jokB, sunbooleantype* jcurB,
-                               sunrealtype gammaB, void* user_dataB,
-                               N_Vector tmp1B, N_Vector tmp2B, N_Vector tmp3);
+                               SUNMatrix AB, sunbooleantype jokB,
+                               sunbooleantype* jcurB, sunrealtype gammaB,
+                               void* user_dataB, N_Vector tmp1B, N_Vector tmp2B,
+                               N_Vector tmp3);
 
 /*================================================================
   PART I - forward problems
@@ -1369,8 +1371,8 @@ int cvLsBandDQJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
   Jv = [f(y + v*sig) - f(y)]/sig, where sig = 1 / ||v||_WRMS,
   i.e. the WRMS norm of v*sig is 1.
   -----------------------------------------------------------------*/
-int cvLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
-                 void* cvode_mem, N_Vector work)
+int cvLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
+                 N_Vector fy, void* cvode_mem, N_Vector work)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -1418,9 +1420,9 @@ int cvLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy
   Setup the linear system A = I - gamma J
   -----------------------------------------------------------------*/
 static int cvLsLinSys(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix A,
-                      sunbooleantype jok, sunbooleantype* jcur, sunrealtype gamma,
-                      void* cvode_mem, N_Vector vtemp1, N_Vector vtemp2,
-                      N_Vector vtemp3)
+                      sunbooleantype jok, sunbooleantype* jcur,
+                      sunrealtype gamma, void* cvode_mem, N_Vector vtemp1,
+                      N_Vector vtemp2, N_Vector vtemp3)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -1765,10 +1767,10 @@ int cvLsSetup(CVodeMem cv_mem, int convfail, N_Vector ypred, N_Vector fpred,
 int cvLsSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight, N_Vector ynow,
               N_Vector fnow)
 {
-  CVLsMem  cvls_mem;
+  CVLsMem cvls_mem;
   sunrealtype bnorm = ZERO;
   sunrealtype deltar, delta, w_mean;
-  int      curiter, nli_inc, retval;
+  int curiter, nli_inc, retval;
   sunbooleantype do_sensi_sim, do_sensi_stg, do_sensi_stg1;
   int ls_status;
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
@@ -2265,7 +2267,8 @@ int CVodeSetLSNormFactorB(void* cvode_mem, int which, sunrealtype nrmfacB)
   return (CVodeSetLSNormFactor(cvodeB_mem, nrmfacB));
 }
 
-int CVodeSetLinearSolutionScalingB(void* cvode_mem, int which, sunbooleantype onoffB)
+int CVodeSetLinearSolutionScalingB(void* cvode_mem, int which,
+                                   sunbooleantype onoffB)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -2479,9 +2482,9 @@ int CVodeSetLinSysFnBS(void* cvode_mem, int which, CVLsLinSysFnBS linsysBS)
 
 /* cvLsJacBWrapper interfaces to the CVLsJacFnB routine provided
    by the user. cvLsJacBWrapper is of type CVLsJacFn. */
-static int cvLsJacBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB, SUNMatrix JB,
-                           void* cvode_mem, N_Vector tmp1B, N_Vector tmp2B,
-                           N_Vector tmp3B)
+static int cvLsJacBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
+                           SUNMatrix JB, void* cvode_mem, N_Vector tmp1B,
+                           N_Vector tmp2B, N_Vector tmp3B)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -2510,9 +2513,9 @@ static int cvLsJacBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB, SUNMatrix J
 
 /* cvLsJacBSWrapper interfaces to the CVLsJacFnBS routine provided
    by the user. cvLsJacBSWrapper is of type CVLsJacFn. */
-static int cvLsJacBSWrapper(sunrealtype t, N_Vector yB, N_Vector fyB, SUNMatrix JB,
-                            void* cvode_mem, N_Vector tmp1B, N_Vector tmp2B,
-                            N_Vector tmp3B)
+static int cvLsJacBSWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
+                            SUNMatrix JB, void* cvode_mem, N_Vector tmp1B,
+                            N_Vector tmp2B, N_Vector tmp3B)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -2807,9 +2810,10 @@ static int cvLsJacTimesVecBSWrapper(N_Vector vB, N_Vector JvB, sunrealtype t,
 /* cvLsLinSysBWrapper interfaces to the CVLsLinSysFnB routine provided
    by the user. cvLsLinSysBWrapper is of type CVLsLinSysFn. */
 static int cvLsLinSysBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
-                              SUNMatrix AB, sunbooleantype jokB, sunbooleantype* jcurB,
-                              sunrealtype gammaB, void* cvode_mem, N_Vector tmp1B,
-                              N_Vector tmp2B, N_Vector tmp3B)
+                              SUNMatrix AB, sunbooleantype jokB,
+                              sunbooleantype* jcurB, sunrealtype gammaB,
+                              void* cvode_mem, N_Vector tmp1B, N_Vector tmp2B,
+                              N_Vector tmp3B)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -2839,9 +2843,10 @@ static int cvLsLinSysBWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
 /* cvLsLinSysBSWrapper interfaces to the CVLsLinSysFnBS routine provided
    by the user. cvLsLinSysBSWrapper is of type CVLsLinSysFn. */
 static int cvLsLinSysBSWrapper(sunrealtype t, N_Vector yB, N_Vector fyB,
-                               SUNMatrix AB, sunbooleantype jokB, sunbooleantype* jcurB,
-                               sunrealtype gammaB, void* cvode_mem, N_Vector tmp1B,
-                               N_Vector tmp2B, N_Vector tmp3B)
+                               SUNMatrix AB, sunbooleantype jokB,
+                               sunbooleantype* jcurB, sunrealtype gammaB,
+                               void* cvode_mem, N_Vector tmp1B, N_Vector tmp2B,
+                               N_Vector tmp3B)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;

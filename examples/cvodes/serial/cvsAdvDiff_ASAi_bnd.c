@@ -51,10 +51,10 @@
 
 /* Header files with a description of contents */
 
-#include <cvodes/cvodes.h>            /* prototypes for CVODES fcts., consts. */
-#include <nvector/nvector_serial.h>   /* access to serial N_Vector            */
-#include <sundials/sundials_math.h>   /* definition of SUNRabs and SUNRexp    */
-#include <sundials/sundials_types.h>  /* definition of type sunrealtype          */
+#include <cvodes/cvodes.h>          /* prototypes for CVODES fcts., consts. */
+#include <nvector/nvector_serial.h> /* access to serial N_Vector            */
+#include <sundials/sundials_math.h> /* definition of SUNRabs and SUNRexp    */
+#include <sundials/sundials_types.h> /* definition of type sunrealtype          */
 #include <sunlinsol/sunlinsol_band.h> /* access to band SUNLinearSolver       */
 #include <sunmatrix/sunmatrix_band.h> /* access to band SUNMatrix             */
 
@@ -70,9 +70,9 @@
 #define T0    SUN_RCONST(0.0) /* initial time                  */
 #define T1    SUN_RCONST(0.1) /* first output time             */
 #define DTOUT SUN_RCONST(0.1) /* output time increment         */
-#define NOUT  10          /* number of output times        */
+#define NOUT  10              /* number of output times        */
 #define TOUT  SUN_RCONST(1.0) /* final time                    */
-#define NSTEP 50          /* check point saved every NSTEP */
+#define NSTEP 50              /* check point saved every NSTEP */
 
 #define ZERO SUN_RCONST(0.0)
 #define ONE  SUN_RCONST(1.0)
@@ -109,8 +109,9 @@ static int Jac(sunrealtype t, N_Vector u, N_Vector fu, SUNMatrix J,
 static int fB(sunrealtype tB, N_Vector u, N_Vector uB, N_Vector uBdot,
               void* user_dataB);
 
-static int JacB(sunrealtype tB, N_Vector u, N_Vector uB, N_Vector fuB, SUNMatrix JB,
-                void* user_dataB, N_Vector tmp1B, N_Vector tmp2B, N_Vector tmp3B);
+static int JacB(sunrealtype tB, N_Vector u, N_Vector uB, N_Vector fuB,
+                SUNMatrix JB, void* user_dataB, N_Vector tmp1B, N_Vector tmp2B,
+                N_Vector tmp3B);
 
 /* Prototypes of private functions */
 
@@ -439,8 +440,9 @@ static int fB(sunrealtype tB, N_Vector u, N_Vector uB, N_Vector uBdot,
  * JacB function. Jacobian of backward ODE
  */
 
-static int JacB(sunrealtype tB, N_Vector u, N_Vector uB, N_Vector fuB, SUNMatrix JB,
-                void* user_dataB, N_Vector tmp1B, N_Vector tmp2B, N_Vector tmp3B)
+static int JacB(sunrealtype tB, N_Vector u, N_Vector uB, N_Vector fuB,
+                SUNMatrix JB, void* user_dataB, N_Vector tmp1B, N_Vector tmp2B,
+                N_Vector tmp3B)
 {
   int i, j, k;
   sunrealtype *kthCol, hordc, horac, verdc;

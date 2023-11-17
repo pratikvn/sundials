@@ -34,7 +34,8 @@ extern "C" {
 extern void FARK_SPMASS(sunrealtype* T, long int* N, long int* NNZ,
                         sunrealtype* MDATA, sunindextype* MRVALS,
                         sunindextype* MCPTRS, long int* IPAR, sunrealtype* RPAR,
-                        sunrealtype* V1, sunrealtype* V2, sunrealtype* V3, int* ier);
+                        sunrealtype* V1, sunrealtype* V2, sunrealtype* V3,
+                        int* ier);
 
 #ifdef __cplusplus
 }

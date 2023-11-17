@@ -170,8 +170,8 @@ SUNMatrix SUNMatrix_cuSparse_NewCSR(int M, int N, int NNZ,
                                       sizeof(int) * (M + 1), SUNMEMTYPE_DEVICE,
                                       nullptr);
   alloc_fail += SUNMemoryHelper_Alloc(SMCU_MEMHELP(A), &d_values,
-                                      sizeof(sunrealtype) * NNZ, SUNMEMTYPE_DEVICE,
-                                      nullptr);
+                                      sizeof(sunrealtype) * NNZ,
+                                      SUNMEMTYPE_DEVICE, nullptr);
   if (alloc_fail)
   {
     SUNMemoryHelper_Dealloc(SMCU_MEMHELP(A), d_colind, nullptr);
@@ -895,9 +895,10 @@ int SUNMatCopy_cuSparse(SUNMatrix src, SUNMatrix dst)
   }
 
   /* Copy the data over */
-  retval =
-    SUNMemoryHelper_CopyAsync(SMCU_MEMHELP(src), SMCU_DATA(dst), SMCU_DATA(src),
-                              SMCU_NNZ(src) * sizeof(sunrealtype), (void*)stream);
+  retval = SUNMemoryHelper_CopyAsync(SMCU_MEMHELP(src), SMCU_DATA(dst),
+                                     SMCU_DATA(src),
+                                     SMCU_NNZ(src) * sizeof(sunrealtype),
+                                     (void*)stream);
   if (retval) { return (SUNMAT_OPERATION_FAIL); }
 
   /* Copy the row pointers over */

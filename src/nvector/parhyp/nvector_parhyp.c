@@ -1387,9 +1387,9 @@ SUNErrCode N_VWrmsNormMaskVectorArray_ParHyp(int nvec, N_Vector* X, N_Vector* W,
   return SUN_SUCCESS;
 }
 
-SUNErrCode N_VScaleAddMultiVectorArray_ParHyp(int nvec, int nsum, sunrealtype* a,
-                                              N_Vector* X, N_Vector** Y,
-                                              N_Vector** Z)
+SUNErrCode N_VScaleAddMultiVectorArray_ParHyp(int nvec, int nsum,
+                                              sunrealtype* a, N_Vector* X,
+                                              N_Vector** Y, N_Vector** Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -1487,8 +1487,9 @@ SUNErrCode N_VScaleAddMultiVectorArray_ParHyp(int nvec, int nsum, sunrealtype* a
   return SUN_SUCCESS;
 }
 
-SUNErrCode N_VLinearCombinationVectorArray_ParHyp(int nvec, int nsum, sunrealtype* c,
-                                                  N_Vector** X, N_Vector* Z)
+SUNErrCode N_VLinearCombinationVectorArray_ParHyp(int nvec, int nsum,
+                                                  sunrealtype* c, N_Vector** X,
+                                                  N_Vector* Z)
 {
   SUNAssignSUNCTX(Z[0]->sunctx);
 

@@ -46,9 +46,9 @@ static void VScaleDiff_Pthreads(sunrealtype c, N_Vector x, N_Vector y,
 static void VLin1_Pthreads(sunrealtype a, N_Vector x, N_Vector y,
                            N_Vector z); /* z=ax+y    */
 static void VLin2_Pthreads(sunrealtype a, N_Vector x, N_Vector y,
-                           N_Vector z);                         /* z=ax-y    */
+                           N_Vector z); /* z=ax-y    */
 static void Vaxpy_Pthreads(sunrealtype a, N_Vector x, N_Vector y); /* y <- ax+y */
-static void VScaleBy_Pthreads(sunrealtype a, N_Vector x);          /* x <- ax   */
+static void VScaleBy_Pthreads(sunrealtype a, N_Vector x); /* x <- ax   */
 
 /* Private functions for special cases of vector array operations */
 /* Z=X+Y */
@@ -58,8 +58,9 @@ static SUNErrCode VSumVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* Y,
 static SUNErrCode VDiffVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* Y,
                                             N_Vector* Z);
 /* Z=c(X+Y) */
-static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* X,
-                                                N_Vector* Y, N_Vector* Z);
+static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, sunrealtype c,
+                                                N_Vector* X, N_Vector* Y,
+                                                N_Vector* Z);
 /* Z=c(X-Y) */
 static SUNErrCode VScaleDiffVectorArray_Pthreads(int nvec, sunrealtype c,
                                                  N_Vector* X, N_Vector* Y,
@@ -71,8 +72,8 @@ static SUNErrCode VLin1VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X
 static SUNErrCode VLin2VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
                                             N_Vector* Y, N_Vector* Z);
 /* Y <- aX+Y */
-static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
-                                            N_Vector* Y);
+static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, sunrealtype a,
+                                            N_Vector* X, N_Vector* Y);
 
 /* Pthread companion functions for vector operations */
 static void* N_VConst_PT(void* thread_data);
@@ -2731,8 +2732,9 @@ static void* N_VDotProdMulti_PT(void* thread_data)
  * Compute multiple linear sums Z[i] = a*X[i] + b*Y[i]
  */
 
-SUNErrCode N_VLinearSumVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
-                                            sunrealtype b, N_Vector* Y, N_Vector* Z)
+SUNErrCode N_VLinearSumVectorArray_Pthreads(int nvec, sunrealtype a,
+                                            N_Vector* X, sunrealtype b,
+                                            N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -3377,9 +3379,9 @@ static void* N_VWrmsNormMaskVectorArray_PT(void* thread_data)
  * Scale and add a vector to multiple vectors Z = Y + a*X
  */
 
-SUNErrCode N_VScaleAddMultiVectorArray_Pthreads(int nvec, int nsum, sunrealtype* a,
-                                                N_Vector* X, N_Vector** Y,
-                                                N_Vector** Z)
+SUNErrCode N_VScaleAddMultiVectorArray_Pthreads(int nvec, int nsum,
+                                                sunrealtype* a, N_Vector* X,
+                                                N_Vector** Y, N_Vector** Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -3546,8 +3548,8 @@ static void* N_VScaleAddMultiVectorArray_PT(void* thread_data)
  */
 
 SUNErrCode N_VLinearCombinationVectorArray_Pthreads(int nvec, int nsum,
-                                                    sunrealtype* c, N_Vector** X,
-                                                    N_Vector* Z)
+                                                    sunrealtype* c,
+                                                    N_Vector** X, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0][0]->sunctx);
 
@@ -4916,8 +4918,9 @@ static void* VDiffVectorArray_PT(void* thread_data)
   pthread_exit(NULL);
 }
 
-static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* X,
-                                                N_Vector* Y, N_Vector* Z)
+static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, sunrealtype c,
+                                                N_Vector* X, N_Vector* Y,
+                                                N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -5229,8 +5232,8 @@ static void* VLin2VectorArray_PT(void* thread_data)
   pthread_exit(NULL);
 }
 
-static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
-                                            N_Vector* Y)
+static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, sunrealtype a,
+                                            N_Vector* X, N_Vector* Y)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 

@@ -35,7 +35,8 @@ extern "C" {
 #endif
 
 extern void FARK_GLOCFN(long int* NLOC, sunrealtype* T, sunrealtype* YLOC,
-                        sunrealtype* GLOC, long int* IPAR, sunrealtype* RPAR, int* ier);
+                        sunrealtype* GLOC, long int* IPAR, sunrealtype* RPAR,
+                        int* ier);
 extern void FARK_COMMFN(long int* NLOC, sunrealtype* T, sunrealtype* Y,
                         long int* IPAR, sunrealtype* RPAR, int* ier);
 

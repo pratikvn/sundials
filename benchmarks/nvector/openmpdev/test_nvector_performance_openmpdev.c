@@ -161,7 +161,8 @@ int main(int argc, char* argv[])
  * --------------------------------------------------------------------*/
 
 /* random data between lower and upper */
-void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower, sunrealtype upper)
+void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower,
+             sunrealtype upper)
 {
   sunrealtype* Xdata;
 

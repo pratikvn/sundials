@@ -29,7 +29,7 @@ static int InitializeClearCache(int cachesize);
 static int FinalizeClearCache();
 
 /* private data for clearing cache */
-static sunindextype N;   /* data length */
+static sunindextype N;      /* data length */
 static sunrealtype* h_data; /* host data   */
 static sunrealtype* h_sum;  /* host sum    */
 static sunrealtype* d_data; /* device data */
@@ -37,7 +37,8 @@ static sunrealtype* d_sum;  /* device sum  */
 static int blocksPerGrid;
 
 /* hip reduction kernel to clearing cache between tests */
-__global__ void ClearCacheKernel(sunindextype N, sunrealtype* data, sunrealtype* out)
+__global__ void ClearCacheKernel(sunindextype N, sunrealtype* data,
+                                 sunrealtype* out)
 {
   __shared__ sunrealtype shared[256];
 
@@ -205,7 +206,8 @@ int main(int argc, char* argv[])
  * --------------------------------------------------------------------*/
 
 /* random data between lower and upper */
-void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower, sunrealtype upper)
+void N_VRand(N_Vector Xvec, sunindextype Xlen, sunrealtype lower,
+             sunrealtype upper)
 {
   rand_realtype(N_VGetHostArrayPointer_Hip(Xvec), Xlen, lower, upper);
   N_VCopyToDevice_Hip(Xvec);
@@ -252,7 +254,7 @@ static int InitializeClearCache(int cachesize)
 
   /* determine size of vector to clear cache, N = ceil(2 * nbytes/sunrealtype) */
   nbytes = (size_t)(2 * cachesize * 1024 * 1024);
-  N      = (sunindextype)((nbytes + sizeof(sunrealtype) - 1) / sizeof(sunrealtype));
+  N = (sunindextype)((nbytes + sizeof(sunrealtype) - 1) / sizeof(sunrealtype));
 
   /* allocate host data */
   blocksPerGrid = SUNMIN(32, (N + 255) / 256);

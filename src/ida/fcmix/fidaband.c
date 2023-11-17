@@ -31,10 +31,11 @@ extern "C" {
 #endif
 
 extern void FIDA_BJAC(long int* N, long int* MU, long int* ML, long int* EBAND,
-                      sunrealtype* T, sunrealtype* Y, sunrealtype* YP, sunrealtype* R,
-                      sunrealtype* CJ, sunrealtype* J, sunrealtype* EWT, sunrealtype* H,
-                      long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
-                      sunrealtype* V2, sunrealtype* V3, int* IER);
+                      sunrealtype* T, sunrealtype* Y, sunrealtype* YP,
+                      sunrealtype* R, sunrealtype* CJ, sunrealtype* J,
+                      sunrealtype* EWT, sunrealtype* H, long int* IPAR,
+                      sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2,
+                      sunrealtype* V3, int* IER);
 #ifdef __cplusplus
 }
 #endif
@@ -62,12 +63,12 @@ void FIDA_BANDSETJAC(int* flag, int* ier)
 
 /*************************************************/
 
-int FIDABandJac(sunrealtype t, sunrealtype c_j, N_Vector yy, N_Vector yp, N_Vector rr,
-                SUNMatrix J, void* user_data, N_Vector vtemp1, N_Vector vtemp2,
-                N_Vector vtemp3)
+int FIDABandJac(sunrealtype t, sunrealtype c_j, N_Vector yy, N_Vector yp,
+                N_Vector rr, SUNMatrix J, void* user_data, N_Vector vtemp1,
+                N_Vector vtemp2, N_Vector vtemp3)
 {
-  sunrealtype *yy_data, *yp_data, *rr_data, *jacdata, *ewtdata, *v1data, *v2data,
-    *v3data;
+  sunrealtype *yy_data, *yp_data, *rr_data, *jacdata, *ewtdata, *v1data,
+    *v2data, *v3data;
   sunrealtype h;
   long int N, mupper, mlower, smu, eband;
   int ier;

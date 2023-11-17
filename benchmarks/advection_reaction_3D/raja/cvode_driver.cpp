@@ -27,12 +27,12 @@ int EvolveProblemBDF(N_Vector y, UserData* udata, UserOptions* uopt)
   SUNLinearSolver LS     = NULL; /* empty linear solver structure    */
 
   sunrealtype t, dtout, tout; /* current/output time data     */
-  int retval;              /* reusable error-checking flag */
-  int iout;                /* output counter               */
-  long int nst, netf;      /* step stats                   */
-  long int nfi;            /* RHS stats                    */
-  long int nni, ncnf;      /* nonlinear solver stats       */
-  long int nli, npsol;     /* linear solver stats          */
+  int retval;                 /* reusable error-checking flag */
+  int iout;                   /* output counter               */
+  long int nst, netf;         /* step stats                   */
+  long int nfi;               /* RHS stats                    */
+  long int nni, ncnf;         /* nonlinear solver stats       */
+  long int nli, npsol;        /* linear solver stats          */
 
   /* Additively split methods should not add the advection and reaction terms */
   udata->add_reactions = true;
@@ -81,8 +81,12 @@ int EvolveProblemBDF(N_Vector y, UserData* udata, UserOptions* uopt)
     }
 
     /* Create linear solver */
-    LS = uopt->precond ? SUNLinSol_SPGMR(y, SUN_PREC_LEFT, 0, udata->ctx) : SUNLinSol_SPGMR(y, SUN_PREC_NONE, 0, udata->ctx);
-    if (check_retval((void *)LS, "SUNLinSol_SPGMR", 0, udata->myid)) return 1;
+    LS = uopt->precond ? SUNLinSol_SPGMR(y, SUN_PREC_LEFT, 0, udata->ctx)
+                       : SUNLinSol_SPGMR(y, SUN_PREC_NONE, 0, udata->ctx);
+    if (check_retval((void*)LS, "SUNLinSol_SPGMR", 0, udata->myid))
+    {
+      return 1;
+    }
 
     /* Attach linear solver */
     retval = CVodeSetLinearSolver(cvode_mem, LS, NULL);
@@ -207,11 +211,11 @@ int EvolveProblemAdams(N_Vector y, UserData* udata, UserOptions* uopt)
   SUNNonlinearSolver NLS = NULL; /* empty nonlinear solver structure */
 
   sunrealtype t, dtout, tout; /* current/output time data     */
-  int retval;              /* reusable error-checking flag */
-  int iout;                /* output counter               */
-  long int nst, netf;      /* step stats                   */
-  long int nfi;            /* RHS stats                    */
-  long int nni, ncnf;      /* nonlinear solver stats       */
+  int retval;                 /* reusable error-checking flag */
+  int iout;                   /* output counter               */
+  long int nst, netf;         /* step stats                   */
+  long int nfi;               /* RHS stats                    */
+  long int nni, ncnf;         /* nonlinear solver stats       */
 
   /* Additively split methods should not add the advection and reaction terms */
   udata->add_reactions = true;

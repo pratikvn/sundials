@@ -136,13 +136,13 @@ static int cvEwtSetSS(CVodeMem cv_mem, N_Vector ycur, N_Vector weight);
 static int cvEwtSetSV(CVodeMem cv_mem, N_Vector ycur, N_Vector weight);
 
 #ifdef SUNDIALS_BUILD_PACKAGE_FUSED_KERNELS
-extern int cvEwtSetSS_fused(const sunbooleantype atolmin0, const sunrealtype reltol,
-                            const sunrealtype Sabstol, const N_Vector ycur,
-                            N_Vector tempv, N_Vector weight);
+extern int cvEwtSetSS_fused(const sunbooleantype atolmin0,
+                            const sunrealtype reltol, const sunrealtype Sabstol,
+                            const N_Vector ycur, N_Vector tempv, N_Vector weight);
 
-extern int cvEwtSetSV_fused(const sunbooleantype atolmin0, const sunrealtype reltol,
-                            const N_Vector Vabstol, const N_Vector ycur,
-                            N_Vector tempv, N_Vector weight);
+extern int cvEwtSetSV_fused(const sunbooleantype atolmin0,
+                            const sunrealtype reltol, const N_Vector Vabstol,
+                            const N_Vector ycur, N_Vector tempv, N_Vector weight);
 #endif
 
 /* Initial stepsize calculation */
@@ -172,7 +172,8 @@ static void cvAdamsFinish(CVodeMem cv_mem, sunrealtype m[], sunrealtype M[],
 static sunrealtype cvAltSum(int iend, sunrealtype a[], int k);
 static void cvSetBDF(CVodeMem cv_mem);
 static void cvSetTqBDF(CVodeMem cv_mem, sunrealtype hsum, sunrealtype alpha0,
-                       sunrealtype alpha0_hat, sunrealtype xi_inv, sunrealtype xistar_inv);
+                       sunrealtype alpha0_hat, sunrealtype xi_inv,
+                       sunrealtype xistar_inv);
 
 /* Nonlinear solver functions */
 
@@ -298,34 +299,34 @@ void* CVodeCreate(int lmm, SUNContext sunctx)
                        ? cv_mem->cv_sunctx->logger->error_fp
                        : stderr;
 #endif
-  cv_mem->cv_qmax             = maxord;
-  cv_mem->cv_mxstep           = MXSTEP_DEFAULT;
-  cv_mem->cv_mxhnil           = MXHNIL_DEFAULT;
-  cv_mem->cv_sldeton          = SUNFALSE;
-  cv_mem->cv_hin              = ZERO;
-  cv_mem->cv_hmin             = HMIN_DEFAULT;
-  cv_mem->cv_hmax_inv         = HMAX_INV_DEFAULT;
-  cv_mem->cv_eta_min_fx       = ETA_MIN_FX_DEFAULT;
-  cv_mem->cv_eta_max_fx       = ETA_MAX_FX_DEFAULT;
-  cv_mem->cv_eta_max_fs       = ETA_MAX_FS_DEFAULT;
-  cv_mem->cv_eta_max_es       = ETA_MAX_ES_DEFAULT;
-  cv_mem->cv_eta_max_gs       = ETA_MAX_GS_DEFAULT;
-  cv_mem->cv_eta_min          = ETA_MIN_DEFAULT;
-  cv_mem->cv_eta_min_ef       = ETA_MIN_EF_DEFAULT;
-  cv_mem->cv_eta_max_ef       = ETA_MAX_EF_DEFAULT;
-  cv_mem->cv_eta_cf           = ETA_CF_DEFAULT;
-  cv_mem->cv_small_nst        = SMALL_NST_DEFAULT;
-  cv_mem->cv_small_nef        = SMALL_NEF_DEFAULT;
-  cv_mem->cv_tstopset         = SUNFALSE;
-  cv_mem->cv_tstopinterp      = SUNFALSE;
-  cv_mem->cv_maxnef           = MXNEF;
-  cv_mem->cv_maxncf           = MXNCF;
-  cv_mem->cv_nlscoef          = CORTES;
-  cv_mem->cv_msbp             = MSBP_DEFAULT;
-  cv_mem->cv_dgmax_lsetup     = DGMAX_LSETUP_DEFAULT;
-  cv_mem->convfail            = CV_NO_FAILURES;
-  cv_mem->cv_constraints      = NULL;
-  cv_mem->cv_constraintsSet   = SUNFALSE;
+  cv_mem->cv_qmax           = maxord;
+  cv_mem->cv_mxstep         = MXSTEP_DEFAULT;
+  cv_mem->cv_mxhnil         = MXHNIL_DEFAULT;
+  cv_mem->cv_sldeton        = SUNFALSE;
+  cv_mem->cv_hin            = ZERO;
+  cv_mem->cv_hmin           = HMIN_DEFAULT;
+  cv_mem->cv_hmax_inv       = HMAX_INV_DEFAULT;
+  cv_mem->cv_eta_min_fx     = ETA_MIN_FX_DEFAULT;
+  cv_mem->cv_eta_max_fx     = ETA_MAX_FX_DEFAULT;
+  cv_mem->cv_eta_max_fs     = ETA_MAX_FS_DEFAULT;
+  cv_mem->cv_eta_max_es     = ETA_MAX_ES_DEFAULT;
+  cv_mem->cv_eta_max_gs     = ETA_MAX_GS_DEFAULT;
+  cv_mem->cv_eta_min        = ETA_MIN_DEFAULT;
+  cv_mem->cv_eta_min_ef     = ETA_MIN_EF_DEFAULT;
+  cv_mem->cv_eta_max_ef     = ETA_MAX_EF_DEFAULT;
+  cv_mem->cv_eta_cf         = ETA_CF_DEFAULT;
+  cv_mem->cv_small_nst      = SMALL_NST_DEFAULT;
+  cv_mem->cv_small_nef      = SMALL_NEF_DEFAULT;
+  cv_mem->cv_tstopset       = SUNFALSE;
+  cv_mem->cv_tstopinterp    = SUNFALSE;
+  cv_mem->cv_maxnef         = MXNEF;
+  cv_mem->cv_maxncf         = MXNCF;
+  cv_mem->cv_nlscoef        = CORTES;
+  cv_mem->cv_msbp           = MSBP_DEFAULT;
+  cv_mem->cv_dgmax_lsetup   = DGMAX_LSETUP_DEFAULT;
+  cv_mem->convfail          = CV_NO_FAILURES;
+  cv_mem->cv_constraints    = NULL;
+  cv_mem->cv_constraintsSet = SUNFALSE;
 
   /* Initialize root finding variables */
 
@@ -1055,7 +1056,8 @@ int CVodeRootInit(void* cvode_mem, int nrtfn, CVRootFn g)
  * In the CV_ONE_STEP mode, it takes one internal step and returns.
  */
 
-int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret, int itask)
+int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret,
+          int itask)
 {
   CVodeMem cv_mem;
   long int nstloc;
@@ -1338,36 +1340,40 @@ int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret, i
     } /* end of root stop check */
 
     /* Test for tn at tstop or near tstop */
-    if ( cv_mem->cv_tstopset )
+    if (cv_mem->cv_tstopset)
     {
       /* Test for tn at tstop */
-      if ( SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff )
+      if (SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
       {
         /* Ensure tout >= tstop, otherwise check for tout return below */
         if ((tout - cv_mem->cv_tstop) * cv_mem->cv_h >= ZERO ||
             SUNRabs(tout - cv_mem->cv_tstop) <= troundoff)
         {
-          if (cv_mem->cv_tstopinterp) {
-            ier =  CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
-            if (ier != CV_SUCCESS) {
+          if (cv_mem->cv_tstopinterp)
+          {
+            ier = CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
+            if (ier != CV_SUCCESS)
+            {
               cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVode",
                              MSGCV_BAD_TSTOP, cv_mem->cv_tstop, cv_mem->cv_tn);
               SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
-              return(CV_ILL_INPUT);
+              return (CV_ILL_INPUT);
             }
-          } else {
-            N_VScale(ONE, cv_mem->cv_zn[0], yout);
           }
+          else { N_VScale(ONE, cv_mem->cv_zn[0], yout); }
           cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
-          cv_mem->cv_tstopset = SUNFALSE;
+          cv_mem->cv_tstopset         = SUNFALSE;
           SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
-          return(CV_TSTOP_RETURN);
+          return (CV_TSTOP_RETURN);
         }
       }
       /* If next step would overtake tstop, adjust stepsize */
-      else if ( (cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop)*cv_mem->cv_h > ZERO )
+      else if ((cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop) *
+                 cv_mem->cv_h >
+               ZERO)
       {
-        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn)*(ONE-FOUR*cv_mem->cv_uround);
+        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn) *
+                            (ONE - FOUR * cv_mem->cv_uround);
         cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
       }
     }
@@ -1560,33 +1566,36 @@ int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret, i
     }
 
     /* Check if tn is at tstop or near tstop */
-    if ( cv_mem->cv_tstopset )
+    if (cv_mem->cv_tstopset)
     {
       troundoff = FUZZ_FACTOR * cv_mem->cv_uround *
-        (SUNRabs(cv_mem->cv_tn) + SUNRabs(cv_mem->cv_h));
+                  (SUNRabs(cv_mem->cv_tn) + SUNRabs(cv_mem->cv_h));
 
       /* Test for tn at tstop */
-      if ( SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
+      if (SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
       {
         /* Ensure tout >= tstop, otherwise check for tout return below */
         if ((tout - cv_mem->cv_tstop) * cv_mem->cv_h >= ZERO ||
             SUNRabs(tout - cv_mem->cv_tstop) <= troundoff)
         {
-          if (cv_mem->cv_tstopinterp) {
-            (void) CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
-          } else {
-            N_VScale(ONE, cv_mem->cv_zn[0], yout);
+          if (cv_mem->cv_tstopinterp)
+          {
+            (void)CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
           }
+          else { N_VScale(ONE, cv_mem->cv_zn[0], yout); }
           cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
-          cv_mem->cv_tstopset = SUNFALSE;
-          istate = CV_TSTOP_RETURN;
+          cv_mem->cv_tstopset         = SUNFALSE;
+          istate                      = CV_TSTOP_RETURN;
           break;
         }
       }
       /* If next step would overtake tstop, adjust stepsize */
-      else if ( (cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop)*cv_mem->cv_h > ZERO )
+      else if ((cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop) *
+                 cv_mem->cv_h >
+               ZERO)
       {
-        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn)*(ONE-FOUR*cv_mem->cv_uround);
+        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn) *
+                            (ONE - FOUR * cv_mem->cv_uround);
         cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
       }
     }
@@ -2305,12 +2314,12 @@ static int cvStep(CVodeMem cv_mem)
 
   sunrealtype saved_t;         /* time to restore to if a failure occurs   */
   sunrealtype dsm;             /* local truncation error estimate          */
-  int ncf;                  /* corrector failures in this step attempt  */
-  int npf;                  /* projection failures in this step attempt */
-  int nef;                  /* error test failures in this step attempt */
-  int nflag, kflag;         /* nonlinear solver flags                   */
-  int pflag;                /* projection return flag                   */
-  int eflag;                /* error test return flag                   */
+  int ncf;                     /* corrector failures in this step attempt  */
+  int npf;                     /* projection failures in this step attempt */
+  int nef;                     /* error test failures in this step attempt */
+  int nflag, kflag;            /* nonlinear solver flags                   */
+  int pflag;                   /* projection return flag                   */
+  int eflag;                   /* error test return flag                   */
   sunbooleantype doProjection; /* flag to apply projection in this step    */
 
   /* Initialize local counters for convergence and error test failures */
@@ -2960,7 +2969,8 @@ static void cvSetBDF(CVodeMem cv_mem)
  */
 
 static void cvSetTqBDF(CVodeMem cv_mem, sunrealtype hsum, sunrealtype alpha0,
-                       sunrealtype alpha0_hat, sunrealtype xi_inv, sunrealtype xistar_inv)
+                       sunrealtype alpha0_hat, sunrealtype xi_inv,
+                       sunrealtype xistar_inv)
 {
   sunrealtype A1, A2, A3, A4, A5, A6;
   sunrealtype C, Cpinv, Cppinv;
@@ -3007,10 +3017,10 @@ static void cvSetTqBDF(CVodeMem cv_mem, sunrealtype hsum, sunrealtype alpha0,
 static int cvNls(CVodeMem cv_mem, int nflag)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
-  int nls_status        = SUN_NLS_SUCCESS;
+  int nls_status           = SUN_NLS_SUCCESS;
   sunbooleantype callSetup = SUNFALSE;
-  long int nni_inc      = 0;
-  long int nnf_inc      = 0;
+  long int nni_inc         = 0;
+  long int nnf_inc         = 0;
 
   /* Decide whether or not to call setup routine (if one exists) and */
   /* set flag convfail (input to lsetup for its evaluation decision) */

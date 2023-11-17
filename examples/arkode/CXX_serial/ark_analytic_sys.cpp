@@ -79,13 +79,13 @@ static int check_flag(void* flagvalue, const string funcname, int opt);
 int main()
 {
   // general problem parameters
-  sunrealtype T0      = SUN_RCONST(0.0);    // initial time
-  sunrealtype Tf      = SUN_RCONST(0.05);   // final time
-  sunrealtype dTout   = SUN_RCONST(0.005);  // time between outputs
-  sunindextype NEQ = 3;              // number of dependent vars.
-  sunrealtype reltol  = SUN_RCONST(1.0e-6); // tolerances
-  sunrealtype abstol  = SUN_RCONST(1.0e-10);
-  sunrealtype lamda   = SUN_RCONST(-100.0); // stiffness parameter
+  sunrealtype T0     = SUN_RCONST(0.0);    // initial time
+  sunrealtype Tf     = SUN_RCONST(0.05);   // final time
+  sunrealtype dTout  = SUN_RCONST(0.005);  // time between outputs
+  sunindextype NEQ   = 3;                  // number of dependent vars.
+  sunrealtype reltol = SUN_RCONST(1.0e-6); // tolerances
+  sunrealtype abstol = SUN_RCONST(1.0e-10);
+  sunrealtype lamda  = SUN_RCONST(-100.0); // stiffness parameter
 
   // general problem variables
   int flag;                  // reusable error-checking flag
@@ -390,9 +390,9 @@ static int SUNDlsMat_dense_MM(SUNMatrix A, SUNMatrix B, SUNMatrix C)
   sunrealtype** adata = SUNDenseMatrix_Cols(A); // access data and extents
   sunrealtype** bdata = SUNDenseMatrix_Cols(B);
   sunrealtype** cdata = SUNDenseMatrix_Cols(C);
-  sunindextype m   = SUNDenseMatrix_Rows(C);
-  sunindextype n   = SUNDenseMatrix_Columns(C);
-  sunindextype l   = SUNDenseMatrix_Columns(A);
+  sunindextype m      = SUNDenseMatrix_Rows(C);
+  sunindextype n      = SUNDenseMatrix_Columns(C);
+  sunindextype l      = SUNDenseMatrix_Columns(A);
   sunindextype i, j, k;
   SUNMatZero(C); // initialize output
 

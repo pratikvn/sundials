@@ -31,9 +31,10 @@
 extern "C" {
 #endif
 
-extern void FARK_DJAC(long int* N, sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
-                      sunrealtype* DJAC, sunrealtype* H, long int* IPAR, sunrealtype* RPAR,
-                      sunrealtype* V1, sunrealtype* V2, sunrealtype* V3, int* ier);
+extern void FARK_DJAC(long int* N, sunrealtype* T, sunrealtype* Y,
+                      sunrealtype* FY, sunrealtype* DJAC, sunrealtype* H,
+                      long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
+                      sunrealtype* V2, sunrealtype* V3, int* ier);
 
 #ifdef __cplusplus
 }

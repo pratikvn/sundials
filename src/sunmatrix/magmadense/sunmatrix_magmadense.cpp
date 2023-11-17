@@ -58,7 +58,8 @@ using namespace sundials::sunmatrix_gpudense::hip;
 
 /* Private function prototypes */
 static sunbooleantype SMCompatible_MagmaDense(SUNMatrix A, SUNMatrix B);
-static sunbooleantype SMCompatible2_MagmaDense(SUNMatrix A, N_Vector x, N_Vector y);
+static sunbooleantype SMCompatible2_MagmaDense(SUNMatrix A, N_Vector x,
+                                               N_Vector y);
 
 /*
  * ----------------------------------------------------------------------------
@@ -153,7 +154,8 @@ SUNMatrix SUNMatrix_MagmaDenseBlock(sunindextype nblocks, sunindextype M,
 
   /* Allocate data */
   retval = SUNMemoryHelper_Alloc(A->memhelp, &A->data,
-                                 sizeof(sunrealtype) * A->ldata, memtype, nullptr);
+                                 sizeof(sunrealtype) * A->ldata, memtype,
+                                 nullptr);
   if (retval)
   {
     SUNMatDestroy(Amat);
@@ -173,8 +175,9 @@ SUNMatrix SUNMatrix_MagmaDenseBlock(sunindextype nblocks, sunindextype M,
     }
 
     /* Initialize array of pointers to block data */
-    magma_xset_pointer(A->q, (sunrealtype**)A->blocks->ptr, (sunrealtype*)A->data->ptr,
-                       A->M, 0, 0, A->M * A->N, A->nblocks);
+    magma_xset_pointer(A->q, (sunrealtype**)A->blocks->ptr,
+                       (sunrealtype*)A->data->ptr, A->M, 0, 0, A->M * A->N,
+                       A->nblocks);
   }
 
   return (Amat);
@@ -266,8 +269,9 @@ extern sunrealtype* SUNMatrix_MagmaDense_Block(SUNMatrix Amat, sunindextype k);
 
 extern sunrealtype* SUNMatrix_MagmaDense_Column(SUNMatrix Amat, sunindextype j);
 
-extern sunrealtype* SUNMatrix_MagmaDense_BlockColumn(SUNMatrix Amat, sunindextype k,
-                                                  sunindextype j);
+extern sunrealtype* SUNMatrix_MagmaDense_BlockColumn(SUNMatrix Amat,
+                                                     sunindextype k,
+                                                     sunindextype j);
 
 /*
  * Utility functions
@@ -296,7 +300,8 @@ int SUNMatrix_MagmaDense_CopyToDevice(SUNMatrix Amat, sunrealtype* h_data)
                        , cudaStream_t stream = magma_queue_get_cuda_stream(A->q);)
 
   retval = SUNMemoryHelper_CopyAsync(A->memhelp, A->data, _h_data,
-                                     sizeof(sunrealtype) * A->ldata, (void*)&stream);
+                                     sizeof(sunrealtype) * A->ldata,
+                                     (void*)&stream);
   magma_queue_sync(A->q); /* sync with respect to host, but only this stream */
 
   SUNMemoryHelper_Dealloc(A->memhelp, _h_data, nullptr);
@@ -314,7 +319,8 @@ int SUNMatrix_MagmaDense_CopyFromDevice(SUNMatrix Amat, sunrealtype* h_data)
                        , cudaStream_t stream = magma_queue_get_cuda_stream(A->q);)
 
   retval = SUNMemoryHelper_CopyAsync(A->memhelp, _h_data, A->data,
-                                     sizeof(sunrealtype) * A->ldata, (void*)&stream);
+                                     sizeof(sunrealtype) * A->ldata,
+                                     (void*)&stream);
   magma_queue_sync(A->q); /* sync with respect to host, but only this stream */
 
   SUNMemoryHelper_Dealloc(A->memhelp, _h_data, nullptr);
@@ -407,7 +413,8 @@ int SUNMatZero_MagmaDense(SUNMatrix Amat)
   SUNMatrixContent_MagmaDense A = SMLD_CONTENT(Amat);
 
   /* Zero out matrix */
-  SUNDIALS_LAUNCH_KERNEL(SUNDIALS_KERNEL_NAME(zeroKernel<sunrealtype, sunindextype>),
+  SUNDIALS_LAUNCH_KERNEL(SUNDIALS_KERNEL_NAME(
+                           zeroKernel<sunrealtype, sunindextype>),
                          dim3(std::min<sunindextype>(A->nblocks, INT_MAX), 1, 1),
                          SUNDIALS_HIP_OR_CUDA(dim3(1, 16, 16),
                                               dim3(1, 16, 32)), /* We choose slightly larger thread blocks when using HIP since the warps are larger */
@@ -432,7 +439,8 @@ int SUNMatCopy_MagmaDense(SUNMatrix Amat, SUNMatrix Bmat)
   if (!SMCompatible_MagmaDense(Amat, Bmat)) { return SUNMAT_ILL_INPUT; }
 
   /* Copy A into B */
-  SUNDIALS_LAUNCH_KERNEL(SUNDIALS_KERNEL_NAME(copyKernel<sunrealtype, sunindextype>),
+  SUNDIALS_LAUNCH_KERNEL(SUNDIALS_KERNEL_NAME(
+                           copyKernel<sunrealtype, sunindextype>),
                          dim3(std::min<sunindextype>(A->nblocks, INT_MAX), 1, 1),
                          SUNDIALS_HIP_OR_CUDA(dim3(1, 16, 16), dim3(1, 16, 32)),
                          0,
@@ -569,15 +577,15 @@ int SUNMatMatvec_MagmaDense(SUNMatrix Amat, N_Vector x, N_Vector y)
   else
   {
     /* Now we can use gemv to do y = alpha*A*x + beta*y */
-    xgemv(A->q,                                /* queue/stream to execute in */
-          MagmaNoTrans,                        /* use A not A^T */
-          A->M,                                /* number of rows */
-          A->N,                                /* number of cols */
-          ONE,                                 /* alpha */
+    xgemv(A->q,         /* queue/stream to execute in */
+          MagmaNoTrans, /* use A not A^T */
+          A->M,         /* number of rows */
+          A->N,         /* number of cols */
+          ONE,          /* alpha */
           (const sunrealtype*)A->data->ptr, A->M, /* leading dimension of A */
           (const sunrealtype*)N_VGetDeviceArrayPointer(x),
-          1,                                        /* increment for x data */
-          ZERO,                                     /* beta */
+          1,    /* increment for x data */
+          ZERO, /* beta */
           (sunrealtype*)N_VGetDeviceArrayPointer(y), 1 /* increment for y data */
     );
   }
@@ -622,7 +630,8 @@ static sunbooleantype SMCompatible_MagmaDense(SUNMatrix Amat, SUNMatrix Bmat)
   return (SUNTRUE);
 }
 
-static sunbooleantype SMCompatible2_MagmaDense(SUNMatrix Amat, N_Vector x, N_Vector y)
+static sunbooleantype SMCompatible2_MagmaDense(SUNMatrix Amat, N_Vector x,
+                                               N_Vector y)
 {
   SUNMatrixContent_MagmaDense A = SMLD_CONTENT(Amat);
 

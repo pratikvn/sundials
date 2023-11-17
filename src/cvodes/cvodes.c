@@ -373,7 +373,8 @@ static void cvAdamsFinish(CVodeMem cv_mem, sunrealtype m[], sunrealtype M[],
 static sunrealtype cvAltSum(int iend, sunrealtype a[], int k);
 static void cvSetBDF(CVodeMem cv_mem);
 static void cvSetTqBDF(CVodeMem cv_mem, sunrealtype hsum, sunrealtype alpha0,
-                       sunrealtype alpha0_hat, sunrealtype xi_inv, sunrealtype xistar_inv);
+                       sunrealtype alpha0_hat, sunrealtype xi_inv,
+                       sunrealtype xistar_inv);
 
 /* Nonlinear solver functions */
 
@@ -421,17 +422,17 @@ static int cvRootfind(CVodeMem cv_mem);
 
 /* Function for combined norms */
 
-static sunrealtype cvQuadUpdateNorm(CVodeMem cv_mem, sunrealtype old_nrm, N_Vector xQ,
-                                 N_Vector wQ);
+static sunrealtype cvQuadUpdateNorm(CVodeMem cv_mem, sunrealtype old_nrm,
+                                    N_Vector xQ, N_Vector wQ);
 
 static sunrealtype cvQuadSensNorm(CVodeMem cv_mem, N_Vector* xQS, N_Vector* wQS);
 static sunrealtype cvQuadSensUpdateNorm(CVodeMem cv_mem, sunrealtype old_nrm,
-                                     N_Vector* xQS, N_Vector* wQS);
+                                        N_Vector* xQS, N_Vector* wQS);
 
 /* Internal sensitivity RHS DQ functions */
 
-static int cvQuadSensRhsInternalDQ(int Ns, sunrealtype t, N_Vector y, N_Vector* yS,
-                                   N_Vector yQdot, N_Vector* yQSdot,
+static int cvQuadSensRhsInternalDQ(int Ns, sunrealtype t, N_Vector y,
+                                   N_Vector* yS, N_Vector yQdot, N_Vector* yQSdot,
                                    void* cvode_mem, N_Vector tmp, N_Vector tmpQ);
 
 static int cvQuadSensRhs1InternalDQ(CVodeMem cv_mem, int is, sunrealtype t,
@@ -1275,7 +1276,8 @@ int CVodeQuadReInit(void* cvode_mem, N_Vector yQ0)
  *   vector component).
  */
 
-int CVodeQuadSStolerances(void* cvode_mem, sunrealtype reltolQ, sunrealtype abstolQ)
+int CVodeQuadSStolerances(void* cvode_mem, sunrealtype reltolQ,
+                          sunrealtype abstolQ)
 {
   CVodeMem cv_mem;
 
@@ -2082,7 +2084,8 @@ int CVodeSensReInit(void* cvode_mem, int ism, N_Vector* yS0)
  *   should be estimated from those provided for the state variables.
  */
 
-int CVodeSensSStolerances(void* cvode_mem, sunrealtype reltolS, sunrealtype* abstolS)
+int CVodeSensSStolerances(void* cvode_mem, sunrealtype reltolS,
+                          sunrealtype* abstolS)
 {
   CVodeMem cv_mem;
   int is;
@@ -2138,7 +2141,8 @@ int CVodeSensSStolerances(void* cvode_mem, sunrealtype reltolS, sunrealtype* abs
   if (!(cv_mem->cv_SabstolSMallocDone))
   {
     cv_mem->cv_SabstolS = NULL;
-    cv_mem->cv_SabstolS = (sunrealtype*)malloc(cv_mem->cv_Ns * sizeof(sunrealtype));
+    cv_mem->cv_SabstolS =
+      (sunrealtype*)malloc(cv_mem->cv_Ns * sizeof(sunrealtype));
     cv_mem->cv_atolSmin0 =
       (sunbooleantype*)malloc(cv_mem->cv_Ns * sizeof(sunbooleantype));
     cv_mem->cv_lrw += cv_mem->cv_Ns;
@@ -2505,7 +2509,8 @@ int CVodeQuadSensSStolerances(void* cvode_mem, sunrealtype reltolQS,
   if (!(cv_mem->cv_SabstolQSMallocDone))
   {
     cv_mem->cv_SabstolQS = NULL;
-    cv_mem->cv_SabstolQS = (sunrealtype*)malloc(cv_mem->cv_Ns * sizeof(sunrealtype));
+    cv_mem->cv_SabstolQS =
+      (sunrealtype*)malloc(cv_mem->cv_Ns * sizeof(sunrealtype));
     cv_mem->cv_atolQSmin0 =
       (sunbooleantype*)malloc(cv_mem->cv_Ns * sizeof(sunbooleantype));
     cv_mem->cv_lrw += cv_mem->cv_Ns;
@@ -2911,7 +2916,8 @@ int CVodeRootInit(void* cvode_mem, int nrtfn, CVRootFn g)
  * In the CV_ONE_STEP mode, it takes one internal step and returns.
  */
 
-int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret, int itask)
+int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret,
+          int itask)
 {
   CVodeMem cv_mem;
   long int nstloc;
@@ -3305,36 +3311,40 @@ int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret, i
     } /* end of root stop check */
 
     /* Test for tn at tstop or near tstop */
-    if ( cv_mem->cv_tstopset )
+    if (cv_mem->cv_tstopset)
     {
       /* Test for tn at tstop */
-      if ( SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff )
+      if (SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
       {
         /* Ensure tout >= tstop, otherwise check for tout return below */
         if ((tout - cv_mem->cv_tstop) * cv_mem->cv_h >= ZERO ||
             SUNRabs(tout - cv_mem->cv_tstop) <= troundoff)
         {
-          if (cv_mem->cv_tstopinterp) {
-            ier =  CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
-            if (ier != CV_SUCCESS) {
+          if (cv_mem->cv_tstopinterp)
+          {
+            ier = CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
+            if (ier != CV_SUCCESS)
+            {
               cvProcessError(cv_mem, CV_ILL_INPUT, "CVODES", "CVode",
                              MSGCV_BAD_TSTOP, cv_mem->cv_tstop, cv_mem->cv_tn);
               SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
-              return(CV_ILL_INPUT);
+              return (CV_ILL_INPUT);
             }
-          } else {
-            N_VScale(ONE, cv_mem->cv_zn[0], yout);
           }
+          else { N_VScale(ONE, cv_mem->cv_zn[0], yout); }
           cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
-          cv_mem->cv_tstopset = SUNFALSE;
+          cv_mem->cv_tstopset         = SUNFALSE;
           SUNDIALS_MARK_FUNCTION_END(CV_PROFILER);
-          return(CV_TSTOP_RETURN);
+          return (CV_TSTOP_RETURN);
         }
       }
       /* If next step would overtake tstop, adjust stepsize */
-      else if ( (cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop)*cv_mem->cv_h > ZERO )
+      else if ((cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop) *
+                 cv_mem->cv_h >
+               ZERO)
       {
-        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn)*(ONE-FOUR*cv_mem->cv_uround);
+        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn) *
+                            (ONE - FOUR * cv_mem->cv_uround);
         cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
       }
     }
@@ -3580,33 +3590,36 @@ int CVode(void* cvode_mem, sunrealtype tout, N_Vector yout, sunrealtype* tret, i
     }
 
     /* Check if tn is at tstop or near tstop */
-    if ( cv_mem->cv_tstopset )
+    if (cv_mem->cv_tstopset)
     {
       troundoff = FUZZ_FACTOR * cv_mem->cv_uround *
-        (SUNRabs(cv_mem->cv_tn) + SUNRabs(cv_mem->cv_h));
+                  (SUNRabs(cv_mem->cv_tn) + SUNRabs(cv_mem->cv_h));
 
       /* Test for tn at tstop */
-      if ( SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
+      if (SUNRabs(cv_mem->cv_tn - cv_mem->cv_tstop) <= troundoff)
       {
         /* Ensure tout >= tstop, otherwise check for tout return below */
         if ((tout - cv_mem->cv_tstop) * cv_mem->cv_h >= ZERO ||
             SUNRabs(tout - cv_mem->cv_tstop) <= troundoff)
         {
-          if (cv_mem->cv_tstopinterp) {
-            (void) CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
-          } else {
-            N_VScale(ONE, cv_mem->cv_zn[0], yout);
+          if (cv_mem->cv_tstopinterp)
+          {
+            (void)CVodeGetDky(cv_mem, cv_mem->cv_tstop, 0, yout);
           }
+          else { N_VScale(ONE, cv_mem->cv_zn[0], yout); }
           cv_mem->cv_tretlast = *tret = cv_mem->cv_tstop;
-          cv_mem->cv_tstopset = SUNFALSE;
-          istate = CV_TSTOP_RETURN;
+          cv_mem->cv_tstopset         = SUNFALSE;
+          istate                      = CV_TSTOP_RETURN;
           break;
         }
       }
       /* If next step would overtake tstop, adjust stepsize */
-      else if ( (cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop)*cv_mem->cv_h > ZERO )
+      else if ((cv_mem->cv_tn + cv_mem->cv_hprime - cv_mem->cv_tstop) *
+                 cv_mem->cv_h >
+               ZERO)
       {
-        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn)*(ONE-FOUR*cv_mem->cv_uround);
+        cv_mem->cv_hprime = (cv_mem->cv_tstop - cv_mem->cv_tn) *
+                            (ONE - FOUR * cv_mem->cv_uround);
         cv_mem->cv_eta = cv_mem->cv_hprime / cv_mem->cv_h;
       }
     }
@@ -5908,16 +5921,16 @@ static int cvStep(CVodeMem cv_mem)
   sunrealtype dsmQ;    /* quadrature error estimate                */
   sunrealtype dsmS;    /* sensitivity error estimate               */
   sunrealtype dsmQS;   /* quadrature sensitivity error estimate    */
-  int ncf;          /* corrector failures in this step attempt  */
-  int ncfS;         /* sensitivity corrector failures           */
-  int npf;          /* projection failures in this step attempt */
-  int nef;          /* error test failures in this step attempt */
-  int nefQ;         /* quadrature error test fails              */
-  int nefS;         /* sensitivity error test fails             */
-  int nefQS;        /* quadrature sensitivity error test fails  */
-  int nflag, kflag; /* nonlinear solver flags                   */
-  int pflag;        /* projection return flag                   */
-  int eflag;        /* error test return flag                   */
+  int ncf;             /* corrector failures in this step attempt  */
+  int ncfS;            /* sensitivity corrector failures           */
+  int npf;             /* projection failures in this step attempt */
+  int nef;             /* error test failures in this step attempt */
+  int nefQ;            /* quadrature error test fails              */
+  int nefS;            /* sensitivity error test fails             */
+  int nefQS;           /* quadrature sensitivity error test fails  */
+  int nflag, kflag;    /* nonlinear solver flags                   */
+  int pflag;           /* projection return flag                   */
+  int eflag;           /* error test return flag                   */
   int retval, is;
   sunbooleantype doProjection;  /* flag to apply projection in this step    */
   sunbooleantype do_sensi_stg;  /* staggered strategy                       */
@@ -6964,7 +6977,8 @@ static void cvSetBDF(CVodeMem cv_mem)
  */
 
 static void cvSetTqBDF(CVodeMem cv_mem, sunrealtype hsum, sunrealtype alpha0,
-                       sunrealtype alpha0_hat, sunrealtype xi_inv, sunrealtype xistar_inv)
+                       sunrealtype alpha0_hat, sunrealtype xi_inv,
+                       sunrealtype xistar_inv)
 {
   sunrealtype A1, A2, A3, A4, A5, A6;
   sunrealtype C, Cpinv, Cppinv;
@@ -9594,8 +9608,8 @@ static int cvQuadSensEwtSetSV(CVodeMem cv_mem, N_Vector* yQScur,
  * Updates the norm old_nrm to account for all quadratures.
  */
 
-static sunrealtype cvQuadUpdateNorm(CVodeMem cv_mem, sunrealtype old_nrm, N_Vector xQ,
-                                 N_Vector wQ)
+static sunrealtype cvQuadUpdateNorm(CVodeMem cv_mem, sunrealtype old_nrm,
+                                    N_Vector xQ, N_Vector wQ)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
   sunrealtype qnrm;
@@ -9642,7 +9656,7 @@ sunrealtype cvSensNorm(CVodeMem cv_mem, N_Vector* xS, N_Vector* wS)
  */
 
 sunrealtype cvSensUpdateNorm(CVodeMem cv_mem, sunrealtype old_nrm, N_Vector* xS,
-                          N_Vector* wS)
+                             N_Vector* wS)
 {
   sunrealtype snrm;
 
@@ -9687,7 +9701,7 @@ static sunrealtype cvQuadSensNorm(CVodeMem cv_mem, N_Vector* xQS, N_Vector* wQS)
  */
 
 static sunrealtype cvQuadSensUpdateNorm(CVodeMem cv_mem, sunrealtype old_nrm,
-                                     N_Vector* xQS, N_Vector* wQS)
+                                        N_Vector* xQS, N_Vector* wQS)
 {
   sunrealtype snrm;
 
@@ -9817,8 +9831,8 @@ int cvSensRhsInternalDQ(int Ns, sunrealtype t, N_Vector y, N_Vector ydot,
  * non-zero return value from f().
  */
 
-int cvSensRhs1InternalDQ(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int is,
-                         N_Vector yS, N_Vector ySdot, void* cvode_mem,
+int cvSensRhs1InternalDQ(int Ns, sunrealtype t, N_Vector y, N_Vector ydot,
+                         int is, N_Vector yS, N_Vector ySdot, void* cvode_mem,
                          N_Vector ytemp, N_Vector ftemp)
 {
   CVodeMem cv_mem;
@@ -10003,8 +10017,8 @@ int cvSensRhs1InternalDQ(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, int i
  * done in cvQuadSensRhs1InternalDQ.
  */
 
-static int cvQuadSensRhsInternalDQ(int Ns, sunrealtype t, N_Vector y, N_Vector* yS,
-                                   N_Vector yQdot, N_Vector* yQSdot,
+static int cvQuadSensRhsInternalDQ(int Ns, sunrealtype t, N_Vector y,
+                                   N_Vector* yS, N_Vector yQdot, N_Vector* yQSdot,
                                    void* cvode_mem, N_Vector tmp, N_Vector tmpQ)
 {
   CVodeMem cv_mem;

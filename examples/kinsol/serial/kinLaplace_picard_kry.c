@@ -145,7 +145,6 @@ int main(void)
 
   infofp = fopen("KINSOL.log", "w");
 
-
   /* ----------------------
    * Create SUNLinearSolver
    * ---------------------- */

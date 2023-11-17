@@ -362,7 +362,8 @@ static void PrintHeader1(void)
   return;
 }
 
-static void PrintOutput1(sunrealtype t, sunrealtype y0, sunrealtype y1, int qu, sunrealtype hu)
+static void PrintOutput1(sunrealtype t, sunrealtype y0, sunrealtype y1, int qu,
+                         sunrealtype hu)
 {
 #if defined(SUNDIALS_EXTENDED_PRECISION)
   printf("%10.5Lf    %12.5Le   %12.5Le   %2d    %6.4Le\n", t, y0, y1, qu, hu);
@@ -684,7 +685,8 @@ static int Jac2(sunrealtype tn, N_Vector y, N_Vector fy, SUNMatrix J,
 static sunrealtype MaxError(N_Vector y, sunrealtype t)
 {
   sunindextype i, j, k;
-  sunrealtype *ydata, er, ex = ZERO, yt, maxError = ZERO, ifact_inv, jfact_inv = ONE;
+  sunrealtype *ydata, er, ex = ZERO, yt, maxError = ZERO, ifact_inv,
+                          jfact_inv = ONE;
 
   if (t == ZERO) { return (ZERO); }
 

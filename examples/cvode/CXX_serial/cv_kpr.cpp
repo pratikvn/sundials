@@ -71,8 +71,8 @@ int main(int argc, char* argv[])
   if (check_flag(flag, "true_sol")) { return 1; }
 
   sunrealtype* ydata = N_VGetArrayPointer(y);
-  ydata[0]        = utrue;
-  ydata[1]        = vtrue;
+  ydata[0]           = utrue;
+  ydata[1]           = vtrue;
 
   // Create matrix and linear solver
   SUNMatrix A = SUNDenseMatrix(2, 2, sunctx);
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
 
   // Attach user data pointer
   sunrealtype udata[4] = {-TWO, HALF, HALF, -ONE};
-  flag              = CVodeSetUserData(cvode_mem, udata);
+  flag                 = CVodeSetUserData(cvode_mem, udata);
   if (check_flag(flag, "CVodeSetUserData")) { return 1; }
 
   // Initial time and fist output time

@@ -169,13 +169,13 @@ struct UserData
   // Integrator settings
   sunrealtype rtol; // relative tolerance
   sunrealtype atol; // absolute tolerance
-  int maxsteps;  // max number of steps between outputs
+  int maxsteps;     // max number of steps between outputs
 
   // Linear solver and preconditioner settings
-  bool pcg;        // use PCG (true) or GMRES (false)
-  bool prec;       // preconditioner on/off
-  int liniters;    // number of linear iterations
-  int msbp;        // max number of steps between preconditioner setups
+  bool pcg;           // use PCG (true) or GMRES (false)
+  bool prec;          // preconditioner on/off
+  int liniters;       // number of linear iterations
+  int msbp;           // max number of steps between preconditioner setups
   sunrealtype epslin; // linear solver tolerance factor
 
   // hypre PFMG settings (hypre defaults)
@@ -291,8 +291,8 @@ int HypreLS_Free(SUNLinearSolver S);
 static int f(sunrealtype t, N_Vector u, N_Vector f, void* user_data);
 
 // Jacobian evaluation function
-static int Jac(sunrealtype t, N_Vector u, N_Vector f, SUNMatrix J, void* user_data,
-               N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
+static int Jac(sunrealtype t, N_Vector u, N_Vector f, SUNMatrix J,
+               void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 // -----------------------------------------------------------------------------
 // Helper functions
@@ -1569,7 +1569,7 @@ UserData::UserData(sundials::Context& sunctx) : sunctx(sunctx)
   // Integrator settings
   rtol     = SUN_RCONST(1.e-5);  // relative tolerance
   atol     = SUN_RCONST(1.e-10); // absolute tolerance
-  maxsteps = 0;              // use default
+  maxsteps = 0;                  // use default
 
   // Linear solver and preconditioner options
   pcg      = true; // use PCG (true) or GMRES (false)

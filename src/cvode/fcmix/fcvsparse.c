@@ -29,11 +29,11 @@
 extern "C" {
 #endif
 
-extern void FCV_SPJAC(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, long int* N,
-                      long int* NNZ, sunrealtype* JDATA, sunindextype* JRVALS,
-                      sunindextype* JCPTRS, sunrealtype* H, long int* IPAR,
-                      sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2, sunrealtype* V3,
-                      int* ier);
+extern void FCV_SPJAC(sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                      long int* N, long int* NNZ, sunrealtype* JDATA,
+                      sunindextype* JRVALS, sunindextype* JCPTRS, sunrealtype* H,
+                      long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
+                      sunrealtype* V2, sunrealtype* V3, int* ier);
 
 #ifdef __cplusplus
 }

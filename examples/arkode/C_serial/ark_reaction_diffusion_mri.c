@@ -63,8 +63,8 @@
 typedef struct
 {
   sunindextype N; /* number of intervals   */
-  sunrealtype dx;    /* mesh spacing          */
-  sunrealtype k;     /* diffusion coefficient */
+  sunrealtype dx; /* mesh spacing          */
+  sunrealtype k;  /* diffusion coefficient */
   sunrealtype lam;
 }* UserData;
 
@@ -82,18 +82,18 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
 int main(void)
 {
   /* general problem parameters */
-  sunrealtype T0    = SUN_RCONST(0.0);           /* initial time */
-  sunrealtype Tf    = SUN_RCONST(3.0);           /* final time */
-  sunrealtype dTout = SUN_RCONST(0.1);           /* time between outputs */
-  int Nt         = (int)ceil(Tf / dTout); /* number of output times */
-  sunrealtype hs    = SUN_RCONST(0.001);         /* slow step size */
-  sunrealtype hf    = SUN_RCONST(0.00002);       /* fast step size */
-  UserData udata = NULL;                  /* user data */
+  sunrealtype T0    = SUN_RCONST(0.0);       /* initial time */
+  sunrealtype Tf    = SUN_RCONST(3.0);       /* final time */
+  sunrealtype dTout = SUN_RCONST(0.1);       /* time between outputs */
+  int Nt            = (int)ceil(Tf / dTout); /* number of output times */
+  sunrealtype hs    = SUN_RCONST(0.001);     /* slow step size */
+  sunrealtype hf    = SUN_RCONST(0.00002);   /* fast step size */
+  UserData udata    = NULL;                  /* user data */
 
-  sunrealtype* data;               /* array for solution output */
-  sunrealtype L     = SUN_RCONST(5.0); /* domain length */
-  sunindextype N = 1001;        /* number of mesh points */
-  sunrealtype ep    = SUN_RCONST(1e-2);
+  sunrealtype* data;                /* array for solution output */
+  sunrealtype L  = SUN_RCONST(5.0); /* domain length */
+  sunindextype N = 1001;            /* number of mesh points */
+  sunrealtype ep = SUN_RCONST(1e-2);
   sunindextype i;
 
   /* general problem variables */
@@ -285,8 +285,8 @@ static int fs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   UserData udata = (UserData)user_data; /* access problem data */
   sunindextype N = udata->N;            /* set variable shortcuts */
-  sunrealtype k     = udata->k;
-  sunrealtype dx    = udata->dx;
+  sunrealtype k  = udata->k;
+  sunrealtype dx = udata->dx;
   sunrealtype *Y = NULL, *Ydot = NULL;
   sunrealtype c1, c2;
   sunindextype i;
@@ -325,11 +325,11 @@ static int fs(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
 static int SetInitialCondition(N_Vector y, UserData user_data)
 {
-  UserData udata = (UserData)user_data; /* access problem data */
-  sunindextype N = udata->N;            /* set variable shortcuts */
-  sunrealtype lam   = udata->lam;
-  sunrealtype dx    = udata->dx;
-  sunrealtype* Y    = NULL;
+  UserData udata  = (UserData)user_data; /* access problem data */
+  sunindextype N  = udata->N;            /* set variable shortcuts */
+  sunrealtype lam = udata->lam;
+  sunrealtype dx  = udata->dx;
+  sunrealtype* Y  = NULL;
   sunindextype i;
 
   /* access state array data */

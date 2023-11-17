@@ -57,7 +57,7 @@
 #define ONE  SUN_RCONST(1.0)
 #define TWO  SUN_RCONST(2.0)
 
-#define NUM_SPECIES 2                /* number of species         */
+#define NUM_SPECIES 2                    /* number of species         */
 #define KH          SUN_RCONST(4.0e-6)   /* horizontal diffusivity Kh */
 #define VEL         SUN_RCONST(0.001)    /* advection velocity V      */
 #define KV0         SUN_RCONST(1.0e-8)   /* coefficient in Kv(y)      */
@@ -69,10 +69,10 @@
 #define C1_SCALE    SUN_RCONST(1.0e6) /* coefficients in initial profiles    */
 #define C2_SCALE    SUN_RCONST(1.0e12)
 
-#define T0      ZERO                    /* initial time */
-#define NOUT    12                      /* number of output times */
-#define TWOHR   SUN_RCONST(7200.0)          /* number of seconds in two hours  */
-#define HALFDAY SUN_RCONST(4.32e4)          /* number of seconds in a half day */
+#define T0      ZERO               /* initial time */
+#define NOUT    12                 /* number of output times */
+#define TWOHR   SUN_RCONST(7200.0) /* number of seconds in two hours  */
+#define HALFDAY SUN_RCONST(4.32e4) /* number of seconds in a half day */
 #define PI      SUN_RCONST(3.1415926535898) /* pi */
 
 #define XMIN ZERO /* grid boundaries in x  */
@@ -89,11 +89,11 @@
 
 /* CVodeInit Constants */
 
-#define RTOL  SUN_RCONST(1.0e-5)    /* scalar relative tolerance */
-#define FLOOR SUN_RCONST(100.0)     /* value of C1 or C2 at which tolerances */
-                                /* change from relative to absolute      */
-#define ATOL (RTOL * FLOOR)     /* scalar absolute tolerance */
-#define NEQ  (NUM_SPECIES * MM) /* NEQ = number of equations */
+#define RTOL  SUN_RCONST(1.0e-5) /* scalar relative tolerance */
+#define FLOOR SUN_RCONST(100.0)  /* value of C1 or C2 at which tolerances */
+                                 /* change from relative to absolute      */
+#define ATOL (RTOL * FLOOR)      /* scalar absolute tolerance */
+#define NEQ  (NUM_SPECIES * MM)  /* NEQ = number of equations */
 
 /* User-defined vector and matrix accessor macros: IJKth, IJth */
 

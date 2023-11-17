@@ -56,13 +56,13 @@
 #define ZERO SUN_RCONST(0.0)
 
 #define XMAX  SUN_RCONST(2.0)    /* domain boundary           */
-#define MX    10             /* mesh dimension            */
-#define NEQ   MX             /* number of equations       */
+#define MX    10                 /* mesh dimension            */
+#define NEQ   MX                 /* number of equations       */
 #define ATOL  SUN_RCONST(1.0e-5) /* scalar absolute tolerance */
-#define T0    ZERO           /* initial time              */
+#define T0    ZERO               /* initial time              */
 #define T1    SUN_RCONST(0.5)    /* first output time         */
 #define DTOUT SUN_RCONST(0.5)    /* output time increment     */
-#define NOUT  10             /* number of output times    */
+#define NOUT  10                 /* number of output times    */
 
 /* Type : UserData
    contains grid constants, parallel machine parameters, work array. */
@@ -271,8 +271,8 @@ static void SetIC(N_Vector u, sunrealtype dx, sunindextype my_length,
   {
     iglobal = my_base + i;
     x       = iglobal * dx;
-    VecSetValue(uvec, iglobal - 1, x * (XMAX - x) * SUNRexp(SUN_RCONST(2.0) * x),
-                INSERT_VALUES);
+    VecSetValue(uvec, iglobal - 1,
+                x * (XMAX - x) * SUNRexp(SUN_RCONST(2.0) * x), INSERT_VALUES);
   }
 
   VecAssemblyBegin(uvec);

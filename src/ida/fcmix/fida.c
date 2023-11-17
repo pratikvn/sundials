@@ -55,9 +55,9 @@ extern void FIDA_RESFUN(sunrealtype*, /* T    */
                         sunrealtype*, /* Y    */
                         sunrealtype*, /* YP   */
                         sunrealtype*, /* R    */
-                        long int*, /* IPAR */
+                        long int*,    /* IPAR */
                         sunrealtype*, /* RPAR */
-                        int*);     /* IER  */
+                        int*);        /* IER  */
 
 #ifdef __cplusplus
 }
@@ -66,8 +66,8 @@ extern void FIDA_RESFUN(sunrealtype*, /* T    */
 /*************************************************/
 
 void FIDA_MALLOC(sunrealtype* t0, sunrealtype* yy0, sunrealtype* yp0, int* iatol,
-                 sunrealtype* rtol, sunrealtype* atol, long int* iout, sunrealtype* rout,
-                 long int* ipar, sunrealtype* rpar, int* ier)
+                 sunrealtype* rtol, sunrealtype* atol, long int* iout,
+                 sunrealtype* rout, long int* ipar, sunrealtype* rpar, int* ier)
 {
   N_Vector Vatol;
   FIDAUserData IDA_userdata;
@@ -192,8 +192,8 @@ void FIDA_MALLOC(sunrealtype* t0, sunrealtype* yy0, sunrealtype* yp0, int* iatol
 
 /*************************************************/
 
-void FIDA_REINIT(sunrealtype* t0, sunrealtype* yy0, sunrealtype* yp0, int* iatol,
-                 sunrealtype* rtol, sunrealtype* atol, int* ier)
+void FIDA_REINIT(sunrealtype* t0, sunrealtype* yy0, sunrealtype* yp0,
+                 int* iatol, sunrealtype* rtol, sunrealtype* atol, int* ier)
 {
   N_Vector Vatol;
 
@@ -471,8 +471,8 @@ void FIDA_SPILSSETINCREMENTFACTOR(sunrealtype* dqincfac, int* ier)
 
 /*************************************************/
 
-void FIDA_SOLVE(sunrealtype* tout, sunrealtype* tret, sunrealtype* yret, sunrealtype* ypret,
-                int* itask, int* ier)
+void FIDA_SOLVE(sunrealtype* tout, sunrealtype* tret, sunrealtype* yret,
+                sunrealtype* ypret, int* itask, int* ier)
 {
   int klast, kcur;
 
@@ -619,7 +619,8 @@ void FIDA_FREE(void)
 
 /*************************************************/
 
-int FIDAresfn(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
+int FIDAresfn(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr,
+              void* user_data)
 {
   int ier;
   sunrealtype *yy_data, *yp_data, *rr_data;

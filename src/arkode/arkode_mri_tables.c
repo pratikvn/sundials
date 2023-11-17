@@ -59,9 +59,8 @@ MRIStepCoupling MRIStepCoupling_LoadTableByName(const char* method)
 #include "arkode_mri_tables.def"
 #undef ARK_MRI_TABLE
 
-  arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE",
-           "MRIStepCoupling_LoadTable",
-           "Unknown coupling table");
+  arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE", "MRIStepCoupling_LoadTable",
+                  "Unknown coupling table");
 
   return NULL;
 }
@@ -187,7 +186,8 @@ MRIStepCoupling MRIStepCoupling_Alloc(int nmat, int stages,
   Routine to allocate and fill a MRIStepCoupling structure
   ---------------------------------------------------------------*/
 MRIStepCoupling MRIStepCoupling_Create(int nmat, int stages, int q, int p,
-                                       sunrealtype* W, sunrealtype* G, sunrealtype* c)
+                                       sunrealtype* W, sunrealtype* G,
+                                       sunrealtype* c)
 {
   int i, j, k;
   MRISTEP_METHOD_TYPE type;
@@ -525,9 +525,9 @@ void MRIStepCoupling_Write(MRIStepCoupling MRIC, FILE* outfile)
   int i, j, k;
 
   /* check for vaild coupling structure */
-  if (!MRIC) return;
-  if (!(MRIC->W) && !(MRIC->G)) return;
-  if (!(MRIC->c)) return;
+  if (!MRIC) { return; }
+  if (!(MRIC->W) && !(MRIC->G)) { return; }
+  if (!(MRIC->c)) { return; }
 
   if (MRIC->W)
   {

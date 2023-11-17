@@ -71,7 +71,7 @@
 /* user data structure */
 typedef struct
 {
-  sunindextype N;      /* current number of intervals */
+  sunindextype N;         /* current number of intervals */
   sunrealtype* x;         /* current mesh */
   sunrealtype k;          /* diffusion coefficient */
   sunrealtype refine_tol; /* adaptivity tolerance */
@@ -96,10 +96,10 @@ int main(void)
   sunrealtype Tf     = SUN_RCONST(1.0);    /* final time */
   sunrealtype rtol   = SUN_RCONST(1.e-3);  /* relative tolerance */
   sunrealtype atol   = SUN_RCONST(1.e-10); /* absolute tolerance */
-  sunrealtype hscale = SUN_RCONST(1.0);    /* time step change factor on resizes */
-  UserData udata  = NULL;
+  sunrealtype hscale = SUN_RCONST(1.0); /* time step change factor on resizes */
+  UserData udata     = NULL;
   sunrealtype* data;
-  sunindextype N  = 21;             /* initial spatial mesh size */
+  sunindextype N     = 21;                 /* initial spatial mesh size */
   sunrealtype refine = SUN_RCONST(3.0e-3); /* adaptivity refinement tolerance */
   sunrealtype k      = SUN_RCONST(0.5);    /* heat conductivity */
   sunindextype i;
@@ -306,8 +306,8 @@ static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   UserData udata = (UserData)user_data; /* access problem data */
   sunindextype N = udata->N;            /* set variable shortcuts */
-  sunrealtype k     = udata->k;
-  sunrealtype* x    = udata->x;
+  sunrealtype k  = udata->k;
+  sunrealtype* x = udata->x;
   sunrealtype *Y = NULL, *Ydot = NULL;
   sunrealtype dxL, dxR;
   sunindextype i;
@@ -344,8 +344,8 @@ static int Jac(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
 {
   UserData udata = (UserData)user_data; /* variable shortcuts */
   sunindextype N = udata->N;
-  sunrealtype k     = udata->k;
-  sunrealtype* x    = udata->x;
+  sunrealtype k  = udata->k;
+  sunrealtype* x = udata->x;
   sunrealtype *V = NULL, *JV = NULL;
   sunrealtype dxL, dxR;
   sunindextype i;

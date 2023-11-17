@@ -36,12 +36,14 @@
 extern "C" {
 #endif
 
-extern void FCV_JTSETUP(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* H,
-                        long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FCV_JTSETUP(sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                        sunrealtype* H, long int* IPAR, sunrealtype* RPAR,
+                        int* IER);
 
-extern void FCV_JTIMES(sunrealtype* V, sunrealtype* JV, sunrealtype* T, sunrealtype* Y,
-                       sunrealtype* FY, sunrealtype* H, long int* IPAR,
-                       sunrealtype* RPAR, sunrealtype* WRK, int* IER);
+extern void FCV_JTIMES(sunrealtype* V, sunrealtype* JV, sunrealtype* T,
+                       sunrealtype* Y, sunrealtype* FY, sunrealtype* H,
+                       long int* IPAR, sunrealtype* RPAR, sunrealtype* WRK,
+                       int* IER);
 
 #ifdef __cplusplus
 }

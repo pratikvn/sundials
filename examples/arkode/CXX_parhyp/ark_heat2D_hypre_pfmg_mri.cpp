@@ -168,20 +168,20 @@ struct UserData
   // Integrator settings
   sunrealtype rtol; // relative tolerance
   sunrealtype atol; // absolute tolerance
-  bool linear;   // enable/disable linearly implicit option
-  int sorder;    // slow method order
-  int forder;    // fast ARKode method order
+  bool linear;      // enable/disable linearly implicit option
+  int sorder;       // slow method order
+  int forder;       // fast ARKode method order
 
-  sunrealtype hf;    // fast fixed step size
-  sunrealtype hs;    // slow timestep fixed
+  sunrealtype hf; // fast fixed step size
+  sunrealtype hs; // slow timestep fixed
   int controller; // step size adaptivity method
   int maxsteps;   // max number of steps between outputs
 
   // Linear solver and preconditioner settings
-  int liniters;    // number of linear iterations
+  int liniters;       // number of linear iterations
   sunrealtype epslin; // linear solver tolerance factor
-  int prectype;    // preconditioner type (NONE or LEFT)
-  int msbp;        // max number of steps between preconditioner setups
+  int prectype;       // preconditioner type (NONE or LEFT)
+  int msbp;           // max number of steps between preconditioner setups
 
   // hypre objects
   HYPRE_StructGrid grid;
@@ -320,8 +320,8 @@ int main(int argc, char* argv[])
   void* arkode_mem                  = NULL; // ARKode memory structure
   void* inner_arkode_mem            = NULL; // ARKode memory structure
   MRIStepInnerStepper inner_stepper = NULL; // inner stepper
-  MRIStepCoupling C = NULL;                 // slow coupling coefficients
-  SUNAdaptController Ctrl = NULL;           // timestep adaptivity controller
+  MRIStepCoupling C                 = NULL; // slow coupling coefficients
+  SUNAdaptController Ctrl           = NULL; // timestep adaptivity controller
 
   // Timing variables
   double t1 = 0.0;
@@ -436,16 +436,19 @@ int main(int argc, char* argv[])
     }
     else
     {
-      switch (udata.controller) {
-      case (ARK_ADAPT_PID):      Ctrl = SUNAdaptController_PID(sunctx);     break;
-      case (ARK_ADAPT_PI):       Ctrl = SUNAdaptController_PI(sunctx);      break;
-      case (ARK_ADAPT_I):        Ctrl = SUNAdaptController_I(sunctx);       break;
-      case (ARK_ADAPT_EXP_GUS):  Ctrl = SUNAdaptController_ExpGus(sunctx);  break;
-      case (ARK_ADAPT_IMP_GUS):  Ctrl = SUNAdaptController_ImpGus(sunctx);  break;
-      case (ARK_ADAPT_IMEX_GUS): Ctrl = SUNAdaptController_ImExGus(sunctx); break;
+      switch (udata.controller)
+      {
+      case (ARK_ADAPT_PID): Ctrl = SUNAdaptController_PID(sunctx); break;
+      case (ARK_ADAPT_PI): Ctrl = SUNAdaptController_PI(sunctx); break;
+      case (ARK_ADAPT_I): Ctrl = SUNAdaptController_I(sunctx); break;
+      case (ARK_ADAPT_EXP_GUS): Ctrl = SUNAdaptController_ExpGus(sunctx); break;
+      case (ARK_ADAPT_IMP_GUS): Ctrl = SUNAdaptController_ImpGus(sunctx); break;
+      case (ARK_ADAPT_IMEX_GUS):
+        Ctrl = SUNAdaptController_ImExGus(sunctx);
+        break;
       }
       flag = ARKStepSetAdaptController(inner_arkode_mem, Ctrl);
-      if (check_flag(&flag, "ARKStepSetAdaptController", 1)) return 1;
+      if (check_flag(&flag, "ARKStepSetAdaptController", 1)) { return 1; }
     }
 
     // Attach user data
@@ -602,15 +605,15 @@ int main(int argc, char* argv[])
     // Clean up and return
     // --------------------
 
-    MRIStepFree(&arkode_mem);                  // Free slow integrator memory
-    ARKStepFree(&inner_arkode_mem);            // Free fast integrator memory
-    MRIStepInnerStepper_Free(&inner_stepper);  // Free inner stepper
-    MRIStepCoupling_Free(C);                   // Free coupling coefficients
-    SUNLinSolFree(LS);                         // Free linear solver
-    SUNLinSolFree(LSf);                        // Free linear solver
-    N_VDestroy(u);                             // Free vectors
-    FreeUserData(&udata);                      // Free user data
-    (void) SUNAdaptController_Destroy(Ctrl);   // Free timestep adaptivity controller
+    MRIStepFree(&arkode_mem);                 // Free slow integrator memory
+    ARKStepFree(&inner_arkode_mem);           // Free fast integrator memory
+    MRIStepInnerStepper_Free(&inner_stepper); // Free inner stepper
+    MRIStepCoupling_Free(C);                  // Free coupling coefficients
+    SUNLinSolFree(LS);                        // Free linear solver
+    SUNLinSolFree(LSf);                       // Free linear solver
+    N_VDestroy(u);                            // Free vectors
+    FreeUserData(&udata);                     // Free user data
+    (void)SUNAdaptController_Destroy(Ctrl); // Free timestep adaptivity controller
   }
 
   // Finalize MPI
@@ -2229,9 +2232,9 @@ static int InitUserData(UserData* udata)
   // Integrator settings
   udata->rtol   = SUN_RCONST(1.e-5);  // relative tolerance
   udata->atol   = SUN_RCONST(1.e-10); // absolute tolerance
-  udata->linear = false;          // linearly implicit problem
-  udata->sorder = 3;              // slow method order
-  udata->forder = 3;              // fast method order
+  udata->linear = false;              // linearly implicit problem
+  udata->sorder = 3;                  // slow method order
+  udata->forder = 3;                  // fast method order
 
   udata->hf         = ZERO;  // using adaptive step sizes at fast
   udata->hs         = 0.001; // slow step size

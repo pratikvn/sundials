@@ -37,18 +37,18 @@
 #define TWO  SUN_RCONST(2.0)
 
 /* Prototypes of functions IDABBDPrecSetup and IDABBDPrecSolve */
-static int IDABBDPrecSetup(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
-                           sunrealtype c_j, void* prec_data);
-static int IDABBDPrecSolve(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
-                           N_Vector rvec, N_Vector zvec, sunrealtype c_j,
-                           sunrealtype delta, void* prec_data);
+static int IDABBDPrecSetup(sunrealtype tt, N_Vector yy, N_Vector yp,
+                           N_Vector rr, sunrealtype c_j, void* prec_data);
+static int IDABBDPrecSolve(sunrealtype tt, N_Vector yy, N_Vector yp,
+                           N_Vector rr, N_Vector rvec, N_Vector zvec,
+                           sunrealtype c_j, sunrealtype delta, void* prec_data);
 
 /* Prototype for IDABBDPrecFree */
 static int IDABBDPrecFree(IDAMem ida_mem);
 
 /* Prototype for difference quotient Jacobian calculation routine */
-static int IBBDDQJac(IBBDPrecData pdata, sunrealtype tt, sunrealtype cj, N_Vector yy,
-                     N_Vector yp, N_Vector gref, N_Vector ytemp,
+static int IBBDDQJac(IBBDPrecData pdata, sunrealtype tt, sunrealtype cj,
+                     N_Vector yy, N_Vector yp, N_Vector gref, N_Vector ytemp,
                      N_Vector yptemp, N_Vector gtemp);
 
 /*---------------------------------------------------------------
@@ -460,8 +460,8 @@ int IDABBDPrecGetNumGfnEvals(void* ida_mem, long int* ngevalsBBDP)
    > 0    for a recoverable error (step will be retried), or
    < 0    for a nonrecoverable error (step fails).
  ----------------------------------------------------------------*/
-static int IDABBDPrecSetup(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
-                           sunrealtype c_j, void* bbd_data)
+static int IDABBDPrecSetup(sunrealtype tt, N_Vector yy, N_Vector yp,
+                           N_Vector rr, sunrealtype c_j, void* bbd_data)
 {
   IBBDPrecData pdata;
   IDAMem IDA_mem;
@@ -512,9 +512,9 @@ static int IDABBDPrecSetup(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr
   IDABBDPrecSolve returns the value returned from the linear
   solver object.
   ---------------------------------------------------------------*/
-static int IDABBDPrecSolve(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
-                           N_Vector rvec, N_Vector zvec, sunrealtype c_j,
-                           sunrealtype delta, void* bbd_data)
+static int IDABBDPrecSolve(sunrealtype tt, N_Vector yy, N_Vector yp,
+                           N_Vector rr, N_Vector rvec, N_Vector zvec,
+                           sunrealtype c_j, sunrealtype delta, void* bbd_data)
 {
   int ls_status;
   IBBDPrecData pdata;
@@ -588,8 +588,8 @@ static int IDABBDPrecFree(IDAMem IDA_mem)
   Return values are: 0 (success), > 0 (recoverable error),
   or < 0 (nonrecoverable error).
   ----------------------------------------------------------------*/
-static int IBBDDQJac(IBBDPrecData pdata, sunrealtype tt, sunrealtype cj, N_Vector yy,
-                     N_Vector yp, N_Vector gref, N_Vector ytemp,
+static int IBBDDQJac(IBBDPrecData pdata, sunrealtype tt, sunrealtype cj,
+                     N_Vector yy, N_Vector yp, N_Vector gref, N_Vector ytemp,
                      N_Vector yptemp, N_Vector gtemp)
 {
   IDAMem IDA_mem;

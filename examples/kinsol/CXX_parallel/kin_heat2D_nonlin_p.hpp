@@ -128,11 +128,11 @@ struct UserData
   MPI_Request reqSN;
 
   // Fixed Point Solver settings
-  sunrealtype rtol;  // relative tolerance
-  int maa;        // m for Anderson Acceleration
-  double damping; // daming for Anderson Acceleration
-  int orthaa;     // orthogonalization routine for AA
-  int maxits;     // max number of fixed point iterations
+  sunrealtype rtol; // relative tolerance
+  int maa;          // m for Anderson Acceleration
+  double damping;   // daming for Anderson Acceleration
+  int orthaa;       // orthogonalization routine for AA
+  int maxits;       // max number of fixed point iterations
 
   // c(u) Function and integer for help setting
   cFn c;

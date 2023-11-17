@@ -33,9 +33,10 @@
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FCV_DJAC(long int* N, sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
-                     sunrealtype* DJAC, sunrealtype* H, long int* IPAR, sunrealtype* RPAR,
-                     sunrealtype* V1, sunrealtype* V2, sunrealtype* V3, int* ier);
+extern void FCV_DJAC(long int* N, sunrealtype* T, sunrealtype* Y,
+                     sunrealtype* FY, sunrealtype* DJAC, sunrealtype* H,
+                     long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
+                     sunrealtype* V2, sunrealtype* V3, int* ier);
 #ifdef __cplusplus
 }
 #endif
@@ -55,8 +56,9 @@ void FCV_DENSESETJAC(int* flag, int* ier)
    Addresses of arguments are passed to FCVDJAC, using accessor functions 
    from the SUNDenseMatrix and N_Vector modules. */
 
-int FCVDenseJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
-                N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
+int FCVDenseJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+                void* user_data, N_Vector vtemp1, N_Vector vtemp2,
+                N_Vector vtemp3)
 {
   int ier;
   sunrealtype *ydata, *fydata, *jacdata, *v1data, *v2data, *v3data;

@@ -70,12 +70,12 @@
 #define YMAX  SUN_RCONST(1.0)
 #define MX    10 /* mesh dimensions           */
 #define MY    5
-#define NEQ   MX* MY         /* number of equations       */
+#define NEQ   MX* MY             /* number of equations       */
 #define ATOL  SUN_RCONST(1.0e-5) /* scalar absolute tolerance */
 #define T0    SUN_RCONST(0.0)    /* initial time              */
 #define T1    SUN_RCONST(0.1)    /* first output time         */
 #define DTOUT SUN_RCONST(0.1)    /* output time increment     */
-#define NOUT  10             /* number of output times    */
+#define NOUT  10                 /* number of output times    */
 
 #define ZERO SUN_RCONST(0.0)
 #define HALF SUN_RCONST(0.5)

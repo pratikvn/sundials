@@ -52,16 +52,16 @@ int arkRootInit(ARKodeMem ark_mem, int nrtfn, ARKRootFn g)
   {
     if (!(ark_mem->step_fullrhs))
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE",
-                      "arkRootInit", MSG_ARK_MISSING_FULLRHS);
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE", "arkRootInit",
+                      MSG_ARK_MISSING_FULLRHS);
       return ARK_ILL_INPUT;
     }
 
     if (!arkAllocVec(ark_mem, ark_mem->yn, &ark_mem->fn))
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE",
-                      "arkInitialSetup", MSG_ARK_MEM_FAIL);
-      return(ARK_MEM_FAIL);
+      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE", "arkInitialSetup",
+                      MSG_ARK_MEM_FAIL);
+      return (ARK_MEM_FAIL);
     }
   }
 
@@ -234,7 +234,8 @@ int arkRootInit(ARKodeMem ark_mem, int nrtfn, ARKRootFn g)
     return (ARK_MEM_FAIL);
   }
   ark_mem->root_mem->gactive = NULL;
-  ark_mem->root_mem->gactive = (sunbooleantype*)malloc(nrt * sizeof(sunbooleantype));
+  ark_mem->root_mem->gactive =
+    (sunbooleantype*)malloc(nrt * sizeof(sunbooleantype));
   if (ark_mem->root_mem->gactive == NULL)
   {
     free(ark_mem->root_mem->glo);

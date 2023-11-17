@@ -41,7 +41,7 @@
 #include <nvector/nvector_serial.h> /* access to serial N_Vector            */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_math.h>  /* defs. of SUNRabs, SUNRexp, etc.      */
+#include <sundials/sundials_math.h> /* defs. of SUNRabs, SUNRexp, etc.      */
 #include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype      */
 #include <sunlinsol/sunlinsol_klu.h> /* access to KLU linear solver          */
 #include <sunmatrix/sunmatrix_sparse.h> /* access to sparse SUNMatrix           */
@@ -73,9 +73,9 @@ typedef struct
 int heatres(sunrealtype tres, N_Vector uu, N_Vector up, N_Vector resval,
             void* user_data);
 
-int jacHeat(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector resvec,
-            SUNMatrix JJ, void* user_data, N_Vector tempv1, N_Vector tempv2,
-            N_Vector tempv3);
+int jacHeat(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
+            N_Vector resvec, SUNMatrix JJ, void* user_data, N_Vector tempv1,
+            N_Vector tempv2, N_Vector tempv3);
 
 /* Exact same setup as jacHeat. Function needed for special case MGRID=3  */
 int jacHeat3(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
@@ -294,7 +294,7 @@ int jacHeat3(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
 
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(JJ);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(JJ);
-  sunrealtype* data        = SUNSparseMatrix_Data(JJ);
+  sunrealtype* data     = SUNSparseMatrix_Data(JJ);
 
   SUNMatZero(JJ);
 
@@ -347,9 +347,9 @@ int jacHeat3(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
 }
 
 /* Jacobian matrix setup for MGRID>=4  */
-int jacHeat(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector resvec,
-            SUNMatrix JJ, void* user_data, N_Vector tempv1, N_Vector tempv2,
-            N_Vector tempv3)
+int jacHeat(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp,
+            N_Vector resvec, SUNMatrix JJ, void* user_data, N_Vector tempv1,
+            N_Vector tempv2, N_Vector tempv3)
 {
   sunrealtype dx   = ONE / (MGRID - ONE);
   sunrealtype beta = SUN_RCONST(4.0) / (dx * dx) + cj;
@@ -357,7 +357,7 @@ int jacHeat(sunrealtype tt, sunrealtype cj, N_Vector yy, N_Vector yp, N_Vector r
 
   sunindextype* colptrs = SUNSparseMatrix_IndexPointers(JJ);
   sunindextype* rowvals = SUNSparseMatrix_IndexValues(JJ);
-  sunrealtype* data        = SUNSparseMatrix_Data(JJ);
+  sunrealtype* data     = SUNSparseMatrix_Data(JJ);
 
   SUNMatZero(JJ);
 
@@ -736,7 +736,8 @@ static int SetInitialProfile(UserData data, N_Vector uu, N_Vector up,
     {
       xfact      = data->dx * i;
       loc        = offset + i;
-      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact * (ONE - yfact);
+      udata[loc] = SUN_RCONST(16.0) * xfact * (ONE - xfact) * yfact *
+                   (ONE - yfact);
     }
   }
 

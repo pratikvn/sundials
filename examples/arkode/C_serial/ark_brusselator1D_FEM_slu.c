@@ -113,13 +113,13 @@
 typedef struct
 {
   sunindextype N; /* number of intervals     */
-  sunrealtype* x;    /* mesh node locations     */
-  sunrealtype a;     /* constant forcing on u   */
-  sunrealtype b;     /* steady-state value of w */
-  sunrealtype du;    /* diffusion coeff for u   */
-  sunrealtype dv;    /* diffusion coeff for v   */
-  sunrealtype dw;    /* diffusion coeff for w   */
-  sunrealtype ep;    /* stiffness parameter     */
+  sunrealtype* x; /* mesh node locations     */
+  sunrealtype a;  /* constant forcing on u   */
+  sunrealtype b;  /* steady-state value of w */
+  sunrealtype du; /* diffusion coeff for u   */
+  sunrealtype dv; /* diffusion coeff for v   */
+  sunrealtype dw; /* diffusion coeff for w   */
+  sunrealtype ep; /* stiffness parameter     */
   N_Vector tmp;   /* temporary vector        */
   SUNMatrix R;    /* temporary storage       */
 }* UserData;
@@ -128,8 +128,8 @@ typedef struct
 static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int f_diff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int f_rx(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data, N_Vector tmp1,
-                      N_Vector tmp2, N_Vector tmp3);
+static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data,
+                      N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
@@ -144,13 +144,13 @@ static int check_retval(void* returnvalue, const char* funcname, int opt);
 int main(int argc, char* argv[])
 {
   /* general problem parameters */
-  sunrealtype T0    = SUN_RCONST(0.0);  /* initial time */
-  sunrealtype Tf    = SUN_RCONST(10.0); /* final time */
-  int Nt         = 100;          /* total number of output times */
-  int Nvar       = 3;            /* number of solution fields */
+  sunrealtype T0 = SUN_RCONST(0.0);  /* initial time */
+  sunrealtype Tf = SUN_RCONST(10.0); /* final time */
+  int Nt         = 100;              /* total number of output times */
+  int Nvar       = 3;                /* number of solution fields */
   UserData udata = NULL;
   sunrealtype* data;
-  sunindextype N  = 201;         /* spatial mesh size */
+  sunindextype N     = 201;             /* spatial mesh size */
   sunrealtype a      = SUN_RCONST(0.6); /* problem parameters */
   sunrealtype b      = SUN_RCONST(2.0);
   sunrealtype du     = SUN_RCONST(0.025);
@@ -486,9 +486,9 @@ static int f_diff(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
   /* shortcuts to number of intervals, background values */
   sunindextype N = udata->N;
-  sunrealtype du    = udata->du;
-  sunrealtype dv    = udata->dv;
-  sunrealtype dw    = udata->dw;
+  sunrealtype du = udata->du;
+  sunrealtype dv = udata->dv;
+  sunrealtype dw = udata->dw;
 
   /* local variables */
   sunindextype i;
@@ -567,9 +567,9 @@ static int f_rx(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
   /* shortcuts to number of intervals, background values */
   sunindextype N = udata->N;
-  sunrealtype a     = udata->a;
-  sunrealtype b     = udata->b;
-  sunrealtype ep    = udata->ep;
+  sunrealtype a  = udata->a;
+  sunrealtype b  = udata->b;
+  sunrealtype ep = udata->ep;
 
   /* local variables */
   sunindextype i;
@@ -762,8 +762,8 @@ static int Jac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 /* Routine to compute the mass matrix multiplying y_t. */
-static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data, N_Vector tmp1,
-                      N_Vector tmp2, N_Vector tmp3)
+static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data,
+                      N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   /* user data structure */
   UserData udata = (UserData)user_data;
@@ -772,8 +772,8 @@ static int MassMatrix(sunrealtype t, SUNMatrix M, void* user_data, N_Vector tmp1
   sunindextype N = udata->N, NEQ = 3 * N;
   sunindextype* rowptrs = SUNSparseMatrix_IndexPointers(M);
   sunindextype* colinds = SUNSparseMatrix_IndexValues(M);
-  sunrealtype* Mdata       = SUNSparseMatrix_Data(M);
-  sunrealtype* Xdata       = udata->x;
+  sunrealtype* Mdata    = SUNSparseMatrix_Data(M);
+  sunrealtype* Xdata    = udata->x;
 
   /* local data */
   sunindextype i, nz = 0;
@@ -908,8 +908,8 @@ static int LaplaceMatrix(SUNMatrix L, UserData udata)
   sunindextype N        = udata->N;
   sunindextype* rowptrs = SUNSparseMatrix_IndexPointers(L);
   sunindextype* colinds = SUNSparseMatrix_IndexValues(L);
-  sunrealtype* Ldata       = SUNSparseMatrix_Data(L);
-  sunrealtype* Xdata       = udata->x;
+  sunrealtype* Ldata    = SUNSparseMatrix_Data(L);
+  sunrealtype* Xdata    = udata->x;
   sunrealtype du = udata->du, dv = udata->dv, dw = udata->dw;
 
   /* set local variables */
@@ -1105,8 +1105,8 @@ static int ReactionJac(N_Vector y, SUNMatrix Jac, UserData udata)
   sunindextype N        = udata->N;
   sunindextype* rowptrs = SUNSparseMatrix_IndexPointers(Jac);
   sunindextype* colinds = SUNSparseMatrix_IndexValues(Jac);
-  sunrealtype* Jdata       = SUNSparseMatrix_Data(Jac);
-  sunrealtype* Xdata       = udata->x;
+  sunrealtype* Jdata    = SUNSparseMatrix_Data(Jac);
+  sunrealtype* Xdata    = udata->x;
 
   /* set local variables */
   sunindextype i, j, nz = 0;

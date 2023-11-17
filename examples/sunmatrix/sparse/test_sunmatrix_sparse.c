@@ -43,9 +43,9 @@ int main(int argc, char* argv[])
   sunindextype matrows, matcols; /* matrix dims                */
   int mattype;                   /* matrix storage type        */
   N_Vector x, y, z;              /* test vectors               */
-  sunrealtype* vecdata;             /* pointers to vector data    */
+  sunrealtype* vecdata;          /* pointers to vector data    */
   SUNMatrix A, B, C, D, I;       /* test matrices              */
-  sunrealtype* matdata;             /* pointer to matrix data     */
+  sunrealtype* matdata;          /* pointer to matrix data     */
   sunindextype i, j, k, kstart, kend, N, uband, lband;
   sunindextype *colptrs, *rowindices;
   sunindextype *rowptrs, *colindices;

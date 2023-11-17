@@ -20,8 +20,8 @@
 #include <string.h>
 
 #include "arkode/arkode_butcher.h"
-#include "arkode_impl.h"
 #include "arkode_erkstep_impl.h"
+#include "arkode_impl.h"
 #include "arkode_interp_impl.h"
 
 /*===============================================================
@@ -135,8 +135,8 @@ void* ERKStepCreate(ARKRhsFn f, sunrealtype t0, N_Vector y0, SUNContext sunctx)
   It first resizes the main ARKODE infrastructure memory, and
   then resizes its own data.
   ---------------------------------------------------------------*/
-int ERKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale, sunrealtype t0,
-                  ARKVecResizeFn resize, void* resize_data)
+int ERKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
+                  sunrealtype t0, ARKVecResizeFn resize, void* resize_data)
 {
   ARKodeMem ark_mem;
   ARKodeERKStepMem step_mem;
@@ -586,7 +586,8 @@ int erkStep_Init(void* arkode_mem, int init_type)
   /* Allocate reusable arrays for fused vector interface */
   if (step_mem->cvals == NULL)
   {
-    step_mem->cvals = (sunrealtype*)calloc(step_mem->stages + 1, sizeof(sunrealtype));
+    step_mem->cvals = (sunrealtype*)calloc(step_mem->stages + 1,
+                                           sizeof(sunrealtype));
     if (step_mem->cvals == NULL) { return (ARK_MEM_FAIL); }
     ark_mem->lrw += (step_mem->stages + 1);
   }
@@ -626,7 +627,6 @@ int erkStep_Init(void* arkode_mem, int init_type)
 
   return (ARK_SUCCESS);
 }
-
 
 /*------------------------------------------------------------------------------
   erkStep_FullRHS:
@@ -673,8 +673,8 @@ int erkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
   SUNAssignSUNCTX(ark_mem->sunctx);
 
   /* perform RHS functions contingent on 'mode' argument */
-  switch(mode) {
-
+  switch (mode)
+  {
   case ARK_FULLRHS_START:
 
     /* compute the RHS */
@@ -686,7 +686,7 @@ int erkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
       {
         arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ERKStep",
                         "erkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
-        return(ARK_RHSFUNC_FAIL);
+        return (ARK_RHSFUNC_FAIL);
       }
     }
 
@@ -714,14 +714,11 @@ int erkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
         if (retval != 0)
         {
           arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ERKStep",
-                        "erkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
-          return(ARK_RHSFUNC_FAIL);
+                          "erkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
+          return (ARK_RHSFUNC_FAIL);
         }
       }
-      else
-      {
-        N_VScale(ONE, step_mem->F[step_mem->stages-1], step_mem->F[0]);
-      }
+      else { N_VScale(ONE, step_mem->F[step_mem->stages - 1], step_mem->F[0]); }
     }
 
     /* copy RHS vector into output */
@@ -796,8 +793,8 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
   Xvecs = step_mem->Xvecs;
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
-  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
-                     "ARKODE::erkStep_TakeStep", "start-stage",
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::erkStep_TakeStep",
+                     "start-stage",
                      "step = %li, stage = 0, h = %" RSYM ", tcur = %" RSYM,
                      ark_mem->nst, ark_mem->h, ark_mem->tcur);
 #endif
@@ -821,7 +818,7 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
 
   if (!(ark_mem->fn_is_current))
   {
-    mode = (ark_mem->initsetup) ? ARK_FULLRHS_START : ARK_FULLRHS_END;
+    mode   = (ark_mem->initsetup) ? ARK_FULLRHS_START : ARK_FULLRHS_END;
     retval = ark_mem->step_fullrhs(ark_mem, ark_mem->tn, ark_mem->yn,
                                    ark_mem->fn, mode);
     if (retval) { return ARK_RHSFUNC_FAIL; }
@@ -896,10 +893,9 @@ int erkStep_TakeStep(void* arkode_mem, sunrealtype* dsmPtr, int* nflagPtr)
 #endif
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_DEBUG
-  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG,
-                     "ARKODE::erkStep_TakeStep", "error-test",
-                     "step = %li, h = %" RSYM ", dsm = %" RSYM, ark_mem->nst,
-                     ark_mem->h, *dsmPtr);
+  SUNLogger_QueueMsg(ARK_LOGGER, SUN_LOGLEVEL_DEBUG, "ARKODE::erkStep_TakeStep",
+                     "error-test", "step = %li, h = %" RSYM ", dsm = %" RSYM,
+                     ark_mem->nst, ark_mem->h, *dsmPtr);
 #endif
 
   return (ARK_SUCCESS);
@@ -981,32 +977,17 @@ int erkStep_SetButcherTable(ARKodeMem ark_mem)
   etable = -1;
 
   /* select method based on order */
-  switch (step_mem->q) {
-  case(2):
-    etable = ERKSTEP_DEFAULT_2;
-    break;
-  case(3):
-    etable = ERKSTEP_DEFAULT_3;
-    break;
-  case(4):
-    etable = ERKSTEP_DEFAULT_4;
-    break;
-  case(5):
-    etable = ERKSTEP_DEFAULT_5;
-    break;
-  case(6):
-    etable = ERKSTEP_DEFAULT_6;
-    break;
-  case(7):
-    etable = ERKSTEP_DEFAULT_7;
-    break;
-  case(8):
-    etable = ERKSTEP_DEFAULT_8;
-    break;
-  case(9):
-    etable = ERKSTEP_DEFAULT_9;
-    break;
-  default:    /* no available method, set default */
+  switch (step_mem->q)
+  {
+  case (2): etable = ERKSTEP_DEFAULT_2; break;
+  case (3): etable = ERKSTEP_DEFAULT_3; break;
+  case (4): etable = ERKSTEP_DEFAULT_4; break;
+  case (5): etable = ERKSTEP_DEFAULT_5; break;
+  case (6): etable = ERKSTEP_DEFAULT_6; break;
+  case (7): etable = ERKSTEP_DEFAULT_7; break;
+  case (8): etable = ERKSTEP_DEFAULT_8; break;
+  case (9): etable = ERKSTEP_DEFAULT_9; break;
+  default: /* no available method, set default */
     arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ERKStep",
                     "erkStep_SetButcherTable",
                     "No explicit method at requested order, using q=9.");
@@ -1134,7 +1115,7 @@ int erkStep_CheckButcherTable(ARKodeMem ark_mem)
     }
   }
 
-  return(ARK_SUCCESS);
+  return (ARK_SUCCESS);
 }
 
 /*---------------------------------------------------------------
@@ -1224,7 +1205,6 @@ int erkStep_ComputeSolutions(ARKodeMem ark_mem, sunrealtype* dsmPtr)
   return (ARK_SUCCESS);
 }
 
-
 /* -----------------------------------------------------------------------------
  * erkStep_RelaxDeltaE
  *
@@ -1275,7 +1255,7 @@ int erkStep_RelaxDeltaE(ARKodeMem ark_mem, ARKRelaxJacFn relax_jac_fn,
     }
 
     retval = N_VLinearCombination(nvec, cvals, Xvecs, z_stage);
-    if (retval) return ARK_VECTOROP_ERR;
+    if (retval) { return ARK_VECTOROP_ERR; }
 
     /* Evaluate the Jacobian at z_i */
     retval = relax_jac_fn(z_stage, J_relax, ark_mem->user_data);
@@ -1286,13 +1266,12 @@ int erkStep_RelaxDeltaE(ARKodeMem ark_mem, ARKRelaxJacFn relax_jac_fn,
     /* Update estimates */
     if (J_relax->ops->nvdotprodlocal && J_relax->ops->nvdotprodmultiallreduce)
     {
-      *delta_e_out += step_mem->B->b[i] * N_VDotProdLocal(J_relax,
-                                                          step_mem->F[i]);
+      *delta_e_out += step_mem->B->b[i] *
+                      N_VDotProdLocal(J_relax, step_mem->F[i]);
     }
     else
     {
-      *delta_e_out += step_mem->B->b[i] * N_VDotProd(J_relax,
-                                                     step_mem->F[i]);
+      *delta_e_out += step_mem->B->b[i] * N_VDotProd(J_relax, step_mem->F[i]);
     }
   }
 

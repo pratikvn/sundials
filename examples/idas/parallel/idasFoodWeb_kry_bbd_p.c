@@ -129,20 +129,20 @@
 #define MY      (MYSUB * NPEY) /* MY = number of y mesh points */
 #define NSMXSUB (NUM_SPECIES * MXSUB)
 #define NEQ     (NUM_SPECIES * MX * MY) /* Number of equations in system */
-#define AA      SUN_RCONST(1.0)             /* Coefficient in above eqns. for a */
-#define EE      SUN_RCONST(10000.)          /* Coefficient in above eqns. for a */
-#define GG      SUN_RCONST(0.5e-6)          /* Coefficient in above eqns. for a */
-#define BB      SUN_RCONST(1.0)             /* Coefficient in above eqns. for b */
-#define DPREY   SUN_RCONST(1.0)             /* Coefficient in above eqns. for d */
-#define DPRED   SUN_RCONST(0.05)            /* Coefficient in above eqns. for d */
-#define ALPHA   SUN_RCONST(50.)             /* Coefficient alpha in above eqns. */
-#define BETA    SUN_RCONST(1000.)           /* Coefficient beta in above eqns. */
-#define AX      SUN_RCONST(1.0)             /* Total range of x variable */
-#define AY      SUN_RCONST(1.0)             /* Total range of y variable */
-#define RTOL    SUN_RCONST(1.e-5)           /*  rtol tolerance */
-#define ATOL    SUN_RCONST(1.e-5)           /*  atol tolerance */
-#define ZERO    SUN_RCONST(0.)              /* 0. */
-#define ONE     SUN_RCONST(1.0)             /* 1. */
+#define AA      SUN_RCONST(1.0)         /* Coefficient in above eqns. for a */
+#define EE      SUN_RCONST(10000.)      /* Coefficient in above eqns. for a */
+#define GG      SUN_RCONST(0.5e-6)      /* Coefficient in above eqns. for a */
+#define BB      SUN_RCONST(1.0)         /* Coefficient in above eqns. for b */
+#define DPREY   SUN_RCONST(1.0)         /* Coefficient in above eqns. for d */
+#define DPRED   SUN_RCONST(0.05)        /* Coefficient in above eqns. for d */
+#define ALPHA   SUN_RCONST(50.)         /* Coefficient alpha in above eqns. */
+#define BETA    SUN_RCONST(1000.)       /* Coefficient beta in above eqns. */
+#define AX      SUN_RCONST(1.0)         /* Total range of x variable */
+#define AY      SUN_RCONST(1.0)         /* Total range of y variable */
+#define RTOL    SUN_RCONST(1.e-5)       /*  rtol tolerance */
+#define ATOL    SUN_RCONST(1.e-5)       /*  atol tolerance */
+#define ZERO    SUN_RCONST(0.)          /* 0. */
+#define ONE     SUN_RCONST(1.0)         /* 1. */
 #define NOUT    6
 #define TMULT   SUN_RCONST(10.0) /* Multiplier for tout values */
 #define TADD    SUN_RCONST(0.3)  /* Increment for tout values */
@@ -177,11 +177,11 @@ typedef struct
 static int resweb(sunrealtype tt, N_Vector cc, N_Vector cp, N_Vector rr,
                   void* user_data);
 
-static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector cc, N_Vector cp,
-                    N_Vector res, void* user_data);
+static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector cc,
+                    N_Vector cp, N_Vector res, void* user_data);
 
-static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector cc, N_Vector cp,
-                   void* user_data);
+static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector cc,
+                   N_Vector cp, void* user_data);
 
 /* Prototypes for supporting functions */
 
@@ -195,8 +195,8 @@ static void BRecvPost(MPI_Comm comm, MPI_Request request[], int thispe,
 static void BRecvWait(MPI_Request request[], int ixsub, int jysub, int dsizex,
                       sunrealtype cext[], sunrealtype buffer[]);
 
-static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                     UserData webdata);
+static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                     sunrealtype* ratesxy, UserData webdata);
 
 static sunrealtype dotprod(int size, sunrealtype* x1, sunrealtype* x2);
 
@@ -807,8 +807,8 @@ static int resweb(sunrealtype tt, N_Vector cc, N_Vector cp, N_Vector rr,
  * and receive-waiting, in routines BRecvPost, BSend, BRecvWait.
  */
 
-static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector cc, N_Vector cp,
-                   void* user_data)
+static int rescomm(sunindextype Nlocal, sunrealtype tt, N_Vector cc,
+                   N_Vector cp, void* user_data)
 {
   UserData webdata;
   sunrealtype *cdata, *cext, buffer[2 * NUM_SPECIES * MYSUB];
@@ -1047,8 +1047,8 @@ static void BSend(MPI_Comm comm, int my_pe, int ixsub, int jysub, int dsizex,
  * for use by the preconditioner setup routine.
  */
 
-static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector cc, N_Vector cp,
-                    N_Vector rr, void* user_data)
+static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector cc,
+                    N_Vector cp, N_Vector rr, void* user_data)
 {
   sunrealtype *cdata, *ratesxy, *cpxy, *resxy, xx, yy, dcyli, dcyui, dcxli, dcxui;
   int ix, jy, is, i, locc, ylocce, locce;
@@ -1157,8 +1157,8 @@ static int reslocal(sunindextype Nlocal, sunrealtype tt, N_Vector cc, N_Vector c
  * At a given (x,y), evaluate the array of ns reaction terms R.
  */
 
-static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy, sunrealtype* ratesxy,
-                     UserData webdata)
+static void WebRates(sunrealtype xx, sunrealtype yy, sunrealtype* cxy,
+                     sunrealtype* ratesxy, UserData webdata)
 {
   int is;
   sunrealtype fac;
