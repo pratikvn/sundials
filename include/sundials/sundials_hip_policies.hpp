@@ -22,13 +22,10 @@
 
 #include <cstdio>
 #include <stdexcept>
-
 #include <sundials/sundials_types.h>
 
-namespace sundials
-{
-namespace hip
-{
+namespace sundials {
+namespace hip {
 
 #if defined(__HIP_PLATFORM_HCC__)
 constexpr const sunindextype WARP_SIZE = 64;
@@ -36,27 +33,34 @@ constexpr const sunindextype WARP_SIZE = 64;
 constexpr const sunindextype WARP_SIZE = 32;
 #endif
 constexpr const sunindextype MAX_BLOCK_SIZE = 1024;
-constexpr const sunindextype MAX_WARPS = MAX_BLOCK_SIZE / WARP_SIZE;
+constexpr const sunindextype MAX_WARPS      = MAX_BLOCK_SIZE / WARP_SIZE;
 
 class ExecPolicy
 {
 public:
-  ExecPolicy(hipStream_t stream = 0) : stream_(stream) { }
+  ExecPolicy(hipStream_t stream = 0) : stream_(stream) {}
+
   virtual size_t gridSize(size_t numWorkUnits = 0, size_t blockDim = 0) const = 0;
   virtual size_t blockSize(size_t numWorkUnits = 0, size_t gridDim = 0) const = 0;
+
   virtual const hipStream_t* stream() const { return (&stream_); }
+
   virtual ExecPolicy* clone() const = 0;
-  ExecPolicy* clone_new_stream(hipStream_t stream) const {
+
+  ExecPolicy* clone_new_stream(hipStream_t stream) const
+  {
     ExecPolicy* ex = clone();
-    ex->stream_ = stream;
+    ex->stream_    = stream;
     return ex;
   }
+
   virtual bool atomic() const { return false; }
+
   virtual ~ExecPolicy() {}
+
 protected:
   hipStream_t stream_;
 };
-
 
 /*
  * A kernel execution policy that maps each thread to a work unit.
@@ -69,11 +73,11 @@ class ThreadDirectExecPolicy : public ExecPolicy
 {
 public:
   ThreadDirectExecPolicy(const size_t blockDim, hipStream_t stream = 0)
-    : blockDim_(blockDim), ExecPolicy(stream)
+    : ExecPolicy(stream), blockDim_(blockDim)
   {}
 
   ThreadDirectExecPolicy(const ThreadDirectExecPolicy& ex)
-    : blockDim_(ex.blockDim_), ExecPolicy(ex.stream_)
+    : ExecPolicy(ex.stream_), blockDim_(ex.blockDim_)
   {}
 
   virtual size_t gridSize(size_t numWorkUnits = 0, size_t /*blockDim*/ = 0) const
@@ -105,12 +109,13 @@ private:
 class GridStrideExecPolicy : public ExecPolicy
 {
 public:
-  GridStrideExecPolicy(const size_t blockDim, const size_t gridDim, hipStream_t stream = 0)
-    : blockDim_(blockDim), gridDim_(gridDim), ExecPolicy(stream)
+  GridStrideExecPolicy(const size_t blockDim, const size_t gridDim,
+                       hipStream_t stream = 0)
+    : ExecPolicy(stream), blockDim_(blockDim), gridDim_(gridDim)
   {}
 
   GridStrideExecPolicy(const GridStrideExecPolicy& ex)
-    : blockDim_(ex.blockDim_), gridDim_(ex.gridDim_), ExecPolicy(ex.stream_)
+    : ExecPolicy(ex.stream_), blockDim_(ex.blockDim_), gridDim_(ex.gridDim_)
   {}
 
   virtual size_t gridSize(size_t /*numWorkUnits*/ = 0, size_t /*blockDim*/ = 0) const
@@ -145,17 +150,19 @@ private:
 class BlockReduceAtomicExecPolicy : public ExecPolicy
 {
 public:
-  BlockReduceAtomicExecPolicy(const size_t blockDim, const size_t gridDim = 0, hipStream_t stream = 0)
-    : blockDim_(blockDim), gridDim_(gridDim), ExecPolicy(stream)
+  BlockReduceAtomicExecPolicy(const size_t blockDim, const size_t gridDim = 0,
+                              hipStream_t stream = 0)
+    : ExecPolicy(stream), blockDim_(blockDim), gridDim_(gridDim)
   {
     if (blockDim < 1 || blockDim % WARP_SIZE)
     {
-      throw std::invalid_argument("the block size must be a multiple of the HIP warp size");
+      throw std::invalid_argument(
+        "the block size must be a multiple of the HIP warp size");
     }
   }
 
   BlockReduceAtomicExecPolicy(const BlockReduceAtomicExecPolicy& ex)
-    : blockDim_(ex.blockDim_), gridDim_(ex.gridDim_), ExecPolicy(ex.stream_)
+    : ExecPolicy(ex.stream_), blockDim_(ex.blockDim_), gridDim_(ex.gridDim_)
   {}
 
   virtual size_t gridSize(size_t numWorkUnits = 0, size_t /*blockDim*/ = 0) const
@@ -187,12 +194,14 @@ private:
 class BlockReduceExecPolicy : public ExecPolicy
 {
 public:
-  BlockReduceExecPolicy(const size_t blockDim, const size_t gridDim = 0, hipStream_t stream = 0)
+  BlockReduceExecPolicy(const size_t blockDim, const size_t gridDim = 0,
+                        hipStream_t stream = 0)
     : blockDim_(blockDim), gridDim_(gridDim), ExecPolicy(stream)
   {
     if (blockDim < 1 || blockDim % WARP_SIZE)
     {
-      throw std::invalid_argument("the block size must be a multiple of the HIP warp size");
+      throw std::invalid_argument(
+        "the block size must be a multiple of the HIP warp size");
     }
   }
 

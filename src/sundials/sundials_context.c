@@ -39,21 +39,21 @@ int SUNContext_Create(SUNComm comm, SUNContext* sunctx)
      when the comm was to be ignored, we check if its NULL here
      and translate it to SUN_COMM_NULL to make the transition 
      easier for users. */
-  if (!comm) 
-  {
-    comm = SUN_COMM_NULL;
-  }
+  if (!comm) { comm = SUN_COMM_NULL; }
 
 #if defined(SUNDIALS_BUILD_WITH_PROFILING) && !defined(SUNDIALS_CALIPER_ENABLED)
-  if (SUNProfiler_Create(comm, "SUNContext Default", &profiler)) return (-1);
+  if (SUNProfiler_Create(comm, "SUNContext Default", &profiler))
+  {
+    return (-1);
+  }
 #endif
 
-#ifdef SUNDIALS_ADIAK_ENABLED 
+#ifdef SUNDIALS_ADIAK_ENABLED
   adiak_init(&comm);
   sunAdiakCollectMetadata();
 #endif
 
-#if SUNDIALS_LOGGING_LEVEL > 0 
+#if SUNDIALS_LOGGING_LEVEL > 0
 #if SUNDIALS_MPI_ENABLED
   if (SUNLogger_CreateFromEnv(comm, &logger))
 #else
@@ -99,10 +99,7 @@ int SUNContext_Create(SUNComm comm, SUNContext* sunctx)
 
 int SUNContext_GetProfiler(SUNContext sunctx, SUNProfiler* profiler)
 {
-  if (sunctx == NULL)
-  {
-    return (-1);
-  }
+  if (sunctx == NULL) { return (-1); }
 
 #ifdef SUNDIALS_BUILD_WITH_PROFILING
   /* get profiler */
@@ -116,16 +113,13 @@ int SUNContext_GetProfiler(SUNContext sunctx, SUNProfiler* profiler)
 
 int SUNContext_SetProfiler(SUNContext sunctx, SUNProfiler profiler)
 {
-  if (sunctx == NULL)
-  {
-    return (-1);
-  }
+  if (sunctx == NULL) { return (-1); }
 
 #ifdef SUNDIALS_BUILD_WITH_PROFILING
   /* free any existing profiler */
   if (sunctx->profiler && sunctx->own_profiler)
   {
-    if (SUNProfiler_Free(&(sunctx->profiler))) return (-1);
+    if (SUNProfiler_Free(&(sunctx->profiler))) { return (-1); }
     sunctx->profiler = NULL;
   }
 
@@ -139,10 +133,7 @@ int SUNContext_SetProfiler(SUNContext sunctx, SUNProfiler profiler)
 
 int SUNContext_GetLogger(SUNContext sunctx, SUNLogger* logger)
 {
-  if (sunctx == NULL)
-  {
-    return (-1);
-  }
+  if (sunctx == NULL) { return (-1); }
 
   /* get logger */
   *logger = sunctx->logger;
@@ -152,18 +143,12 @@ int SUNContext_GetLogger(SUNContext sunctx, SUNLogger* logger)
 
 int SUNContext_SetLogger(SUNContext sunctx, SUNLogger logger)
 {
-  if (sunctx == NULL)
-  {
-    return (-1);
-  }
+  if (sunctx == NULL) { return (-1); }
 
   /* free any existing logger */
   if (sunctx->logger && sunctx->own_logger)
   {
-    if (SUNLogger_Destroy(&(sunctx->logger)))
-    {
-      return (-1);
-    }
+    if (SUNLogger_Destroy(&(sunctx->logger))) { return (-1); }
     sunctx->logger = NULL;
   }
 
@@ -181,14 +166,8 @@ int SUNContext_Free(SUNContext* sunctx)
   char* sunprofiler_print_env;
 #endif
 
-  if (!sunctx)
-  {
-    return (0);
-  }
-  if (!(*sunctx))
-  {
-    return (0);
-  }
+  if (!sunctx) { return (0); }
+  if (!(*sunctx)) { return (0); }
 
 #if defined(SUNDIALS_BUILD_WITH_PROFILING) && !defined(SUNDIALS_CALIPER_ENABLED)
   /* Find out where we are printing to */
@@ -196,23 +175,23 @@ int SUNContext_Free(SUNContext* sunctx)
   fp                    = NULL;
   if (sunprofiler_print_env)
   {
-    if (!strcmp(sunprofiler_print_env, "0"))
-      fp = NULL;
+    if (!strcmp(sunprofiler_print_env, "0")) { fp = NULL; }
     else if (!strcmp(sunprofiler_print_env, "1") ||
              !strcmp(sunprofiler_print_env, "TRUE") ||
              !strcmp(sunprofiler_print_env, "stdout"))
+    {
       fp = stdout;
-    else
-      fp = fopen(sunprofiler_print_env, "a");
+    }
+    else { fp = fopen(sunprofiler_print_env, "a"); }
   }
 
   /* Enforce that the profiler is freed before finalizing,
      if it is not owned by the sunctx. */
   if ((*sunctx)->profiler)
   {
-    if (fp) SUNProfiler_Print((*sunctx)->profiler, fp);
-    if (fp) fclose(fp);
-    if ((*sunctx)->own_profiler) SUNProfiler_Free(&(*sunctx)->profiler);
+    if (fp) { SUNProfiler_Print((*sunctx)->profiler, fp); }
+    if (fp) { fclose(fp); }
+    if ((*sunctx)->own_profiler) { SUNProfiler_Free(&(*sunctx)->profiler); }
   }
 #endif
 
@@ -232,7 +211,8 @@ int SUNContext_Free(SUNContext* sunctx)
 }
 
 #ifdef SUNDIALS_ADIAK_ENABLED
-void sunAdiakCollectMetadata() {
+void sunAdiakCollectMetadata()
+{
   adiak_launchdate();
   adiak_executable();
   adiak_cmdline();
@@ -246,12 +226,15 @@ void sunAdiakCollectMetadata() {
   adiak_namevalue("c_compiler_flags", 2, NULL, "%s", SUN_C_COMPILER_FLAGS);
 
   adiak_namevalue("cxx_compiler", 2, NULL, "%s", SUN_CXX_COMPILER);
-  adiak_namevalue("cxx_compiler_version", 2, NULL, "%s", SUN_CXX_COMPILER_VERSION);
+  adiak_namevalue("cxx_compiler_version", 2, NULL, "%s",
+                  SUN_CXX_COMPILER_VERSION);
   adiak_namevalue("cxx_compiler_flags", 2, NULL, "%s", SUN_CXX_COMPILER_FLAGS);
 
   adiak_namevalue("fortran_compiler", 2, NULL, "%s", SUN_FORTRAN_COMPILER);
-  adiak_namevalue("fortran_compiler_version", 2, NULL, "%s", SUN_FORTRAN_COMPILER_VERSION);
-  adiak_namevalue("fortran_compiler_flags", 2, NULL, "%s", SUN_FORTRAN_COMPILER_FLAGS);
+  adiak_namevalue("fortran_compiler_version", 2, NULL, "%s",
+                  SUN_FORTRAN_COMPILER_VERSION);
+  adiak_namevalue("fortran_compiler_flags", 2, NULL, "%s",
+                  SUN_FORTRAN_COMPILER_FLAGS);
 
   adiak_namevalue("sundials_version", 2, NULL, "%s", SUNDIALS_VERSION);
   adiak_namevalue("sundials_git_version", 2, NULL, "%s", SUNDIALS_GIT_VERSION);
@@ -283,7 +266,8 @@ void sunAdiakCollectMetadata() {
 #endif
 
 #ifdef SUNDIALS_KOKKOS_KERNELS_ENABLED
-  adiak_namevalue("kokkos_kernels_version", 2, NULL, "%s", SUN_KOKKOS_KERNELS_VERSION);
+  adiak_namevalue("kokkos_kernels_version", 2, NULL, "%s",
+                  SUN_KOKKOS_KERNELS_VERSION);
 #endif
 
 #ifdef SUNDIALS_BLAS_LAPACK_ENABLED
@@ -301,7 +285,8 @@ void sunAdiakCollectMetadata() {
   adiak_namevalue("mpi_cxx_compiler", 2, NULL, "%s", SUN_MPI_CXX_COMPILER);
   adiak_namevalue("mpi_cxx_version", 2, NULL, "%s", SUN_MPI_CXX_VERSION);
 
-  adiak_namevalue("mpi_fortran_compiler", 2, NULL, "%s", SUN_MPI_FORTRAN_COMPILER);
+  adiak_namevalue("mpi_fortran_compiler", 2, NULL, "%s",
+                  SUN_MPI_FORTRAN_COMPILER);
   adiak_namevalue("mpi_fortran_version", 2, NULL, "%s", SUN_MPI_FORTRAN_VERSION);
 #endif
 
@@ -351,6 +336,5 @@ void sunAdiakCollectMetadata() {
   adiak_namevalue("hip_version", 2, NULL, "%s", SUN_HIP_VERSION);
   adiak_namevalue("amdgpu_targets", 2, NULL, "%s", SUN_AMDGPU_TARGETS);
 #endif
-
 }
 #endif
