@@ -27,8 +27,8 @@
 #define NEWTON_CONTENT(S) ((SUNNonlinearSolverContent_Newton)(S->content))
 
 /* Constant macros */
-#define ZERO RCONST(0.0) /* real 0.0 */
-#define ONE  RCONST(1.0) /* real 1.0 */
+#define ZERO SUN_RCONST(0.0) /* real 0.0 */
+#define ONE  SUN_RCONST(1.0) /* real 1.0 */
 
 /*==============================================================================
   Constructor to create a new Newton solver
@@ -170,13 +170,13 @@ SUNErrCode SUNNonlinSolInitialize_Newton(SUNNonlinearSolver NLS)
   the Sys, LSetup, and LSolve functions provided to the nonlinear solver.
   ----------------------------------------------------------------------------*/
 int SUNNonlinSolSolve_Newton(SUNNonlinearSolver NLS, N_Vector y0, N_Vector ycor,
-                             N_Vector w, realtype tol, booleantype callLSetup,
+                             N_Vector w, sunrealtype tol, sunbooleantype callLSetup,
                              void* mem)
 {
   SUNAssignSUNCTX(NLS->sunctx);
   /* local variables */
   int retval;
-  booleantype jbad;
+  sunbooleantype jbad;
   N_Vector delta;
 
   /* check that all required function pointers have been set */

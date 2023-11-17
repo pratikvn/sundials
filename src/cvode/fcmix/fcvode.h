@@ -156,8 +156,8 @@
  * Real numbers:  At compilation, SUNDIALS allows the configuration option 
  * '--with-precision', that accepts values of 'single', 'double' or 
  * 'extended' (the default is 'double').  This choice dictates the size of a 
- * SUNDIALS 'realtype' variable.  The corresponding Fortran types for these 
- * 'realtype' sizes are:
+ * SUNDIALS 'sunrealtype' variable.  The corresponding Fortran types for these 
+ * 'sunrealtype' sizes are:
  *   single   -- equivalent to a REAL or REAL*4 in Fortran
  *   double   -- equivalent to a DOUBLE PRECISION or REAL*8 in Fortran
  *   extended -- equivalent to a REAL*16 in Fortran
@@ -174,12 +174,12 @@
  *   system, as function of T = t and the array Y = y.
  *
  *   The arguments are:
- *       Y    -- array containing state variables [realtype, input]
- *       YDOT -- array containing state derivatives [realtype, output]
+ *       Y    -- array containing state variables [sunrealtype, input]
+ *       YDOT -- array containing state derivatives [sunrealtype, output]
  *       IPAR -- array containing integer user data that was passed to
  *               FCVMALLOC [long int, input]
  *       RPAR -- array containing real user data that was passed to
- *               FCVMALLOC [realtype, input]
+ *               FCVMALLOC [sunrealtype, input]
  *       IER  -- return flag [int, output]:
  *                  0 if successful, 
  *                 >0 if a recoverable error occurred,
@@ -198,18 +198,18 @@
  *
  *   The arguments are:
  *       NEQ  -- number of rows in the matrix [long int, input]
- *       T    -- current time [realtype, input]
- *       Y    -- array containing state variables [realtype, input]
- *       FY   -- array containing state derivatives [realtype, input]
- *       DJAC -- 2D array containing the jacobian entries [realtype of size
+ *       T    -- current time [sunrealtype, input]
+ *       Y    -- array containing state variables [sunrealtype, input]
+ *       FY   -- array containing state derivatives [sunrealtype, input]
+ *       DJAC -- 2D array containing the jacobian entries [sunrealtype of size
  *               (NEQ,NEQ), output]
- *       H    -- current step size [realtype, input]
+ *       H    -- current step size [sunrealtype, input]
  *       IPAR -- array containing integer user data that was passed to
  *               FCVMALLOC [long int, input]
  *       RPAR -- array containing real user data that was passed to
- *               FCVMALLOC [realtype, input]
+ *               FCVMALLOC [sunrealtype, input]
  *       WK*  -- array containing temporary workspace of same size as Y 
- *               [realtype, input]
+ *               [sunrealtype, input]
  *       IER  -- return flag [int, output]:
  *                  0 if successful, 
  *                 >0 if a recoverable error occurred,
@@ -234,18 +234,18 @@
  *       MU   -- upper half-bandwidth of the matrix [long int, input]
  *       ML   -- lower half-bandwidth of the matrix [long int, input]
  *       MDIM -- leading dimension of BJAC array [long int, input]
- *       T    -- current time [realtype, input]
- *       Y    -- array containing state variables [realtype, input]
- *       FY   -- array containing state derivatives [realtype, input]
- *       BJAC -- 2D array containing the jacobian entries [realtype of size
+ *       T    -- current time [sunrealtype, input]
+ *       Y    -- array containing state variables [sunrealtype, input]
+ *       FY   -- array containing state derivatives [sunrealtype, input]
+ *       BJAC -- 2D array containing the jacobian entries [sunrealtype of size
  *               (MDIM,NEQ), output]
- *       H    -- current step size [realtype, input]
+ *       H    -- current step size [sunrealtype, input]
  *       IPAR -- array containing integer user data that was passed to
  *               FCVMALLOC [long int, input]
  *       RPAR -- array containing real user data that was passed to
- *               FCVMALLOC [realtype, input]
+ *               FCVMALLOC [sunrealtype, input]
  *       WK*  -- array containing temporary workspace of same size as Y 
- *               [realtype, input]
+ *               [sunrealtype, input]
  *       IER  -- return flag [int, output]:
  *                  0 if successful, 
  *                 >0 if a recoverable error occurred,
@@ -269,24 +269,24 @@
  *   (t,y) in CSC [or CSR] form (see sunmatrix_sparse.h for more information).
  *
  *   The arguments are:
- *         T    -- current time [realtype, input]
- *         Y    -- array containing state variables [realtype, input]
- *         FY   -- array containing state derivatives [realtype, input]
+ *         T    -- current time [sunrealtype, input]
+ *         Y    -- array containing state variables [sunrealtype, input]
+ *         FY   -- array containing state derivatives [sunrealtype, input]
  *         N    -- number of matrix rows/columns in Jacobian [int, input]
  *         NNZ  -- allocated length of nonzero storage [int, input]
  *        JDATA -- nonzero values in Jacobian
- *                 [realtype of length NNZ, output]
+ *                 [sunrealtype of length NNZ, output]
  *       JRVALS -- row [or column] indices for each nonzero in Jacobian
  *                 [int of length NNZ, output]
  *       JCPTRS -- pointers to each Jacobian column [or row] in preceding arrays
  *                 [int of length N+1, output]
- *         H    -- current step size [realtype, input]
+ *         H    -- current step size [sunrealtype, input]
  *         IPAR -- array containing integer user data that was passed to
  *                 FCVMALLOC [long int, input]
  *         RPAR -- array containing real user data that was passed to
- *                 FCVMALLOC [realtype, input]
+ *                 FCVMALLOC [sunrealtype, input]
  *         WK*  -- array containing temporary workspace of same size as Y 
- *                 [realtype, input]
+ *                 [sunrealtype, input]
  *         IER  -- return flag [int, output]:
  *                    0 if successful, 
  *                   >0 if a recoverable error occurred,
@@ -312,14 +312,14 @@
  *   FCVJTIMES routine (see below).  
  *
  *   The arguments are:
- *       T    -- current time [realtype, input]
- *       Y    -- array containing state variables [realtype, input]
- *       FY   -- array containing state derivatives [realtype, input]
- *       H    -- current step size [realtype, input]
+ *       T    -- current time [sunrealtype, input]
+ *       Y    -- array containing state variables [sunrealtype, input]
+ *       FY   -- array containing state derivatives [sunrealtype, input]
+ *       H    -- current step size [sunrealtype, input]
  *       IPAR -- array containing integer user data that was passed to
  *               FCVMALLOC [long int, input]
  *       RPAR -- array containing real user data that was passed to
- *               FCVMALLOC [realtype, input]
+ *               FCVMALLOC [sunrealtype, input]
  *       IER  -- return flag [int, output]:
  *                  0 if successful, 
  *                  nonzero if an error.
@@ -337,18 +337,18 @@
  *   the product in FJV.  
  * 
  *   The arguments are:
- *       V    -- array containing vector to multiply [realtype, input]
- *       JV   -- array containing product vector [realtype, output]
- *       T    -- current time [realtype, input]
- *       Y    -- array containing state variables [realtype, input]
- *       FY   -- array containing state derivatives [realtype, input]
- *       H    -- current step size [realtype, input]
+ *       V    -- array containing vector to multiply [sunrealtype, input]
+ *       JV   -- array containing product vector [sunrealtype, output]
+ *       T    -- current time [sunrealtype, input]
+ *       Y    -- array containing state variables [sunrealtype, input]
+ *       FY   -- array containing state derivatives [sunrealtype, input]
+ *       H    -- current step size [sunrealtype, input]
  *       IPAR -- array containing integer user data that was passed to
  *               FCVMALLOC [long int, input]
  *       RPAR -- array containing real user data that was passed to
- *               FCVMALLOC [realtype, input]
+ *               FCVMALLOC [sunrealtype, input]
  *       WORK -- array containing temporary workspace of same size as Y 
- *               [realtype, input]
+ *               [sunrealtype, input]
  *       IER  -- return flag [int, output]:
  *                  0 if successful, 
  *                  nonzero if an error.
@@ -369,19 +369,19 @@
  *     approximation to the matrix  A = I - GAMMA*J  (J = Jacobian),
  *
  *     The arguments are:
- *       T = current time [realtype, input]
- *       Y = current state variable array [realtype, input]
- *       FY = current state variable derivative array [realtype, input]
+ *       T = current time [sunrealtype, input]
+ *       Y = current state variable array [sunrealtype, input]
+ *       FY = current state variable derivative array [sunrealtype, input]
  *       JOK = flag indicating whether Jacobian-related data needs to be 
  *           recomputed [int, input]:
  *                  0 = recompute, 
  *		  1 = reuse with the current value of GAMMA
  *       JCUR = return flag to denote if Jacobian data was recomputed
- *           [realtype, output], 1=yes, 0=no
- *       GAMMA = Jacobian scaling factor [realtype, input]
- *       H = current time step [realtype, input]
+ *           [sunrealtype, output], 1=yes, 0=no
+ *       GAMMA = Jacobian scaling factor [sunrealtype, input]
+ *       H = current time step [sunrealtype, input]
  *       IPAR = array of user integer data [long int, input/output]
- *       RPAR = array with user real data [realtype, input/output]
+ *       RPAR = array with user real data [sunrealtype, input/output]
  *       IER  = return completion flag [int, output]:
  *                  0 = SUCCESS,
  *                 >0 = recoverable failure
@@ -398,18 +398,18 @@
  *     (J = Jacobian).
  *
  *     The arguments are:
- *       T = current time [realtype, input]
- *       Y = current state variable array [realtype, input]
- *       FY = current state variable derivative array [realtype, input]
- *       R = right-hand side array [realtype, input]
- *       Z = solution array [realtype, output]
- *       GAMMA = Jacobian scaling factor [realtype, input]
- *       DELTA = desired residual tolerance [realtype, input]
+ *       T = current time [sunrealtype, input]
+ *       Y = current state variable array [sunrealtype, input]
+ *       FY = current state variable derivative array [sunrealtype, input]
+ *       R = right-hand side array [sunrealtype, input]
+ *       Z = solution array [sunrealtype, output]
+ *       GAMMA = Jacobian scaling factor [sunrealtype, input]
+ *       DELTA = desired residual tolerance [sunrealtype, input]
  *       LR = flag denoting to solve the right or left preconditioner system
  *                  1 = left preconditioner
  *                  2 = right preconditioner
  *       IPAR = array of user integer data [long int, input/output]
- *       RPAR = array with user real data [realtype, input/output]
+ *       RPAR = array with user real data [sunrealtype, input/output]
  *       IER  = return completion flag [int, output]:
  *                  0 = SUCCESS,
  *                 >0 = recoverable failure
@@ -426,12 +426,12 @@
  *   It must store the error weights in EWT, given the current solution vector Y.
  *
  *   The arguments are:
- *       Y    -- array containing state variables [realtype, input]
- *       EWT  -- array containing the error weight vector [realtype, output]
+ *       Y    -- array containing state variables [sunrealtype, input]
+ *       EWT  -- array containing the error weight vector [sunrealtype, output]
  *       IPAR -- array containing integer user data that was passed to
  *               FCVMALLOC [long int, input]
  *       RPAR -- array containing real user data that was passed to
- *               FCVMALLOC [realtype, input]
+ *               FCVMALLOC [sunrealtype, input]
  *       IER  -- return flag [int, output]:
  *                  0 if successful, 
  *                  nonzero if an error.
@@ -573,8 +573,8 @@
  *      1               IOUT, ROUT, IPAR, RPAR, IER)
  *
  *   The arguments are:
- *      T0     = initial value of t [realtype, input]
- *      Y0     = array of initial conditions [realtype, input]
+ *      T0     = initial value of t [sunrealtype, input]
+ *      Y0     = array of initial conditions [sunrealtype, input]
  *      METH   = flag denoting basic integration method [int, input]:
  *                   1 = Adams (nonstiff), 
  *                   2 = BDF (stiff)
@@ -583,13 +583,13 @@
  *                   2 = array.
  *                   3 = user-supplied function; the user must supply a routine 
  *                       FCVEWT to compute the error weight vector.
- *      RTOL   = scalar relative tolerance [realtype, input]
- *      ATOL   = scalar or array absolute tolerance [realtype, input]
+ *      RTOL   = scalar relative tolerance [sunrealtype, input]
+ *      ATOL   = scalar or array absolute tolerance [sunrealtype, input]
  *      IOUT   = array of length 21 for integer optional outputs 
  *               [long int, output]
- *      ROUT   = array of length 6 for real optional outputs [realtype, output]
+ *      ROUT   = array of length 6 for real optional outputs [sunrealtype, output]
  *      IPAR   = array with user integer data [long int, input/output]
- *      RPAR   = array with user real data [realtype, input/output]
+ *      RPAR   = array with user real data [sunrealtype, input/output]
  *	IER    = return completion flag [int, output]:
  *                  0 = SUCCESS,
  *                 -1 = failure (see printed message for failure details).
@@ -618,7 +618,7 @@
  *           HCUR    = ROUT( 3) from CVodeGetCurrentStep
  *           TCUR    = ROUT( 4) from CVodeGetCurrentTime
  *           TOLSF   = ROUT( 5) from CVodeGetTolScaleFactor
- *           UROUND  = ROUT( 6) from UNIT_ROUNDOFF
+ *           UROUND  = ROUT( 6) from SUN_UNIT_ROUNDOFF
  *   See the CVODE manual for details. 
  *
  * (5.5) If a linear solver was created in step (5.3) then it must be 
@@ -766,7 +766,7 @@
  *
  *   to set the real value VAL to the optional input specified by the
  *   quoted character string KEY.  VALUE must be a Fortran real-valued 
- *   number of size commensurate with the SUNDIALS "realtype".  KEY must 
+ *   number of size commensurate with the SUNDIALS "sunrealtype".  KEY must 
  *   be one of the following: INIT_STEP, MAX_STEP, MIN_STEP, STOP_TIME,
  *   NLCONV_COEF.  The int return flag IER is 0 if successful, and <0 otherwise.
  *
@@ -774,7 +774,7 @@
  *
  *      CALL CVSETVIN(KEY, ARRAY, IER)
  *
- *    where ARRAY is an array of realtype and the quoted character string
+ *    where ARRAY is an array of sunrealtype and the quoted character string
  *    KEY is CONSTR_VEC.  The int return flag IER is 0 if successful, and
  *    nonzero otherwise.
  * 
@@ -784,7 +784,7 @@
  *   IOUT array that was passed to FCVMALLOC)
  *
  *   Optional outputs specific to the CVLS interface:
- *        LENRWLS  = IOUT(13) from CVodeGetLinWorkSpace (realtype space)
+ *        LENRWLS  = IOUT(13) from CVodeGetLinWorkSpace (sunrealtype space)
  *        LENIWLS  = IOUT(14) from CVodeGetLinWorkSpace (integer space)
  *        LSTF     = IOUT(15) from CVodeGetLastLinFlag
  *        NFELS    = IOUT(16) from CVodeGetNumLinRhsEvals
@@ -814,9 +814,9 @@
  *       CALL FCVODE (TOUT, T, Y, ITASK, IER)
  *
  *   The arguments are:
- *      TOUT  = next value of t at which a solution is desired [realtype, input]
- *      T     = value of t reached by the solver on output [realtype, output]
- *      Y     = array containing the computed solution on output [realtype, output]
+ *      TOUT  = next value of t at which a solution is desired [sunrealtype, input]
+ *      T     = value of t reached by the solver on output [sunrealtype, output]
+ *      Y     = array containing the computed solution on output [sunrealtype, output]
  *      ITASK = task indicator [int, input]: 
  *              1 = normal mode (overshoot TOUT and interpolate)
  *              2 = one-step mode (return after each internal step taken)
@@ -842,9 +842,9 @@
  *
  *   The arguments are:
  *      T   = value of t at which solution derivative is desired, in
- *             [TCUR-HU,TCUR], [realtype, input].
+ *             [TCUR-HU,TCUR], [sunrealtype, input].
  *      K   = derivative order (0 .le. K .le. QU) [int, input]
- *      DKY = array containing computed K-th derivative of y [realtype, output]
+ *      DKY = array containing computed K-th derivative of y [sunrealtype, output]
  *      IER = return flag [int, output]: = 0 for success, <0 for illegal argument
  * 
  * -----------------------------------------------------------------------------
@@ -856,7 +856,7 @@
  *       CALL FCVGETERRWEIGHTS(EWT, IER)
  *
  *   The arguments are:
- *       EWT = array containing the error weight vector [realtype, output]
+ *       EWT = array containing the error weight vector [sunrealtype, output]
  *       IER = return flag [int, output]: 0=success, nonzero if an error.
  *
  * -----------------------------------------------------------------------------
@@ -879,7 +879,7 @@
 #include <sundials/sundials_linearsolver.h>  /* definition of type SUNLinearSolver */
 #include <sundials/sundials_matrix.h>        /* definition of type SUNMatrix */
 #include <sundials/sundials_nvector.h>       /* definition of type N_Vector */
-#include <sundials/sundials_types.h>         /* definition of type realtype */
+#include <sundials/sundials_types.h>         /* definition of type sunrealtype */
 
 #ifdef __cplusplus  /* wrapper to enable C++ usage */
 extern "C" {
@@ -970,34 +970,34 @@ extern "C" {
   /* Type for user data */
 
   typedef struct {
-    realtype *rpar;
+    sunrealtype *rpar;
     long int *ipar;
   } *FCVUserData;
 
   /* Prototypes of exported functions */
 
-  void FCV_MALLOC(realtype *t0, realtype *y0,
+  void FCV_MALLOC(sunrealtype *t0, sunrealtype *y0,
                   int *meth, int *iatol,
-                  realtype *rtol, realtype *atol,
-                  long int *iout, realtype *rout,
-                  long int *ipar, realtype *rpar,
+                  sunrealtype *rtol, sunrealtype *atol,
+                  long int *iout, sunrealtype *rout,
+                  long int *ipar, sunrealtype *rpar,
                   int *ier);
 
-  void FCV_REINIT(realtype *t0, realtype *y0,
-                  int *iatol, realtype *rtol, realtype *atol,
+  void FCV_REINIT(sunrealtype *t0, sunrealtype *y0,
+                  int *iatol, sunrealtype *rtol, sunrealtype *atol,
                   int *ier);
 
   void FCV_SETIIN(char key_name[], long int *ival, int *ier);
 
-  void FCV_SETRIN(char key_name[], realtype *rval, int *ier);
+  void FCV_SETRIN(char key_name[], sunrealtype *rval, int *ier);
 
-  void FCV_SETVIN(char key_name[], realtype *vval, int *ier);
+  void FCV_SETVIN(char key_name[], sunrealtype *vval, int *ier);
   void FCV_EWTSET(int *flag, int *ier);
 
   void FCV_LSINIT(int *ier);
   void FCV_LSSETJAC(int *flag, int *ier);
   void FCV_LSSETPREC(int *flag, int *ier);
-  void FCV_LSSETEPSLIN(realtype *eplifac, int *ier);
+  void FCV_LSSETEPSLIN(sunrealtype *eplifac, int *ier);
   void FCV_DENSESETJAC(int *flag, int *ier);
   void FCV_BANDSETJAC(int *flag, int *ier);
   void FCV_SPARSESETJAC(int *ier);
@@ -1007,50 +1007,50 @@ extern "C" {
   void FCV_DLSSETJAC(int *flag, int *ier);
   void FCV_SPILSINIT(int *ier);
   void FCV_SPILSSETPREC(int *flag, int *ier);
-  void FCV_SPILSSETEPSLIN(realtype *eplifac, int *ier);
+  void FCV_SPILSSETEPSLIN(sunrealtype *eplifac, int *ier);
 /*----------------*/
   
   void FCV_DIAG(int *ier);
 
   void FCV_NLSINIT(int *ier);
 
-  void FCV_CVODE(realtype *tout, realtype *t, realtype *y, int *itask, int *ier);
+  void FCV_CVODE(sunrealtype *tout, sunrealtype *t, sunrealtype *y, int *itask, int *ier);
 
-  void FCV_DKY(realtype *t, int *k, realtype *dky, int *ier);
+  void FCV_DKY(sunrealtype *t, int *k, sunrealtype *dky, int *ier);
 
-  void FCV_GETERRWEIGHTS(realtype *eweight, int *ier);
-  void FCV_GETESTLOCALERR(realtype *ele, int *ier);
+  void FCV_GETERRWEIGHTS(sunrealtype *eweight, int *ier);
+  void FCV_GETESTLOCALERR(sunrealtype *ele, int *ier);
 
   void FCV_FREE(void);
 
 
   /* Prototypes: Functions Called by the CVODE Solver */
   
-  int FCVf(realtype t, N_Vector y, N_Vector ydot, void *user_data);
+  int FCVf(sunrealtype t, N_Vector y, N_Vector ydot, void *user_data);
   
-  int FCVDenseJac(realtype t, N_Vector y, N_Vector fy, 
+  int FCVDenseJac(sunrealtype t, N_Vector y, N_Vector fy, 
                   SUNMatrix J, void *user_data,
                   N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
   
-  int FCVBandJac(realtype t, N_Vector y, N_Vector fy,
+  int FCVBandJac(sunrealtype t, N_Vector y, N_Vector fy,
                  SUNMatrix J, void *user_data,
                  N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
   
-  int FCVSparseJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+  int FCVSparseJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 		   void *user_data, N_Vector vtemp1,
 		   N_Vector vtemp2, N_Vector vtemp3);
 
-  int FCVPSet(realtype tn, N_Vector y, N_Vector fy, booleantype jok,
-              booleantype *jcurPtr, realtype gamma, void *user_data);
+  int FCVPSet(sunrealtype tn, N_Vector y, N_Vector fy, sunbooleantype jok,
+              sunbooleantype *jcurPtr, sunrealtype gamma, void *user_data);
   
-  int FCVPSol(realtype tn, N_Vector y, N_Vector fy, 
+  int FCVPSol(sunrealtype tn, N_Vector y, N_Vector fy, 
               N_Vector r, N_Vector z,
-              realtype gamma, realtype delta,
+              sunrealtype gamma, sunrealtype delta,
               int lr, void *user_data);
   
-  int FCVJTSetup(realtype t, N_Vector y, N_Vector fy, void *user_data);
+  int FCVJTSetup(sunrealtype t, N_Vector y, N_Vector fy, void *user_data);
   
-  int FCVJtimes(N_Vector v, N_Vector Jv, realtype t, 
+  int FCVJtimes(N_Vector v, N_Vector Jv, sunrealtype t, 
                 N_Vector y, N_Vector fy,
                 void *user_data, N_Vector work);
   
@@ -1069,7 +1069,7 @@ extern "C" {
 
   extern void *CV_cvodemem;        /* defined in fcvode.c */
   extern long int *CV_iout;        /* defined in fcvode.c */
-  extern realtype *CV_rout;        /* defined in fcvode.c */
+  extern sunrealtype *CV_rout;        /* defined in fcvode.c */
   extern int CV_nrtfn;             /* defined in fcvode.c */
   extern int CV_ls;                /* defined in fcvode.c */
 

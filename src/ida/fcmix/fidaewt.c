@@ -31,8 +31,8 @@
 extern "C" {
 #endif
 
-extern void FIDA_EWT(realtype*, realtype*, /* Y, EWT */
-                     long int*, realtype*, /* IPAR, RPAR */
+extern void FIDA_EWT(sunrealtype*, sunrealtype*, /* Y, EWT */
+                     long int*, sunrealtype*, /* IPAR, RPAR */
                      int*);                /* IER */
 
 #ifdef __cplusplus
@@ -63,7 +63,7 @@ void FIDA_EWTSET(int* flag, int* ier)
 int FIDAEwtSet(N_Vector y, N_Vector ewt, void* user_data)
 {
   int ier;
-  realtype *y_data, *ewt_data;
+  sunrealtype *y_data, *ewt_data;
   FIDAUserData IDA_userdata;
 
   /* Initialize all pointers to NULL */

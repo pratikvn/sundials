@@ -42,7 +42,7 @@
 #include <sundials/sundials_linearsolver.h>  /* definition of type SUNLinearSolver */
 #include <sundials/sundials_matrix.h>        /* definition of type SUNMatrix */
 #include <sundials/sundials_nvector.h>       /* definition of type N_Vector */
-#include <sundials/sundials_types.h>         /* definition of type realtype */
+#include <sundials/sundials_types.h>         /* definition of type sunrealtype */
 
 /*=============================================================*/
 
@@ -229,58 +229,58 @@ extern "C" {
 
   /* Type for user data */
   typedef struct {
-    realtype *rpar;
+    sunrealtype *rpar;
     long int *ipar;
   } *FARKUserData;
 
   /* Prototypes of exported functions */
-  void FARK_MALLOC(realtype *t0, realtype *y0, int *imex,
-                   int *iatol, realtype *rtol, realtype *atol,
-                   long int *iout, realtype *rout,
-                   long int *ipar, realtype *rpar, int *ier);
+  void FARK_MALLOC(sunrealtype *t0, sunrealtype *y0, int *imex,
+                   int *iatol, sunrealtype *rtol, sunrealtype *atol,
+                   long int *iout, sunrealtype *rout,
+                   long int *ipar, sunrealtype *rpar, int *ier);
 
-  void FARK_REINIT(realtype *t0, realtype *y0, int *imex,
-                   int *iatol, realtype *rtol, realtype *atol,
+  void FARK_REINIT(sunrealtype *t0, sunrealtype *y0, int *imex,
+                   int *iatol, sunrealtype *rtol, sunrealtype *atol,
                    int *ier);
 
-  void FARK_RESIZE(realtype *t0, realtype *y0, realtype *hscale,
-                   int *itol, realtype *rtol, realtype *atol, int *ier);
+  void FARK_RESIZE(sunrealtype *t0, sunrealtype *y0, sunrealtype *hscale,
+                   int *itol, sunrealtype *rtol, sunrealtype *atol, int *ier);
 
   void FARK_SETDEFAULTS(int *ier);
   void FARK_SETIIN(char key_name[], long int *ival, int *ier);
-  void FARK_SETRIN(char key_name[], realtype *rval, int *ier);
-  void FARK_SETVIN(char key_name[], realtype *vval, int *ier);
+  void FARK_SETRIN(char key_name[], sunrealtype *rval, int *ier);
+  void FARK_SETVIN(char key_name[], sunrealtype *vval, int *ier);
 
   void FARK_SETADAPTMETHOD(int *imethod, int *idefault, int *ipq,
-                           realtype *params, int *ier);
+                           sunrealtype *params, int *ier);
 
-  void FARK_SETERKTABLE(int *s, int *q, int *p, realtype *c, realtype *A,
-                        realtype *b, realtype *b2, int *ier);
-  void FARK_SETIRKTABLE(int *s, int *q, int *p, realtype *c,
-                        realtype *A, realtype *b, realtype *b2, int *ier);
-  void FARK_SETARKTABLES(int *s, int *q, int *p, realtype *ci,
-                         realtype *ce, realtype *Ai, realtype *Ae,
-                         realtype *bi, realtype *be, realtype *b2i,
-                         realtype *b2e, int *ier);
+  void FARK_SETERKTABLE(int *s, int *q, int *p, sunrealtype *c, sunrealtype *A,
+                        sunrealtype *b, sunrealtype *b2, int *ier);
+  void FARK_SETIRKTABLE(int *s, int *q, int *p, sunrealtype *c,
+                        sunrealtype *A, sunrealtype *b, sunrealtype *b2, int *ier);
+  void FARK_SETARKTABLES(int *s, int *q, int *p, sunrealtype *ci,
+                         sunrealtype *ce, sunrealtype *Ai, sunrealtype *Ae,
+                         sunrealtype *bi, sunrealtype *be, sunrealtype *b2i,
+                         sunrealtype *b2e, int *ier);
 
-  void FARK_SETRESTOLERANCE(int *itol, realtype *atol, int *ier);
+  void FARK_SETRESTOLERANCE(int *itol, sunrealtype *atol, int *ier);
   void FARK_SETDIAGNOSTICS(char fname[], int *flen, int *ier);
   void FARK_STOPDIAGNOSTICS(int *ier);
 
   void FARK_NLSINIT(int *ier);
 
   void FARK_LSINIT(int *ier);
-  void FARK_LSSETEPSLIN(realtype *eplifac, int *ier);
+  void FARK_LSSETEPSLIN(sunrealtype *eplifac, int *ier);
   void FARK_LSMASSINIT(int *time_dep, int *ier);
-  void FARK_LSSETMASSEPSLIN(realtype *eplifac, int *ier);
+  void FARK_LSSETMASSEPSLIN(sunrealtype *eplifac, int *ier);
 
-  void FARK_ARKODE(realtype *tout, realtype *t, realtype *y,
+  void FARK_ARKODE(sunrealtype *tout, sunrealtype *t, sunrealtype *y,
                    int *itask, int *ier);
-  void FARK_DKY(realtype *t, int *k, realtype *dky, int *ier);
+  void FARK_DKY(sunrealtype *t, int *k, sunrealtype *dky, int *ier);
 
-  void FARK_GETERRWEIGHTS(realtype *eweight, int *ier);
-  void FARK_GETRESWEIGHTS(realtype *rweight, int *ier);
-  void FARK_GETESTLOCALERR(realtype *ele, int *ier);
+  void FARK_GETERRWEIGHTS(sunrealtype *eweight, int *ier);
+  void FARK_GETRESWEIGHTS(sunrealtype *rweight, int *ier);
+  void FARK_GETESTLOCALERR(sunrealtype *ele, int *ier);
 
   void FARK_FREE(void);
 
@@ -307,9 +307,9 @@ extern "C" {
   void FARK_DLSINIT(int *ier);
   void FARK_DLSMASSINIT(int *time_dep, int *ier);
   void FARK_SPILSINIT(int *ier);
-  void FARK_SPILSSETEPSLIN(realtype *eplifac, int *ier);
+  void FARK_SPILSSETEPSLIN(sunrealtype *eplifac, int *ier);
   void FARK_SPILSMASSINIT(int *time_dep, int *ier);
-  void FARK_SPILSSETMASSEPSLIN(realtype *eplifac, int *ier);
+  void FARK_SPILSSETMASSEPSLIN(sunrealtype *eplifac, int *ier);
   void FARK_SPILSSETJAC(int *flag, int *ier);
   void FARK_SPILSSETPREC(int *flag, int *ier);
   void FARK_SPILSSETMASS(int *ier);
@@ -319,60 +319,60 @@ extern "C" {
 
 
   /* Prototypes: Functions Called by the ARKODE Solver */
-  int FARKfe(realtype t, N_Vector y, N_Vector ydot, void *user_data);
-  int FARKfi(realtype t, N_Vector y, N_Vector ydot, void *user_data);
+  int FARKfe(sunrealtype t, N_Vector y, N_Vector ydot, void *user_data);
+  int FARKfi(sunrealtype t, N_Vector y, N_Vector ydot, void *user_data);
 
-  int FARKDenseJac(realtype t, N_Vector y, N_Vector fy,
+  int FARKDenseJac(sunrealtype t, N_Vector y, N_Vector fy,
                    SUNMatrix J, void *user_data,
                    N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
-  int FARKBandJac(realtype t, N_Vector y, N_Vector fy,
+  int FARKBandJac(sunrealtype t, N_Vector y, N_Vector fy,
                   SUNMatrix J, void *user_data,
                   N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
-  int FARKSparseJac(realtype t, N_Vector y, N_Vector fy,
+  int FARKSparseJac(sunrealtype t, N_Vector y, N_Vector fy,
                     SUNMatrix J, void *user_data, N_Vector vtemp1,
                     N_Vector vtemp2, N_Vector vtemp3);
 
 
-  int FARKDenseMass(realtype t, SUNMatrix M, void *user_data,
+  int FARKDenseMass(sunrealtype t, SUNMatrix M, void *user_data,
                     N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
-  int FARKBandMass(realtype t, SUNMatrix M, void *user_data,
+  int FARKBandMass(sunrealtype t, SUNMatrix M, void *user_data,
                     N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
-  int FARKSparseMass(realtype t, SUNMatrix M, void *user_data,
+  int FARKSparseMass(sunrealtype t, SUNMatrix M, void *user_data,
                     N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
 
-  int FARKPSet(realtype tn, N_Vector y, N_Vector fy, booleantype jok,
-               booleantype *jcurPtr, realtype gamma, void *user_data);
+  int FARKPSet(sunrealtype tn, N_Vector y, N_Vector fy, sunbooleantype jok,
+               sunbooleantype *jcurPtr, sunrealtype gamma, void *user_data);
 
-  int FARKMassPSet(realtype tn, void *user_data);
+  int FARKMassPSet(sunrealtype tn, void *user_data);
 
-  int FARKPSol(realtype tn, N_Vector y, N_Vector fy, N_Vector r,
-               N_Vector z, realtype gamma, realtype delta, int lr,
+  int FARKPSol(sunrealtype tn, N_Vector y, N_Vector fy, N_Vector r,
+               N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
                void *user_data);
 
-  int FARKMassPSol(realtype tn, N_Vector r, N_Vector z, realtype delta,
+  int FARKMassPSol(sunrealtype tn, N_Vector r, N_Vector z, sunrealtype delta,
                    int lr, void *user_data);
 
-  int FARKJTSetup(realtype t, N_Vector y, N_Vector fy, void *user_data);
+  int FARKJTSetup(sunrealtype t, N_Vector y, N_Vector fy, void *user_data);
 
-  int FARKJtimes(N_Vector v, N_Vector Jv, realtype t, N_Vector y,
+  int FARKJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y,
                  N_Vector fy, void *user_data, N_Vector work);
 
-  int FARKMTSetup(realtype t, void *user_data);
+  int FARKMTSetup(sunrealtype t, void *user_data);
 
-  int FARKMtimes(N_Vector v, N_Vector Mv, realtype t, void *user_data);
+  int FARKMtimes(N_Vector v, N_Vector Mv, sunrealtype t, void *user_data);
 
   int FARKEwt(N_Vector y, N_Vector ewt, void *user_data);
 
-  int FARKAdapt(N_Vector y, realtype t, realtype h1, realtype h2,
-                realtype h3, realtype e1, realtype e2, realtype e3,
-                int q, int p, realtype *hnew, void *user_data);
+  int FARKAdapt(N_Vector y, sunrealtype t, sunrealtype h1, sunrealtype h2,
+                sunrealtype h3, sunrealtype e1, sunrealtype e2, sunrealtype e3,
+                int q, int p, sunrealtype *hnew, void *user_data);
 
-  int FARKExpStab(N_Vector y, realtype t, realtype *hstab, void *user_data);
+  int FARKExpStab(N_Vector y, sunrealtype t, sunrealtype *hstab, void *user_data);
 
   void FARKNullMatrix(void);
   void FARKNullLinsol(void);
@@ -391,10 +391,10 @@ extern "C" {
   /* items defined in farkode.c */
   extern void *ARK_arkodemem;
   extern long int *ARK_iout;
-  extern realtype *ARK_rout;
+  extern sunrealtype *ARK_rout;
   extern int ARK_nrtfn;
-  extern booleantype ARK_ls;
-  extern booleantype ARK_mass_ls;
+  extern sunbooleantype ARK_ls;
+  extern sunbooleantype ARK_mass_ls;
 
 #ifdef __cplusplus
 }

@@ -34,7 +34,7 @@
  * ----------------------------------------------------------------
  */
 
-#define ZERO RCONST(0.0)
+#define ZERO SUN_RCONST(0.0)
 
 /*
  * ----------------------------------------------------------------
@@ -46,8 +46,8 @@
 extern "C" {
 #endif
 
-extern void FK_LOCFN(long int* NLOC, realtype* ULOC, realtype* GLOC, int* IER);
-extern void FK_COMMFN(long int* NLOC, realtype* ULOC, int* IER);
+extern void FK_LOCFN(long int* NLOC, sunrealtype* ULOC, sunrealtype* GLOC, int* IER);
+extern void FK_COMMFN(long int* NLOC, sunrealtype* ULOC, int* IER);
 
 #ifdef __cplusplus
 }
@@ -81,7 +81,7 @@ void FKIN_BBDINIT(long int* nlocal, long int* mudq, long int* mldq,
 
 int FKINgloc(long int Nloc, N_Vector uu, N_Vector gval, void* user_data)
 {
-  realtype *uloc, *gloc;
+  sunrealtype *uloc, *gloc;
   int ier;
 
   /* Initialize all pointers to NULL */
@@ -114,7 +114,7 @@ int FKINgloc(long int Nloc, N_Vector uu, N_Vector gval, void* user_data)
 
 int FKINgcomm(long int Nloc, N_Vector uu, void* user_data)
 {
-  realtype* uloc;
+  sunrealtype* uloc;
   int ier;
 
   /* Initialize all pointers to NULL */

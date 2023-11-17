@@ -32,12 +32,12 @@
 extern "C" {
 #endif
 
-extern void FARK_JTSETUP(realtype* T, realtype* Y, realtype* FY, realtype* H,
-                         long int* IPAR, realtype* RPAR, int* IER);
+extern void FARK_JTSETUP(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* H,
+                         long int* IPAR, sunrealtype* RPAR, int* IER);
 
-extern void FARK_JTIMES(realtype* V, realtype* JV, realtype* T, realtype* Y,
-                        realtype* FY, realtype* H, long int* IPAR,
-                        realtype* RPAR, realtype* WRK, int* IER);
+extern void FARK_JTIMES(sunrealtype* V, sunrealtype* JV, sunrealtype* T, sunrealtype* Y,
+                        sunrealtype* FY, sunrealtype* H, long int* IPAR,
+                        sunrealtype* RPAR, sunrealtype* WRK, int* IER);
 
 #ifdef __cplusplus
 }
@@ -63,10 +63,10 @@ void FARK_LSSETJAC(int* flag, int* ier)
 
 /* C interface to user-supplied Fortran routine FARKJTSETUP; see
    farkode.h for further information */
-int FARKJTSetup(realtype t, N_Vector y, N_Vector fy, void* user_data)
+int FARKJTSetup(sunrealtype t, N_Vector y, N_Vector fy, void* user_data)
 {
-  realtype *ydata, *fydata;
-  realtype h;
+  sunrealtype *ydata, *fydata;
+  sunrealtype h;
   FARKUserData ARK_userdata;
   int ier = 0;
 
@@ -85,11 +85,11 @@ int FARKJTSetup(realtype t, N_Vector y, N_Vector fy, void* user_data)
 
 /* C interface to user-supplied Fortran routine FARKJTIMES; see
    farkode.h for further information */
-int FARKJtimes(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
+int FARKJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
                void* user_data, N_Vector work)
 {
-  realtype *vdata, *Jvdata, *ydata, *fydata, *wkdata;
-  realtype h;
+  sunrealtype *vdata, *Jvdata, *ydata, *fydata, *wkdata;
+  sunrealtype h;
   FARKUserData ARK_userdata;
   int ier = 0;
 

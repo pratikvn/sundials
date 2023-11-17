@@ -29,11 +29,11 @@
 extern "C" {
 #endif
 
-extern void FIDA_SPJAC(realtype* T, realtype* CJ, realtype* Y, realtype* YP,
-                       realtype* R, long int* N, long int* NNZ, realtype* JDATA,
-                       sunindextype* JRVALS, sunindextype* JCPTRS, realtype* H,
-                       long int* IPAR, realtype* RPAR, realtype* V1,
-                       realtype* V2, realtype* V3, int* ier);
+extern void FIDA_SPJAC(sunrealtype* T, sunrealtype* CJ, sunrealtype* Y, sunrealtype* YP,
+                       sunrealtype* R, long int* N, long int* NNZ, sunrealtype* JDATA,
+                       sunindextype* JRVALS, sunindextype* JCPTRS, sunrealtype* H,
+                       long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
+                       sunrealtype* V2, sunrealtype* V3, int* ier);
 
 #ifdef __cplusplus
 }
@@ -58,13 +58,13 @@ void FIDA_SPARSESETJAC(int* ier)
 
 /* C interface to user-supplied Fortran routine FIDASPJAC; see 
    fida.h for additional information  */
-int FIDASparseJac(realtype t, realtype cj, N_Vector y, N_Vector yp,
+int FIDASparseJac(sunrealtype t, sunrealtype cj, N_Vector y, N_Vector yp,
                   N_Vector fval, SUNMatrix J, void* user_data, N_Vector vtemp1,
                   N_Vector vtemp2, N_Vector vtemp3)
 {
   int ier;
-  realtype *ydata, *ypdata, *rdata, *v1data, *v2data, *v3data, *Jdata;
-  realtype h;
+  sunrealtype *ydata, *ypdata, *rdata, *v1data, *v2data, *v3data, *Jdata;
+  sunrealtype h;
   long int NP, NNZ;
   sunindextype *indexvals, *indexptrs;
   FIDAUserData IDA_userdata;

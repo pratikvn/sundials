@@ -24,15 +24,15 @@
 
 /* Other Constants */
 
-#define FRACT RCONST(0.1)
-#define ONE   RCONST(1.0)
+#define FRACT SUN_RCONST(0.1)
+#define ONE   SUN_RCONST(1.0)
 
 /* CVDIAG linit, lsetup, lsolve, and lfree routines */
 
 static int CVDiagInit(CVodeMem cv_mem);
 
 static int CVDiagSetup(CVodeMem cv_mem, int convfail, N_Vector ypred,
-                       N_Vector fpred, booleantype* jcurPtr, N_Vector vtemp1,
+                       N_Vector fpred, sunbooleantype* jcurPtr, N_Vector vtemp1,
                        N_Vector vtemp2, N_Vector vtemp3);
 
 static int CVDiagSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight,
@@ -329,14 +329,14 @@ static int CVDiagInit(CVodeMem cv_mem)
  */
 
 static int CVDiagSetup(CVodeMem cv_mem, int convfail, N_Vector ypred,
-                       N_Vector fpred, booleantype* jcurPtr, N_Vector vtemp1,
+                       N_Vector fpred, sunbooleantype* jcurPtr, N_Vector vtemp1,
                        N_Vector vtemp2, N_Vector vtemp3)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
 
-  realtype r;
+  sunrealtype r;
   N_Vector ftemp, y;
-  booleantype invOK;
+  sunbooleantype invOK;
   CVDiagMem cvdiag_mem;
   int retval;
 
@@ -409,8 +409,8 @@ static int CVDiagSolve(CVodeMem cv_mem, N_Vector b, N_Vector weight,
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);
 
-  booleantype invOK;
-  realtype r;
+  sunbooleantype invOK;
+  sunrealtype r;
   CVDiagMem cvdiag_mem;
 
   cvdiag_mem = (CVDiagMem)lmem;

@@ -23,8 +23,8 @@
 
 #include "sundials_linearsolver_impl.h"
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 /*
  * -----------------------------------------------------------------
@@ -247,13 +247,13 @@ SUNErrCode SUNLinSolInitialize_SPFGMR(SUNLinearSolver S)
   /*   Hessenberg matrix Hes */
   if (content->Hes == NULL)
   {
-    content->Hes = (realtype**)malloc((content->maxl + 1) * sizeof(realtype*));
+    content->Hes = (sunrealtype**)malloc((content->maxl + 1) * sizeof(sunrealtype*));
     SUNAssert(content->Hes, SUN_ERR_MALLOC_FAIL);
 
     for (k = 0; k <= content->maxl; k++)
     {
       content->Hes[k] = NULL;
-      content->Hes[k] = (realtype*)malloc(content->maxl * sizeof(realtype));
+      content->Hes[k] = (sunrealtype*)malloc(content->maxl * sizeof(sunrealtype));
       SUNAssert(content->Hes[k], SUN_ERR_MALLOC_FAIL);
     }
   }
@@ -261,21 +261,21 @@ SUNErrCode SUNLinSolInitialize_SPFGMR(SUNLinearSolver S)
   /*   Givens rotation components */
   if (content->givens == NULL)
   {
-    content->givens = (realtype*)malloc(2 * content->maxl * sizeof(realtype));
+    content->givens = (sunrealtype*)malloc(2 * content->maxl * sizeof(sunrealtype));
     SUNAssert(content->givens, SUN_ERR_MALLOC_FAIL);
   }
 
   /*    y and g vectors */
   if (content->yg == NULL)
   {
-    content->yg = (realtype*)malloc((content->maxl + 1) * sizeof(realtype));
+    content->yg = (sunrealtype*)malloc((content->maxl + 1) * sizeof(sunrealtype));
     SUNAssert(content->yg, SUN_ERR_MALLOC_FAIL);
   }
 
   /*    cv vector for fused vector ops */
   if (content->cv == NULL)
   {
-    content->cv = (realtype*)malloc((content->maxl + 1) * sizeof(realtype));
+    content->cv = (sunrealtype*)malloc((content->maxl + 1) * sizeof(sunrealtype));
     SUNAssert(content->cv, SUN_ERR_MALLOC_FAIL);
   }
 
@@ -322,7 +322,7 @@ SUNErrCode SUNLinSolSetScalingVectors_SPFGMR(SUNLinearSolver S, N_Vector s1,
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNLinSolSetZeroGuess_SPFGMR(SUNLinearSolver S, booleantype onoff)
+SUNErrCode SUNLinSolSetZeroGuess_SPFGMR(SUNLinearSolver S, sunbooleantype onoff)
 {
   /* set flag indicating a zero initial guess */
   SPFGMR_CONTENT(S)->zeroguess = onoff;
@@ -357,15 +357,15 @@ int SUNLinSolSetup_SPFGMR(SUNLinearSolver S, SUNMatrix A)
 }
 
 int SUNLinSolSolve_SPFGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                          N_Vector b, realtype delta)
+                          N_Vector b, sunrealtype delta)
 {
   /* local data and shortcut variables */
   SUNAssignSUNCTX(S->sunctx);
   N_Vector *V, *Z, xcor, vtemp, s1, s2;
-  realtype **Hes, *givens, *yg, *res_norm;
-  realtype beta, rotation_product, r_norm, s_product, rho;
-  booleantype preOnRight, scale1, scale2, converged;
-  booleantype* zeroguess;
+  sunrealtype **Hes, *givens, *yg, *res_norm;
+  sunrealtype beta, rotation_product, r_norm, s_product, rho;
+  sunbooleantype preOnRight, scale1, scale2, converged;
+  sunbooleantype* zeroguess;
   int i, j, k, l, l_max, krydim, ntries, max_restarts, gstype;
   int* nli;
   void *A_data, *P_data;
@@ -374,7 +374,7 @@ int SUNLinSolSolve_SPFGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   int status;
 
   /* local shortcuts for fused vector operations */
-  realtype* cv;
+  sunrealtype* cv;
   N_Vector* Xv;
 
   /* Initialize some variables */
@@ -407,7 +407,7 @@ int SUNLinSolSolve_SPFGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   *nli      = 0;
   converged = SUNFALSE;
 
-  /* Set booleantype flags for internal solver options */
+  /* Set sunbooleantype flags for internal solver options */
   preOnRight = ((SPFGMR_CONTENT(S)->pretype == SUN_PREC_LEFT) ||
                 (SPFGMR_CONTENT(S)->pretype == SUN_PREC_RIGHT) ||
                 (SPFGMR_CONTENT(S)->pretype == SUN_PREC_BOTH));
@@ -655,7 +655,7 @@ int SUNLinSolNumIters_SPFGMR(SUNLinearSolver S)
   return (SPFGMR_CONTENT(S)->numiters);
 }
 
-realtype SUNLinSolResNorm_SPFGMR(SUNLinearSolver S)
+sunrealtype SUNLinSolResNorm_SPFGMR(SUNLinearSolver S)
 {
   return (SPFGMR_CONTENT(S)->resnorm);
 }

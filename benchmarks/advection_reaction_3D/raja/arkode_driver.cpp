@@ -51,7 +51,7 @@ int EvolveProblemDIRK(N_Vector y, UserData* udata, UserOptions* uopt)
   SUNNonlinearSolver NLS = NULL; /* empty nonlinear solver structure */
   SUNLinearSolver LS     = NULL; /* empty linear solver structure    */
 
-  realtype t, dtout, tout;    /* current/output time data     */
+  sunrealtype t, dtout, tout;    /* current/output time data     */
   int      retval;            /* reusable error-checking flag */
   int      iout;              /* output counter               */
   long int nst, nst_a, netf;  /* step stats                   */
@@ -241,7 +241,7 @@ int EvolveProblemIMEX(N_Vector y, UserData* udata, UserOptions* uopt)
   SUNNonlinearSolver NLS = NULL; /* empty nonlinear solver structure */
   SUNLinearSolver LS     = NULL; /* empty linear solver structure    */
 
-  realtype t, dtout, tout;    /* current/output time data     */
+  sunrealtype t, dtout, tout;    /* current/output time data     */
   int      retval;            /* reusable error-checking flag */
   int      iout;              /* output counter               */
   long int nst, nst_a, netf;  /* step stats                   */
@@ -442,7 +442,7 @@ int EvolveProblemIMEX(N_Vector y, UserData* udata, UserOptions* uopt)
 int EvolveProblemExplicit(N_Vector y, UserData* udata, UserOptions* uopt)
 {
   void*    arkode_mem = NULL; /* empty ARKODE memory structure */
-  realtype   t, dtout, tout;    /* current/output time data      */
+  sunrealtype   t, dtout, tout;    /* current/output time data      */
   int      retval;            /* reusable error-checking flag  */
   int      iout;              /* output counter                */
   long int nst, nst_a, netf;  /* step stats                    */
@@ -557,12 +557,12 @@ int TaskLocalNlsResidual(N_Vector ycor, N_Vector F, void* arkode_mem)
   /* temporary variables */
   UserData* udata;
   int retval;
-  realtype c[3];
+  sunrealtype c[3];
   N_Vector X[3];
 
   /* nonlinear system data */
   N_Vector z, zpred, Fi, sdata;
-  realtype tcur, gamma;
+  sunrealtype tcur, gamma;
   void* user_data;
 
   ARKStepGetNonlinearSystemData(arkode_mem, &tcur, &zpred, &z, &Fi, &gamma,
@@ -602,7 +602,7 @@ int TaskLocalLSolve(N_Vector delta, void* arkode_mem)
 
   /* nonlinear system data */
   N_Vector z, zpred, Fi, sdata;
-  realtype tcur, gamma;
+  sunrealtype tcur, gamma;
   void* user_data = NULL;
 
   ARKStepGetNonlinearSystemData(arkode_mem, &tcur, &zpred, &z, &Fi, &gamma,
@@ -635,7 +635,7 @@ int TaskLocalNewton_Initialize(SUNNonlinearSolver NLS)
 }
 
 int TaskLocalNewton_Solve(SUNNonlinearSolver NLS, N_Vector y0, N_Vector ycor,
-                          N_Vector w, realtype tol, booleantype callLSetup,
+                          N_Vector w, sunrealtype tol, sunbooleantype callLSetup,
                           void* mem)
 {
   /* local variables */

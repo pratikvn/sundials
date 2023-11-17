@@ -27,50 +27,50 @@
 
 /* constants */
 #define MAX_ITERS 3 /* max. number of attempts to recover in DQ J*v */
-#define ZERO      RCONST(0.0)
-#define PT25      RCONST(0.25)
-#define PT05      RCONST(0.05)
-#define PT9       RCONST(0.9)
-#define ONE       RCONST(1.0)
-#define TWO       RCONST(2.0)
+#define ZERO      SUN_RCONST(0.0)
+#define PT25      SUN_RCONST(0.25)
+#define PT05      SUN_RCONST(0.05)
+#define PT9       SUN_RCONST(0.9)
+#define ONE       SUN_RCONST(1.0)
+#define TWO       SUN_RCONST(2.0)
 
 /*=================================================================
   PRIVATE FUNCTION PROTOTYPES
   =================================================================*/
 
-static int idaLsJacBWrapper(realtype tt, realtype c_jB, N_Vector yyB,
+static int idaLsJacBWrapper(sunrealtype tt, sunrealtype c_jB, N_Vector yyB,
                             N_Vector ypB, N_Vector rBr, SUNMatrix JacB,
                             void* ida_mem, N_Vector tmp1B, N_Vector tmp2B,
                             N_Vector tmp3B);
-static int idaLsJacBSWrapper(realtype tt, realtype c_jB, N_Vector yyB,
+static int idaLsJacBSWrapper(sunrealtype tt, sunrealtype c_jB, N_Vector yyB,
                              N_Vector ypB, N_Vector rBr, SUNMatrix JacB,
                              void* ida_mem, N_Vector tmp1B, N_Vector tmp2B,
                              N_Vector tmp3B);
 
-static int idaLsPrecSetupB(realtype tt, N_Vector yyB, N_Vector ypB,
-                           N_Vector rrB, realtype c_jB, void* idaadj_mem);
-static int idaLsPrecSetupBS(realtype tt, N_Vector yyB, N_Vector ypB,
-                            N_Vector rrB, realtype c_jB, void* idaadj_mem);
+static int idaLsPrecSetupB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                           N_Vector rrB, sunrealtype c_jB, void* idaadj_mem);
+static int idaLsPrecSetupBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                            N_Vector rrB, sunrealtype c_jB, void* idaadj_mem);
 
-static int idaLsPrecSolveB(realtype tt, N_Vector yyB, N_Vector ypB,
+static int idaLsPrecSolveB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                            N_Vector rrB, N_Vector rvecB, N_Vector zvecB,
-                           realtype c_jB, realtype deltaB, void* idaadj_mem);
-static int idaLsPrecSolveBS(realtype tt, N_Vector yyB, N_Vector ypB,
+                           sunrealtype c_jB, sunrealtype deltaB, void* idaadj_mem);
+static int idaLsPrecSolveBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                             N_Vector rrB, N_Vector rvecB, N_Vector zvecB,
-                            realtype c_jB, realtype deltaB, void* idaadj_mem);
+                            sunrealtype c_jB, sunrealtype deltaB, void* idaadj_mem);
 
-static int idaLsJacTimesSetupB(realtype tt, N_Vector yyB, N_Vector ypB,
-                               N_Vector rrB, realtype c_jB, void* idaadj_mem);
-static int idaLsJacTimesSetupBS(realtype tt, N_Vector yyB, N_Vector ypB,
-                                N_Vector rrB, realtype c_jB, void* idaadj_mem);
+static int idaLsJacTimesSetupB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                               N_Vector rrB, sunrealtype c_jB, void* idaadj_mem);
+static int idaLsJacTimesSetupBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                                N_Vector rrB, sunrealtype c_jB, void* idaadj_mem);
 
-static int idaLsJacTimesVecB(realtype tt, N_Vector yyB, N_Vector ypB,
+static int idaLsJacTimesVecB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                              N_Vector rrB, N_Vector vB, N_Vector JvB,
-                             realtype c_jB, void* idaadj_mem, N_Vector tmp1B,
+                             sunrealtype c_jB, void* idaadj_mem, N_Vector tmp1B,
                              N_Vector tmp2B);
-static int idaLsJacTimesVecBS(realtype tt, N_Vector yyB, N_Vector ypB,
+static int idaLsJacTimesVecBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                               N_Vector rrB, N_Vector vB, N_Vector JvB,
-                              realtype c_jB, void* idaadj_mem, N_Vector tmp1B,
+                              sunrealtype c_jB, void* idaadj_mem, N_Vector tmp1B,
                               N_Vector tmp2B);
 
 /*================================================================
@@ -85,8 +85,8 @@ int IDASetLinearSolver(void* ida_mem, SUNLinearSolver LS, SUNMatrix A)
   IDAMem IDA_mem;
   IDALsMem idals_mem;
   int retval, LSType;
-  booleantype iterative;   /* is the solver iterative?    */
-  booleantype matrixbased; /* is a matrix structure used? */
+  sunbooleantype iterative;   /* is the solver iterative?    */
+  sunbooleantype matrixbased; /* is a matrix structure used? */
 
   /* Return immediately if any input is NULL */
   if (ida_mem == NULL)
@@ -366,7 +366,7 @@ int IDASetJacFn(void* ida_mem, IDALsJacFn jac)
 }
 
 /* IDASetEpsLin specifies the nonlinear -> linear tolerance scale factor */
-int IDASetEpsLin(void* ida_mem, realtype eplifac)
+int IDASetEpsLin(void* ida_mem, sunrealtype eplifac)
 {
   IDAMem IDA_mem;
   IDALsMem idals_mem;
@@ -391,7 +391,7 @@ int IDASetEpsLin(void* ida_mem, realtype eplifac)
 
 /* IDASetWRMSNormFactor sets or computes the factor to use when converting from
    the integrator tolerance to the linear solver tolerance (WRMS to L2 norm). */
-int IDASetLSNormFactor(void* ida_mem, realtype nrmfac)
+int IDASetLSNormFactor(void* ida_mem, sunrealtype nrmfac)
 {
   IDAMem IDA_mem;
   IDALsMem idals_mem;
@@ -425,7 +425,7 @@ int IDASetLSNormFactor(void* ida_mem, realtype nrmfac)
 
 /* IDASetLinearSolutionScaling enables or disables scaling the linear solver
    solution to account for changes in cj. */
-int IDASetLinearSolutionScaling(void* ida_mem, booleantype onoff)
+int IDASetLinearSolutionScaling(void* ida_mem, sunbooleantype onoff)
 {
   IDAMem IDA_mem;
   IDALsMem idals_mem;
@@ -446,7 +446,7 @@ int IDASetLinearSolutionScaling(void* ida_mem, booleantype onoff)
 }
 
 /* IDASetIncrementFactor specifies increment factor for DQ approximations to Jv */
-int IDASetIncrementFactor(void* ida_mem, realtype dqincfac)
+int IDASetIncrementFactor(void* ida_mem, sunrealtype dqincfac)
 {
   IDAMem IDA_mem;
   IDALsMem idals_mem;
@@ -913,7 +913,7 @@ int idaLsPSetup(void* ida_mem)
   is the only case in which the user's psolve routine is allowed
   to be NULL.
   ---------------------------------------------------------------*/
-int idaLsPSolve(void* ida_mem, N_Vector r, N_Vector z, realtype tol, int lr)
+int idaLsPSolve(void* ida_mem, N_Vector r, N_Vector z, sunrealtype tol, int lr)
 {
   IDAMem IDA_mem;
   IDALsMem idals_mem;
@@ -938,7 +938,7 @@ int idaLsPSolve(void* ida_mem, N_Vector r, N_Vector z, realtype tol, int lr)
   implementations of the difference quotient Jacobian
   approximation routines.
 ---------------------------------------------------------------*/
-int idaLsDQJac(realtype t, realtype c_j, N_Vector y, N_Vector yp, N_Vector r,
+int idaLsDQJac(sunrealtype t, sunrealtype c_j, N_Vector y, N_Vector yp, N_Vector r,
                SUNMatrix Jac, void* ida_mem, N_Vector tmp1, N_Vector tmp2,
                N_Vector tmp3)
 {
@@ -1006,13 +1006,13 @@ int idaLsDQJac(realtype t, realtype c_j, N_Vector y, N_Vector yp, N_Vector r,
   actual computation of the jth column of the Jacobian is
   done with a call to N_VLinearSum.
 ---------------------------------------------------------------*/
-int idaLsDenseDQJac(realtype tt, realtype c_j, N_Vector yy, N_Vector yp,
+int idaLsDenseDQJac(sunrealtype tt, sunrealtype c_j, N_Vector yy, N_Vector yp,
                     N_Vector rr, SUNMatrix Jac, IDAMem IDA_mem, N_Vector tmp1)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
-  realtype inc, inc_inv, yj, ypj, srur, conj;
-  realtype *y_data, *yp_data, *ewt_data, *cns_data = NULL;
+  sunrealtype inc, inc_inv, yj, ypj, srur, conj;
+  sunrealtype *y_data, *yp_data, *ewt_data, *cns_data = NULL;
   N_Vector rtemp, jthCol;
   sunindextype j, N;
   IDALsMem idals_mem;
@@ -1113,15 +1113,15 @@ int idaLsDenseDQJac(realtype tt, realtype c_j, N_Vector yy, N_Vector yp,
   The return value is either IDABAND_SUCCESS = 0, or the nonzero
   value returned by the res routine, if any.
   ---------------------------------------------------------------*/
-int idaLsBandDQJac(realtype tt, realtype c_j, N_Vector yy, N_Vector yp,
+int idaLsBandDQJac(sunrealtype tt, sunrealtype c_j, N_Vector yy, N_Vector yp,
                    N_Vector rr, SUNMatrix Jac, IDAMem IDA_mem, N_Vector tmp1,
                    N_Vector tmp2, N_Vector tmp3)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
-  realtype inc, inc_inv, yj, ypj, srur, conj, ewtj;
-  realtype *y_data, *yp_data, *ewt_data, *cns_data = NULL;
-  realtype *ytemp_data, *yptemp_data, *rtemp_data, *r_data, *col_j;
+  sunrealtype inc, inc_inv, yj, ypj, srur, conj, ewtj;
+  sunrealtype *y_data, *yp_data, *ewt_data, *cns_data = NULL;
+  sunrealtype *ytemp_data, *yptemp_data, *rtemp_data, *r_data, *col_j;
   N_Vector rtemp, ytemp, yptemp;
   sunindextype i, j, i1, i2, width, ngroups, group;
   sunindextype N, mupper, mlower;
@@ -1260,14 +1260,14 @@ int idaLsBandDQJac(realtype tt, realtype c_j, N_Vector yy, N_Vector yp,
   The return value from the call to res is saved in order to set
   the return flag from idaLsSolve.
   ---------------------------------------------------------------*/
-int idaLsDQJtimes(realtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
-                  N_Vector v, N_Vector Jv, realtype c_j, void* ida_mem,
+int idaLsDQJtimes(sunrealtype tt, N_Vector yy, N_Vector yp, N_Vector rr,
+                  N_Vector v, N_Vector Jv, sunrealtype c_j, void* ida_mem,
                   N_Vector work1, N_Vector work2)
 {
   IDAMem IDA_mem;
   IDALsMem idals_mem;
   N_Vector y_tmp, yp_tmp;
-  realtype sig, siginv;
+  sunrealtype sig, siginv;
   int iter, retval;
   SUNLinearSolver_ID LSID;
 
@@ -1508,7 +1508,7 @@ int idaLsSolve(IDAMem IDA_mem, N_Vector b, N_Vector weight, N_Vector ycur,
 
   IDALsMem idals_mem;
   int nli_inc, retval;
-  realtype tol, w_mean;
+  sunrealtype tol, w_mean;
   int ls_status;
 
   /* access IDALsMem structure */
@@ -1670,9 +1670,9 @@ int idaLsSolve(IDAMem IDA_mem, N_Vector b, N_Vector weight, N_Vector ycur,
 int idaLsPerf(IDAMem IDA_mem, int perftask)
 {
   IDALsMem idals_mem;
-  realtype rcfn, rcfl;
+  sunrealtype rcfn, rcfl;
   long int nstd, nnid;
-  booleantype lcfn, lcfl;
+  sunbooleantype lcfn, lcfl;
 
   /* access IDALsMem structure */
   if (IDA_mem->ida_lmem == NULL)
@@ -1705,8 +1705,8 @@ int idaLsPerf(IDAMem IDA_mem, int perftask)
   nnid = IDA_mem->ida_nni - idals_mem->nni0;
   if (nstd == 0 || nnid == 0) { return (0); }
 
-  rcfn = ((realtype)(IDA_mem->ida_ncfn - idals_mem->ncfn0)) / ((realtype)nstd);
-  rcfl = ((realtype)(idals_mem->ncfl - idals_mem->ncfl0)) / ((realtype)nnid);
+  rcfn = ((sunrealtype)(IDA_mem->ida_ncfn - idals_mem->ncfn0)) / ((sunrealtype)nstd);
+  rcfl = ((sunrealtype)(idals_mem->ncfl - idals_mem->ncfl0)) / ((sunrealtype)nnid);
   lcfn = (rcfn > PT9);
   lcfl = (rcfl > PT9);
   if (!(lcfn || lcfl)) { return (0); }
@@ -1967,7 +1967,7 @@ int IDASetJacFnBS(void* ida_mem, int which, IDALsJacFnBS jacBS)
   return (retval);
 }
 
-int IDASetEpsLinB(void* ida_mem, int which, realtype eplifacB)
+int IDASetEpsLinB(void* ida_mem, int which, sunrealtype eplifacB)
 {
   IDAadjMem IDAADJ_mem;
   IDAMem IDA_mem;
@@ -1986,7 +1986,7 @@ int IDASetEpsLinB(void* ida_mem, int which, realtype eplifacB)
   return (IDASetEpsLin(ida_memB, eplifacB));
 }
 
-int IDASetLSNormFactorB(void* ida_mem, int which, realtype nrmfacB)
+int IDASetLSNormFactorB(void* ida_mem, int which, sunrealtype nrmfacB)
 {
   IDAadjMem IDAADJ_mem;
   IDAMem IDA_mem;
@@ -2005,7 +2005,7 @@ int IDASetLSNormFactorB(void* ida_mem, int which, realtype nrmfacB)
   return (IDASetLSNormFactor(ida_memB, nrmfacB));
 }
 
-int IDASetLinearSolutionScalingB(void* ida_mem, int which, booleantype onoffB)
+int IDASetLinearSolutionScalingB(void* ida_mem, int which, sunbooleantype onoffB)
 {
   IDAadjMem IDAADJ_mem;
   IDAMem IDA_mem;
@@ -2024,7 +2024,7 @@ int IDASetLinearSolutionScalingB(void* ida_mem, int which, booleantype onoffB)
   return (IDASetLinearSolutionScaling(ida_memB, onoffB));
 }
 
-int IDASetIncrementFactorB(void* ida_mem, int which, realtype dqincfacB)
+int IDASetIncrementFactorB(void* ida_mem, int which, sunrealtype dqincfacB)
 {
   IDAadjMem IDAADJ_mem;
   IDAMem IDA_mem;
@@ -2180,7 +2180,7 @@ int IDASetJacTimesResFnB(void* ida_mem, int which, IDAResFn jtimesResFn)
 
 /* idaLsJacBWrapper interfaces to the IDAJacFnB routine provided
    by the user. idaLsJacBWrapper is of type IDALsJacFn. */
-static int idaLsJacBWrapper(realtype tt, realtype c_jB, N_Vector yyB,
+static int idaLsJacBWrapper(sunrealtype tt, sunrealtype c_jB, N_Vector yyB,
                             N_Vector ypB, N_Vector rrB, SUNMatrix JacB,
                             void* ida_mem, N_Vector tmp1B, N_Vector tmp2B,
                             N_Vector tmp3B)
@@ -2220,7 +2220,7 @@ static int idaLsJacBWrapper(realtype tt, realtype c_jB, N_Vector yyB,
 
 /* idaLsJacBSWrapper interfaces to the IDAJacFnBS routine provided
    by the user. idaLsJacBSWrapper is of type IDALsJacFn. */
-static int idaLsJacBSWrapper(realtype tt, realtype c_jB, N_Vector yyB,
+static int idaLsJacBSWrapper(sunrealtype tt, sunrealtype c_jB, N_Vector yyB,
                              N_Vector ypB, N_Vector rrB, SUNMatrix JacB,
                              void* ida_mem, N_Vector tmp1B, N_Vector tmp2B,
                              N_Vector tmp3B)
@@ -2271,8 +2271,8 @@ static int idaLsJacBSWrapper(realtype tt, realtype c_jB, N_Vector yyB,
 
 /* idaLsPrecSetupB interfaces to the IDALsPrecSetupFnB
    routine provided by the user */
-static int idaLsPrecSetupB(realtype tt, N_Vector yyB, N_Vector ypB,
-                           N_Vector rrB, realtype c_jB, void* ida_mem)
+static int idaLsPrecSetupB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                           N_Vector rrB, sunrealtype c_jB, void* ida_mem)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -2308,8 +2308,8 @@ static int idaLsPrecSetupB(realtype tt, N_Vector yyB, N_Vector ypB,
 
 /* idaLsPrecSetupBS interfaces to the IDALsPrecSetupFnBS routine
    provided by the user */
-static int idaLsPrecSetupBS(realtype tt, N_Vector yyB, N_Vector ypB,
-                            N_Vector rrB, realtype c_jB, void* ida_mem)
+static int idaLsPrecSetupBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                            N_Vector rrB, sunrealtype c_jB, void* ida_mem)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -2355,9 +2355,9 @@ static int idaLsPrecSetupBS(realtype tt, N_Vector yyB, N_Vector ypB,
 
 /* idaLsPrecSolveB interfaces to the IDALsPrecSolveFnB routine
    provided by the user */
-static int idaLsPrecSolveB(realtype tt, N_Vector yyB, N_Vector ypB,
+static int idaLsPrecSolveB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                            N_Vector rrB, N_Vector rvecB, N_Vector zvecB,
-                           realtype c_jB, realtype deltaB, void* ida_mem)
+                           sunrealtype c_jB, sunrealtype deltaB, void* ida_mem)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -2394,9 +2394,9 @@ static int idaLsPrecSolveB(realtype tt, N_Vector yyB, N_Vector ypB,
 
 /* idaLsPrecSolveBS interfaces to the IDALsPrecSolveFnBS routine
    provided by the user */
-static int idaLsPrecSolveBS(realtype tt, N_Vector yyB, N_Vector ypB,
+static int idaLsPrecSolveBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                             N_Vector rrB, N_Vector rvecB, N_Vector zvecB,
-                            realtype c_jB, realtype deltaB, void* ida_mem)
+                            sunrealtype c_jB, sunrealtype deltaB, void* ida_mem)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -2443,8 +2443,8 @@ static int idaLsPrecSolveBS(realtype tt, N_Vector yyB, N_Vector ypB,
 
 /* idaLsJacTimesSetupB interfaces to the IDALsJacTimesSetupFnB
    routine provided by the user */
-static int idaLsJacTimesSetupB(realtype tt, N_Vector yyB, N_Vector ypB,
-                               N_Vector rrB, realtype c_jB, void* ida_mem)
+static int idaLsJacTimesSetupB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                               N_Vector rrB, sunrealtype c_jB, void* ida_mem)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -2479,8 +2479,8 @@ static int idaLsJacTimesSetupB(realtype tt, N_Vector yyB, N_Vector ypB,
 
 /* idaLsJacTimesSetupBS interfaces to the IDALsJacTimesSetupFnBS
    routine provided by the user */
-static int idaLsJacTimesSetupBS(realtype tt, N_Vector yyB, N_Vector ypB,
-                                N_Vector rrB, realtype c_jB, void* ida_mem)
+static int idaLsJacTimesSetupBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
+                                N_Vector rrB, sunrealtype c_jB, void* ida_mem)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -2526,9 +2526,9 @@ static int idaLsJacTimesSetupBS(realtype tt, N_Vector yyB, N_Vector ypB,
 
 /* idaLsJacTimesVecB interfaces to the IDALsJacTimesVecFnB routine
    provided by the user */
-static int idaLsJacTimesVecB(realtype tt, N_Vector yyB, N_Vector ypB,
+static int idaLsJacTimesVecB(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                              N_Vector rrB, N_Vector vB, N_Vector JvB,
-                             realtype c_jB, void* ida_mem, N_Vector tmp1B,
+                             sunrealtype c_jB, void* ida_mem, N_Vector tmp1B,
                              N_Vector tmp2B)
 {
   IDAMem IDA_mem;
@@ -2566,9 +2566,9 @@ static int idaLsJacTimesVecB(realtype tt, N_Vector yyB, N_Vector ypB,
 
 /* idaLsJacTimesVecBS interfaces to the IDALsJacTimesVecFnBS routine
    provided by the user */
-static int idaLsJacTimesVecBS(realtype tt, N_Vector yyB, N_Vector ypB,
+static int idaLsJacTimesVecBS(sunrealtype tt, N_Vector yyB, N_Vector ypB,
                               N_Vector rrB, N_Vector vB, N_Vector JvB,
-                              realtype c_jB, void* ida_mem, N_Vector tmp1B,
+                              sunrealtype c_jB, void* ida_mem, N_Vector tmp1B,
                               N_Vector tmp2B)
 {
   IDAMem IDA_mem;

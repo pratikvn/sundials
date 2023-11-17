@@ -31,9 +31,9 @@
 extern "C" {
 #endif
 
-extern void FARK_DJAC(long int* N, realtype* T, realtype* Y, realtype* FY,
-                      realtype* DJAC, realtype* H, long int* IPAR, realtype* RPAR,
-                      realtype* V1, realtype* V2, realtype* V3, int* ier);
+extern void FARK_DJAC(long int* N, sunrealtype* T, sunrealtype* Y, sunrealtype* FY,
+                      sunrealtype* DJAC, sunrealtype* H, long int* IPAR, sunrealtype* RPAR,
+                      sunrealtype* V1, sunrealtype* V2, sunrealtype* V3, int* ier);
 
 #ifdef __cplusplus
 }
@@ -54,12 +54,12 @@ void FARK_DENSESETJAC(int* flag, int* ier)
 
 /* C interface to user-supplied Fortran routine FARKDJAC; see
    farkode.h for additional information  */
-int FARKDenseJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int FARKDenseJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                  void* user_data, N_Vector vtemp1, N_Vector vtemp2,
                  N_Vector vtemp3)
 {
-  realtype *ydata, *fydata, *jacdata, *v1data, *v2data, *v3data;
-  realtype h;
+  sunrealtype *ydata, *fydata, *jacdata, *v1data, *v2data, *v3data;
+  sunrealtype h;
   long int N;
   FARKUserData ARK_userdata;
   int ier = 0;

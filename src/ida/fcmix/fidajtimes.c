@@ -32,14 +32,14 @@
 extern "C" {
 #endif
 
-extern void FIDA_JTSETUP(realtype* T, realtype* Y, realtype* YP, realtype* R,
-                         realtype* CJ, realtype* EWT, realtype* H,
-                         long int* IPAR, realtype* RPAR, int* IER);
+extern void FIDA_JTSETUP(sunrealtype* T, sunrealtype* Y, sunrealtype* YP, sunrealtype* R,
+                         sunrealtype* CJ, sunrealtype* EWT, sunrealtype* H,
+                         long int* IPAR, sunrealtype* RPAR, int* IER);
 
-extern void FIDA_JTIMES(realtype* T, realtype* Y, realtype* YP, realtype* R,
-                        realtype* V, realtype* FJV, realtype* CJ, realtype* EWT,
-                        realtype* H, long int* IPAR, realtype* RPAR,
-                        realtype* WK1, realtype* WK2, int* IER);
+extern void FIDA_JTIMES(sunrealtype* T, sunrealtype* Y, sunrealtype* YP, sunrealtype* R,
+                        sunrealtype* V, sunrealtype* FJV, sunrealtype* CJ, sunrealtype* EWT,
+                        sunrealtype* H, long int* IPAR, sunrealtype* RPAR,
+                        sunrealtype* WK1, sunrealtype* WK2, int* IER);
 
 #ifdef __cplusplus
 }
@@ -75,11 +75,11 @@ void FIDA_LSSETJAC(int* flag, int* ier)
 
 /* C interface to user-supplied Fortran routine FIDAJTSETUP; see
    fida.h for further information */
-int FIDAJTSetup(realtype t, N_Vector y, N_Vector yp, N_Vector r, realtype cj,
+int FIDAJTSetup(sunrealtype t, N_Vector y, N_Vector yp, N_Vector r, sunrealtype cj,
                 void* user_data)
 {
-  realtype *ydata, *ypdata, *rdata, *ewtdata;
-  realtype h;
+  sunrealtype *ydata, *ypdata, *rdata, *ewtdata;
+  sunrealtype h;
   FIDAUserData IDA_userdata;
   int ier = 0;
 
@@ -109,13 +109,13 @@ int FIDAJTSetup(realtype t, N_Vector y, N_Vector yp, N_Vector r, realtype cj,
 
 /* C interface to user-supplied Fortran routine FIDAJTIMES; see
    fida.h for further information */
-int FIDAJtimes(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, N_Vector v,
-               N_Vector Jv, realtype c_j, void* user_data, N_Vector vtemp1,
+int FIDAJtimes(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, N_Vector v,
+               N_Vector Jv, sunrealtype c_j, void* user_data, N_Vector vtemp1,
                N_Vector vtemp2)
 {
-  realtype *yy_data, *yp_data, *rr_data, *vdata, *Jvdata, *ewtdata;
-  realtype *v1data, *v2data;
-  realtype h;
+  sunrealtype *yy_data, *yp_data, *rr_data, *vdata, *Jvdata, *ewtdata;
+  sunrealtype *v1data, *v2data;
+  sunrealtype h;
   FIDAUserData IDA_userdata;
   int ier;
 

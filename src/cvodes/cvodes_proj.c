@@ -22,10 +22,10 @@
 #include "cvodes_impl.h"
 
 /* Private constants */
-#define ZERO RCONST(0.0) /* real 0.0 */
-#define ONE  RCONST(1.0) /* real 1.0 */
+#define ZERO SUN_RCONST(0.0) /* real 0.0 */
+#define ONE  SUN_RCONST(1.0) /* real 1.0 */
 
-#define ONEPSM RCONST(1.000001)
+#define ONEPSM SUN_RCONST(1.000001)
 
 /* Private utility function prototypes */
 static int cvProjCreate(CVodeProjMem* proj_mem);
@@ -99,7 +99,7 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
  * Exported Functions - projection set function
  * ===========================================================================*/
 
-int CVodeSetProjErrEst(void* cvode_mem, booleantype onoff)
+int CVodeSetProjErrEst(void* cvode_mem, sunbooleantype onoff)
 {
   int retval;
   CVodeMem cv_mem;
@@ -175,7 +175,7 @@ int CVodeSetMaxNumProjFails(void* cvode_mem, int max_fails)
   return (CV_SUCCESS);
 }
 
-int CVodeSetEpsProj(void* cvode_mem, realtype eps)
+int CVodeSetEpsProj(void* cvode_mem, sunrealtype eps)
 {
   int retval;
   CVodeMem cv_mem;
@@ -200,7 +200,7 @@ int CVodeSetEpsProj(void* cvode_mem, realtype eps)
   return (CV_SUCCESS);
 }
 
-int CVodeSetProjFailEta(void* cvode_mem, realtype eta)
+int CVodeSetProjFailEta(void* cvode_mem, sunrealtype eta)
 {
   int retval;
   CVodeMem cv_mem;
@@ -275,7 +275,7 @@ int CVodeGetNumProjFails(void* cvode_mem, long int* npfails)
  * until it is potentially used in cvCompleteStep).
  */
 
-int cvDoProjection(CVodeMem cv_mem, int* nflagPtr, realtype saved_t,
+int cvDoProjection(CVodeMem cv_mem, int* nflagPtr, sunrealtype saved_t,
                    int* npfailPtr)
 {
   SUNAssignSUNCTX(cv_mem->cv_sunctx);

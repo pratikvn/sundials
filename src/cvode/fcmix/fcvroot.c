@@ -33,8 +33,8 @@
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FCV_ROOTFN(realtype* T, realtype* Y, realtype* G, long int* IPAR,
-                       realtype* RPAR, int* ier);
+extern void FCV_ROOTFN(sunrealtype* T, sunrealtype* Y, sunrealtype* G, long int* IPAR,
+                       sunrealtype* RPAR, int* ier);
 #ifdef __cplusplus
 }
 #endif
@@ -68,10 +68,10 @@ void FCV_ROOTFREE(void)
 
 /***************************************************************************/
 
-int FCVrootfunc(realtype t, N_Vector y, realtype* gout, void* user_data)
+int FCVrootfunc(sunrealtype t, N_Vector y, sunrealtype* gout, void* user_data)
 {
   int ier;
-  realtype* ydata;
+  sunrealtype* ydata;
   FCVUserData CV_userdata;
 
   ydata = N_VGetArrayPointer(y);

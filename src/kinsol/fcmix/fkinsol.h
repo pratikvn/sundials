@@ -169,18 +169,18 @@
      more information).
 
      The arguments are:
-         Y    -- array containing state variables [realtype, input]
-         FY   -- array containing residual values [realtype, input]
+         Y    -- array containing state variables [sunrealtype, input]
+         FY   -- array containing residual values [sunrealtype, input]
          N    -- number of matrix rows/columns in Jacobian [int, input]
          NNZ  -- allocated length of nonzero storage [int, input]
         JDATA -- nonzero values in Jacobian
-                 [realtype of length NNZ, output]
+                 [sunrealtype of length NNZ, output]
        JRVALS -- row [or column] indices for each nonzero in Jacobian
                   [int of length NNZ, output]
        JCPTRS -- pointers to each Jacobian column [or row] in preceding arrays
                  [int of length N+1, output]
          WK*  -- array containing temporary workspace of same size as Y 
-                 [realtype, input]
+                 [sunrealtype, input]
          IER  -- return flag [int, output]:
                     0 if successful, 
                    >0 if a recoverable error occurred,
@@ -631,7 +631,7 @@
 #include <sundials/sundials_linearsolver.h> /* definition of SUNLinearSolver */
 #include <sundials/sundials_matrix.h>       /* definition of SUNMatrix       */
 #include <sundials/sundials_nvector.h>      /* definition of type N_Vector   */
-#include <sundials/sundials_types.h>        /* definition of type realtype   */
+#include <sundials/sundials_types.h>        /* definition of type sunrealtype   */
 
 #ifdef __cplusplus  /* wrapper to enable C++ usage */
 extern "C" {
@@ -709,13 +709,13 @@ extern "C" {
   Prototypes : exported functions
   ------------------------------------------------------------------*/
 
-void FKIN_MALLOC(long int *iout, realtype *rout, int *ier);
+void FKIN_MALLOC(long int *iout, sunrealtype *rout, int *ier);
 void FKIN_CREATE(int *ier);
-void FKIN_INIT(long int *iout, realtype *rout, int *ier);
+void FKIN_INIT(long int *iout, sunrealtype *rout, int *ier);
 
 void FKIN_SETIIN(char key_name[], long int *ival, int *ier);
-void FKIN_SETRIN(char key_name[], realtype *rval, int *ier);
-void FKIN_SETVIN(char key_name[], realtype *vval, int *ier);
+void FKIN_SETRIN(char key_name[], sunrealtype *rval, int *ier);
+void FKIN_SETVIN(char key_name[], sunrealtype *vval, int *ier);
 
 void FKIN_LSINIT(int *ier);
 void FKIN_LSSETJAC(int *flag, int *ier);
@@ -731,8 +731,8 @@ void FKIN_SPILSSETJAC(int *flag, int *ier);
 void FKIN_SPILSSETPREC(int *flag, int *ier);
 /*----------------*/
   
-void FKIN_SOL(realtype *uu, int *globalstrategy, 
-              realtype *uscale , realtype *fscale, int *ier);
+void FKIN_SOL(sunrealtype *uu, int *globalstrategy, 
+              sunrealtype *uscale , sunrealtype *fscale, int *ier);
 
 void FKIN_FREE(void);
 
@@ -752,7 +752,7 @@ int FKINSparseJac(N_Vector uu, N_Vector fval, SUNMatrix J,
 		  void *user_data, N_Vector vtemp1, N_Vector vtemp2);
 
 int FKINJtimes(N_Vector v, N_Vector Jv, N_Vector uu,
-               booleantype *new_uu, void *user_data);
+               sunbooleantype *new_uu, void *user_data);
 
 int FKINPSet(N_Vector uu, N_Vector uscale,
              N_Vector fval, N_Vector fscale,
@@ -774,7 +774,7 @@ extern SUNMatrix F2C_KINSOL_matrix;       /* defined in FSUNMATRIX module */
 extern SUNLinearSolver F2C_KINSOL_linsol; /* defined in FSUNLINSOL module */
 extern void *KIN_kinmem;                  /* defined in fkinsol.c         */
 extern long int *KIN_iout;                /* defined in fkinsol.c         */
-extern realtype *KIN_rout;                /* defined in fkinsol.c         */
+extern sunrealtype *KIN_rout;                /* defined in fkinsol.c         */
 
 #ifdef __cplusplus
 }

@@ -49,10 +49,10 @@ using namespace std;
 
 // accessor macros between (x,y) location and 1D NVector array
 #define IDX(x, y, n) ((n) * (y) + (x))
-#define PI           RCONST(3.141592653589793238462643383279502884197169)
-#define ZERO         RCONST(0.0)
-#define ONE          RCONST(1.0)
-#define TWO          RCONST(2.0)
+#define PI           SUN_RCONST(3.141592653589793238462643383279502884197169)
+#define ZERO         SUN_RCONST(0.0)
+#define ONE          SUN_RCONST(1.0)
+#define TWO          SUN_RCONST(2.0)
 
 // user data structure
 typedef struct
@@ -88,8 +88,8 @@ typedef struct
 // User-supplied Functions Called by the Solver
 static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data);
 static int f0(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int PSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-                booleantype* jcurPtr, realtype gamma, void* user_data);
+static int PSet(realtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+                sunbooleantype* jcurPtr, realtype gamma, void* user_data);
 static int PSol(realtype t, N_Vector y, N_Vector fy, N_Vector r, N_Vector z,
                 realtype gamma, realtype delta, int lr, void* user_data);
 
@@ -115,20 +115,20 @@ int main(int argc, char* argv[])
   SUNContext_Create(NULL, &ctx);
 
   // general problem parameters
-  realtype T0     = RCONST(0.0); // initial time
-  realtype Tf     = RCONST(0.3); // final time
+  realtype T0     = SUN_RCONST(0.0); // initial time
+  realtype Tf     = SUN_RCONST(0.3); // final time
   int Nt          = 1000;        // total number of internal steps
   sunindextype nx = 60;          // spatial mesh size
   sunindextype ny = 120;
-  realtype kx     = RCONST(0.5); // heat conductivity coefficients
-  realtype ky     = RCONST(0.75);
-  realtype rtol   = RCONST(1.e-5); // relative and absolute tolerances
-  realtype atol   = RCONST(1.e-10);
+  realtype kx     = SUN_RCONST(0.5); // heat conductivity coefficients
+  realtype ky     = SUN_RCONST(0.75);
+  realtype rtol   = SUN_RCONST(1.e-5); // relative and absolute tolerances
+  realtype atol   = SUN_RCONST(1.e-10);
   UserData* udata = NULL;
   realtype* data;
   sunindextype N, Ntot, i, j;
   int numfails;
-  booleantype linear;
+  sunbooleantype linear;
   realtype t;
   long int ark_nst, ark_nfe, ark_nfi, ark_nsetups, ark_nli, ark_nJv, ark_nlcf,
     ark_nni, ark_ncfn, ark_npe, ark_nps;
@@ -234,10 +234,10 @@ int main(int argc, char* argv[])
   // Create solve-decoupled DIRK2 (trapezoidal) Butcher table
   ARKodeButcherTable B = ARKodeButcherTable_Alloc(2, SUNFALSE);
   if (check_flag((void*)B, "ARKodeButcherTable_Alloc", 0)) { return 1; }
-  B->A[1][0] = RCONST(0.5);
-  B->A[1][1] = RCONST(0.5);
-  B->b[0]    = RCONST(0.5);
-  B->b[1]    = RCONST(0.5);
+  B->A[1][0] = SUN_RCONST(0.5);
+  B->A[1][1] = SUN_RCONST(0.5);
+  B->b[0]    = SUN_RCONST(0.5);
+  B->b[1]    = SUN_RCONST(0.5);
   B->c[1]    = ONE;
   B->q       = 2;
 
@@ -245,10 +245,10 @@ int main(int argc, char* argv[])
   ARKodeButcherTable Bc = ARKodeButcherTable_Alloc(3, SUNFALSE);
   if (check_flag((void*)Bc, "ARKodeButcherTable_Alloc", 0)) { return 1; }
   Bc->A[1][0] = ONE;
-  Bc->A[2][0] = RCONST(0.5);
-  Bc->A[2][2] = RCONST(0.5);
-  Bc->b[0]    = RCONST(0.5);
-  Bc->b[2]    = RCONST(0.5);
+  Bc->A[2][0] = SUN_RCONST(0.5);
+  Bc->A[2][2] = SUN_RCONST(0.5);
+  Bc->b[0]    = SUN_RCONST(0.5);
+  Bc->b[2]    = SUN_RCONST(0.5);
   Bc->c[1]    = ONE;
   Bc->c[2]    = ONE;
   Bc->q       = 2;
@@ -262,7 +262,7 @@ int main(int argc, char* argv[])
                             (void*)udata); // Pass udata to user functions
   if (check_flag(&flag, "ARKStepSetUserData", 1)) { return 1; }
   flag = ARKStepSetNonlinConvCoef(arkstep_mem,
-                                  RCONST(1.e-7)); // Update solver convergence coeff.
+                                  SUN_RCONST(1.e-7)); // Update solver convergence coeff.
   if (check_flag(&flag, "ARKStepSetNonlinConvCoef", 1)) { return 1; }
   flag = ARKStepSStolerances(arkstep_mem, rtol, atol); // Specify tolerances
   if (check_flag(&flag, "ARKStepSStolerances", 1)) { return 1; }
@@ -277,7 +277,7 @@ int main(int argc, char* argv[])
                             (void*)udata); // Pass udata to user functions
   if (check_flag(&flag, "MRIStepSetUserData", 1)) { return 1; }
   flag = MRIStepSetNonlinConvCoef(mristep_mem,
-                                  RCONST(1.e-7)); // Update solver convergence coeff.
+                                  SUN_RCONST(1.e-7)); // Update solver convergence coeff.
   if (check_flag(&flag, "MRIStepSetNonlinConvCoef", 1)) { return 1; }
   flag = MRIStepSStolerances(mristep_mem, rtol, atol); // Specify tolerances
   if (check_flag(&flag, "MRIStepSStolerances", 1)) { return 1; }
@@ -680,8 +680,8 @@ static int f0(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 }
 
 // Preconditioner setup routine (fills inverse of Jacobian diagonal)
-static int PSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-                booleantype* jcurPtr, realtype gamma, void* user_data)
+static int PSet(realtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+                sunbooleantype* jcurPtr, realtype gamma, void* user_data)
 {
   UserData* udata = (UserData*)user_data; // variable shortcuts
   realtype kx     = udata->kx;

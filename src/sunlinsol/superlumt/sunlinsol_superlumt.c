@@ -23,9 +23,9 @@
 #include <sundials/sundials_math.h>
 #include <sunlinsol/sunlinsol_superlumt.h>
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
-#define TWO  RCONST(2.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
+#define TWO  SUN_RCONST(2.0)
 
 /*
  * -----------------------------------------------------------------
@@ -319,10 +319,10 @@ int SUNLinSolSetup_SuperLUMT(SUNLinearSolver S, SUNMatrix A)
 }
 
 int SUNLinSolSolve_SuperLUMT(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                             N_Vector b, realtype tol)
+                             N_Vector b, sunrealtype tol)
 {
   int_t retval;
-  realtype* xdata;
+  sunrealtype* xdata;
   DNformat* Bstore;
   trans_t trans;
 

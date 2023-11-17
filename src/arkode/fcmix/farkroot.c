@@ -31,8 +31,8 @@
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FARK_ROOTFN(realtype* T, realtype* Y, realtype* G, long int* IPAR,
-                        realtype* RPAR, int* ier);
+extern void FARK_ROOTFN(sunrealtype* T, sunrealtype* Y, sunrealtype* G, long int* IPAR,
+                        sunrealtype* RPAR, int* ier);
 
 #ifdef __cplusplus
 }
@@ -74,10 +74,10 @@ void FARK_ROOTFREE(void)
 
 /* C interface to user-supplied routine FARKROOTFN; see
    farkroot.h for further information. */
-int FARKrootfunc(realtype t, N_Vector y, realtype* gout, void* user_data)
+int FARKrootfunc(sunrealtype t, N_Vector y, sunrealtype* gout, void* user_data)
 {
   int ier;
-  realtype* ydata;
+  sunrealtype* ydata;
   FARKUserData ARK_userdata;
 
   ydata        = N_VGetArrayPointer(y);

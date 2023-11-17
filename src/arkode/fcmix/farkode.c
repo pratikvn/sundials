@@ -32,9 +32,9 @@
 /*=============================================================*/
 
 /* Constants and default values (in case of illegal inputs) */
-#define ABSTOL RCONST(1.0e-9)
-#define RELTOL RCONST(1.0e-4)
-#define ZERO   RCONST(0.0)
+#define ABSTOL SUN_RCONST(1.0e-9)
+#define RELTOL SUN_RCONST(1.0e-4)
+#define ZERO   SUN_RCONST(0.0)
 
 /*=============================================================*/
 
@@ -42,7 +42,7 @@
    interface routines */
 void* ARK_arkodemem;
 long int* ARK_iout;
-realtype* ARK_rout;
+sunrealtype* ARK_rout;
 int ARK_nrtfn;
 int ARK_ls;
 int ARK_mass_ls;
@@ -56,10 +56,10 @@ int ARK_constr;
 extern "C" {
 #endif
 
-extern void FARK_IMP_FUN(realtype* T, realtype* Y, realtype* YDOT,
-                         long int* IPAR, realtype* RPAR, int* IER);
-extern void FARK_EXP_FUN(realtype* T, realtype* Y, realtype* YDOT,
-                         long int* IPAR, realtype* RPAR, int* IER);
+extern void FARK_IMP_FUN(sunrealtype* T, sunrealtype* Y, sunrealtype* YDOT,
+                         long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FARK_EXP_FUN(sunrealtype* T, sunrealtype* Y, sunrealtype* YDOT,
+                         long int* IPAR, sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -72,13 +72,13 @@ extern void FARK_EXP_FUN(realtype* T, realtype* Y, realtype* YDOT,
    routines ARKStepCreate, ARKStepSetUserData, and
    ARKStepSStolerances (or ARKStepSVtolerances); see farkode.h
    for further details */
-void FARK_MALLOC(realtype* t0, realtype* y0, int* imex, int* iatol,
-                 realtype* rtol, realtype* atol, long int* iout, realtype* rout,
-                 long int* ipar, realtype* rpar, int* ier)
+void FARK_MALLOC(sunrealtype* t0, sunrealtype* y0, int* imex, int* iatol,
+                 sunrealtype* rtol, sunrealtype* atol, long int* iout, sunrealtype* rout,
+                 long int* ipar, sunrealtype* rpar, int* ier)
 {
   N_Vector Vatol;
   FARKUserData ARK_userdata;
-  realtype reltol, abstol;
+  sunrealtype reltol, abstol;
 
   *ier = 0;
 
@@ -201,7 +201,7 @@ void FARK_MALLOC(realtype* t0, realtype* y0, int* imex, int* iatol,
   ARK_rout = rout;
 
   /* Store the unit roundoff in rout for user access */
-  ARK_rout[5] = UNIT_ROUNDOFF;
+  ARK_rout[5] = SUN_UNIT_ROUNDOFF;
 
   return;
 }
@@ -212,11 +212,11 @@ void FARK_MALLOC(realtype* t0, realtype* y0, int* imex, int* iatol,
    structure; functions as an all-in-one interface to the C
    routines ARKStepReInit and ARKStepSStolerances (or
    ARKStepSVtolerances); see farkode.h for further details */
-void FARK_REINIT(realtype* t0, realtype* y0, int* imex, int* iatol,
-                 realtype* rtol, realtype* atol, int* ier)
+void FARK_REINIT(sunrealtype* t0, sunrealtype* y0, int* imex, int* iatol,
+                 sunrealtype* rtol, sunrealtype* atol, int* ier)
 {
   N_Vector Vatol;
-  realtype reltol, abstol;
+  sunrealtype reltol, abstol;
   *ier = 0;
 
   /* Initialize all pointers to NULL */
@@ -289,8 +289,8 @@ void FARK_REINIT(realtype* t0, realtype* y0, int* imex, int* iatol,
    scale; functions as an all-in-one interface to the C
    routines ARKStepResize (and potentially ARKStepSVtolerances);
    see farkode.h for further details */
-void FARK_RESIZE(realtype* t0, realtype* y0, realtype* hscale, int* itol,
-                 realtype* rtol, realtype* atol, int* ier)
+void FARK_RESIZE(sunrealtype* t0, sunrealtype* y0, sunrealtype* hscale, int* itol,
+                 sunrealtype* rtol, sunrealtype* atol, int* ier)
 {
   *ier = 0;
 
@@ -433,7 +433,7 @@ void FARK_SETIIN(char key_name[], long int* ival, int* ier)
 
 /* Fortran interface to C "set" routines having real
    arguments; see farkode.h for further details */
-void FARK_SETRIN(char key_name[], realtype* rval, int* ier)
+void FARK_SETRIN(char key_name[], sunrealtype* rval, int* ier)
 {
   if (!strncmp(key_name, "INIT_STEP", 9))
   {
@@ -513,7 +513,7 @@ void FARK_SETRIN(char key_name[], realtype* rval, int* ier)
 
 /*=============================================================*/
 
-void FARK_SETVIN(char key_name[], realtype* vval, int* ier)
+void FARK_SETVIN(char key_name[], sunrealtype* vval, int* ier)
 {
   N_Vector Vec;
 
@@ -545,7 +545,7 @@ void FARK_SETVIN(char key_name[], realtype* vval, int* ier)
 /* Fortran interface to C routine ARKStepSetAdaptivityMethod;
    see farkode.h for further details */
 void FARK_SETADAPTMETHOD(int* imethod, int* idefault, int* ipq,
-                         realtype* params, int* ier)
+                         sunrealtype* params, int* ier)
 {
   *ier = ARKStepSetAdaptivityMethod(ARK_arkodemem, *imethod, *idefault, *ipq,
                                     params);
@@ -556,8 +556,8 @@ void FARK_SETADAPTMETHOD(int* imethod, int* idefault, int* ipq,
 
 /* Fortran interface to C routine ARKStepSetTables; see
    farkode.h for further details */
-void FARK_SETERKTABLE(int* s, int* q, int* p, realtype* c, realtype* A,
-                      realtype* b, realtype* b2, int* ier)
+void FARK_SETERKTABLE(int* s, int* q, int* p, sunrealtype* c, sunrealtype* A,
+                      sunrealtype* b, sunrealtype* b2, int* ier)
 {
   ARKodeButcherTable Be;
   Be   = ARKodeButcherTable_Create(*s, *q, *p, c, A, b, b2);
@@ -570,8 +570,8 @@ void FARK_SETERKTABLE(int* s, int* q, int* p, realtype* c, realtype* A,
 
 /* Fortran interface to C routine ARKStepSetTables; see
    farkode.h for further details */
-void FARK_SETIRKTABLE(int* s, int* q, int* p, realtype* c, realtype* A,
-                      realtype* b, realtype* b2, int* ier)
+void FARK_SETIRKTABLE(int* s, int* q, int* p, sunrealtype* c, sunrealtype* A,
+                      sunrealtype* b, sunrealtype* b2, int* ier)
 {
   ARKodeButcherTable Bi;
   Bi   = ARKodeButcherTable_Create(*s, *q, *p, c, A, b, b2);
@@ -584,9 +584,9 @@ void FARK_SETIRKTABLE(int* s, int* q, int* p, realtype* c, realtype* A,
 
 /* Fortran interface to C routine ARKStepSetTables; see
    farkode.h for further details */
-void FARK_SETARKTABLES(int* s, int* q, int* p, realtype* ci, realtype* ce,
-                       realtype* Ai, realtype* Ae, realtype* bi, realtype* be,
-                       realtype* b2i, realtype* b2e, int* ier)
+void FARK_SETARKTABLES(int* s, int* q, int* p, sunrealtype* ci, sunrealtype* ce,
+                       sunrealtype* Ai, sunrealtype* Ae, sunrealtype* bi, sunrealtype* be,
+                       sunrealtype* b2i, sunrealtype* b2e, int* ier)
 {
   ARKodeButcherTable Bi, Be;
   Bi   = ARKodeButcherTable_Create(*s, *q, *p, ci, Ai, bi, b2i);
@@ -603,10 +603,10 @@ void FARK_SETARKTABLES(int* s, int* q, int* p, realtype* ci, realtype* ce,
    scalar/array; functions as an all-in-one interface to the C
    routines ARKStepResStolerance and ARKStepResVtolerance;
    see farkode.h for further details */
-void FARK_SETRESTOLERANCE(int* itol, realtype* atol, int* ier)
+void FARK_SETRESTOLERANCE(int* itol, sunrealtype* atol, int* ier)
 {
   N_Vector Vatol;
-  realtype abstol;
+  sunrealtype abstol;
 
   *ier = 0;
 
@@ -734,12 +734,12 @@ void FARK_SPILSMASSINIT(int* time_dep, int* ier)
 /* ---DEPRECATED---
    Fortran interfaces to C "set" routines for the ARKStep linear
    solver; see farkode.h for further details */
-void FARK_SPILSSETEPSLIN(realtype* eplifac, int* ier)
+void FARK_SPILSSETEPSLIN(sunrealtype* eplifac, int* ier)
 {
   FARK_LSSETEPSLIN(eplifac, ier);
 }
 
-void FARK_SPILSSETMASSEPSLIN(realtype* eplifac, int* ier)
+void FARK_SPILSSETMASSEPSLIN(sunrealtype* eplifac, int* ier)
 {
   FARK_LSSETMASSEPSLIN(eplifac, ier);
 }
@@ -780,12 +780,12 @@ void FARK_LSMASSINIT(int* time_dep, int* ier)
 
 /* Fortran interfaces to C "set" routines for the ARKStep linear
    solver; see farkode.h for further details */
-void FARK_LSSETEPSLIN(realtype* eplifac, int* ier)
+void FARK_LSSETEPSLIN(sunrealtype* eplifac, int* ier)
 {
   *ier = ARKStepSetEpsLin(ARK_arkodemem, *eplifac);
 }
 
-void FARK_LSSETMASSEPSLIN(realtype* eplifac, int* ier)
+void FARK_LSSETMASSEPSLIN(sunrealtype* eplifac, int* ier)
 {
   *ier = ARKStepSetMassEpsLin(ARK_arkodemem, *eplifac);
 }
@@ -795,7 +795,7 @@ void FARK_LSSETMASSEPSLIN(realtype* eplifac, int* ier)
 /* Fortran interface to C routine ARKStepEvolve (the main integrator)
    and optional output routines ARKStepGet*; see farkode.h for
    further details */
-void FARK_ARKODE(realtype* tout, realtype* t, realtype* y, int* itask, int* ier)
+void FARK_ARKODE(sunrealtype* tout, sunrealtype* t, sunrealtype* y, int* itask, int* ier)
 {
   /* attach user solution array to solver memory */
   N_VSetArrayPointer(y, F2C_ARKODE_vec);
@@ -872,10 +872,10 @@ void FARK_ARKODE(realtype* tout, realtype* t, realtype* y, int* itask, int* ier)
 
 /* Fortran interface to C routine ARKStepGetDky; see farkode.h
    for further details */
-void FARK_DKY(realtype* t, int* k, realtype* dky, int* ier)
+void FARK_DKY(sunrealtype* t, int* k, sunrealtype* dky, int* ier)
 {
   /* store pointer existing F2C_ARKODE_vec data array */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
 
   /* attach output data array to F2C_ARKODE_vec */
   N_VSetArrayPointer(dky, F2C_ARKODE_vec);
@@ -893,10 +893,10 @@ void FARK_DKY(realtype* t, int* k, realtype* dky, int* ier)
 
 /* Fortran interface to C routine ARKStepGetErrWeights; see
    farkode.h for further details */
-void FARK_GETERRWEIGHTS(realtype* eweight, int* ier)
+void FARK_GETERRWEIGHTS(sunrealtype* eweight, int* ier)
 {
   /* store pointer existing F2C_ARKODE_vec data array */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
 
   /* attach output data array to F2C_ARKODE_vec */
   N_VSetArrayPointer(eweight, F2C_ARKODE_vec);
@@ -914,10 +914,10 @@ void FARK_GETERRWEIGHTS(realtype* eweight, int* ier)
 
 /* Fortran interface to C routine ARKStepGetResWeights; see
    farkode.h for further details */
-void FARK_GETRESWEIGHTS(realtype* rweight, int* ier)
+void FARK_GETRESWEIGHTS(sunrealtype* rweight, int* ier)
 {
   /* store pointer existing F2C_ARKODE_vec data array */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
 
   /* attach output data array to F2C_ARKODE_vec */
   N_VSetArrayPointer(rweight, F2C_ARKODE_vec);
@@ -935,10 +935,10 @@ void FARK_GETRESWEIGHTS(realtype* rweight, int* ier)
 
 /* Fortran interface to C routine ARKStepGetEstLocalErrors; see
    farkode.h for further details */
-void FARK_GETESTLOCALERR(realtype* ele, int* ier)
+void FARK_GETESTLOCALERR(sunrealtype* ele, int* ier)
 {
   /* store pointer existing F2C_ARKODE_vec data array */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_ARKODE_vec);
 
   /* attach output data array to F2C_ARKODE_vec */
   N_VSetArrayPointer(ele, F2C_ARKODE_vec);
@@ -994,10 +994,10 @@ void FARK_WRITEPARAMETERS(int* ier)
 
 /* C interface to user-supplied FORTRAN function FARKEFUN; see
    farkode.h for further details */
-int FARKfe(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+int FARKfe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   int ier;
-  realtype *ydata, *dydata;
+  sunrealtype *ydata, *dydata;
   FARKUserData ARK_userdata;
   ydata        = N_VGetArrayPointer(y);
   dydata       = N_VGetArrayPointer(ydot);
@@ -1011,10 +1011,10 @@ int FARKfe(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 
 /* C interface to user-supplied FORTRAN function FARKIFUN; see
    farkode.h for further details */
-int FARKfi(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+int FARKfi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   int ier;
-  realtype *ydata, *dydata;
+  sunrealtype *ydata, *dydata;
   FARKUserData ARK_userdata;
   ydata        = N_VGetArrayPointer(y);
   dydata       = N_VGetArrayPointer(ydot);

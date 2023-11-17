@@ -43,29 +43,29 @@
 
 #define Ith(v, i) NV_Ith_S(v, i - 1)
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 typedef struct
 {
-  realtype p1, p2;
+  sunrealtype p1, p2;
 }* UserData;
 
-static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int fQ(realtype t, N_Vector y, N_Vector qdot, void* user_data);
-static int fS(int Ns, realtype t, N_Vector y, N_Vector ydot, N_Vector* yS,
+static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+static int fQ(sunrealtype t, N_Vector y, N_Vector qdot, void* user_data);
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, N_Vector* yS,
               N_Vector* ySdot, void* user_data, N_Vector tmp1, N_Vector tmp2);
-static int fQS(int Ns, realtype t, N_Vector y, N_Vector* yS, N_Vector yQdot,
+static int fQS(int Ns, sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yQdot,
                N_Vector* yQSdot, void* user_data, N_Vector tmp, N_Vector tmpQ);
 
-static int fB1(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fB1(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                N_Vector yBdot, void* user_dataB);
-static int fQB1(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fQB1(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                 N_Vector qBdot, void* user_dataB);
 
-static int fB2(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fB2(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                N_Vector yBdot, void* user_dataB);
-static int fQB2(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fQB2(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                 N_Vector qBdot, void* user_dataB);
 
 int PrintFwdStats(void* cvode_mem);
@@ -93,10 +93,10 @@ int main(int argc, char* argv[])
   sunindextype Neq, Np2;
   int Np;
 
-  realtype t0, tf;
+  sunrealtype t0, tf;
 
-  realtype reltol;
-  realtype abstol, abstolQ, abstolB, abstolQB;
+  sunrealtype reltol;
+  sunrealtype abstol, abstolQ, abstolB, abstolQB;
 
   N_Vector y, yQ;
   N_Vector *yS, *yQS;
@@ -107,12 +107,12 @@ int main(int argc, char* argv[])
   int indexB1, indexB2;
 
   int retval;
-  realtype time;
+  sunrealtype time;
 
-  realtype dp;
-  realtype G, Gp, Gm;
-  realtype grdG_fwd[2], grdG_bck[2], grdG_cntr[2];
-  realtype H11, H22;
+  sunrealtype dp;
+  sunrealtype G, Gp, Gm;
+  sunrealtype grdG_fwd[2], grdG_bck[2], grdG_cntr[2];
+  sunrealtype H11, H22;
 
   data = NULL;
   y = yQ = NULL;
@@ -125,8 +125,8 @@ int main(int argc, char* argv[])
   /* User data structure */
 
   data     = (UserData)malloc(sizeof *data);
-  data->p1 = RCONST(1.0);
-  data->p2 = RCONST(2.0);
+  data->p1 = SUN_RCONST(1.0);
+  data->p2 = SUN_RCONST(2.0);
 
   /* Problem size, integration interval, and tolerances */
 
@@ -438,7 +438,7 @@ int main(int argc, char* argv[])
 
   /* Finite difference tests */
 
-  dp = RCONST(1.0e-2);
+  dp = SUN_RCONST(1.0e-2);
 
   printf("-----------------------\n");
   printf("Finite Difference tests\n");
@@ -630,11 +630,11 @@ int main(int argc, char* argv[])
  *--------------------------------------------------------------------
  */
 
-static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
-  realtype y1, y2, y3;
+  sunrealtype y1, y2, y3;
   UserData data;
-  realtype p1, p2;
+  sunrealtype p1, p2;
 
   data = (UserData)user_data;
   p1   = data->p1;
@@ -651,9 +651,9 @@ static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data)
   return (0);
 }
 
-static int fQ(realtype t, N_Vector y, N_Vector qdot, void* user_data)
+static int fQ(sunrealtype t, N_Vector y, N_Vector qdot, void* user_data)
 {
-  realtype y1, y2, y3;
+  sunrealtype y1, y2, y3;
 
   y1 = Ith(y, 1);
   y2 = Ith(y, 2);
@@ -664,14 +664,14 @@ static int fQ(realtype t, N_Vector y, N_Vector qdot, void* user_data)
   return (0);
 }
 
-static int fS(int Ns, realtype t, N_Vector y, N_Vector ydot, N_Vector* yS,
+static int fS(int Ns, sunrealtype t, N_Vector y, N_Vector ydot, N_Vector* yS,
               N_Vector* ySdot, void* user_data, N_Vector tmp1, N_Vector tmp2)
 {
   UserData data;
-  realtype y1, y2, y3;
-  realtype s1, s2, s3;
-  realtype fys1, fys2, fys3;
-  realtype p1, p2;
+  sunrealtype y1, y2, y3;
+  sunrealtype s1, s2, s3;
+  sunrealtype fys1, fys2, fys3;
+  sunrealtype p1, p2;
 
   data = (UserData)user_data;
   p1   = data->p1;
@@ -712,11 +712,11 @@ static int fS(int Ns, realtype t, N_Vector y, N_Vector ydot, N_Vector* yS,
   return (0);
 }
 
-static int fQS(int Ns, realtype t, N_Vector y, N_Vector* yS, N_Vector yQdot,
+static int fQS(int Ns, sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yQdot,
                N_Vector* yQSdot, void* user_data, N_Vector tmp, N_Vector tmpQ)
 {
-  realtype y1, y2, y3;
-  realtype s1, s2, s3;
+  sunrealtype y1, y2, y3;
+  sunrealtype s1, s2, s3;
 
   y1 = Ith(y, 1);
   y2 = Ith(y, 2);
@@ -741,15 +741,15 @@ static int fQS(int Ns, realtype t, N_Vector y, N_Vector* yS, N_Vector yQdot,
   return (0);
 }
 
-static int fB1(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fB1(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                N_Vector yBdot, void* user_dataB)
 {
   UserData data;
-  realtype p1, p2;
-  realtype y1, y2, y3; /* solution */
-  realtype s1, s2, s3; /* sensitivity 1 */
-  realtype l1, l2, l3; /* lambda */
-  realtype m1, m2, m3; /* mu */
+  sunrealtype p1, p2;
+  sunrealtype y1, y2, y3; /* solution */
+  sunrealtype s1, s2, s3; /* sensitivity 1 */
+  sunrealtype l1, l2, l3; /* lambda */
+  sunrealtype m1, m2, m3; /* mu */
 
   data = (UserData)user_dataB;
   p1   = data->p1;
@@ -782,15 +782,15 @@ static int fB1(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
   return (0);
 }
 
-static int fQB1(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fQB1(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                 N_Vector qBdot, void* user_dataB)
 {
   UserData data;
-  realtype p2;
-  realtype y1, y2, y3; /* solution */
-  realtype s1, s2, s3; /* sensitivity 1 */
-  realtype l1, l3;     /* lambda */
-  realtype m1, m3;     /* mu */
+  sunrealtype p2;
+  sunrealtype y1, y2, y3; /* solution */
+  sunrealtype s1, s2, s3; /* sensitivity 1 */
+  sunrealtype l1, l3;     /* lambda */
+  sunrealtype m1, m3;     /* mu */
 
   data = (UserData)user_dataB;
 
@@ -820,15 +820,15 @@ static int fQB1(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
   return (0);
 }
 
-static int fB2(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fB2(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                N_Vector yBdot, void* user_dataB)
 {
   UserData data;
-  realtype p1, p2;
-  realtype y1, y2, y3; /* solution */
-  realtype s1, s2, s3; /* sensitivity 2 */
-  realtype l1, l2, l3; /* lambda */
-  realtype m1, m2, m3; /* mu */
+  sunrealtype p1, p2;
+  sunrealtype y1, y2, y3; /* solution */
+  sunrealtype s1, s2, s3; /* sensitivity 2 */
+  sunrealtype l1, l2, l3; /* lambda */
+  sunrealtype m1, m2, m3; /* mu */
 
   data = (UserData)user_dataB;
   p1   = data->p1;
@@ -863,15 +863,15 @@ static int fB2(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
   return (0);
 }
 
-static int fQB2(realtype t, N_Vector y, N_Vector* yS, N_Vector yB,
+static int fQB2(sunrealtype t, N_Vector y, N_Vector* yS, N_Vector yB,
                 N_Vector qBdot, void* user_dataB)
 {
   UserData data;
-  realtype p2;
-  realtype y1, y2, y3; /* solution */
-  realtype s1, s2, s3; /* sensitivity 2 */
-  realtype l1, l3;     /* lambda */
-  realtype m1, m3;     /* mu */
+  sunrealtype p2;
+  sunrealtype y1, y2, y3; /* solution */
+  sunrealtype s1, s2, s3; /* sensitivity 2 */
+  sunrealtype l1, l3;     /* lambda */
+  sunrealtype m1, m3;     /* mu */
 
   data = (UserData)user_dataB;
 
@@ -915,7 +915,7 @@ int PrintFwdStats(void* cvode_mem)
   long int nfQSe, netfQS;
 
   int qlast, qcur;
-  realtype h0u, hlast, hcur, tcur;
+  sunrealtype h0u, hlast, hcur, tcur;
 
   int retval;
 
@@ -959,7 +959,7 @@ int PrintBckStats(void* cvode_mem, int idx)
   long int nfQe, netfQ;
 
   int qlast, qcur;
-  realtype h0u, hlast, hcur, tcur;
+  sunrealtype h0u, hlast, hcur, tcur;
 
   int retval;
 

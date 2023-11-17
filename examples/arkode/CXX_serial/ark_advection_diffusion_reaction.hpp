@@ -35,14 +35,14 @@
 #include "sunmatrix/sunmatrix_band.h"
 
 // Macros for problem constants
-#define PI   RCONST(3.141592653589793238462643383279502884197169)
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
-#define TWO  RCONST(2.0)
+#define PI   SUN_RCONST(3.141592653589793238462643383279502884197169)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
+#define TWO  SUN_RCONST(2.0)
 
 #define NSPECIES 3
 
-#define WIDTH (10 + numeric_limits<realtype>::digits10)
+#define WIDTH (10 + numeric_limits<sunrealtype>::digits10)
 
 // Macro to access each species at an x location
 #define UIDX(i) (NSPECIES * (i))
@@ -65,28 +65,28 @@ struct UserData
   int splitting = 3;
 
   // Advection and diffusion coefficients
-  realtype c = RCONST(1.0e-3);
-  realtype d = RCONST(1.0e-2);
+  sunrealtype c = SUN_RCONST(1.0e-3);
+  sunrealtype d = SUN_RCONST(1.0e-2);
 
   // Feed and reaction rates
-  realtype A = RCONST(0.6);
-  realtype B = RCONST(2.0);
+  sunrealtype A = SUN_RCONST(0.6);
+  sunrealtype B = SUN_RCONST(2.0);
 
   // Stiffness parameter
-  realtype eps = RCONST(1.0e-2);
+  sunrealtype eps = SUN_RCONST(1.0e-2);
 
   // Final simulation time
-  realtype tf = RCONST(3.0);
+  sunrealtype tf = SUN_RCONST(3.0);
 
   // Domain boundaries
-  realtype xl = ZERO;
-  realtype xu = ONE;
+  sunrealtype xl = ZERO;
+  sunrealtype xu = ONE;
 
   // Number of nodes
   sunindextype nx = 512;
 
   // Mesh spacing
-  realtype dx = (xu - xl) / (nx - 1);
+  sunrealtype dx = (xu - xl) / (nx - 1);
 
   // Number of equations
   sunindextype neq = NSPECIES * nx;
@@ -131,17 +131,17 @@ struct UserOptions
   bool ark_dirk  = false;
 
   // Relative and absolute tolerances
-  realtype rtol      = RCONST(1.e-4);
-  realtype atol      = RCONST(1.e-9);
-  realtype rtol_fast = RCONST(1.e-4);
-  realtype atol_fast = RCONST(1.e-9);
+  sunrealtype rtol      = SUN_RCONST(1.e-4);
+  sunrealtype atol      = SUN_RCONST(1.e-9);
+  sunrealtype rtol_fast = SUN_RCONST(1.e-4);
+  sunrealtype atol_fast = SUN_RCONST(1.e-9);
 
   // Step size selection (ZERO = adaptive steps)
-  realtype fixed_h      = ZERO;
-  realtype fixed_h_fast = ZERO;
+  sunrealtype fixed_h      = ZERO;
+  sunrealtype fixed_h_fast = ZERO;
 
   // First step growth factor
-  realtype etamx1_fast = ZERO;
+  sunrealtype etamx1_fast = ZERO;
 
   int maxsteps      = 10000; // max steps between outputs
   int controller    = -1;    // step size adaptivity method
@@ -158,7 +158,7 @@ struct UserOptions
   bool save_hinit = false;
   bool save_hcur  = false;
 
-  realtype hcur_factor = RCONST(0.7);
+  sunrealtype hcur_factor = SUN_RCONST(0.7);
 
   int output = 1;  // 0 = none, 1 = stats, 2 = disk, 3 = disk with tstop
   int nout   = 10; // number of output times
@@ -178,10 +178,10 @@ struct CVodeInnerStepperContent
   bool save_hinit = false;
   bool save_hcur  = false;
 
-  realtype hcur_factor = ONE;
+  sunrealtype hcur_factor = ONE;
 
-  realtype hinit = ZERO; // initial step size
-  realtype hcur  = ZERO; // current step size
+  sunrealtype hinit = ZERO; // initial step size
+  sunrealtype hcur  = ZERO; // current step size
 
   // saved integrator stats
   long int nst     = 0; // time steps
@@ -193,13 +193,13 @@ struct CVodeInnerStepperContent
   long int nje     = 0; // Jacobian evals
 };
 
-int CVodeInnerStepper_Evolve(MRIStepInnerStepper fast_mem, realtype t0,
-                             realtype tout, N_Vector y);
+int CVodeInnerStepper_Evolve(MRIStepInnerStepper fast_mem, sunrealtype t0,
+                             sunrealtype tout, N_Vector y);
 
-int CVodeInnerStepper_FullRhs(MRIStepInnerStepper fast_mem, realtype t,
+int CVodeInnerStepper_FullRhs(MRIStepInnerStepper fast_mem, sunrealtype t,
                               N_Vector y, N_Vector f, int mode);
 
-int CVodeInnerStepper_Reset(MRIStepInnerStepper fast_mem, realtype tR,
+int CVodeInnerStepper_Reset(MRIStepInnerStepper fast_mem, sunrealtype tR,
                             N_Vector yR);
 
 // -----------------------------------------------------------------------------
@@ -207,31 +207,31 @@ int CVodeInnerStepper_Reset(MRIStepInnerStepper fast_mem, realtype tR,
 // -----------------------------------------------------------------------------
 
 // ODE right hand side (RHS) functions
-int f_advection(realtype t, N_Vector y, N_Vector f, void* user_data);
-int f_diffusion(realtype t, N_Vector y, N_Vector f, void* user_data);
-int f_reaction(realtype t, N_Vector y, N_Vector f, void* user_data);
+int f_advection(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
+int f_diffusion(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
+int f_reaction(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
 
-int f_adv_diff(realtype t, N_Vector y, N_Vector f, void* user_data);
-int f_adv_react(realtype t, N_Vector y, N_Vector f, void* user_data);
-int f_diff_react(realtype t, N_Vector y, N_Vector f, void* user_data);
-int f_adv_diff_react(realtype t, N_Vector y, N_Vector f, void* user_data);
+int f_adv_diff(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
+int f_adv_react(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
+int f_diff_react(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
+int f_adv_diff_react(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
 
-int f_react_forcing(realtype t, N_Vector y, N_Vector f, void* user_data);
+int f_react_forcing(sunrealtype t, N_Vector y, N_Vector f, void* user_data);
 
 // Jacobian of RHS functions
-int J_advection(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_advection(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-int J_diffusion(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_diffusion(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-int J_reaction(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_reaction(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-int J_adv_diff(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_adv_diff(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-int J_adv_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_adv_react(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-int J_diff_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_diff_react(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                  void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
-int J_adv_diff_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_adv_diff_react(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                      void* user_data, N_Vector tmp1, N_Vector tmp2,
                      N_Vector tmp3);
 
@@ -349,8 +349,8 @@ int OutputStatsARK(void* arkode_mem, UserData& udata)
     cout << "  J evals            = " << nje << endl;
     cout << endl;
 
-    realtype avgnli = (realtype)nni / (realtype)nst_a;
-    realtype avgls  = (realtype)nsetups / (realtype)nni;
+    sunrealtype avgnli = (sunrealtype)nni / (sunrealtype)nst_a;
+    sunrealtype avgls  = (sunrealtype)nsetups / (sunrealtype)nni;
     cout << "  Avg NLS iters per step attempt = " << avgnli << endl;
     cout << "  Avg LS setups per NLS iter     = " << avgls << endl;
   }
@@ -399,8 +399,8 @@ int OutputStatsMRIARK(void* arkode_mem, MRIStepInnerStepper fast_mem,
     cout << endl;
 
     // Compute average nls iters per step and ls iters per nls iter
-    realtype avgnli = (realtype)nni / (realtype)nst;
-    realtype avgls  = (realtype)nsetups / (realtype)nni;
+    sunrealtype avgnli = (sunrealtype)nni / (sunrealtype)nst;
+    sunrealtype avgls  = (sunrealtype)nsetups / (sunrealtype)nni;
     cout << "  Avg NLS iters per slow step = " << avgnli << endl;
     cout << "  Avg LS setups per NLS iter  = " << avgls << endl;
   }
@@ -448,8 +448,8 @@ int OutputStatsMRIARK(void* arkode_mem, MRIStepInnerStepper fast_mem,
     cout << "  J evals                 = " << nje << endl;
     cout << endl;
 
-    realtype avgnli = (realtype)nni / (realtype)nst;
-    realtype avgls  = (realtype)nsetups / (realtype)nni;
+    sunrealtype avgnli = (sunrealtype)nni / (sunrealtype)nst;
+    sunrealtype avgls  = (sunrealtype)nsetups / (sunrealtype)nni;
     cout << "  Avg NLS iters per fast step = " << avgnli << endl;
     cout << "  Avg LS setups per NLS iter  = " << avgls << endl;
   }
@@ -532,8 +532,8 @@ int OutputStatsMRICVODE(void* arkode_mem, MRIStepInnerStepper fast_mem,
   cout << endl;
 
   // Compute average nls iters per step and ls iters per nls iter
-  realtype avgnli = (realtype)nni / (realtype)nsts;
-  realtype avgls  = (realtype)nsetups / (realtype)nni;
+  sunrealtype avgnli = (sunrealtype)nni / (sunrealtype)nsts;
+  sunrealtype avgls  = (sunrealtype)nsetups / (sunrealtype)nni;
   cout << "  Avg NLS iters per slow step = " << avgnli << endl;
   cout << "  Avg LS setups per NLS iter  = " << avgls << endl;
   cout << endl;
@@ -558,8 +558,8 @@ int OutputStatsMRICVODE(void* arkode_mem, MRIStepInnerStepper fast_mem,
   cout << "  J evals          = " << content->nje << endl;
   cout << endl;
 
-  avgnli = (realtype)content->nni / (realtype)content->nst;
-  avgls  = (realtype)content->nsetups / (realtype)content->nni;
+  avgnli = (sunrealtype)content->nni / (sunrealtype)content->nst;
+  avgls  = (sunrealtype)content->nsetups / (sunrealtype)content->nni;
   cout << "  Avg NLS iters per fast step = " << avgnli << endl;
   cout << "  Avg LS setups per NLS iter  = " << avgls << endl;
   cout << endl;
@@ -611,7 +611,7 @@ void InputHelp()
   cout << "  --help                   : print options and exit\n";
 }
 
-inline void find_arg(vector<string>& args, const string key, realtype& dest)
+inline void find_arg(vector<string>& args, const string key, sunrealtype& dest)
 {
   auto it = find(args.begin(), args.end(), key);
   if (it != args.end())
@@ -1151,7 +1151,7 @@ int OpenOutput(UserData& udata, UserOptions& uopts)
   if (uopts.output)
   {
     cout << scientific;
-    cout << setprecision(numeric_limits<realtype>::digits10);
+    cout << setprecision(numeric_limits<sunrealtype>::digits10);
     cout << "          t           ";
     cout << "          ||y||_rms      " << endl;
     cout << " ---------------------";
@@ -1167,7 +1167,7 @@ int OpenOutput(UserData& udata, UserOptions& uopts)
     uopts.uout.open(fname.str());
 
     uopts.uout << scientific;
-    uopts.uout << setprecision(numeric_limits<realtype>::digits10);
+    uopts.uout << setprecision(numeric_limits<sunrealtype>::digits10);
     uopts.uout << "# title Advection-Diffusion-Reaction (Brusselator)" << endl;
     uopts.uout << "# nvar 3" << endl;
     uopts.uout << "# vars u v w" << endl;
@@ -1181,18 +1181,18 @@ int OpenOutput(UserData& udata, UserOptions& uopts)
 }
 
 // Write output
-int WriteOutput(realtype t, N_Vector y, UserData& udata, UserOptions& uopts)
+int WriteOutput(sunrealtype t, N_Vector y, UserData& udata, UserOptions& uopts)
 {
   if (uopts.output)
   {
     // Compute rms norm of the state
-    realtype urms = sqrt(N_VDotProd(y, y) / udata.nx);
+    sunrealtype urms = sqrt(N_VDotProd(y, y) / udata.nx);
     cout << setw(22) << t << setw(25) << urms << endl;
 
     // Write solution to disk
     if (uopts.output >= 2)
     {
-      realtype* ydata = N_VGetArrayPointer(y);
+      sunrealtype* ydata = N_VGetArrayPointer(y);
       if (check_ptr(ydata, "N_VGetArrayPointer")) { return -1; }
 
       uopts.uout << t;

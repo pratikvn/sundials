@@ -26,14 +26,14 @@
 
 #include "sundials_matrix_impl.h"
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 /* Private function prototypes */
-static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
-static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
+static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
+static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
                                               N_Vector y);
-static SUNErrCode SMScaleAddNew_Band(realtype c, SUNMatrix A, SUNMatrix B);
+static SUNErrCode SMScaleAddNew_Band(sunrealtype c, SUNMatrix A, SUNMatrix B);
 
 /*
  * -----------------------------------------------------------------
@@ -103,10 +103,10 @@ SUNMatrix SUNBandMatrixStorage(sunindextype N, sunindextype mu, sunindextype ml,
   content->cols  = NULL;
 
   /* Allocate content */
-  content->data = (realtype*)calloc(N * colSize, sizeof(realtype));
+  content->data = (sunrealtype*)calloc(N * colSize, sizeof(sunrealtype));
   SUNAssert(content->data, SUN_ERR_MALLOC_FAIL);
 
-  content->cols = (realtype**)malloc(N * sizeof(realtype*));
+  content->cols = (sunrealtype**)malloc(N * sizeof(sunrealtype*));
   SUNAssert(content->cols, SUN_ERR_MALLOC_FAIL);
   for (j = 0; j < N; j++) { content->cols[j] = content->data + j * colSize; }
 
@@ -200,21 +200,21 @@ sunindextype SUNBandMatrix_LData(SUNMatrix A)
   return SM_LDATA_B(A);
 }
 
-realtype* SUNBandMatrix_Data(SUNMatrix A)
+sunrealtype* SUNBandMatrix_Data(SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
   return SM_DATA_B(A);
 }
 
-realtype** SUNBandMatrix_Cols(SUNMatrix A)
+sunrealtype** SUNBandMatrix_Cols(SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
   return SM_COLS_B(A);
 }
 
-realtype* SUNBandMatrix_Column(SUNMatrix A, sunindextype j)
+sunrealtype* SUNBandMatrix_Column(SUNMatrix A, sunindextype j)
 {
   SUNAssignSUNCTX(A->sunctx);
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
@@ -278,7 +278,7 @@ SUNErrCode SUNMatZero_Band(SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i;
-  realtype* Adata;
+  sunrealtype* Adata;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
 
@@ -293,7 +293,7 @@ SUNErrCode SUNMatCopy_Band(SUNMatrix A, SUNMatrix B)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i, j, colSize, ml, mu, smu;
-  realtype *A_colj, *B_colj;
+  sunrealtype *A_colj, *B_colj;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
   SUNAssert(SUNMatGetID(B) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
@@ -312,8 +312,8 @@ SUNErrCode SUNMatCopy_Band(SUNMatrix A, SUNMatrix B)
     SM_CONTENT_B(B)->ldim  = colSize;
     SM_CONTENT_B(B)->ldata = SM_COLUMNS_B(B) * colSize;
     SM_CONTENT_B(B)->data =
-      (realtype*)realloc(SM_CONTENT_B(B)->data,
-                         SM_COLUMNS_B(B) * colSize * sizeof(realtype));
+      (sunrealtype*)realloc(SM_CONTENT_B(B)->data,
+                         SM_COLUMNS_B(B) * colSize * sizeof(sunrealtype));
     for (j = 0; j < SM_COLUMNS_B(B); j++)
     {
       SM_CONTENT_B(B)->cols[j] = SM_CONTENT_B(B)->data + j * colSize;
@@ -331,11 +331,11 @@ SUNErrCode SUNMatCopy_Band(SUNMatrix A, SUNMatrix B)
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNMatScaleAddI_Band(realtype c, SUNMatrix A)
+SUNErrCode SUNMatScaleAddI_Band(sunrealtype c, SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i, j;
-  realtype* A_colj;
+  sunrealtype* A_colj;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
 
@@ -349,11 +349,11 @@ SUNErrCode SUNMatScaleAddI_Band(realtype c, SUNMatrix A)
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNMatScaleAdd_Band(realtype c, SUNMatrix A, SUNMatrix B)
+SUNErrCode SUNMatScaleAdd_Band(sunrealtype c, SUNMatrix A, SUNMatrix B)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i, j;
-  realtype *A_colj, *B_colj;
+  sunrealtype *A_colj, *B_colj;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
   SUNAssert(SUNMatGetID(B) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
@@ -382,7 +382,7 @@ SUNErrCode SUNMatMatvec_Band(SUNMatrix A, N_Vector x, N_Vector y)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i, j, is, ie;
-  realtype *col_j, *xd, *yd;
+  sunrealtype *col_j, *xd, *yd;
 
   SUNCheck(compatibleMatrixAndVectors(A, x, y), SUN_ERR_ARG_DIMSMISMATCH);
 
@@ -417,7 +417,7 @@ SUNErrCode SUNMatSpace_Band(SUNMatrix A, long int* lenrw, long int* leniw)
  * -----------------------------------------------------------------
  */
 
-static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
+static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
 {
   /* both matrices must have the same number of columns
      (note that we do not check for identical bandwidth) */
@@ -426,7 +426,7 @@ static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
   return SUNTRUE;
 }
 
-static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
+static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
 {
   /* Vectors must provide nvgetarraypointer */
   if (!x->ops->nvgetarraypointer || !y->ops->nvgetarraypointer)
@@ -443,11 +443,11 @@ static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector 
   return SUNTRUE;
 }
 
-SUNErrCode SMScaleAddNew_Band(realtype c, SUNMatrix A, SUNMatrix B)
+SUNErrCode SMScaleAddNew_Band(sunrealtype c, SUNMatrix A, SUNMatrix B)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i, j, ml, mu, smu;
-  realtype *A_colj, *B_colj, *C_colj;
+  sunrealtype *A_colj, *B_colj, *C_colj;
   SUNMatrix C;
 
   /* create new matrix large enough to hold both A and B */

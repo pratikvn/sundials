@@ -18,7 +18,7 @@
 #include <sunlinsol/sunlinsol_magmadense.h>
 #include <sunmatrix/sunmatrix_magmadense.h>
 
-/* Interfaces to match 'realtype' with the correct MAGMA functions */
+/* Interfaces to match 'sunrealtype' with the correct MAGMA functions */
 #if defined(SUNDIALS_DOUBLE_PRECISION)
 #define xgetrf         magma_dgetrf_gpu
 #define xgetrf_batched magma_dgetrf_batched
@@ -32,11 +32,11 @@
 #define xgetrs_batched magma_sgetrs_batched
 #define xset_pointer   magma_sset_pointer
 #else
-#error Incompatible realtype for MAGMA
+#error Incompatible sunrealtype for MAGMA
 #endif
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 /*
  * -----------------------------------------------------------------
@@ -49,7 +49,7 @@
 #define QUEUE(S)              (MAGMADENSE_CONTENT(S)->q)
 #define PIVOTS(S)             ((sunindextype*)MAGMADENSE_CONTENT(S)->pivots->ptr)
 #define PIVOTSARRAY(S)        ((sunindextype**)MAGMADENSE_CONTENT(S)->pivotsarr->ptr)
-#define RHSARRAY(S)           ((realtype**)MAGMADENSE_CONTENT(S)->rhsarr->ptr)
+#define RHSARRAY(S)           ((sunrealtype**)MAGMADENSE_CONTENT(S)->rhsarr->ptr)
 #define INFOARRAY(S)          ((sunindextype*)MAGMADENSE_CONTENT(S)->infoarr->ptr)
 #define LASTFLAG(S)           (MAGMADENSE_CONTENT(S)->last_flag)
 #define ASYNCHRONOUS(S)       (MAGMADENSE_CONTENT(S)->async)
@@ -186,7 +186,7 @@ SUNLinearSolver SUNLinSol_MagmaDense(N_Vector y, SUNMatrix Amat, SUNContext sunc
     }
 
     retval = SUNMemoryHelper_Alloc(content->memhelp, &content->rhsarr,
-                                   nblocks * sizeof(realtype*),
+                                   nblocks * sizeof(sunrealtype*),
                                    SUNMEMTYPE_DEVICE, nullptr);
     if (retval)
     {
@@ -202,7 +202,7 @@ SUNLinearSolver SUNLinSol_MagmaDense(N_Vector y, SUNMatrix Amat, SUNContext sunc
  * Set functions
  */
 
-int SUNLinSol_MagmaDense_SetAsync(SUNLinearSolver S, booleantype onoff)
+int SUNLinSol_MagmaDense_SetAsync(SUNLinearSolver S, sunbooleantype onoff)
 {
   if (S == NULL) { return SUNLS_MEM_NULL; }
   ASYNCHRONOUS(S) = onoff;
@@ -265,7 +265,7 @@ int SUNLinSolSetup_MagmaDense(SUNLinearSolver S, SUNMatrix A)
                    M, /* leading dimension of each block */
                    PIVOTSARRAY(S), INFOARRAY(S), nblocks, QUEUE(S));
 #else
-    realtype** blocks = SUNMatrix_MagmaDense_BlockData(A);
+    sunrealtype** blocks = SUNMatrix_MagmaDense_BlockData(A);
     for (int k = 0; k < nblocks; k++)
     {
       xgetrf(M,            /* number of rows */
@@ -306,7 +306,7 @@ int SUNLinSolSetup_MagmaDense(SUNLinearSolver S, SUNMatrix A)
 }
 
 int SUNLinSolSolve_MagmaDense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                              N_Vector b, realtype tol)
+                              N_Vector b, sunrealtype tol)
 {
   /* Check for valid inputs */
   if (S == NULL) { return (SUNLS_MEM_NULL); }
@@ -332,7 +332,7 @@ int SUNLinSolSolve_MagmaDense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   N_VScale(ONE, b, x);
 
   /* Access x data array */
-  realtype* xdata = N_VGetDeviceArrayPointer(x);
+  sunrealtype* xdata = N_VGetDeviceArrayPointer(x);
   if (xdata == NULL)
   {
     LASTFLAG(S) = SUNLS_MEM_FAIL;

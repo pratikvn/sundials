@@ -27,16 +27,16 @@
 #include "arkode_ls_impl.h"
 
 /* constants */
-#define MIN_INC_MULT RCONST(1000.0)
+#define MIN_INC_MULT SUN_RCONST(1000.0)
 #define MAX_DQITERS  3 /* max. # of attempts to recover in DQ J*v */
-#define ZERO         RCONST(0.0)
-#define PT25         RCONST(0.25)
-#define ONE          RCONST(1.0)
+#define ZERO         SUN_RCONST(0.0)
+#define PT25         SUN_RCONST(0.25)
+#define ONE          SUN_RCONST(1.0)
 
 /* Prototypes for internal functions */
-static int arkLsLinSys(realtype t, N_Vector y, N_Vector fy, SUNMatrix A,
-                       SUNMatrix M, booleantype jok, booleantype* jcur,
-                       realtype gamma, void* user_data, N_Vector tmp1,
+static int arkLsLinSys(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix A,
+                       SUNMatrix M, sunbooleantype jok, sunbooleantype* jcur,
+                       sunrealtype gamma, void* user_data, N_Vector tmp1,
                        N_Vector tmp2, N_Vector tmp3);
 
 /*===============================================================
@@ -52,8 +52,8 @@ int arkLSSetLinearSolver(void* arkode_mem, SUNLinearSolver LS, SUNMatrix A)
   ARKLsMem arkls_mem;
   int retval;
   SUNLinearSolver_Type LSType;
-  booleantype iterative;   /* is the solver iterative?    */
-  booleantype matrixbased; /* is a matrix structure used? */
+  sunbooleantype iterative;   /* is the solver iterative?    */
+  sunbooleantype matrixbased; /* is a matrix structure used? */
 
   /* Return immediately if either arkode_mem or LS inputs are NULL */
   if (arkode_mem == NULL)
@@ -304,14 +304,14 @@ int arkLSSetLinearSolver(void* arkode_mem, SUNLinearSolver LS, SUNMatrix A)
   mass-matrix-vector product.
   ---------------------------------------------------------------*/
 int arkLSSetMassLinearSolver(void* arkode_mem, SUNLinearSolver LS, SUNMatrix M,
-                             booleantype time_dep)
+                             sunbooleantype time_dep)
 {
   ARKodeMem ark_mem;
   ARKLsMassMem arkls_mem;
   int retval;
   SUNLinearSolver_Type LSType;
-  booleantype iterative;   /* is the solver iterative?    */
-  booleantype matrixbased; /* is a matrix structure used? */
+  sunbooleantype iterative;   /* is the solver iterative?    */
+  sunbooleantype matrixbased; /* is a matrix structure used? */
 
   /* Return immediately if either arkode_mem or LS inputs are NULL */
   if (arkode_mem == NULL)
@@ -618,7 +618,7 @@ int arkLSSetMassFn(void* arkode_mem, ARKLsMassFn mass)
   arkLSSetEpsLin specifies the nonlinear -> linear tolerance
   scale factor.
   ---------------------------------------------------------------*/
-int arkLSSetEpsLin(void* arkode_mem, realtype eplifac)
+int arkLSSetEpsLin(void* arkode_mem, sunrealtype eplifac)
 {
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
@@ -638,7 +638,7 @@ int arkLSSetEpsLin(void* arkode_mem, realtype eplifac)
   converting from the integrator tolerance (WRMS norm) to the
   linear solver tolerance (L2 norm).
   ---------------------------------------------------------------*/
-int arkLSSetNormFactor(void* arkode_mem, realtype nrmfac)
+int arkLSSetNormFactor(void* arkode_mem, sunrealtype nrmfac)
 {
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
@@ -698,7 +698,7 @@ int arkLSSetJacEvalFrequency(void* arkode_mem, long int msbj)
   arkLSSetLinearSolutionScaling enables or disables scaling the
   linear solver solution to account for changes in gamma.
   ---------------------------------------------------------------*/
-int arkLSSetLinearSolutionScaling(void* arkode_mem, booleantype onoff)
+int arkLSSetLinearSolutionScaling(void* arkode_mem, sunbooleantype onoff)
 {
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
@@ -1244,7 +1244,7 @@ char* arkLSGetReturnFlagName(long int flag)
   arkLSSetMassEpsLin specifies the nonlinear -> linear tolerance
   scale factor for mass matrix linear systems.
   ---------------------------------------------------------------*/
-int arkLSSetMassEpsLin(void* arkode_mem, realtype eplifac)
+int arkLSSetMassEpsLin(void* arkode_mem, sunrealtype eplifac)
 {
   ARKodeMem ark_mem;
   ARKLsMassMem arkls_mem;
@@ -1265,7 +1265,7 @@ int arkLSSetMassEpsLin(void* arkode_mem, realtype eplifac)
   converting from the integrator tolerance (WRMS norm) to the
   linear solver tolerance (L2 norm).
   ---------------------------------------------------------------*/
-int arkLSSetMassNormFactor(void* arkode_mem, realtype nrmfac)
+int arkLSSetMassNormFactor(void* arkode_mem, sunrealtype nrmfac)
 {
   ARKodeMem ark_mem;
   ARKLsMassMem arkls_mem;
@@ -1692,8 +1692,8 @@ int arkLsATimes(void* arkode_mem, N_Vector v, N_Vector z)
   ARKLsMem arkls_mem;
   void* ark_step_massmem;
   int retval;
-  realtype gamma, gamrat;
-  booleantype dgamma_fail, *jcur;
+  sunrealtype gamma, gamrat;
+  sunbooleantype dgamma_fail, *jcur;
 
   /* access ARKLsMem structure */
   retval = arkLs_AccessLMem(arkode_mem, "arkLsATimes", &ark_mem, &arkls_mem);
@@ -1752,8 +1752,8 @@ int arkLsPSetup(void* arkode_mem)
 {
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
-  realtype gamma, gamrat;
-  booleantype dgamma_fail, *jcur;
+  sunrealtype gamma, gamrat;
+  sunbooleantype dgamma_fail, *jcur;
   int retval;
 
   /* access ARKLsMem structure */
@@ -1789,12 +1789,12 @@ int arkLsPSetup(void* arkode_mem)
   is the only case in which the user's psolve routine is allowed
   to be NULL.
   ---------------------------------------------------------------*/
-int arkLsPSolve(void* arkode_mem, N_Vector r, N_Vector z, realtype tol, int lr)
+int arkLsPSolve(void* arkode_mem, N_Vector r, N_Vector z, sunrealtype tol, int lr)
 {
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
-  realtype gamma, gamrat;
-  booleantype dgamma_fail, *jcur;
+  sunrealtype gamma, gamrat;
+  sunbooleantype dgamma_fail, *jcur;
   int retval;
 
   /* access ARKLsMem structure */
@@ -1916,7 +1916,7 @@ int arkLsMPSetup(void* arkode_mem)
   case in which preconditioning is not done. This is the only case
   in which the user's psolve routine is allowed to be NULL.
   ---------------------------------------------------------------*/
-int arkLsMPSolve(void* arkode_mem, N_Vector r, N_Vector z, realtype tol, int lr)
+int arkLsMPSolve(void* arkode_mem, N_Vector r, N_Vector z, sunrealtype tol, int lr)
 {
   ARKodeMem ark_mem;
   ARKLsMassMem arkls_mem;
@@ -1939,7 +1939,7 @@ int arkLsMPSolve(void* arkode_mem, N_Vector r, N_Vector z, realtype tol, int lr)
   implementations of the difference quotient Jacobian
   approximation routines.
   ---------------------------------------------------------------*/
-int arkLsDQJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
+int arkLsDQJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
                void* arkode_mem, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   ARKodeMem ark_mem;
@@ -2013,13 +2013,13 @@ int arkLsDQJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
   actual computation of the jth column of the Jacobian is done
   with a call to N_VLinearSum.
   ---------------------------------------------------------------*/
-int arkLsDenseDQJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
+int arkLsDenseDQJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
                     ARKodeMem ark_mem, ARKLsMem arkls_mem, ARKRhsFn fi,
                     N_Vector tmp1)
 {
   SUNAssignSUNCTX(ark_mem->sunctx);
-  realtype fnorm, minInc, inc, inc_inv, yjsaved, srur, conj;
-  realtype *y_data, *ewt_data, *cns_data;
+  sunrealtype fnorm, minInc, inc, inc_inv, yjsaved, srur, conj;
+  sunrealtype *y_data, *ewt_data, *cns_data;
   N_Vector ftemp, jthCol;
   sunindextype j, N;
   int retval = 0;
@@ -2102,15 +2102,15 @@ int arkLsDenseDQJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
   write a simple for loop to set each of the elements of a column
   in succession.
   ---------------------------------------------------------------*/
-int arkLsBandDQJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
+int arkLsBandDQJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
                    ARKodeMem ark_mem, ARKLsMem arkls_mem, ARKRhsFn fi,
                    N_Vector tmp1, N_Vector tmp2)
 {
   SUNAssignSUNCTX(ark_mem->sunctx);
   N_Vector ftemp, ytemp;
-  realtype fnorm, minInc, inc, inc_inv, srur, conj;
-  realtype *col_j, *ewt_data, *fy_data, *ftemp_data, *y_data, *ytemp_data;
-  realtype* cns_data;
+  sunrealtype fnorm, minInc, inc, inc_inv, srur, conj;
+  sunrealtype *col_j, *ewt_data, *fy_data, *ftemp_data, *y_data, *ytemp_data;
+  sunrealtype* cns_data;
   sunindextype group, i, j, width, ngroups, i1, i2;
   sunindextype N, mupper, mlower;
   int retval = 0;
@@ -2222,12 +2222,12 @@ int arkLsBandDQJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix Jac,
   Jv = [fi(y + v*sig) - fi(y)]/sig, where sig = 1 / ||v||_WRMS,
   i.e. the WRMS norm of v*sig is 1.
   ---------------------------------------------------------------*/
-int arkLsDQJtimes(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
+int arkLsDQJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
                   void* arkode_mem, N_Vector work)
 {
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
-  realtype sig, siginv;
+  sunrealtype sig, siginv;
   int iter, retval;
 
   /* access ARKLsMem structure */
@@ -2269,9 +2269,9 @@ int arkLsDQJtimes(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
 
   Setup the linear system A = I - gamma J or A = M - gamma J
   -----------------------------------------------------------------*/
-static int arkLsLinSys(realtype t, N_Vector y, N_Vector fy, SUNMatrix A,
-                       SUNMatrix M, booleantype jok, booleantype* jcur,
-                       realtype gamma, void* arkode_mem, N_Vector vtemp1,
+static int arkLsLinSys(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix A,
+                       SUNMatrix M, sunbooleantype jok, sunbooleantype* jcur,
+                       sunrealtype gamma, void* arkode_mem, N_Vector vtemp1,
                        N_Vector vtemp2, N_Vector vtemp3)
 {
   ARKodeMem ark_mem;
@@ -2568,16 +2568,16 @@ int arkLsInitialize(void* arkode_mem)
 
   This routine then calls the LS 'setup' routine with A.
   ---------------------------------------------------------------*/
-int arkLsSetup(void* arkode_mem, int convfail, realtype tpred, N_Vector ypred,
-               N_Vector fpred, booleantype* jcurPtr, N_Vector vtemp1,
+int arkLsSetup(void* arkode_mem, int convfail, sunrealtype tpred, N_Vector ypred,
+               N_Vector fpred, sunbooleantype* jcurPtr, N_Vector vtemp1,
                N_Vector vtemp2, N_Vector vtemp3)
 {
   ARKodeMem ark_mem      = NULL;
   ARKLsMem arkls_mem     = NULL;
   void* ark_step_massmem = NULL;
   SUNMatrix M            = NULL;
-  realtype gamma, gamrat;
-  booleantype dgamma_fail, *jcur;
+  sunrealtype gamma, gamrat;
+  sunbooleantype dgamma_fail, *jcur;
   int retval;
 
   /* access ARKLsMem structure */
@@ -2715,14 +2715,14 @@ int arkLsSetup(void* arkode_mem, int convfail, realtype tpred, N_Vector ypred,
   When using a non-NULL SUNMatrix, this will additionally scale
   the solution appropriately when gamrat != 1.
   ---------------------------------------------------------------*/
-int arkLsSolve(void* arkode_mem, N_Vector b, realtype tnow, N_Vector ynow,
-               N_Vector fnow, realtype eRNrm, int mnewt)
+int arkLsSolve(void* arkode_mem, N_Vector b, sunrealtype tnow, N_Vector ynow,
+               N_Vector fnow, sunrealtype eRNrm, int mnewt)
 {
-  realtype bnorm, resnorm;
+  sunrealtype bnorm, resnorm;
   ARKodeMem ark_mem;
   ARKLsMem arkls_mem;
-  realtype gamma, gamrat, delta, deltar, rwt_mean;
-  booleantype dgamma_fail, *jcur;
+  sunrealtype gamma, gamrat, delta, deltar, rwt_mean;
+  sunbooleantype dgamma_fail, *jcur;
   long int nps_inc;
   int nli_inc, retval;
   int ls_status;
@@ -3055,12 +3055,12 @@ int arkLsMassInitialize(void* arkode_mem)
 /*---------------------------------------------------------------
   arkLsMassSetup calls the LS 'setup' routine.
   ---------------------------------------------------------------*/
-int arkLsMassSetup(void* arkode_mem, realtype t, N_Vector vtemp1,
+int arkLsMassSetup(void* arkode_mem, sunrealtype t, N_Vector vtemp1,
                    N_Vector vtemp2, N_Vector vtemp3)
 {
   ARKodeMem ark_mem;
   ARKLsMassMem arkls_mem;
-  booleantype call_mtsetup, call_mvsetup, call_lssetup;
+  sunbooleantype call_mtsetup, call_mvsetup, call_lssetup;
   int retval;
 
   /* access ARKLsMassMem structure */
@@ -3216,9 +3216,9 @@ int arkLsMassSetup(void* arkode_mem, realtype t, N_Vector vtemp1,
   and scaling vectors, calling the solver, and accumulating
   statistics from the solve for use/reporting by ARKODE.
   ---------------------------------------------------------------*/
-int arkLsMassSolve(void* arkode_mem, N_Vector b, realtype nlscoef)
+int arkLsMassSolve(void* arkode_mem, N_Vector b, sunrealtype nlscoef)
 {
-  realtype resnorm, delta, rwt_mean;
+  sunrealtype resnorm, delta, rwt_mean;
   ARKodeMem ark_mem;
   ARKLsMassMem arkls_mem;
   long int nps_inc;
@@ -3458,7 +3458,7 @@ int arkLsInitializeMassCounters(ARKLsMassMem arkls_mem)
   arkls_mem->nli        = 0;
   arkls_mem->nps        = 0;
   arkls_mem->ncfl       = 0;
-  arkls_mem->msetuptime = -BIG_REAL;
+  arkls_mem->msetuptime = -SUN_BIG_REAL;
   return (0);
 }
 

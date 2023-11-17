@@ -21,10 +21,10 @@
 #include "idas_impl.h"
 #include "idas_ls_impl.h"
 
-#define ZERO   RCONST(0.0)
-#define HALF   RCONST(0.5)
-#define ONE    RCONST(1.0)
-#define TWOPT5 RCONST(2.5)
+#define ZERO   SUN_RCONST(0.0)
+#define HALF   SUN_RCONST(0.5)
+#define ONE    SUN_RCONST(1.0)
+#define TWOPT5 SUN_RCONST(2.5)
 
 /*
  * =================================================================
@@ -32,7 +32,7 @@
  * =================================================================
  */
 
-int IDASetDeltaCjLSetup(void* ida_mem, realtype dcj)
+int IDASetDeltaCjLSetup(void* ida_mem, sunrealtype dcj)
 {
   IDAMem IDA_mem;
 
@@ -106,8 +106,8 @@ int IDASetUserData(void* ida_mem, void* user_data)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetEtaFixedStepBounds(void* ida_mem, realtype eta_min_fx,
-                             realtype eta_max_fx)
+int IDASetEtaFixedStepBounds(void* ida_mem, sunrealtype eta_min_fx,
+                             sunrealtype eta_max_fx)
 {
   IDAMem IDA_mem;
 
@@ -133,7 +133,7 @@ int IDASetEtaFixedStepBounds(void* ida_mem, realtype eta_min_fx,
 
 /*-----------------------------------------------------------------*/
 
-int IDASetEtaMax(void* ida_mem, realtype eta_max)
+int IDASetEtaMax(void* ida_mem, sunrealtype eta_max)
 {
   IDAMem IDA_mem;
 
@@ -153,7 +153,7 @@ int IDASetEtaMax(void* ida_mem, realtype eta_max)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetEtaMin(void* ida_mem, realtype eta_min)
+int IDASetEtaMin(void* ida_mem, sunrealtype eta_min)
 {
   IDAMem IDA_mem;
 
@@ -176,7 +176,7 @@ int IDASetEtaMin(void* ida_mem, realtype eta_min)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetEtaLow(void* ida_mem, realtype eta_low)
+int IDASetEtaLow(void* ida_mem, sunrealtype eta_low)
 {
   IDAMem IDA_mem;
 
@@ -199,7 +199,7 @@ int IDASetEtaLow(void* ida_mem, realtype eta_low)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetEtaMinErrFail(void* ida_mem, realtype eta_min_ef)
+int IDASetEtaMinErrFail(void* ida_mem, sunrealtype eta_min_ef)
 {
   IDAMem IDA_mem;
 
@@ -222,7 +222,7 @@ int IDASetEtaMinErrFail(void* ida_mem, realtype eta_min_ef)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetEtaConvFail(void* ida_mem, realtype eta_cf)
+int IDASetEtaConvFail(void* ida_mem, sunrealtype eta_cf)
 {
   IDAMem IDA_mem;
 
@@ -302,7 +302,7 @@ int IDASetMaxNumSteps(void* ida_mem, long int mxsteps)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetInitStep(void* ida_mem, realtype hin)
+int IDASetInitStep(void* ida_mem, sunrealtype hin)
 {
   IDAMem IDA_mem;
 
@@ -321,7 +321,7 @@ int IDASetInitStep(void* ida_mem, realtype hin)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetMaxStep(void* ida_mem, realtype hmax)
+int IDASetMaxStep(void* ida_mem, sunrealtype hmax)
 {
   IDAMem IDA_mem;
 
@@ -354,7 +354,7 @@ int IDASetMaxStep(void* ida_mem, realtype hmax)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetMinStep(void* ida_mem, realtype hmin)
+int IDASetMinStep(void* ida_mem, sunrealtype hmin)
 {
   IDAMem IDA_mem;
 
@@ -387,7 +387,7 @@ int IDASetMinStep(void* ida_mem, realtype hmin)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetStopTime(void* ida_mem, realtype tstop)
+int IDASetStopTime(void* ida_mem, sunrealtype tstop)
 {
   IDAMem IDA_mem;
 
@@ -440,7 +440,7 @@ int IDAClearStopTime(void* ida_mem)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetNonlinConvCoef(void* ida_mem, realtype epcon)
+int IDASetNonlinConvCoef(void* ida_mem, sunrealtype epcon)
 {
   IDAMem IDA_mem;
 
@@ -507,7 +507,7 @@ int IDASetMaxConvFails(void* ida_mem, int maxncf)
 int IDASetMaxNonlinIters(void* ida_mem, int maxcor)
 {
   IDAMem IDA_mem;
-  booleantype sensi_sim;
+  sunbooleantype sensi_sim;
 
   if (ida_mem == NULL)
   {
@@ -548,7 +548,7 @@ int IDASetMaxNonlinIters(void* ida_mem, int maxcor)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetSuppressAlg(void* ida_mem, booleantype suppressalg)
+int IDASetSuppressAlg(void* ida_mem, sunbooleantype suppressalg)
 {
   IDAMem IDA_mem;
 
@@ -613,7 +613,7 @@ int IDASetId(void* ida_mem, N_Vector id)
 int IDASetConstraints(void* ida_mem, N_Vector constraints)
 {
   IDAMem IDA_mem;
-  realtype temptest;
+  sunrealtype temptest;
 
   if (ida_mem == NULL)
   {
@@ -740,7 +740,7 @@ int IDASetNoInactiveRootWarn(void* ida_mem)
  * =================================================================
  */
 
-int IDASetNonlinConvCoefIC(void* ida_mem, realtype epiccon)
+int IDASetNonlinConvCoefIC(void* ida_mem, sunrealtype epiccon)
 {
   IDAMem IDA_mem;
 
@@ -870,7 +870,7 @@ int IDASetMaxBacksIC(void* ida_mem, int maxbacks)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetLineSearchOffIC(void* ida_mem, booleantype lsoff)
+int IDASetLineSearchOffIC(void* ida_mem, sunbooleantype lsoff)
 {
   IDAMem IDA_mem;
 
@@ -889,7 +889,7 @@ int IDASetLineSearchOffIC(void* ida_mem, booleantype lsoff)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetStepToleranceIC(void* ida_mem, realtype steptol)
+int IDASetStepToleranceIC(void* ida_mem, sunrealtype steptol)
 {
   IDAMem IDA_mem;
 
@@ -921,7 +921,7 @@ int IDASetStepToleranceIC(void* ida_mem, realtype steptol)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetQuadErrCon(void* ida_mem, booleantype errconQ)
+int IDASetQuadErrCon(void* ida_mem, sunbooleantype errconQ)
 {
   IDAMem IDA_mem;
 
@@ -949,7 +949,7 @@ int IDASetQuadErrCon(void* ida_mem, booleantype errconQ)
  * =================================================================
  */
 
-int IDASetSensDQMethod(void* ida_mem, int DQtype, realtype DQrhomax)
+int IDASetSensDQMethod(void* ida_mem, int DQtype, sunrealtype DQrhomax)
 {
   IDAMem IDA_mem;
 
@@ -983,7 +983,7 @@ int IDASetSensDQMethod(void* ida_mem, int DQtype, realtype DQrhomax)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetSensErrCon(void* ida_mem, booleantype errconS)
+int IDASetSensErrCon(void* ida_mem, sunbooleantype errconS)
 {
   IDAMem IDA_mem;
 
@@ -1026,7 +1026,7 @@ int IDASetSensMaxNonlinIters(void* ida_mem, int maxcorS)
 
 /*-----------------------------------------------------------------*/
 
-int IDASetSensParams(void* ida_mem, realtype* p, realtype* pbar, int* plist)
+int IDASetSensParams(void* ida_mem, sunrealtype* p, sunrealtype* pbar, int* plist)
 {
   IDAMem IDA_mem;
   int Ns, is;
@@ -1105,7 +1105,7 @@ int IDASetSensParams(void* ida_mem, realtype* p, realtype* pbar, int* plist)
  * are considered or not in the error control.
  * -----------------------------------------------------------------
  */
-int IDASetQuadSensErrCon(void* ida_mem, booleantype errconQS)
+int IDASetQuadSensErrCon(void* ida_mem, sunbooleantype errconQS)
 {
   IDAMem IDA_mem;
 
@@ -1311,7 +1311,7 @@ int IDAGetCurrentOrder(void* ida_mem, int* kcur)
 
 /*-----------------------------------------------------------------*/
 
-int IDAGetCurrentCj(void* ida_mem, realtype* cj)
+int IDAGetCurrentCj(void* ida_mem, sunrealtype* cj)
 {
   IDAMem IDA_mem;
 
@@ -1406,7 +1406,7 @@ int IDAGetCurrentYpSens(void* ida_mem, N_Vector** ypS)
 
 /*-----------------------------------------------------------------*/
 
-int IDAGetActualInitStep(void* ida_mem, realtype* hinused)
+int IDAGetActualInitStep(void* ida_mem, sunrealtype* hinused)
 {
   IDAMem IDA_mem;
 
@@ -1425,7 +1425,7 @@ int IDAGetActualInitStep(void* ida_mem, realtype* hinused)
 
 /*-----------------------------------------------------------------*/
 
-int IDAGetLastStep(void* ida_mem, realtype* hlast)
+int IDAGetLastStep(void* ida_mem, sunrealtype* hlast)
 {
   IDAMem IDA_mem;
 
@@ -1444,7 +1444,7 @@ int IDAGetLastStep(void* ida_mem, realtype* hlast)
 
 /*-----------------------------------------------------------------*/
 
-int IDAGetCurrentStep(void* ida_mem, realtype* hcur)
+int IDAGetCurrentStep(void* ida_mem, sunrealtype* hcur)
 {
   IDAMem IDA_mem;
 
@@ -1463,7 +1463,7 @@ int IDAGetCurrentStep(void* ida_mem, realtype* hcur)
 
 /*-----------------------------------------------------------------*/
 
-int IDAGetCurrentTime(void* ida_mem, realtype* tcur)
+int IDAGetCurrentTime(void* ida_mem, sunrealtype* tcur)
 {
   IDAMem IDA_mem;
 
@@ -1482,7 +1482,7 @@ int IDAGetCurrentTime(void* ida_mem, realtype* tcur)
 
 /*-----------------------------------------------------------------*/
 
-int IDAGetTolScaleFactor(void* ida_mem, realtype* tolsfact)
+int IDAGetTolScaleFactor(void* ida_mem, sunrealtype* tolsfact)
 {
   IDAMem IDA_mem;
 
@@ -1564,8 +1564,8 @@ int IDAGetWorkSpace(void* ida_mem, long int* lenrw, long int* leniw)
 
 int IDAGetIntegratorStats(void* ida_mem, long int* nsteps, long int* nrevals,
                           long int* nlinsetups, long int* netfails, int* klast,
-                          int* kcur, realtype* hinused, realtype* hlast,
-                          realtype* hcur, realtype* tcur)
+                          int* kcur, sunrealtype* hinused, sunrealtype* hlast,
+                          sunrealtype* hcur, sunrealtype* tcur)
 {
   IDAMem IDA_mem;
 
@@ -2332,7 +2332,7 @@ int IDAPrintAllStats(void* ida_mem, FILE* outfile, SUNOutputFormat fmt)
     if (IDA_mem->ida_nst > 0)
     {
       fprintf(outfile, "NLS iters per step           = %" RSYM "\n",
-              (realtype)IDA_mem->ida_nre / (realtype)IDA_mem->ida_nst);
+              (sunrealtype)IDA_mem->ida_nre / (sunrealtype)IDA_mem->ida_nst);
     }
 
     /* linear solver stats */
@@ -2354,11 +2354,11 @@ int IDAPrintAllStats(void* ida_mem, FILE* outfile, SUNOutputFormat fmt)
       if (IDA_mem->ida_nni > 0)
       {
         fprintf(outfile, "LS iters per NLS iter        = %" RSYM "\n",
-                (realtype)idals_mem->nli / (realtype)IDA_mem->ida_nni);
+                (sunrealtype)idals_mem->nli / (sunrealtype)IDA_mem->ida_nni);
         fprintf(outfile, "Jac evals per NLS iter       = %" RSYM "\n",
-                (realtype)idals_mem->nje / (realtype)IDA_mem->ida_nni);
+                (sunrealtype)idals_mem->nje / (sunrealtype)IDA_mem->ida_nni);
         fprintf(outfile, "Prec evals per NLS iter      = %" RSYM "\n",
-                (realtype)idals_mem->npe / (realtype)IDA_mem->ida_nni);
+                (sunrealtype)idals_mem->npe / (sunrealtype)IDA_mem->ida_nni);
       }
     }
 
@@ -2427,7 +2427,7 @@ int IDAPrintAllStats(void* ida_mem, FILE* outfile, SUNOutputFormat fmt)
     if (IDA_mem->ida_nst > 0)
     {
       fprintf(outfile, ",NLS iters per step,%" RSYM,
-              (realtype)IDA_mem->ida_nre / (realtype)IDA_mem->ida_nst);
+              (sunrealtype)IDA_mem->ida_nre / (sunrealtype)IDA_mem->ida_nst);
     }
     else { fprintf(outfile, ",NLS iters per step,0"); }
 
@@ -2447,11 +2447,11 @@ int IDAPrintAllStats(void* ida_mem, FILE* outfile, SUNOutputFormat fmt)
       if (IDA_mem->ida_nni > 0)
       {
         fprintf(outfile, ",LS iters per NLS iter,%" RSYM,
-                (realtype)idals_mem->nli / (realtype)IDA_mem->ida_nni);
+                (sunrealtype)idals_mem->nli / (sunrealtype)IDA_mem->ida_nni);
         fprintf(outfile, ",Jac evals per NLS iter,%" RSYM,
-                (realtype)idals_mem->nje / (realtype)IDA_mem->ida_nni);
+                (sunrealtype)idals_mem->nje / (sunrealtype)IDA_mem->ida_nni);
         fprintf(outfile, ",Prec evals per NLS iter,%" RSYM,
-                (realtype)idals_mem->npe / (realtype)IDA_mem->ida_nni);
+                (sunrealtype)idals_mem->npe / (sunrealtype)IDA_mem->ida_nni);
       }
       else
       {

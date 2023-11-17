@@ -25,11 +25,11 @@
  *   - The definition of the generic N_Vector structure can be found
  *     in the header file sundials_nvector.h.
  *
- *   - The definition of the type 'realtype' can be found in the
+ *   - The definition of the type 'sunrealtype' can be found in the
  *     header file sundials_types.h, and it may be changed (at the
  *     configuration stage) according to the user's needs.
  *     The sundials_types.h file also contains the definition
- *     for the type 'booleantype'.
+ *     for the type 'sunbooleantype'.
  *
  *   - N_Vector arguments to arithmetic vector operations need not
  *     be distinct. For example, the following call:
@@ -60,8 +60,8 @@ extern "C" {
 struct _N_VectorContent_Pthreads
 {
   sunindextype length;  /* vector length           */
-  booleantype own_data; /* data ownership flag     */
-  realtype* data;       /* data array              */
+  sunbooleantype own_data; /* data ownership flag     */
+  sunrealtype* data;       /* data array              */
   int num_threads;      /* number of POSIX threads */
 };
 
@@ -70,22 +70,22 @@ typedef struct _N_VectorContent_Pthreads* N_VectorContent_Pthreads;
 /* Structure to hold parallelization information for each thread when
    calling "companion" functions to compute vector operations. The
    start and end vector (loop) indices are unique to each thread, the
-   realtype variables are the same for each thread, and the mutex
+   sunrealtype variables are the same for each thread, and the mutex
    variable is used to lock variables in reductions. */
 
 struct _Pthreads_Data
 {
   sunindextype start;            /* starting index for loop  */
   sunindextype end;              /* ending index for loop    */
-  realtype c1, c2;               /* scalar values            */
-  realtype *v1, *v2, *v3;        /* vector data              */
-  realtype* global_val;          /* shared global variable   */
+  sunrealtype c1, c2;               /* scalar values            */
+  sunrealtype *v1, *v2, *v3;        /* vector data              */
+  sunrealtype* global_val;          /* shared global variable   */
   pthread_mutex_t* global_mutex; /* lock for shared variable */
 
   int nvec; /* number of vectors in fused op */
   int nsum; /* number of sums in fused op    */
 
-  realtype* cvals; /* scalar values in fused op */
+  sunrealtype* cvals; /* scalar values in fused op */
 
   N_Vector x1; /* vector array in fused op */
   N_Vector x2; /* vector array in fused op */
@@ -136,7 +136,7 @@ N_Vector N_VNewEmpty_Pthreads(sunindextype vec_length, int n_threads,
 
 SUNDIALS_EXPORT
 N_Vector N_VMake_Pthreads(sunindextype vec_length, int n_threads,
-                          realtype* v_data, SUNContext sunctx);
+                          sunrealtype* v_data, SUNContext sunctx);
 
 SUNDIALS_EXPORT
 sunindextype N_VGetLength_Pthreads(N_Vector v);
@@ -164,18 +164,18 @@ void N_VSpace_Pthreads(N_Vector v, sunindextype* lrw,
                        sunindextype* liw);
 
 SUNDIALS_EXPORT
-realtype* N_VGetArrayPointer_Pthreads(N_Vector v);
+sunrealtype* N_VGetArrayPointer_Pthreads(N_Vector v);
 
 SUNDIALS_EXPORT
-void N_VSetArrayPointer_Pthreads(realtype* v_data, N_Vector v);
+void N_VSetArrayPointer_Pthreads(sunrealtype* v_data, N_Vector v);
 
 /* standard vector operations */
 SUNDIALS_EXPORT
-void N_VLinearSum_Pthreads(realtype a, N_Vector x, realtype b, N_Vector y,
+void N_VLinearSum_Pthreads(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y,
                            N_Vector z);
 
 SUNDIALS_EXPORT
-void N_VConst_Pthreads(realtype c, N_Vector z);
+void N_VConst_Pthreads(sunrealtype c, N_Vector z);
 
 SUNDIALS_EXPORT
 void N_VProd_Pthreads(N_Vector x, N_Vector y, N_Vector z);
@@ -184,7 +184,7 @@ SUNDIALS_EXPORT
 void N_VDiv_Pthreads(N_Vector x, N_Vector y, N_Vector z);
 
 SUNDIALS_EXPORT
-void N_VScale_Pthreads(realtype c, N_Vector x, N_Vector z);
+void N_VScale_Pthreads(sunrealtype c, N_Vector x, N_Vector z);
 
 SUNDIALS_EXPORT
 void N_VAbs_Pthreads(N_Vector x, N_Vector z);
@@ -193,86 +193,86 @@ SUNDIALS_EXPORT
 void N_VInv_Pthreads(N_Vector x, N_Vector z);
 
 SUNDIALS_EXPORT
-void N_VAddConst_Pthreads(N_Vector x, realtype b, N_Vector z);
+void N_VAddConst_Pthreads(N_Vector x, sunrealtype b, N_Vector z);
 
 SUNDIALS_EXPORT
-realtype N_VDotProd_Pthreads(N_Vector x, N_Vector y);
+sunrealtype N_VDotProd_Pthreads(N_Vector x, N_Vector y);
 
 SUNDIALS_EXPORT
-realtype N_VMaxNorm_Pthreads(N_Vector x);
+sunrealtype N_VMaxNorm_Pthreads(N_Vector x);
 
 SUNDIALS_EXPORT
-realtype N_VWrmsNorm_Pthreads(N_Vector x, N_Vector w);
+sunrealtype N_VWrmsNorm_Pthreads(N_Vector x, N_Vector w);
 
 SUNDIALS_EXPORT
-realtype N_VWrmsNormMask_Pthreads(N_Vector x, N_Vector w,
+sunrealtype N_VWrmsNormMask_Pthreads(N_Vector x, N_Vector w,
                                   N_Vector id);
 
 SUNDIALS_EXPORT
-realtype N_VMin_Pthreads(N_Vector x);
+sunrealtype N_VMin_Pthreads(N_Vector x);
 
 SUNDIALS_EXPORT
-realtype N_VWL2Norm_Pthreads(N_Vector x, N_Vector w);
+sunrealtype N_VWL2Norm_Pthreads(N_Vector x, N_Vector w);
 
 SUNDIALS_EXPORT
-realtype N_VL1Norm_Pthreads(N_Vector x);
+sunrealtype N_VL1Norm_Pthreads(N_Vector x);
 
 SUNDIALS_EXPORT
-void N_VCompare_Pthreads(realtype c, N_Vector x, N_Vector z);
+void N_VCompare_Pthreads(sunrealtype c, N_Vector x, N_Vector z);
 
 SUNDIALS_EXPORT
-booleantype N_VInvTest_Pthreads(N_Vector x, N_Vector z);
+sunbooleantype N_VInvTest_Pthreads(N_Vector x, N_Vector z);
 
 SUNDIALS_EXPORT
-booleantype N_VConstrMask_Pthreads(N_Vector c, N_Vector x,
+sunbooleantype N_VConstrMask_Pthreads(N_Vector c, N_Vector x,
                                    N_Vector m);
 
 SUNDIALS_EXPORT
-realtype N_VMinQuotient_Pthreads(N_Vector num, N_Vector denom);
+sunrealtype N_VMinQuotient_Pthreads(N_Vector num, N_Vector denom);
 
 /* fused vector operations */
 SUNDIALS_EXPORT
-SUNErrCode N_VLinearCombination_Pthreads(int nvec, realtype* c, N_Vector* X,
+SUNErrCode N_VLinearCombination_Pthreads(int nvec, sunrealtype* c, N_Vector* X,
                                          N_Vector z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleAddMulti_Pthreads(int nvec, realtype* a, N_Vector x,
+SUNErrCode N_VScaleAddMulti_Pthreads(int nvec, sunrealtype* a, N_Vector x,
                                      N_Vector* Y, N_Vector* Z);
 SUNDIALS_EXPORT
 SUNErrCode N_VDotProdMulti_Pthreads(int nvec, N_Vector x, N_Vector* Y,
-                                    realtype* dotprods);
+                                    sunrealtype* dotprods);
 
 /* vector array operations */
 SUNDIALS_EXPORT
-SUNErrCode N_VLinearSumVectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
-                                            realtype b, N_Vector* Y, N_Vector* Z);
+SUNErrCode N_VLinearSumVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
+                                            sunrealtype b, N_Vector* Y, N_Vector* Z);
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleVectorArray_Pthreads(int nvec, realtype* c, N_Vector* X,
+SUNErrCode N_VScaleVectorArray_Pthreads(int nvec, sunrealtype* c, N_Vector* X,
                                         N_Vector* Z);
 SUNDIALS_EXPORT
-SUNErrCode N_VConstVectorArray_Pthreads(int nvec, realtype c, N_Vector* Z);
+SUNErrCode N_VConstVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* Z);
 
 SUNDIALS_EXPORT
 SUNErrCode N_VWrmsNormVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* W,
-                                           realtype* nrm);
+                                           sunrealtype* nrm);
 SUNDIALS_EXPORT
 SUNErrCode N_VWrmsNormMaskVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* W,
-                                               N_Vector id, realtype* nrm);
+                                               N_Vector id, sunrealtype* nrm);
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleAddMultiVectorArray_Pthreads(int nvec, int nsum, realtype* a,
+SUNErrCode N_VScaleAddMultiVectorArray_Pthreads(int nvec, int nsum, sunrealtype* a,
                                                 N_Vector* X, N_Vector** Y,
                                                 N_Vector** Z);
 SUNDIALS_EXPORT
 SUNErrCode N_VLinearCombinationVectorArray_Pthreads(int nvec, int nsum,
-                                                    realtype* c, N_Vector** X,
+                                                    sunrealtype* c, N_Vector** X,
                                                     N_Vector* Z);
 
 /* OPTIONAL local reduction kernels (no parallel communication) */
 SUNDIALS_EXPORT
-realtype N_VWSqrSumLocal_Pthreads(N_Vector x, N_Vector w);
+sunrealtype N_VWSqrSumLocal_Pthreads(N_Vector x, N_Vector w);
 
 SUNDIALS_EXPORT
-realtype N_VWSqrSumMaskLocal_Pthreads(N_Vector x, N_Vector w,
+sunrealtype N_VWSqrSumMaskLocal_Pthreads(N_Vector x, N_Vector w,
                                       N_Vector id);
 
 /* OPTIONAL XBraid interface operations */
@@ -292,38 +292,38 @@ SUNErrCode N_VBufUnpack_Pthreads(N_Vector x, void* buf);
  */
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableFusedOps_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableFusedOps_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableLinearCombination_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableLinearCombination_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleAddMulti_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableScaleAddMulti_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableDotProdMulti_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableDotProdMulti_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableLinearSumVectorArray_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableLinearSumVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleVectorArray_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableScaleVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableConstVectorArray_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableConstVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableWrmsNormVectorArray_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableWrmsNormVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableWrmsNormMaskVectorArray_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableWrmsNormMaskVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleAddMultiVectorArray_Pthreads(N_Vector v, booleantype tf);
+SUNErrCode N_VEnableScaleAddMultiVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT
 SUNErrCode N_VEnableLinearCombinationVectorArray_Pthreads(N_Vector v,
-                                                          booleantype tf);
+                                                          sunbooleantype tf);
 
 #ifdef __cplusplus
 }

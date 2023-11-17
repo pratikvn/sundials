@@ -221,9 +221,9 @@ int main(int argc, char* argv[])
   // ----------------------
 
   // Initial time, time between outputs, output time
-  realtype t     = ZERO;
-  realtype dTout = udata.tf / uopts.nout;
-  realtype tout  = dTout;
+  sunrealtype t     = ZERO;
+  sunrealtype dTout = udata.tf / uopts.nout;
+  sunrealtype tout  = dTout;
 
   // Inital output
   flag = OpenOutput(udata, uopts);
@@ -1093,8 +1093,8 @@ int SetupMRICVODE(SUNContext ctx, UserData& udata, UserOptions& uopts,
 // -----------------------------------------------------------------------------
 
 // Advance the fast ODE in time
-int CVodeInnerStepper_Evolve(MRIStepInnerStepper fast_mem, realtype t0,
-                             realtype tout, N_Vector y)
+int CVodeInnerStepper_Evolve(MRIStepInnerStepper fast_mem, sunrealtype t0,
+                             sunrealtype tout, N_Vector y)
 {
   void* inner_content = nullptr;
   int flag = MRIStepInnerStepper_GetContent(fast_mem, &inner_content);
@@ -1119,7 +1119,7 @@ int CVodeInnerStepper_Evolve(MRIStepInnerStepper fast_mem, realtype t0,
   flag = CVodeSetStopTime(content->cvode_mem, tout);
   if (check_flag(flag, "CVodeSetStopTime")) { return -1; }
 
-  realtype tret;
+  sunrealtype tret;
   flag = CVode(content->cvode_mem, tout, y, &tret, CV_NORMAL);
   if (flag < 0) { return -1; }
 
@@ -1141,7 +1141,7 @@ int CVodeInnerStepper_Evolve(MRIStepInnerStepper fast_mem, realtype t0,
 }
 
 // Compute the RHS of the fast ODE
-int CVodeInnerStepper_FullRhs(MRIStepInnerStepper fast_mem, realtype t,
+int CVodeInnerStepper_FullRhs(MRIStepInnerStepper fast_mem, sunrealtype t,
                               N_Vector y, N_Vector f, int mode)
 {
   void* inner_content = nullptr;
@@ -1157,7 +1157,7 @@ int CVodeInnerStepper_FullRhs(MRIStepInnerStepper fast_mem, realtype t,
 }
 
 // Reset the fast integrator to the given time and state
-int CVodeInnerStepper_Reset(MRIStepInnerStepper fast_mem, realtype tR, N_Vector yR)
+int CVodeInnerStepper_Reset(MRIStepInnerStepper fast_mem, sunrealtype tR, N_Vector yR)
 {
   void* inner_content = nullptr;
   int flag = MRIStepInnerStepper_GetContent(fast_mem, &inner_content);
@@ -1181,24 +1181,24 @@ int CVodeInnerStepper_Reset(MRIStepInnerStepper fast_mem, realtype tR, N_Vector 
 // -----------------------------------------------------------------------------
 
 // Advection RHS function
-int f_advection(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_advection(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
 
   // Access data arrays
-  realtype* ydata = N_VGetArrayPointer(y);
+  sunrealtype* ydata = N_VGetArrayPointer(y);
   if (check_ptr(ydata, "N_VGetArrayPointer")) { return -1; }
 
-  realtype* fdata = N_VGetArrayPointer(f);
+  sunrealtype* fdata = N_VGetArrayPointer(f);
   if (check_ptr(fdata, "N_VGetArrayPointer")) { return -1; }
 
   // Compute advection RHS
-  realtype ul, ur;
-  realtype vl, vr;
-  realtype wl, wr;
+  sunrealtype ul, ur;
+  sunrealtype vl, vr;
+  sunrealtype wl, wr;
 
-  realtype c = -ONE * udata->c / (TWO * udata->dx);
+  sunrealtype c = -ONE * udata->c / (TWO * udata->dx);
 
   fdata[0] = fdata[1] = fdata[2] = ZERO;
 
@@ -1224,13 +1224,13 @@ int f_advection(realtype t, N_Vector y, N_Vector f, void* user_data)
 }
 
 // Advection Jacobian function
-int J_advection(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_advection(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
 
-  realtype c = -ONE * udata->c / (TWO * udata->dx);
+  sunrealtype c = -ONE * udata->c / (TWO * udata->dx);
 
   for (sunindextype i = 1; i < udata->nx - 1; i++)
   {
@@ -1248,24 +1248,24 @@ int J_advection(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 // Diffusion RHS function
-int f_diffusion(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_diffusion(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
 
   // Access data arrays
-  realtype* ydata = N_VGetArrayPointer(y);
+  sunrealtype* ydata = N_VGetArrayPointer(y);
   if (check_ptr(ydata, "N_VGetArrayPointer")) { return -1; }
 
-  realtype* fdata = N_VGetArrayPointer(f);
+  sunrealtype* fdata = N_VGetArrayPointer(f);
   if (check_ptr(fdata, "N_VGetArrayPointer")) { return -1; }
 
   // Compute diffusion RHS
-  realtype ul, uc, ur;
-  realtype vl, vc, vr;
-  realtype wl, wc, wr;
+  sunrealtype ul, uc, ur;
+  sunrealtype vl, vc, vr;
+  sunrealtype wl, wc, wr;
 
-  realtype d = udata->d / (udata->dx * udata->dx);
+  sunrealtype d = udata->d / (udata->dx * udata->dx);
 
   fdata[0] = fdata[1] = fdata[2] = ZERO;
 
@@ -1294,13 +1294,13 @@ int f_diffusion(realtype t, N_Vector y, N_Vector f, void* user_data)
 }
 
 // Diffusion Jacobian function
-int J_diffusion(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_diffusion(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
 
-  realtype d = udata->d / (udata->dx * udata->dx);
+  sunrealtype d = udata->d / (udata->dx * udata->dx);
 
   for (sunindextype i = 1; i < udata->nx - 1; i++)
   {
@@ -1321,20 +1321,20 @@ int J_diffusion(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 // Reaction RHS function
-int f_reaction(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_reaction(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
 
   // Access data arrays
-  realtype* ydata = N_VGetArrayPointer(y);
+  sunrealtype* ydata = N_VGetArrayPointer(y);
   if (check_ptr(ydata, "N_VGetArrayPointer")) { return -1; }
 
-  realtype* fdata = N_VGetArrayPointer(f);
+  sunrealtype* fdata = N_VGetArrayPointer(f);
   if (check_ptr(fdata, "N_VGetArrayPointer")) { return -1; }
 
   // Compute reaction RHS
-  realtype u, v, w;
+  sunrealtype u, v, w;
 
   fdata[0] = fdata[1] = fdata[2] = ZERO;
 
@@ -1355,17 +1355,17 @@ int f_reaction(realtype t, N_Vector y, N_Vector f, void* user_data)
 }
 
 // Diffusion Jacobian function
-int J_reaction(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_reaction(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
 
   // Access data array
-  realtype* ydata = N_VGetArrayPointer(y);
+  sunrealtype* ydata = N_VGetArrayPointer(y);
   if (check_ptr(ydata, "N_VGetArrayPointer")) { return 1; }
 
-  realtype u, v, w;
+  sunrealtype u, v, w;
 
   for (sunindextype i = 1; i < udata->nx - 1; i++)
   {
@@ -1392,7 +1392,7 @@ int J_reaction(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 // Advection-diffusion RHS function
-int f_adv_diff(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_adv_diff(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
@@ -1412,7 +1412,7 @@ int f_adv_diff(realtype t, N_Vector y, N_Vector f, void* user_data)
 }
 
 // Advection-diffusion Jacobian function
-int J_adv_diff(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_adv_diff(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
@@ -1437,7 +1437,7 @@ int J_adv_diff(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 // Advection-reaction RHS function
-int f_adv_react(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_adv_react(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
@@ -1457,7 +1457,7 @@ int f_adv_react(realtype t, N_Vector y, N_Vector f, void* user_data)
 }
 
 // Diffusion-reaction Jacobian function
-int J_adv_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_adv_react(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                 void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
@@ -1482,7 +1482,7 @@ int J_adv_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 // Diffusion-reaction RHS function
-int f_diff_react(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_diff_react(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
@@ -1502,7 +1502,7 @@ int f_diff_react(realtype t, N_Vector y, N_Vector f, void* user_data)
 }
 
 // Diffusion-reaction Jacobian function
-int J_diff_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_diff_react(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                  void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
@@ -1527,7 +1527,7 @@ int J_diff_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 // Advection-diffusion-reaction RHS function
-int f_adv_diff_react(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_adv_diff_react(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
@@ -1554,7 +1554,7 @@ int f_adv_diff_react(realtype t, N_Vector y, N_Vector f, void* user_data)
 }
 
 // Diffusion-reaction Jacobian function
-int J_adv_diff_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int J_adv_diff_react(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                      void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
@@ -1590,7 +1590,7 @@ int J_adv_diff_react(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
 }
 
 // Reaction RHS function with MRI forcing
-int f_react_forcing(realtype t, N_Vector y, N_Vector f, void* user_data)
+int f_react_forcing(sunrealtype t, N_Vector y, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
@@ -1609,15 +1609,15 @@ int f_react_forcing(realtype t, N_Vector y, N_Vector f, void* user_data)
 // Compute the initial condition
 int SetIC(N_Vector y, UserData& udata)
 {
-  realtype* ydata = N_VGetArrayPointer(y);
+  sunrealtype* ydata = N_VGetArrayPointer(y);
   if (check_ptr(ydata, "N_VGetArrayPointer")) { return -1; }
 
-  realtype x, p;
+  sunrealtype x, p;
 
   for (sunindextype i = 0; i < udata.nx; i++)
   {
     x              = udata.xl + i * udata.dx;
-    p              = RCONST(0.1) * sin(PI * x);
+    p              = SUN_RCONST(0.1) * sin(PI * x);
     ydata[UIDX(i)] = udata.A + p;
     ydata[VIDX(i)] = udata.B / udata.A + p;
     ydata[WIDX(i)] = udata.B + p;

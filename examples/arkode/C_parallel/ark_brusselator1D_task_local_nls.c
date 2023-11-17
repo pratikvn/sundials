@@ -206,8 +206,8 @@ static int AdvectionReaction(double t, N_Vector y, N_Vector ydot,
  * Preconditioner functions (used only when using the global nonlinear solver)
  */
 
-static int PSetup(double t, N_Vector y, N_Vector f, booleantype jok,
-                  booleantype* jcurPtr, double gamma, void* user_data);
+static int PSetup(double t, N_Vector y, N_Vector f, sunbooleantype jok,
+                  sunbooleantype* jcurPtr, double gamma, void* user_data);
 static int PSolve(double t, N_Vector y, N_Vector f, N_Vector r, N_Vector z,
                   double gamma, double delta, int lr, void* user_data);
 
@@ -1056,7 +1056,7 @@ int TaskLocalNewton_Initialize(SUNNonlinearSolver NLS)
 }
 
 int TaskLocalNewton_Solve(SUNNonlinearSolver NLS, N_Vector y0, N_Vector ycor,
-                          N_Vector w, double tol, booleantype callLSetup,
+                          N_Vector w, double tol, sunbooleantype callLSetup,
                           void* mem)
 {
   /* local variables */
@@ -1219,8 +1219,8 @@ SUNNonlinearSolver TaskLocalNewton(SUNContext ctx, N_Vector y)
  * --------------------------------------------------------------*/
 
 /* Sets P = I - gamma * J */
-int PSetup(double t, N_Vector y, N_Vector ydot, booleantype jok,
-           booleantype* jcurPtr, double gamma, void* user_data)
+int PSetup(double t, N_Vector y, N_Vector ydot, sunbooleantype jok,
+           sunbooleantype* jcurPtr, double gamma, void* user_data)
 {
   /* local variables */
   UserData udata = (UserData)user_data;

@@ -36,11 +36,11 @@
 extern "C" {
 #endif
 
-extern void FCV_GLOCFN(long int* NLOC, realtype* T, realtype* YLOC,
-                       realtype* GLOC, long int* IPAR, realtype* RPAR, int* ier);
+extern void FCV_GLOCFN(long int* NLOC, sunrealtype* T, sunrealtype* YLOC,
+                       sunrealtype* GLOC, long int* IPAR, sunrealtype* RPAR, int* ier);
 
-extern void FCV_COMMFN(long int* NLOC, realtype* T, realtype* Y, long int* IPAR,
-                       realtype* RPAR, int* ier);
+extern void FCV_COMMFN(long int* NLOC, sunrealtype* T, sunrealtype* Y, long int* IPAR,
+                       sunrealtype* RPAR, int* ier);
 
 #ifdef __cplusplus
 }
@@ -49,7 +49,7 @@ extern void FCV_COMMFN(long int* NLOC, realtype* T, realtype* Y, long int* IPAR,
 /***************************************************************************/
 
 void FCV_BBDINIT(long int* Nloc, long int* mudq, long int* mldq, long int* mu,
-                 long int* ml, realtype* dqrely, int* ier)
+                 long int* ml, sunrealtype* dqrely, int* ier)
 {
   /*
      First call CVBBDPrecInit to initialize CVBBDPRE module:
@@ -71,7 +71,7 @@ void FCV_BBDINIT(long int* Nloc, long int* mudq, long int* mldq, long int* mu,
 
 /***************************************************************************/
 
-void FCV_BBDREINIT(long int* mudq, long int* mldq, realtype* dqrely, int* ier)
+void FCV_BBDREINIT(long int* mudq, long int* mldq, sunrealtype* dqrely, int* ier)
 {
   /*
      First call CVReInitBBD to re-initialize CVBBDPRE module:
@@ -90,11 +90,11 @@ void FCV_BBDREINIT(long int* mudq, long int* mldq, realtype* dqrely, int* ier)
 /* C function FCVgloc to interface between CVBBDPRE module and a Fortran
    subroutine FCVLOCFN. */
 
-int FCVgloc(long int Nloc, realtype t, N_Vector yloc, N_Vector gloc,
+int FCVgloc(long int Nloc, sunrealtype t, N_Vector yloc, N_Vector gloc,
             void* user_data)
 {
   int ier;
-  realtype *yloc_data, *gloc_data;
+  sunrealtype *yloc_data, *gloc_data;
   FCVUserData CV_userdata;
 
   yloc_data = N_VGetArrayPointer(yloc);
@@ -112,10 +112,10 @@ int FCVgloc(long int Nloc, realtype t, N_Vector yloc, N_Vector gloc,
 /* C function FCVcfn to interface between CVBBDPRE module and a Fortran
    subroutine FCVCOMMF. */
 
-int FCVcfn(long int Nloc, realtype t, N_Vector y, void* user_data)
+int FCVcfn(long int Nloc, sunrealtype t, N_Vector y, void* user_data)
 {
   int ier;
-  realtype* yloc;
+  sunrealtype* yloc;
   FCVUserData CV_userdata;
 
   yloc = N_VGetArrayPointer(y);

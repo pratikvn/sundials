@@ -33,7 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sundials/sundials_math.h>   /* access to SUNRexp               */
-#include <sundials/sundials_types.h>  /* defs. of realtype, sunindextype */
+#include <sundials/sundials_types.h>  /* defs. of sunrealtype, sunindextype */
 #include <sunlinsol/sunlinsol_band.h> /* access to band SUNLinearSolver  */
 #include <sunmatrix/sunmatrix_band.h> /* access to band SUNMatrix        */
 
@@ -45,11 +45,11 @@
 
 #define SKIP 3 /* no. of points skipped for printing */
 
-#define FTOL RCONST(1.e-12) /* function tolerance */
+#define FTOL SUN_RCONST(1.e-12) /* function tolerance */
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
-#define TWO  RCONST(2.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
+#define TWO  SUN_RCONST(2.0)
 
 /* IJth is defined in order to isolate the translation from the
    mathematical 2-dimensional structure of the dependent variable vector
@@ -80,7 +80,7 @@ static int check_retval(void* retvalvalue, const char* funcname, int opt);
 int main(void)
 {
   SUNContext sunctx;
-  realtype fnormtol, fnorm;
+  sunrealtype fnormtol, fnorm;
   N_Vector y, scale;
   int retval;
   void* kmem;
@@ -238,10 +238,10 @@ int main(void)
 
 static int func(N_Vector u, N_Vector f, void* user_data)
 {
-  realtype dx, dy, hdiff, vdiff;
-  realtype hdc, vdc;
-  realtype uij, udn, uup, ult, urt;
-  realtype *udata, *fdata;
+  sunrealtype dx, dy, hdiff, vdiff;
+  sunrealtype hdc, vdc;
+  sunrealtype uij, udn, uup, ult, urt;
+  sunrealtype *udata, *fdata;
 
   int i, j;
 
@@ -286,9 +286,9 @@ static int func(N_Vector u, N_Vector f, void* user_data)
 static int jac(N_Vector u, N_Vector f, SUNMatrix J, void* user_data,
                N_Vector tmp1, N_Vector tmp2)
 {
-  realtype dx, dy;
-  realtype hdc, vdc;
-  realtype* kthCol;
+  sunrealtype dx, dy;
+  sunrealtype hdc, vdc;
+  sunrealtype* kthCol;
 
   int i, j, k;
 
@@ -336,8 +336,8 @@ static int jac(N_Vector u, N_Vector f, SUNMatrix J, void* user_data,
 static void PrintOutput(N_Vector u)
 {
   int i, j;
-  realtype dx, dy, x, y;
-  realtype* udata;
+  sunrealtype dx, dy, x, y;
+  sunrealtype* udata;
 
   dx = ONE / (NX + 1);
   dy = ONE / (NY + 1);

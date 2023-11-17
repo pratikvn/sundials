@@ -20,7 +20,7 @@
 #include <cvode/cvode.h> /* prototypes for CVODE functions and const */
 #include <nvector/nvector_serial.h> /* access to serial NVector                 */
 #include <stdio.h>
-#include <sundials/sundials_types.h> /* defs. of realtype, sunindextype          */
+#include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype          */
 #include <sunlinsol/sunlinsol_dense.h> /* access to dense SUNLinearSolver          */
 #include <sunmatrix/sunmatrix_dense.h> /* access to dense SUNMatrix                */
 
@@ -42,7 +42,7 @@
 
 /* User provided routine called by the solver to compute
  * the function f(t,y). */
-static int f(realtype t, N_Vector y, N_Vector ydot, void* f_data);
+static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* f_data);
 
 /* Function for checking return values */
 static int check_retval(void* flagvalue, const char* funcname, int opt);
@@ -56,15 +56,15 @@ int main(void)
 
   N_Vector y;
   int flag, retval;
-  realtype reltol, abstol, t0, t1, t2, t;
+  sunrealtype reltol, abstol, t0, t1, t2, t;
   long int nst1, nst2, nst;
 
-  reltol = RCONST(1.0e-3);
-  abstol = RCONST(1.0e-4);
+  reltol = SUN_RCONST(1.0e-3);
+  abstol = SUN_RCONST(1.0e-4);
 
-  t0 = RCONST(0.0);
-  t1 = RCONST(1.0);
-  t2 = RCONST(2.0);
+  t0 = SUN_RCONST(0.0);
+  t1 = SUN_RCONST(1.0);
+  t2 = SUN_RCONST(2.0);
 
   /* Create the SUNDIALS context */
   retval = SUNContext_Create(NULL, &sunctx);
@@ -74,7 +74,7 @@ int main(void)
   y = N_VNew_Serial(NEQ, sunctx);
 
   /* Set initial condition */
-  NV_Ith_S(y, 0) = RCONST(1.0);
+  NV_Ith_S(y, 0) = SUN_RCONST(1.0);
 
   /*
    * ------------------------------------------------------------
@@ -149,7 +149,7 @@ int main(void)
   /* ---- Integrate from the discontinuity */
 
   /* Include discontinuity */
-  NV_Ith_S(y, 0) = RCONST(1.0);
+  NV_Ith_S(y, 0) = SUN_RCONST(1.0);
 
   /* Reinitialize the solver */
   retval = CVodeReInit(cvode_mem, t1, y);
@@ -191,7 +191,7 @@ int main(void)
   printf("\nDiscontinuity in RHS: Case 1 - explicit treatment\n\n");
 
   /* Set initial condition */
-  NV_Ith_S(y, 0) = RCONST(1.0);
+  NV_Ith_S(y, 0) = SUN_RCONST(1.0);
 
   /* Reinitialize the solver. CVodeReInit does not reallocate memory
    * so it can only be used when the new problem size is the same as
@@ -265,7 +265,7 @@ int main(void)
   printf("\nDiscontinuity in RHS: Case 2 - let CVODE deal with it\n\n");
 
   /* Set initial condition */
-  NV_Ith_S(y, 0) = RCONST(1.0);
+  NV_Ith_S(y, 0) = SUN_RCONST(1.0);
 
   /* Reinitialize the solver. CVodeReInit does not reallocate memory
    * so it can only be used when the new problem size is the same as
@@ -339,7 +339,7 @@ int main(void)
  *   flag = RHS2 -> y' = -5*y
  */
 
-static int f(realtype t, N_Vector y, N_Vector ydot, void* f_data)
+static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* f_data)
 {
   int* flag;
 

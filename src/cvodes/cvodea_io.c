@@ -35,7 +35,7 @@
  * =================================================================
  */
 
-#define ONE RCONST(1.0)
+#define ONE SUN_RCONST(1.0)
 
 /*
  * =================================================================
@@ -262,7 +262,7 @@ int CVodeSetMaxNumStepsB(void* cvode_mem, int which, long int mxstepsB)
   return (flag);
 }
 
-int CVodeSetStabLimDetB(void* cvode_mem, int which, booleantype stldetB)
+int CVodeSetStabLimDetB(void* cvode_mem, int which, sunbooleantype stldetB)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -309,7 +309,7 @@ int CVodeSetStabLimDetB(void* cvode_mem, int which, booleantype stldetB)
   return (flag);
 }
 
-int CVodeSetInitStepB(void* cvode_mem, int which, realtype hinB)
+int CVodeSetInitStepB(void* cvode_mem, int which, sunrealtype hinB)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -356,7 +356,7 @@ int CVodeSetInitStepB(void* cvode_mem, int which, realtype hinB)
   return (flag);
 }
 
-int CVodeSetMinStepB(void* cvode_mem, int which, realtype hminB)
+int CVodeSetMinStepB(void* cvode_mem, int which, sunrealtype hminB)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -403,7 +403,7 @@ int CVodeSetMinStepB(void* cvode_mem, int which, realtype hminB)
   return (flag);
 }
 
-int CVodeSetMaxStepB(void* cvode_mem, int which, realtype hmaxB)
+int CVodeSetMaxStepB(void* cvode_mem, int which, sunrealtype hmaxB)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -502,7 +502,7 @@ int CVodeSetConstraintsB(void* cvode_mem, int which, N_Vector constraintsB)
  * CVODES quadrature optional input functions
  */
 
-int CVodeSetQuadErrConB(void* cvode_mem, int which, booleantype errconQB)
+int CVodeSetQuadErrConB(void* cvode_mem, int which, sunbooleantype errconQB)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -671,7 +671,7 @@ int CVodeGetAdjCheckPointsInfo(void* cvode_mem, CVadjCheckPointRec* ckpnt)
  * at the 'which' data point. Cubic Hermite interpolation.
  */
 
-int CVodeGetAdjDataPointHermite(void* cvode_mem, int which, realtype* t,
+int CVodeGetAdjDataPointHermite(void* cvode_mem, int which, sunrealtype* t,
                                 N_Vector y, N_Vector yd)
 {
   CVodeMem cv_mem;
@@ -724,7 +724,7 @@ int CVodeGetAdjDataPointHermite(void* cvode_mem, int which, realtype* t,
  * at the 'which' data point. Polynomial interpolation.
  */
 
-int CVodeGetAdjDataPointPolynomial(void* cvode_mem, int which, realtype* t,
+int CVodeGetAdjDataPointPolynomial(void* cvode_mem, int which, sunrealtype* t,
                                    int* order, N_Vector y)
 {
   CVodeMem cv_mem;

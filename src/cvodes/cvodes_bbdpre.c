@@ -28,29 +28,29 @@
 #include "cvodes_impl.h"
 #include "cvodes_ls_impl.h"
 
-#define MIN_INC_MULT RCONST(1000.0)
-#define ZERO         RCONST(0.0)
-#define ONE          RCONST(1.0)
-#define TWO          RCONST(2.0)
+#define MIN_INC_MULT SUN_RCONST(1000.0)
+#define ZERO         SUN_RCONST(0.0)
+#define ONE          SUN_RCONST(1.0)
+#define TWO          SUN_RCONST(2.0)
 
 /* Prototypes of functions cvBBDPrecSetup and cvBBDPrecSolve */
-static int cvBBDPrecSetup(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-                          booleantype* jcurPtr, realtype gamma, void* bbd_data);
-static int cvBBDPrecSolve(realtype t, N_Vector y, N_Vector fy, N_Vector r,
-                          N_Vector z, realtype gamma, realtype delta, int lr,
+static int cvBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+                          sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data);
+static int cvBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
+                          N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
                           void* bbd_data);
 
 /* Prototype for cvBBDPrecFree */
 static int cvBBDPrecFree(CVodeMem cv_mem);
 
 /* Wrapper functions for adjoint code */
-static int cvGlocWrapper(sunindextype NlocalB, realtype t, N_Vector yB,
+static int cvGlocWrapper(sunindextype NlocalB, sunrealtype t, N_Vector yB,
                          N_Vector gB, void* cvadj_mem);
-static int cvCfnWrapper(sunindextype NlocalB, realtype t, N_Vector yB,
+static int cvCfnWrapper(sunindextype NlocalB, sunrealtype t, N_Vector yB,
                         void* cvadj_mem);
 
 /* Prototype for difference quotient Jacobian calculation routine */
-static int cvBBDDQJac(CVBBDPrecData pdata, realtype t, N_Vector y, N_Vector gy,
+static int cvBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y, N_Vector gy,
                       N_Vector ytemp, N_Vector gtemp);
 
 /* Prototype for the backward pfree routine */
@@ -65,7 +65,7 @@ static int CVBBDPrecFreeB(CVodeBMem cvB_mem);
   -----------------------------------------------------------------*/
 int CVBBDPrecInit(void* cvode_mem, sunindextype Nlocal, sunindextype mudq,
                   sunindextype mldq, sunindextype mukeep, sunindextype mlkeep,
-                  realtype dqrely, CVLocalFn gloc, CVCommFn cfn)
+                  sunrealtype dqrely, CVLocalFn gloc, CVCommFn cfn)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -320,7 +320,7 @@ int CVBBDPrecInit(void* cvode_mem, sunindextype Nlocal, sunindextype mudq,
 }
 
 int CVBBDPrecReInit(void* cvode_mem, sunindextype mudq, sunindextype mldq,
-                    realtype dqrely)
+                    sunrealtype dqrely)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -482,8 +482,8 @@ int CVBBDPrecGetNumGfnEvals(void* cvode_mem, long int* ngevalsBBDP)
 
   Return value: int
   -----------------------------------------------------------------*/
-static int cvBBDPrecSetup(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-                          booleantype* jcurPtr, realtype gamma, void* bbd_data)
+static int cvBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+                          sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data)
 {
   CVBBDPrecData pdata;
   CVodeMem cv_mem;
@@ -576,8 +576,8 @@ static int cvBBDPrecSetup(realtype t, N_Vector y, N_Vector fy, booleantype jok,
 
   The value returned by the cvBBDPrecSolve function is a int.
   -----------------------------------------------------------------*/
-static int cvBBDPrecSolve(realtype t, N_Vector y, N_Vector fy, N_Vector r,
-                          N_Vector z, realtype gamma, realtype delta, int lr,
+static int cvBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
+                          N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
                           void* bbd_data)
 {
   int ls_status;
@@ -647,14 +647,14 @@ static int cvBBDPrecFree(CVodeMem cv_mem)
   This routine also assumes that the local elements of a vector are
   stored contiguously.
   -----------------------------------------------------------------*/
-static int cvBBDDQJac(CVBBDPrecData pdata, realtype t, N_Vector y, N_Vector gy,
+static int cvBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y, N_Vector gy,
                       N_Vector ytemp, N_Vector gtemp)
 {
   CVodeMem cv_mem;
-  realtype gnorm, minInc, inc, inc_inv, yj, conj;
+  sunrealtype gnorm, minInc, inc, inc_inv, yj, conj;
   sunindextype group, i, j, width, ngroups, i1, i2;
-  realtype *y_data, *ewt_data, *gy_data, *gtemp_data;
-  realtype *ytemp_data, *col_j, *cns_data;
+  sunrealtype *y_data, *ewt_data, *gy_data, *gtemp_data;
+  sunrealtype *ytemp_data, *col_j, *cns_data;
   int retval;
 
   /* initialize cns_data to avoid compiler warning */
@@ -774,7 +774,7 @@ static int cvBBDDQJac(CVBBDPrecData pdata, realtype t, N_Vector y, N_Vector gy,
   ---------------------------------------------------------------*/
 int CVBBDPrecInitB(void* cvode_mem, int which, sunindextype NlocalB,
                    sunindextype mudqB, sunindextype mldqB, sunindextype mukeepB,
-                   sunindextype mlkeepB, realtype dqrelyB, CVLocalFnB glocB,
+                   sunindextype mlkeepB, sunrealtype dqrelyB, CVLocalFnB glocB,
                    CVCommFnB cfnB)
 {
   CVodeMem cv_mem;
@@ -849,7 +849,7 @@ int CVBBDPrecInitB(void* cvode_mem, int which, sunindextype NlocalB,
 }
 
 int CVBBDPrecReInitB(void* cvode_mem, int which, sunindextype mudqB,
-                     sunindextype mldqB, realtype dqrelyB)
+                     sunindextype mldqB, sunrealtype dqrelyB)
 {
   CVodeMem cv_mem;
   CVadjMem ca_mem;
@@ -911,7 +911,7 @@ static int CVBBDPrecFreeB(CVodeBMem cvB_mem)
   ----------------------------------------------------------------*/
 
 /* cvGlocWrapper interfaces to the CVLocalFnB routine provided by the user */
-static int cvGlocWrapper(sunindextype NlocalB, realtype t, N_Vector yB,
+static int cvGlocWrapper(sunindextype NlocalB, sunrealtype t, N_Vector yB,
                          N_Vector gB, void* cvode_mem)
 {
   CVodeMem cv_mem;
@@ -940,7 +940,7 @@ static int cvGlocWrapper(sunindextype NlocalB, realtype t, N_Vector yB,
 }
 
 /* cvCfnWrapper interfaces to the CVCommFnB routine provided by the user */
-static int cvCfnWrapper(sunindextype NlocalB, realtype t, N_Vector yB,
+static int cvCfnWrapper(sunindextype NlocalB, sunrealtype t, N_Vector yB,
                         void* cvode_mem)
 {
   CVodeMem cv_mem;

@@ -31,8 +31,8 @@
 extern "C" {
 #endif
 
-extern void FK_JTIMES(realtype* vdata, realtype* Jvdata, int* new_uu,
-                      realtype* uudata, int* ier);
+extern void FK_JTIMES(sunrealtype* vdata, sunrealtype* Jvdata, int* new_uu,
+                      sunrealtype* uudata, int* ier);
 
 #ifdef __cplusplus
 }
@@ -61,11 +61,11 @@ void FKIN_SPILSSETJAC(int* flag, int* ier) { FKIN_LSSETJAC(flag, ier); }
   KINSp* / KINSp*JTimes and FK_JTIMES (user-supplied Fortran
   routine).
   ------------------------------------------------------------------*/
-int FKINJtimes(N_Vector v, N_Vector Jv, N_Vector uu, booleantype* new_uu,
+int FKINJtimes(N_Vector v, N_Vector Jv, N_Vector uu, sunbooleantype* new_uu,
                void* user_data)
 {
   int retcode;
-  realtype *vdata, *Jvdata, *uudata;
+  sunrealtype *vdata, *Jvdata, *uudata;
 
   vdata = Jvdata = uudata = NULL;
 

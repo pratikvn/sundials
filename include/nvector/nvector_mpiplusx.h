@@ -71,7 +71,7 @@ sunindextype N_VGetLocalLength_MPIPlusX(N_Vector v)
 }
 
 SUNDIALS_STATIC_INLINE
-SUNErrCode N_VEnableFusedOps_MPIPlusX(N_Vector v, booleantype tf)
+SUNErrCode N_VEnableFusedOps_MPIPlusX(N_Vector v, sunbooleantype tf)
 {
   SUNAssignSUNCTX(v->sunctx);
   SUNCheckCall(N_VEnableFusedOps_MPIManyVector(v, tf));

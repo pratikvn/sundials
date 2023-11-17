@@ -35,13 +35,13 @@ N_Vector F2C_IDA_ypvec, F2C_IDA_ewtvec;
 
 void* IDA_idamem;
 long int* IDA_iout;
-realtype* IDA_rout;
+sunrealtype* IDA_rout;
 int IDA_nrtfn;
 
 /*************************************************/
 
 /* private constant(s) */
-#define ZERO RCONST(0.0)
+#define ZERO SUN_RCONST(0.0)
 
 /*************************************************/
 
@@ -51,12 +51,12 @@ int IDA_nrtfn;
 extern "C" {
 #endif
 
-extern void FIDA_RESFUN(realtype*, /* T    */
-                        realtype*, /* Y    */
-                        realtype*, /* YP   */
-                        realtype*, /* R    */
+extern void FIDA_RESFUN(sunrealtype*, /* T    */
+                        sunrealtype*, /* Y    */
+                        sunrealtype*, /* YP   */
+                        sunrealtype*, /* R    */
                         long int*, /* IPAR */
-                        realtype*, /* RPAR */
+                        sunrealtype*, /* RPAR */
                         int*);     /* IER  */
 
 #ifdef __cplusplus
@@ -65,9 +65,9 @@ extern void FIDA_RESFUN(realtype*, /* T    */
 
 /*************************************************/
 
-void FIDA_MALLOC(realtype* t0, realtype* yy0, realtype* yp0, int* iatol,
-                 realtype* rtol, realtype* atol, long int* iout, realtype* rout,
-                 long int* ipar, realtype* rpar, int* ier)
+void FIDA_MALLOC(sunrealtype* t0, sunrealtype* yy0, sunrealtype* yp0, int* iatol,
+                 sunrealtype* rtol, sunrealtype* atol, long int* iout, sunrealtype* rout,
+                 long int* ipar, sunrealtype* rpar, int* ier)
 {
   N_Vector Vatol;
   FIDAUserData IDA_userdata;
@@ -182,7 +182,7 @@ void FIDA_MALLOC(realtype* t0, realtype* yy0, realtype* yp0, int* iatol,
   IDA_rout = rout;
 
   /* Store the unit roundoff in rout for user access */
-  IDA_rout[5] = UNIT_ROUNDOFF;
+  IDA_rout[5] = SUN_UNIT_ROUNDOFF;
 
   /* Set F2C_IDA_ewtvec on NULL */
   F2C_IDA_ewtvec = NULL;
@@ -192,8 +192,8 @@ void FIDA_MALLOC(realtype* t0, realtype* yy0, realtype* yp0, int* iatol,
 
 /*************************************************/
 
-void FIDA_REINIT(realtype* t0, realtype* yy0, realtype* yp0, int* iatol,
-                 realtype* rtol, realtype* atol, int* ier)
+void FIDA_REINIT(sunrealtype* t0, sunrealtype* yy0, sunrealtype* yp0, int* iatol,
+                 sunrealtype* rtol, sunrealtype* atol, int* ier)
 {
   N_Vector Vatol;
 
@@ -276,7 +276,7 @@ void FIDA_SETIIN(char key_name[], long int* ival, int* ier)
   }
   else if (!strncmp(key_name, "SUPPRESS_ALG", 12))
   {
-    *ier = IDASetSuppressAlg(IDA_idamem, (booleantype)*ival);
+    *ier = IDASetSuppressAlg(IDA_idamem, (sunbooleantype)*ival);
   }
   else if (!strncmp(key_name, "MAX_NSTEPS_IC", 13))
   {
@@ -292,7 +292,7 @@ void FIDA_SETIIN(char key_name[], long int* ival, int* ier)
   }
   else if (!strncmp(key_name, "LS_OFF_IC", 9))
   {
-    *ier = IDASetLineSearchOffIC(IDA_idamem, (booleantype)*ival);
+    *ier = IDASetLineSearchOffIC(IDA_idamem, (sunbooleantype)*ival);
   }
   else
   {
@@ -303,7 +303,7 @@ void FIDA_SETIIN(char key_name[], long int* ival, int* ier)
 
 /***************************************************************************/
 
-void FIDA_SETRIN(char key_name[], realtype* rval, int* ier)
+void FIDA_SETRIN(char key_name[], sunrealtype* rval, int* ier)
 {
   if (!strncmp(key_name, "INIT_STEP", 9))
   {
@@ -338,7 +338,7 @@ void FIDA_SETRIN(char key_name[], realtype* rval, int* ier)
 
 /*************************************************/
 
-void FIDA_SETVIN(char key_name[], realtype* vval, int* ier)
+void FIDA_SETVIN(char key_name[], sunrealtype* vval, int* ier)
 {
   N_Vector Vec;
 
@@ -379,7 +379,7 @@ void FIDA_SETVIN(char key_name[], realtype* vval, int* ier)
 
 /*************************************************/
 
-void FIDA_TOLREINIT(int* iatol, realtype* rtol, realtype* atol, int* ier)
+void FIDA_TOLREINIT(int* iatol, sunrealtype* rtol, sunrealtype* atol, int* ier)
 {
   N_Vector Vatol = NULL;
 
@@ -405,7 +405,7 @@ void FIDA_TOLREINIT(int* iatol, realtype* rtol, realtype* atol, int* ier)
 
 /*************************************************/
 
-void FIDA_CALCIC(int* icopt, realtype* tout1, int* ier)
+void FIDA_CALCIC(int* icopt, sunrealtype* tout1, int* ier)
 {
   *ier = 0;
   *ier = IDACalcIC(IDA_idamem, *icopt, *tout1);
@@ -445,33 +445,33 @@ void FIDA_SPILSINIT(int* ier)
 
 /* Fortran interfaces to C "set" routines for the IDALS solver;
    see fida.h for further details */
-void FIDA_LSSETEPSLIN(realtype* eplifac, int* ier)
+void FIDA_LSSETEPSLIN(sunrealtype* eplifac, int* ier)
 {
   *ier = IDASetEpsLin(IDA_idamem, *eplifac);
   return;
 }
 
-void FIDA_LSSETINCREMENTFACTOR(realtype* dqincfac, int* ier)
+void FIDA_LSSETINCREMENTFACTOR(sunrealtype* dqincfac, int* ier)
 {
   *ier = IDASetIncrementFactor(IDA_idamem, *dqincfac);
   return;
 }
 
 /*** DEPRECATED ***/
-void FIDA_SPILSSETEPSLIN(realtype* eplifac, int* ier)
+void FIDA_SPILSSETEPSLIN(sunrealtype* eplifac, int* ier)
 {
   FIDA_LSSETEPSLIN(eplifac, ier);
 }
 
 /*** DEPRECATED ***/
-void FIDA_SPILSSETINCREMENTFACTOR(realtype* dqincfac, int* ier)
+void FIDA_SPILSSETINCREMENTFACTOR(sunrealtype* dqincfac, int* ier)
 {
   FIDA_LSSETINCREMENTFACTOR(dqincfac, ier);
 }
 
 /*************************************************/
 
-void FIDA_SOLVE(realtype* tout, realtype* tret, realtype* yret, realtype* ypret,
+void FIDA_SOLVE(sunrealtype* tout, sunrealtype* tret, sunrealtype* yret, sunrealtype* ypret,
                 int* itask, int* ier)
 {
   int klast, kcur;
@@ -531,10 +531,10 @@ void FIDA_SOLVE(realtype* tout, realtype* tret, realtype* yret, realtype* ypret,
 
 /*************************************************/
 
-void FIDA_GETDKY(realtype* t, int* k, realtype* dky, int* ier)
+void FIDA_GETDKY(sunrealtype* t, int* k, sunrealtype* dky, int* ier)
 {
   /* Store existing F2C_IDA_vec data pointer */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_IDA_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_IDA_vec);
 
   /* Attach user data to vectors */
   N_VSetArrayPointer(dky, F2C_IDA_vec);
@@ -550,10 +550,10 @@ void FIDA_GETDKY(realtype* t, int* k, realtype* dky, int* ier)
 
 /*************************************************/
 
-void FIDA_GETERRWEIGHTS(realtype* eweight, int* ier)
+void FIDA_GETERRWEIGHTS(sunrealtype* eweight, int* ier)
 {
   /* Store existing F2C_IDA_vec data pointer */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_IDA_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_IDA_vec);
 
   /* Attach user data to vector */
   N_VSetArrayPointer(eweight, F2C_IDA_vec);
@@ -569,10 +569,10 @@ void FIDA_GETERRWEIGHTS(realtype* eweight, int* ier)
 
 /*************************************************/
 
-void FIDA_GETESTLOCALERR(realtype* ele, int* ier)
+void FIDA_GETESTLOCALERR(sunrealtype* ele, int* ier)
 {
   /* Store existing F2C_IDA_vec data pointer */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_IDA_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_IDA_vec);
 
   /* Attach user data to vector */
   N_VSetArrayPointer(ele, F2C_IDA_vec);
@@ -619,10 +619,10 @@ void FIDA_FREE(void)
 
 /*************************************************/
 
-int FIDAresfn(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
+int FIDAresfn(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void* user_data)
 {
   int ier;
-  realtype *yy_data, *yp_data, *rr_data;
+  sunrealtype *yy_data, *yp_data, *rr_data;
   FIDAUserData IDA_userdata;
 
   /* NOTE: The user-supplied routine should set ier to an

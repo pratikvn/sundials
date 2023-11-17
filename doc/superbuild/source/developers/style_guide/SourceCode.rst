@@ -237,14 +237,14 @@ Coding Conventions and Rules
 
    .. code-block:: c
 
-      SUNErrCode N_VLinearCombination_Serial(int nvec, realtype* c, N_Vector* X, N_Vector z)
+      SUNErrCode N_VLinearCombination_Serial(int nvec, sunrealtype* c, N_Vector* X, N_Vector z)
       {
          SUNAssignSUNCTX(X[0]->sunctx); // Correct
          
          int          i;
          sunindextype j, N;
-         realtype*    zd=NULL;
-         realtype*    xd=NULL;
+         sunrealtype*    zd=NULL;
+         sunrealtype*    xd=NULL;
 
          /* invalid number of vectors */
          SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
@@ -258,12 +258,12 @@ Coding Conventions and Rules
          // ...
       }
 
-      SUNErrCode N_VLinearCombination_Serial(int nvec, realtype* c, N_Vector* X, N_Vector z)
+      SUNErrCode N_VLinearCombination_Serial(int nvec, sunrealtype* c, N_Vector* X, N_Vector z)
       {
          int          i;
          sunindextype j, N;
-         realtype*    zd=NULL;
-         realtype*    xd=NULL;
+         sunrealtype*    zd=NULL;
+         sunrealtype*    xd=NULL;
 
          SUNAssignSUNCTX(X[0]->sunctx); // Incorrect
 

@@ -36,13 +36,13 @@
 
 void* KIN_kinmem;
 long int* KIN_iout;
-realtype* KIN_rout;
+sunrealtype* KIN_rout;
 
 /*------------------------------------------------------------------
   private constants
   ------------------------------------------------------------------*/
 
-#define ZERO RCONST(0.0)
+#define ZERO SUN_RCONST(0.0)
 
 /*------------------------------------------------------------------
   prototype of user-supplied fortran routine
@@ -52,7 +52,7 @@ realtype* KIN_rout;
 extern "C" {
 #endif
 
-extern void FK_FUN(realtype*, realtype*, int*);
+extern void FK_FUN(sunrealtype*, sunrealtype*, int*);
 
 #ifdef __cplusplus
 }
@@ -91,7 +91,7 @@ void FKIN_CREATE(int* ier)
   Function : FKIN_INIT
   ------------------------------------------------------------------*/
 
-void FKIN_INIT(long int* iout, realtype* rout, int* ier)
+void FKIN_INIT(long int* iout, sunrealtype* rout, int* ier)
 {
   /* Call KINInit */
   *ier = 0;
@@ -115,7 +115,7 @@ void FKIN_INIT(long int* iout, realtype* rout, int* ier)
   Function : FKIN_MALLOC
   ------------------------------------------------------------------*/
 
-void FKIN_MALLOC(long int* iout, realtype* rout, int* ier)
+void FKIN_MALLOC(long int* iout, sunrealtype* rout, int* ier)
 {
   /* check for required vector operations */
   if ((F2C_KINSOL_vec->ops->nvgetarraypointer == NULL) ||
@@ -187,15 +187,15 @@ void FKIN_SETIIN(char key_name[], long int* ival, int* ier)
   }
   else if (!strncmp(key_name, "NO_INIT_SETUP", 13))
   {
-    *ier = KINSetNoInitSetup(KIN_kinmem, (booleantype)*ival);
+    *ier = KINSetNoInitSetup(KIN_kinmem, (sunbooleantype)*ival);
   }
   else if (!strncmp(key_name, "NO_MIN_EPS", 10))
   {
-    *ier = KINSetNoMinEps(KIN_kinmem, (booleantype)*ival);
+    *ier = KINSetNoMinEps(KIN_kinmem, (sunbooleantype)*ival);
   }
   else if (!strncmp(key_name, "NO_RES_MON", 10))
   {
-    *ier = KINSetNoResMon(KIN_kinmem, (booleantype)*ival);
+    *ier = KINSetNoResMon(KIN_kinmem, (sunbooleantype)*ival);
   }
   else
   {
@@ -208,7 +208,7 @@ void FKIN_SETIIN(char key_name[], long int* ival, int* ier)
   Function : FKIN_SETRIN
   ------------------------------------------------------------------*/
 
-void FKIN_SETRIN(char key_name[], realtype* rval, int* ier)
+void FKIN_SETRIN(char key_name[], sunrealtype* rval, int* ier)
 {
   if (!strncmp(key_name, "FNORM_TOL", 9))
   {
@@ -253,7 +253,7 @@ void FKIN_SETRIN(char key_name[], realtype* rval, int* ier)
   Function : FKIN_SETVIN
   ------------------------------------------------------------------*/
 
-void FKIN_SETVIN(char key_name[], realtype* vval, int* ier)
+void FKIN_SETVIN(char key_name[], sunrealtype* vval, int* ier)
 {
   N_Vector Vec;
 
@@ -310,8 +310,8 @@ void FKIN_SPILSINIT(int* ier) { FKIN_LSINIT(ier); }
   Function : FKIN_SOL
   ------------------------------------------------------------------*/
 
-void FKIN_SOL(realtype* uu, int* globalstrategy, realtype* uscale,
-              realtype* fscale, int* ier)
+void FKIN_SOL(sunrealtype* uu, int* globalstrategy, sunrealtype* uscale,
+              sunrealtype* fscale, int* ier)
 
 {
   N_Vector uuvec, uscalevec, fscalevec;
@@ -426,7 +426,7 @@ void FKIN_FREE(void)
 
 int FKINfunc(N_Vector uu, N_Vector fval, void* user_data)
 {
-  realtype *udata, *fdata;
+  sunrealtype *udata, *fdata;
   int ier;
 
   udata = N_VGetArrayPointer(uu);

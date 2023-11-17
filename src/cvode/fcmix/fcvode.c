@@ -38,14 +38,14 @@
 
 void* CV_cvodemem;
 long int* CV_iout;
-realtype* CV_rout;
+sunrealtype* CV_rout;
 int CV_nrtfn;
 int CV_ls;
 
 /***************************************************************************/
 
 /* private constant(s) */
-#define ZERO RCONST(0.0)
+#define ZERO SUN_RCONST(0.0)
 
 /***************************************************************************/
 
@@ -54,11 +54,11 @@ int CV_ls;
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FCV_FUN(realtype*, /* T    */
-                    realtype*, /* Y    */
-                    realtype*, /* YDOT */
+extern void FCV_FUN(sunrealtype*, /* T    */
+                    sunrealtype*, /* Y    */
+                    sunrealtype*, /* YDOT */
                     long int*, /* IPAR */
-                    realtype*, /* RPAR */
+                    sunrealtype*, /* RPAR */
                     int*);     /* IER  */
 #ifdef __cplusplus
 }
@@ -66,9 +66,9 @@ extern void FCV_FUN(realtype*, /* T    */
 
 /**************************************************************************/
 
-void FCV_MALLOC(realtype* t0, realtype* y0, int* meth, int* iatol,
-                realtype* rtol, realtype* atol, long int* iout, realtype* rout,
-                long int* ipar, realtype* rpar, int* ier)
+void FCV_MALLOC(sunrealtype* t0, sunrealtype* y0, int* meth, int* iatol,
+                sunrealtype* rtol, sunrealtype* atol, long int* iout, sunrealtype* rout,
+                long int* ipar, sunrealtype* rpar, int* ier)
 {
   int lmm;
   N_Vector Vatol;
@@ -175,15 +175,15 @@ void FCV_MALLOC(realtype* t0, realtype* y0, int* meth, int* iatol,
   CV_rout = rout;
 
   /* Store the unit roundoff in rout for user access */
-  CV_rout[5] = UNIT_ROUNDOFF;
+  CV_rout[5] = SUN_UNIT_ROUNDOFF;
 
   return;
 }
 
 /***************************************************************************/
 
-void FCV_REINIT(realtype* t0, realtype* y0, int* iatol, realtype* rtol,
-                realtype* atol, int* ier)
+void FCV_REINIT(sunrealtype* t0, sunrealtype* y0, int* iatol, sunrealtype* rtol,
+                sunrealtype* atol, int* ier)
 {
   N_Vector Vatol;
 
@@ -266,7 +266,7 @@ void FCV_SETIIN(char key_name[], long int* ival, int* ier)
   }
   else if (!strncmp(key_name, "STAB_LIM", 8))
   {
-    *ier = CVodeSetStabLimDet(CV_cvodemem, (booleantype)*ival);
+    *ier = CVodeSetStabLimDet(CV_cvodemem, (sunbooleantype)*ival);
   }
   else
   {
@@ -277,7 +277,7 @@ void FCV_SETIIN(char key_name[], long int* ival, int* ier)
 
 /***************************************************************************/
 
-void FCV_SETRIN(char key_name[], realtype* rval, int* ier)
+void FCV_SETRIN(char key_name[], sunrealtype* rval, int* ier)
 {
   if (!strncmp(key_name, "INIT_STEP", 9))
   {
@@ -308,7 +308,7 @@ void FCV_SETRIN(char key_name[], realtype* rval, int* ier)
 
 /***************************************************************************/
 
-void FCV_SETVIN(char key_name[], realtype* vval, int* ier)
+void FCV_SETVIN(char key_name[], sunrealtype* vval, int* ier)
 {
   N_Vector Vec;
 
@@ -361,12 +361,12 @@ void FCV_SPILSINIT(int* ier) { FCV_LSINIT(ier); }
 /*=============================================================*/
 
 /* ---DEPRECATED--- */
-void FCV_SPILSSETEPSLIN(realtype* eplifac, int* ier)
+void FCV_SPILSSETEPSLIN(sunrealtype* eplifac, int* ier)
 {
   FCV_LSSETEPSLIN(eplifac, ier);
 }
 
-void FCV_LSSETEPSLIN(realtype* eplifac, int* ier)
+void FCV_LSSETEPSLIN(sunrealtype* eplifac, int* ier)
 {
   *ier = CVodeSetEpsLin(CV_cvodemem, *eplifac);
 }
@@ -387,7 +387,7 @@ void FCV_DIAG(int* ier)
 
 /***************************************************************************/
 
-void FCV_CVODE(realtype* tout, realtype* t, realtype* y, int* itask, int* ier)
+void FCV_CVODE(sunrealtype* tout, sunrealtype* t, sunrealtype* y, int* itask, int* ier)
 {
   /*
      tout          is the t value where output is desired
@@ -456,7 +456,7 @@ void FCV_CVODE(realtype* tout, realtype* t, realtype* y, int* itask, int* ier)
 
 /***************************************************************************/
 
-void FCV_DKY(realtype* t, int* k, realtype* dky, int* ier)
+void FCV_DKY(sunrealtype* t, int* k, sunrealtype* dky, int* ier)
 {
   /*
      t             is the t value where output is desired
@@ -464,7 +464,7 @@ void FCV_DKY(realtype* t, int* k, realtype* dky, int* ier)
      F2C_CVODE_vec is the N_Vector containing the solution derivative on return
   */
 
-  realtype* f2c_data = N_VGetArrayPointer(F2C_CVODE_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_CVODE_vec);
   N_VSetArrayPointer(dky, F2C_CVODE_vec);
 
   *ier = 0;
@@ -475,10 +475,10 @@ void FCV_DKY(realtype* t, int* k, realtype* dky, int* ier)
 
 /*************************************************/
 
-void FCV_GETERRWEIGHTS(realtype* eweight, int* ier)
+void FCV_GETERRWEIGHTS(sunrealtype* eweight, int* ier)
 {
   /* Attach user data to vector */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_CVODE_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_CVODE_vec);
   N_VSetArrayPointer(eweight, F2C_CVODE_vec);
 
   *ier = 0;
@@ -492,10 +492,10 @@ void FCV_GETERRWEIGHTS(realtype* eweight, int* ier)
 
 /*************************************************/
 
-void FCV_GETESTLOCALERR(realtype* ele, int* ier)
+void FCV_GETESTLOCALERR(sunrealtype* ele, int* ier)
 {
   /* Attach user data to vector */
-  realtype* f2c_data = N_VGetArrayPointer(F2C_CVODE_vec);
+  sunrealtype* f2c_data = N_VGetArrayPointer(F2C_CVODE_vec);
   N_VSetArrayPointer(ele, F2C_CVODE_vec);
 
   *ier = 0;
@@ -540,10 +540,10 @@ void FCV_FREE()
  * Auxiliary data is assumed to be communicated by Common.
  */
 
-int FCVf(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+int FCVf(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   int ier;
-  realtype *ydata, *dydata;
+  sunrealtype *ydata, *dydata;
   FCVUserData CV_userdata;
 
   ydata  = N_VGetArrayPointer(y);

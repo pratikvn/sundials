@@ -166,8 +166,8 @@ int SUNNonlinSolInitialize_PetscSNES(SUNNonlinearSolver NLS)
   the Sys function provided to the nonlinear solver.
   ----------------------------------------------------------------------------*/
 int SUNNonlinSolSolve_PetscSNES(SUNNonlinearSolver NLS, N_Vector y0, N_Vector y,
-                                N_Vector w, realtype tol,
-                                booleantype callLSetup, void* mem)
+                                N_Vector w, sunrealtype tol,
+                                sunbooleantype callLSetup, void* mem)
 {
   /* local variables */
   PetscErrorCode ierr;

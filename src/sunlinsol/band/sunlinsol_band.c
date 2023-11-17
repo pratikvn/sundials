@@ -21,8 +21,8 @@
 
 #include "sundials_linearsolver_impl.h"
 
-#define ZERO           RCONST(0.0)
-#define ONE            RCONST(1.0)
+#define ZERO           SUN_RCONST(0.0)
+#define ONE            SUN_RCONST(1.0)
 #define ROW(i, j, smu) (i - j + smu)
 
 /*
@@ -125,7 +125,7 @@ SUNErrCode SUNLinSolInitialize_Band(SUNLinearSolver S)
 int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
 {
   SUNAssignSUNCTX(S->sunctx);
-  realtype** A_cols;
+  sunrealtype** A_cols;
   sunindextype* pivots;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
@@ -158,10 +158,10 @@ int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
 }
 
 int SUNLinSolSolve_Band(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
-                        realtype tol)
+                        sunrealtype tol)
 {
   SUNAssignSUNCTX(S->sunctx);
-  realtype **A_cols, *xdata;
+  sunrealtype **A_cols, *xdata;
   sunindextype* pivots;
 
   /* copy b into x */

@@ -31,8 +31,8 @@
 #include "kinsol_impl.h"
 #include "kinsol_ls_impl.h"
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 /* Prototypes of functions KINBBDPrecSetup and KINBBDPrecSolve */
 static int KINBBDPrecSetup(N_Vector uu, N_Vector uscale, N_Vector fval,
@@ -57,7 +57,7 @@ static int KBBDDQJac(KBBDPrecData pdata, N_Vector uu, N_Vector uscale,
   ------------------------------------------------------------------*/
 int KINBBDPrecInit(void* kinmem, sunindextype Nlocal, sunindextype mudq,
                    sunindextype mldq, sunindextype mukeep, sunindextype mlkeep,
-                   realtype dq_rel_uu, KINBBDLocalFn gloc, KINBBDCommFn gcomm)
+                   sunrealtype dq_rel_uu, KINBBDLocalFn gloc, KINBBDCommFn gcomm)
 {
   KINMem kin_mem;
   KINLsMem kinls_mem;
@@ -478,8 +478,8 @@ static int KINBBDPrecSolve(N_Vector uu, N_Vector uscale, N_Vector fval,
 {
   int ls_status;
   KBBDPrecData pdata;
-  realtype* vd;
-  realtype* zd;
+  sunrealtype* vd;
+  sunrealtype* zd;
   int i;
 
   pdata = (KBBDPrecData)bbd_data;
@@ -550,10 +550,10 @@ static int KBBDDQJac(KBBDPrecData pdata, N_Vector uu, N_Vector uscale,
                      N_Vector gu, N_Vector gtemp, N_Vector utemp)
 {
   KINMem kin_mem;
-  realtype inc, inc_inv;
+  sunrealtype inc, inc_inv;
   int retval;
   sunindextype group, i, j, width, ngroups, i1, i2;
-  realtype *udata, *uscdata, *gudata, *gtempdata, *utempdata, *col_j;
+  sunrealtype *udata, *uscdata, *gudata, *gtempdata, *utempdata, *col_j;
 
   kin_mem = (KINMem)pdata->kin_mem;
 

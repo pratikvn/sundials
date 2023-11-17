@@ -35,8 +35,8 @@ extern "C" {
 #endif
 
 extern void FK_BJAC(long int* N, long int* MU, long int* ML, long int* EBAND,
-                    realtype* UU, realtype* FU, realtype* BJAC, realtype* WK1,
-                    realtype* WK2, int* IER);
+                    sunrealtype* UU, sunrealtype* FU, sunrealtype* BJAC, sunrealtype* WK1,
+                    sunrealtype* WK2, int* IER);
 
 #ifdef __cplusplus
 }
@@ -71,7 +71,7 @@ void FKIN_BANDSETJAC(int* flag, int* ier)
 int FKINBandJac(N_Vector uu, N_Vector fval, SUNMatrix J, void* user_data,
                 N_Vector vtemp1, N_Vector vtemp2)
 {
-  realtype *uu_data, *fval_data, *jacdata, *v1_data, *v2_data;
+  sunrealtype *uu_data, *fval_data, *jacdata, *v1_data, *v2_data;
   long int N, mupper, mlower, smu, eband;
   int ier;
 

@@ -32,11 +32,11 @@ using namespace sundials::cuda;
 using namespace sundials::sunmatrix_cusparse;
 
 /* Constants */
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 /* Private function prototypes */
-static booleantype SMCompatible_cuSparse(SUNMatrix, SUNMatrix);
+static sunbooleantype SMCompatible_cuSparse(SUNMatrix, SUNMatrix);
 static SUNMatrix SUNMatrix_cuSparse_NewEmpty(SUNContext sunctx);
 #if CUDART_VERSION >= 11000
 static cusparseStatus_t CreateSpMatDescr(SUNMatrix, cusparseSpMatDescr_t*);
@@ -70,7 +70,7 @@ static cusparseStatus_t CreateSpMatDescr(SUNMatrix, cusparseSpMatDescr_t*);
 #define SMCU_SPARSETYPE(A)   (SMCU_CONTENT(A)->sparse_type)
 #define SMCU_OWNMATD(A)      (SMCU_CONTENT(A)->own_matd)
 #define SMCU_DATA(A)         (SMCU_CONTENT(A)->data)
-#define SMCU_DATAp(A)        ((realtype*)SMCU_CONTENT(A)->data->ptr)
+#define SMCU_DATAp(A)        ((sunrealtype*)SMCU_CONTENT(A)->data->ptr)
 #define SMCU_INDEXVALS(A)    (SMCU_CONTENT(A)->colind)
 #define SMCU_INDEXPTRS(A)    (SMCU_CONTENT(A)->rowptrs)
 #define SMCU_INDEXVALSp(A)   ((int*)SMCU_CONTENT(A)->colind->ptr)
@@ -170,7 +170,7 @@ SUNMatrix SUNMatrix_cuSparse_NewCSR(int M, int N, int NNZ,
                                       sizeof(int) * (M + 1), SUNMEMTYPE_DEVICE,
                                       nullptr);
   alloc_fail += SUNMemoryHelper_Alloc(SMCU_MEMHELP(A), &d_values,
-                                      sizeof(realtype) * NNZ, SUNMEMTYPE_DEVICE,
+                                      sizeof(sunrealtype) * NNZ, SUNMEMTYPE_DEVICE,
                                       nullptr);
   if (alloc_fail)
   {
@@ -265,7 +265,7 @@ SUNMatrix SUNMatrix_cuSparse_NewCSR(int M, int N, int NNZ,
 
 SUNMatrix SUNMatrix_cuSparse_MakeCSR(cusparseMatDescr_t mat_descr, int M, int N,
                                      int NNZ, int* rowptrs, int* colind,
-                                     realtype* data, cusparseHandle_t cusp,
+                                     sunrealtype* data, cusparseHandle_t cusp,
                                      SUNContext sunctx)
 {
   /* return with NULL matrix on illegal input */
@@ -413,7 +413,7 @@ SUNMatrix SUNMatrix_cuSparse_NewBlockCSR(int nblocks, int blockrows,
                                       sizeof(int) * (blockrows + 1),
                                       SUNMEMTYPE_DEVICE, nullptr);
   alloc_fail += SUNMemoryHelper_Alloc(SMCU_MEMHELP(A), &d_values,
-                                      sizeof(realtype) * blocknnz * nblocks,
+                                      sizeof(sunrealtype) * blocknnz * nblocks,
                                       SUNMEMTYPE_DEVICE, nullptr);
   if (alloc_fail)
   {
@@ -546,7 +546,7 @@ int* SUNMatrix_cuSparse_IndexValues(SUNMatrix A)
   else { return (NULL); }
 }
 
-realtype* SUNMatrix_cuSparse_Data(SUNMatrix A)
+sunrealtype* SUNMatrix_cuSparse_Data(SUNMatrix A)
 {
   if (SUNMatGetID(A) == SUNMATRIX_CUSPARSE) { return (SMCU_DATAp(A)); }
   else { return (NULL); }
@@ -576,9 +576,9 @@ int SUNMatrix_cuSparse_BlockNNZ(SUNMatrix A)
   else { return (SUNMAT_ILL_INPUT); }
 }
 
-realtype* SUNMatrix_cuSparse_BlockData(SUNMatrix A, int blockidx)
+sunrealtype* SUNMatrix_cuSparse_BlockData(SUNMatrix A, int blockidx)
 {
-  realtype* matdata;
+  sunrealtype* matdata;
   int offset;
 
   if (SUNMatGetID(A) != SUNMATRIX_CUSPARSE) { return (NULL); }
@@ -597,7 +597,7 @@ cusparseMatDescr_t SUNMatrix_cuSparse_MatDescr(SUNMatrix A)
   else { return (NULL); }
 }
 
-int SUNMatrix_cuSparse_SetFixedPattern(SUNMatrix A, booleantype yesno)
+int SUNMatrix_cuSparse_SetFixedPattern(SUNMatrix A, sunbooleantype yesno)
 {
   if (SUNMatGetID(A) != SUNMATRIX_CUSPARSE) { return (SUNMAT_ILL_INPUT); }
 
@@ -623,7 +623,7 @@ int SUNMatrix_cuSparse_SetKernelExecPolicy(SUNMatrix A,
   return (SUNMAT_SUCCESS);
 }
 
-int SUNMatrix_cuSparse_CopyToDevice(SUNMatrix dA, realtype* h_data,
+int SUNMatrix_cuSparse_CopyToDevice(SUNMatrix dA, sunrealtype* h_data,
                                     int* h_idxptrs, int* h_idxvals)
 {
   int retval;
@@ -639,7 +639,7 @@ int SUNMatrix_cuSparse_CopyToDevice(SUNMatrix dA, realtype* h_data,
   {
     _h_data = SUNMemoryHelper_Wrap(h_data, SUNMEMTYPE_HOST);
     retval = SUNMemoryHelper_CopyAsync(SMCU_MEMHELP(dA), SMCU_DATA(dA), _h_data,
-                                       SMCU_NNZ(dA) * sizeof(realtype),
+                                       SMCU_NNZ(dA) * sizeof(sunrealtype),
                                        (void*)stream);
     SUNMemoryHelper_Dealloc(SMCU_MEMHELP(dA), _h_data, nullptr);
     if (retval != 0) { return (SUNMAT_OPERATION_FAIL); }
@@ -684,7 +684,7 @@ int SUNMatrix_cuSparse_CopyToDevice(SUNMatrix dA, realtype* h_data,
   return (SUNMAT_SUCCESS);
 }
 
-int SUNMatrix_cuSparse_CopyFromDevice(SUNMatrix dA, realtype* h_data,
+int SUNMatrix_cuSparse_CopyFromDevice(SUNMatrix dA, sunrealtype* h_data,
                                       int* h_idxptrs, int* h_idxvals)
 {
   int retval;
@@ -700,7 +700,7 @@ int SUNMatrix_cuSparse_CopyFromDevice(SUNMatrix dA, realtype* h_data,
   {
     _h_data = SUNMemoryHelper_Wrap(h_data, SUNMEMTYPE_HOST);
     retval = SUNMemoryHelper_CopyAsync(SMCU_MEMHELP(dA), _h_data, SMCU_DATA(dA),
-                                       SMCU_NNZ(dA) * sizeof(realtype),
+                                       SMCU_NNZ(dA) * sizeof(sunrealtype),
                                        (void*)stream);
     SUNMemoryHelper_Dealloc(SMCU_MEMHELP(dA), _h_data, nullptr);
     if (retval != 0) { return (SUNMAT_OPERATION_FAIL); }
@@ -846,7 +846,7 @@ int SUNMatZero_cuSparse(SUNMatrix A)
   stream = *SMCU_EXECPOLICY(A)->stream();
 
   /* set all data to zero */
-  cuerr = cudaMemsetAsync(SMCU_DATAp(A), 0, SMCU_NNZ(A) * sizeof(realtype),
+  cuerr = cudaMemsetAsync(SMCU_DATAp(A), 0, SMCU_NNZ(A) * sizeof(sunrealtype),
                           stream);
   if (!SUNDIALS_CUDA_VERIFY(cuerr)) { return (SUNMAT_OPERATION_FAIL); }
 
@@ -897,7 +897,7 @@ int SUNMatCopy_cuSparse(SUNMatrix src, SUNMatrix dst)
   /* Copy the data over */
   retval =
     SUNMemoryHelper_CopyAsync(SMCU_MEMHELP(src), SMCU_DATA(dst), SMCU_DATA(src),
-                              SMCU_NNZ(src) * sizeof(realtype), (void*)stream);
+                              SMCU_NNZ(src) * sizeof(sunrealtype), (void*)stream);
   if (retval) { return (SUNMAT_OPERATION_FAIL); }
 
   /* Copy the row pointers over */
@@ -918,7 +918,7 @@ int SUNMatCopy_cuSparse(SUNMatrix src, SUNMatrix dst)
 }
 
 /* Performs A = cA + I. Requires the diagonal to be allocated already. */
-int SUNMatScaleAddI_cuSparse(realtype c, SUNMatrix A)
+int SUNMatScaleAddI_cuSparse(sunrealtype c, SUNMatrix A)
 {
   unsigned threadsPerBlock, gridSize;
   cudaStream_t stream = *SMCU_EXECPOLICY(A)->stream();
@@ -932,7 +932,7 @@ int SUNMatScaleAddI_cuSparse(realtype c, SUNMatrix A)
     threadsPerBlock = SMCU_EXECPOLICY(A)->blockSize(SMCU_COLUMNS(A) / 2);
     gridSize = SMCU_EXECPOLICY(A)->gridSize(SMCU_ROWS(A) * SMCU_COLUMNS(A) / 2,
                                             threadsPerBlock);
-    scaleAddIKernelCSR<realtype, int>
+    scaleAddIKernelCSR<sunrealtype, int>
       <<<gridSize, threadsPerBlock, 0, stream>>>(SMCU_ROWS(A), c, SMCU_DATAp(A),
                                                  SMCU_INDEXPTRSp(A),
                                                  SMCU_INDEXVALSp(A));
@@ -944,7 +944,7 @@ int SUNMatScaleAddI_cuSparse(realtype c, SUNMatrix A)
     threadsPerBlock = SMCU_EXECPOLICY(A)->blockSize(SMCU_BLOCKROWS(A));
     gridSize = SMCU_EXECPOLICY(A)->gridSize(SMCU_NBLOCKS(A) * SMCU_BLOCKROWS(A),
                                             threadsPerBlock);
-    scaleAddIKernelBCSR<realtype, int>
+    scaleAddIKernelBCSR<sunrealtype, int>
       <<<gridSize, threadsPerBlock, 0, stream>>>(SMCU_BLOCKROWS(A),
                                                  SMCU_NBLOCKS(A),
                                                  SMCU_BLOCKNNZ(A), c,
@@ -967,7 +967,7 @@ int SUNMatScaleAddI_cuSparse(realtype c, SUNMatrix A)
 }
 
 /* Performs A = cA + B */
-int SUNMatScaleAdd_cuSparse(realtype c, SUNMatrix A, SUNMatrix B)
+int SUNMatScaleAdd_cuSparse(sunrealtype c, SUNMatrix A, SUNMatrix B)
 {
   cudaStream_t stream;
   unsigned threadsPerBlock, gridSize;
@@ -990,7 +990,7 @@ int SUNMatScaleAdd_cuSparse(realtype c, SUNMatrix A, SUNMatrix B)
     threadsPerBlock = SMCU_EXECPOLICY(A)->blockSize(SMCU_COLUMNS(A) / 2);
     gridSize = SMCU_EXECPOLICY(A)->gridSize(SMCU_ROWS(A) * SMCU_COLUMNS(A) / 2,
                                             threadsPerBlock);
-    scaleAddKernelCSR<realtype, int>
+    scaleAddKernelCSR<sunrealtype, int>
       <<<gridSize, threadsPerBlock, 0, stream>>>(SMCU_NNZ(A), c, SMCU_DATAp(A),
                                                  SMCU_DATAp(B));
     break;
@@ -1001,7 +1001,7 @@ int SUNMatScaleAdd_cuSparse(realtype c, SUNMatrix A, SUNMatrix B)
     threadsPerBlock = SMCU_EXECPOLICY(A)->blockSize(SMCU_BLOCKROWS(A));
     gridSize = SMCU_EXECPOLICY(A)->gridSize(SMCU_NBLOCKS(A) * SMCU_BLOCKROWS(A),
                                             threadsPerBlock);
-    scaleAddKernelCSR<realtype, int>
+    scaleAddKernelCSR<sunrealtype, int>
       <<<gridSize, threadsPerBlock, 0, stream>>>(SMCU_NNZ(A), c, SMCU_DATAp(A),
                                                  SMCU_DATAp(B));
     break;
@@ -1023,8 +1023,8 @@ int SUNMatScaleAdd_cuSparse(realtype c, SUNMatrix A, SUNMatrix B)
 int SUNMatMatvecSetup_cuSparse(SUNMatrix A)
 {
 #if CUDART_VERSION >= 11000
-  realtype placeholder[1];
-  const realtype one = ONE;
+  sunrealtype placeholder[1];
+  const sunrealtype one = ONE;
 
   /* Check if setup has already been done */
   if (!(SMCU_CONTENT(A)->matvec_issetup))
@@ -1063,12 +1063,12 @@ int SUNMatMatvec_cuSparse(SUNMatrix A, N_Vector x, N_Vector y)
     return (SUNMAT_ILL_INPUT);
   }
 
-  realtype* d_xdata = N_VGetDeviceArrayPointer(x);
-  realtype* d_ydata = N_VGetDeviceArrayPointer(y);
+  sunrealtype* d_xdata = N_VGetDeviceArrayPointer(x);
+  sunrealtype* d_ydata = N_VGetDeviceArrayPointer(y);
 
   if (SMCU_SPARSETYPE(A) == SUNMAT_CUSPARSE_CSR)
   {
-    const realtype one = ONE;
+    const sunrealtype one = ONE;
 
     /* Zero result vector */
     N_VConst(ZERO, y);
@@ -1113,7 +1113,7 @@ int SUNMatMatvec_cuSparse(SUNMatrix A, N_Vector x, N_Vector y)
     threadsPerBlock = SMCU_EXECPOLICY(A)->blockSize(SMCU_COLUMNS(A) / 2);
     gridSize = SMCU_EXECPOLICY(A)->gridSize(SMCU_ROWS(A) * SMCU_COLUMNS(A) / 2,
                                             threadsPerBlock);
-    matvecBCSR<realtype, int>
+    matvecBCSR<sunrealtype, int>
       <<<gridSize, threadsPerBlock, 0, stream>>>(SMCU_BLOCKROWS(A),
                                                  SMCU_NBLOCKS(A),
                                                  SMCU_BLOCKNNZ(A), SMCU_DATAp(A),
@@ -1145,7 +1145,7 @@ int SUNMatMatvec_cuSparse(SUNMatrix A, N_Vector x, N_Vector y)
 /* -----------------------------------------------------------------
  * Function to check compatibility of two sparse SUNMatrix objects
  */
-static booleantype SMCompatible_cuSparse(SUNMatrix A, SUNMatrix B)
+static sunbooleantype SMCompatible_cuSparse(SUNMatrix A, SUNMatrix B)
 {
   /* both matrices must be sparse */
   if ((SUNMatGetID(A) != SUNMATRIX_CUSPARSE) ||

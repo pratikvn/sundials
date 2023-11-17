@@ -32,12 +32,12 @@
 extern "C" {
 #endif
 
-extern void FARK_PSET(realtype* T, realtype* Y, realtype* FY, booleantype* JOK,
-                      booleantype* JCUR, realtype* GAMMA, realtype* H,
-                      long int* IPAR, realtype* RPAR, int* IER);
-extern void FARK_PSOL(realtype* T, realtype* Y, realtype* FY, realtype* R,
-                      realtype* Z, realtype* GAMMA, realtype* DELTA, int* LR,
-                      long int* IPAR, realtype* RPAR, int* IER);
+extern void FARK_PSET(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunbooleantype* JOK,
+                      sunbooleantype* JCUR, sunrealtype* GAMMA, sunrealtype* H,
+                      long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FARK_PSOL(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* R,
+                      sunrealtype* Z, sunrealtype* GAMMA, sunrealtype* DELTA, int* LR,
+                      long int* IPAR, sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -66,12 +66,12 @@ void FARK_LSSETPREC(int* flag, int* ier)
 
 /* C interface to user-supplied Fortran routine FARKPSET; see 
    farkode.h for further details */
-int FARKPSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-             booleantype* jcurPtr, realtype gamma, void* user_data)
+int FARKPSet(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+             sunbooleantype* jcurPtr, sunrealtype gamma, void* user_data)
 {
   int ier = 0;
-  realtype *ydata, *fydata;
-  realtype h;
+  sunrealtype *ydata, *fydata;
+  sunrealtype h;
   FARKUserData ARK_userdata;
 
   ARKStepGetLastStep(ARK_arkodemem, &h);
@@ -88,11 +88,11 @@ int FARKPSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
 
 /* C interface to user-supplied Fortran routine FARKPSOL; see 
    farkode.h for further details */
-int FARKPSol(realtype t, N_Vector y, N_Vector fy, N_Vector r, N_Vector z,
-             realtype gamma, realtype delta, int lr, void* user_data)
+int FARKPSol(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r, N_Vector z,
+             sunrealtype gamma, sunrealtype delta, int lr, void* user_data)
 {
   int ier = 0;
-  realtype *ydata, *fydata, *rdata, *zdata;
+  sunrealtype *ydata, *fydata, *rdata, *zdata;
   FARKUserData ARK_userdata;
 
   ydata        = N_VGetArrayPointer(y);

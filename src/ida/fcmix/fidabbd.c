@@ -30,7 +30,7 @@
 
 /* private constant(s) */
 
-#define ZERO RCONST(0.0)
+#define ZERO SUN_RCONST(0.0)
 
 /*************************************************/
 
@@ -38,11 +38,11 @@
 extern "C" {
 #endif
 
-extern void FIDA_GLOCFN(long int* NLOC, realtype* Y, realtype* YLOC,
-                        realtype* YPLOC, realtype* GLOC, long int* IPAR,
-                        realtype* RPAR, int* IER);
-extern void FIDA_COMMFN(long int* NLOC, realtype* T, realtype* Y, realtype* YP,
-                        long int* IPAR, realtype* RPAR, int* IER);
+extern void FIDA_GLOCFN(long int* NLOC, sunrealtype* Y, sunrealtype* YLOC,
+                        sunrealtype* YPLOC, sunrealtype* GLOC, long int* IPAR,
+                        sunrealtype* RPAR, int* IER);
+extern void FIDA_COMMFN(long int* NLOC, sunrealtype* T, sunrealtype* Y, sunrealtype* YP,
+                        long int* IPAR, sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -51,7 +51,7 @@ extern void FIDA_COMMFN(long int* NLOC, realtype* T, realtype* Y, realtype* YP,
 /*************************************************/
 
 void FIDA_BBDINIT(long int* Nloc, long int* mudq, long int* mldq, long int* mu,
-                  long int* ml, realtype* dqrely, int* ier)
+                  long int* ml, sunrealtype* dqrely, int* ier)
 {
   *ier = IDABBDPrecInit(IDA_idamem, (sunindextype)(*Nloc),
                         (sunindextype)(*mudq), (sunindextype)(*mldq),
@@ -63,7 +63,7 @@ void FIDA_BBDINIT(long int* Nloc, long int* mudq, long int* mldq, long int* mu,
 /*************************************************/
 
 void FIDA_BBDREINIT(long int* Nloc, long int* mudq, long int* mldq,
-                    realtype* dqrely, int* ier)
+                    sunrealtype* dqrely, int* ier)
 {
   *ier = IDABBDPrecReInit(IDA_idamem, (sunindextype)(*mudq),
                           (sunindextype)(*mldq), *dqrely);
@@ -72,10 +72,10 @@ void FIDA_BBDREINIT(long int* Nloc, long int* mudq, long int* mldq,
 
 /*************************************************/
 
-int FIDAgloc(long int Nloc, realtype t, N_Vector yy, N_Vector yp, N_Vector gval,
+int FIDAgloc(long int Nloc, sunrealtype t, N_Vector yy, N_Vector yp, N_Vector gval,
              void* user_data)
 {
-  realtype *yy_data, *yp_data, *gval_data;
+  sunrealtype *yy_data, *yp_data, *gval_data;
   int ier;
   FIDAUserData IDA_userdata;
 
@@ -103,9 +103,9 @@ int FIDAgloc(long int Nloc, realtype t, N_Vector yy, N_Vector yp, N_Vector gval,
 
 /*************************************************/
 
-int FIDAcfn(long int Nloc, realtype t, N_Vector yy, N_Vector yp, void* user_data)
+int FIDAcfn(long int Nloc, sunrealtype t, N_Vector yy, N_Vector yp, void* user_data)
 {
-  realtype *yy_data, *yp_data;
+  sunrealtype *yy_data, *yp_data;
   int ier;
   FIDAUserData IDA_userdata;
 

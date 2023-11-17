@@ -44,9 +44,9 @@ struct _SUNLinearSolverContent_PCG
 {
   int maxl;
   int pretype;
-  booleantype zeroguess;
+  sunbooleantype zeroguess;
   int numiters;
-  realtype resnorm;
+  sunrealtype resnorm;
   int last_flag;
 
   SUNATimesFn ATimes;
@@ -103,20 +103,20 @@ SUNErrCode SUNLinSolSetScalingVectors_PCG(SUNLinearSolver S, N_Vector s,
                                           N_Vector nul);
 
 SUNDIALS_EXPORT
-SUNErrCode SUNLinSolSetZeroGuess_PCG(SUNLinearSolver S, booleantype onoff);
+SUNErrCode SUNLinSolSetZeroGuess_PCG(SUNLinearSolver S, sunbooleantype onoff);
 
 SUNDIALS_EXPORT
 int SUNLinSolSetup_PCG(SUNLinearSolver S, SUNMatrix nul);
 
 SUNDIALS_EXPORT
 int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x,
-                       N_Vector b, realtype tol);
+                       N_Vector b, sunrealtype tol);
 
 SUNDIALS_EXPORT
 int SUNLinSolNumIters_PCG(SUNLinearSolver S);
 
 SUNDIALS_EXPORT
-realtype SUNLinSolResNorm_PCG(SUNLinearSolver S);
+sunrealtype SUNLinSolResNorm_PCG(SUNLinearSolver S);
 
 SUNDIALS_EXPORT
 N_Vector SUNLinSolResid_PCG(SUNLinearSolver S);
@@ -144,12 +144,12 @@ SUNDIALS_EXPORT int SUNLinSolSetScalingVectors_PCG(SUNLinearSolver S,
                                                    N_Vector s,
                                                    N_Vector nul);
 SUNDIALS_EXPORT int SUNLinSolSetZeroGuess_PCG(SUNLinearSolver S,
-                                              booleantype onoff);
+                                              sunbooleantype onoff);
 SUNDIALS_EXPORT int SUNLinSolSetup_PCG(SUNLinearSolver S, SUNMatrix nul);
 SUNDIALS_EXPORT int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul,
-                                       N_Vector x, N_Vector b, realtype tol);
+                                       N_Vector x, N_Vector b, sunrealtype tol);
 SUNDIALS_EXPORT int SUNLinSolNumIters_PCG(SUNLinearSolver S);
-SUNDIALS_EXPORT realtype SUNLinSolResNorm_PCG(SUNLinearSolver S);
+SUNDIALS_EXPORT sunrealtype SUNLinSolResNorm_PCG(SUNLinearSolver S);
 SUNDIALS_EXPORT N_Vector SUNLinSolResid_PCG(SUNLinearSolver S);
 SUNDIALS_EXPORT sunindextype SUNLinSolLastFlag_PCG(SUNLinearSolver S);
 SUNDIALS_EXPORT int SUNLinSolSpace_PCG(SUNLinearSolver S,

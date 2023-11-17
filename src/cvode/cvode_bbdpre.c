@@ -29,23 +29,23 @@
 #include "cvode_impl.h"
 #include "cvode_ls_impl.h"
 
-#define MIN_INC_MULT RCONST(1000.0)
-#define ZERO         RCONST(0.0)
-#define ONE          RCONST(1.0)
-#define TWO          RCONST(2.0)
+#define MIN_INC_MULT SUN_RCONST(1000.0)
+#define ZERO         SUN_RCONST(0.0)
+#define ONE          SUN_RCONST(1.0)
+#define TWO          SUN_RCONST(2.0)
 
 /* Prototypes of functions CVBBDPrecSetup and CVBBDPrecSolve */
-static int CVBBDPrecSetup(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-                          booleantype* jcurPtr, realtype gamma, void* bbd_data);
-static int CVBBDPrecSolve(realtype t, N_Vector y, N_Vector fy, N_Vector r,
-                          N_Vector z, realtype gamma, realtype delta, int lr,
+static int CVBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+                          sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data);
+static int CVBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
+                          N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
                           void* bbd_data);
 
 /* Prototype for CVBBDPrecFree */
 static int CVBBDPrecFree(CVodeMem cv_mem);
 
 /* Prototype for difference quotient Jacobian calculation routine */
-static int CVBBDDQJac(CVBBDPrecData pdata, realtype t, N_Vector y, N_Vector gy,
+static int CVBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y, N_Vector gy,
                       N_Vector ytemp, N_Vector gtemp);
 
 /*-----------------------------------------------------------------
@@ -53,7 +53,7 @@ static int CVBBDDQJac(CVBBDPrecData pdata, realtype t, N_Vector y, N_Vector gy,
   -----------------------------------------------------------------*/
 int CVBBDPrecInit(void* cvode_mem, sunindextype Nlocal, sunindextype mudq,
                   sunindextype mldq, sunindextype mukeep, sunindextype mlkeep,
-                  realtype dqrely, CVLocalFn gloc, CVCommFn cfn)
+                  sunrealtype dqrely, CVLocalFn gloc, CVCommFn cfn)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -312,7 +312,7 @@ int CVBBDPrecInit(void* cvode_mem, sunindextype Nlocal, sunindextype mudq,
 }
 
 int CVBBDPrecReInit(void* cvode_mem, sunindextype mudq, sunindextype mldq,
-                    realtype dqrely)
+                    sunrealtype dqrely)
 {
   CVodeMem cv_mem;
   CVLsMem cvls_mem;
@@ -474,8 +474,8 @@ int CVBBDPrecGetNumGfnEvals(void* cvode_mem, long int* ngevalsBBDP)
 
   Return value: int
   -----------------------------------------------------------------*/
-static int CVBBDPrecSetup(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-                          booleantype* jcurPtr, realtype gamma, void* bbd_data)
+static int CVBBDPrecSetup(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+                          sunbooleantype* jcurPtr, sunrealtype gamma, void* bbd_data)
 {
   CVBBDPrecData pdata;
   CVodeMem cv_mem;
@@ -568,8 +568,8 @@ static int CVBBDPrecSetup(realtype t, N_Vector y, N_Vector fy, booleantype jok,
 
   The value returned by the CVBBDPrecSolve function is a int.
   -----------------------------------------------------------------*/
-static int CVBBDPrecSolve(realtype t, N_Vector y, N_Vector fy, N_Vector r,
-                          N_Vector z, realtype gamma, realtype delta, int lr,
+static int CVBBDPrecSolve(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r,
+                          N_Vector z, sunrealtype gamma, sunrealtype delta, int lr,
                           void* bbd_data)
 {
   int ls_status;
@@ -638,14 +638,14 @@ static int CVBBDPrecFree(CVodeMem cv_mem)
   This routine also assumes that the local elements of a vector are
   stored contiguously.
   -----------------------------------------------------------------*/
-static int CVBBDDQJac(CVBBDPrecData pdata, realtype t, N_Vector y, N_Vector gy,
+static int CVBBDDQJac(CVBBDPrecData pdata, sunrealtype t, N_Vector y, N_Vector gy,
                       N_Vector ytemp, N_Vector gtemp)
 {
   CVodeMem cv_mem;
-  realtype gnorm, minInc, inc, inc_inv, yj, conj;
+  sunrealtype gnorm, minInc, inc, inc_inv, yj, conj;
   sunindextype group, i, j, width, ngroups, i1, i2;
-  realtype *y_data, *ewt_data, *gy_data, *gtemp_data;
-  realtype *ytemp_data, *col_j, *cns_data;
+  sunrealtype *y_data, *ewt_data, *gy_data, *gtemp_data;
+  sunrealtype *ytemp_data, *col_j, *cns_data;
   int retval;
 
   /* initialize cns_data to avoid compiler warning */

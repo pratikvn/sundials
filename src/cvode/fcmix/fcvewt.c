@@ -30,7 +30,7 @@
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FCV_EWT(realtype* Y, realtype* EWT, long int* IPAR, realtype* RPAR,
+extern void FCV_EWT(sunrealtype* Y, sunrealtype* EWT, long int* IPAR, sunrealtype* RPAR,
                     int* IER);
 #ifdef __cplusplus
 }
@@ -56,7 +56,7 @@ void FCV_EWTSET(int* flag, int* ier)
 int FCVEwtSet(N_Vector y, N_Vector ewt, void* user_data)
 {
   int ier = 0;
-  realtype *ydata, *ewtdata;
+  sunrealtype *ydata, *ewtdata;
   FCVUserData CV_userdata;
 
   ydata   = N_VGetArrayPointer(y);

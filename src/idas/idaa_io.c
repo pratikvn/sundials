@@ -34,7 +34,7 @@
  * =================================================================
  */
 
-#define ONE RCONST(1.0)
+#define ONE SUN_RCONST(1.0)
 
 /*
  * -----------------------------------------------------------------
@@ -270,7 +270,7 @@ int IDASetMaxNumStepsB(void* ida_mem, int which, long int mxstepsB)
   return IDASetMaxNumSteps(ida_memB, mxstepsB);
 }
 
-int IDASetInitStepB(void* ida_mem, int which, realtype hinB)
+int IDASetInitStepB(void* ida_mem, int which, sunrealtype hinB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -316,7 +316,7 @@ int IDASetInitStepB(void* ida_mem, int which, realtype hinB)
   return IDASetInitStep(ida_memB, hinB);
 }
 
-int IDASetMaxStepB(void* ida_mem, int which, realtype hmaxB)
+int IDASetMaxStepB(void* ida_mem, int which, sunrealtype hmaxB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -362,7 +362,7 @@ int IDASetMaxStepB(void* ida_mem, int which, realtype hmaxB)
   return IDASetMaxStep(ida_memB, hmaxB);
 }
 
-int IDASetSuppressAlgB(void* ida_mem, int which, booleantype suppressalgB)
+int IDASetSuppressAlgB(void* ida_mem, int which, sunbooleantype suppressalgB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -741,7 +741,7 @@ int IDAGetConsistentICB(void* ida_mem, int which, N_Vector yyB0_mod,
  * IDA_SUCCESS otherwise.
  *
  */
-int IDAGetAdjDataPointHermite(void* ida_mem, int which, realtype* t,
+int IDAGetAdjDataPointHermite(void* ida_mem, int which, sunrealtype* t,
                               N_Vector yy, N_Vector yd)
 
 {
@@ -799,7 +799,7 @@ int IDAGetAdjDataPointHermite(void* ida_mem, int which, realtype* t,
  * IDA_SUCCESS otherwise.
  */
 
-int IDAGetAdjDataPointPolynomial(void* ida_mem, int which, realtype* t,
+int IDAGetAdjDataPointPolynomial(void* ida_mem, int which, sunrealtype* t,
                                  int* order, N_Vector y)
 {
   IDAMem IDA_mem;

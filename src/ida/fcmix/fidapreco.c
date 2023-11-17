@@ -29,13 +29,13 @@
 extern "C" {
 #endif
 
-extern void FIDA_PSET(realtype* t, realtype* yy, realtype* yp, realtype* rr,
-                      realtype* c_j, realtype* ewt, realtype* h, long int* ipar,
-                      realtype* rpar, int* ier);
+extern void FIDA_PSET(sunrealtype* t, sunrealtype* yy, sunrealtype* yp, sunrealtype* rr,
+                      sunrealtype* c_j, sunrealtype* ewt, sunrealtype* h, long int* ipar,
+                      sunrealtype* rpar, int* ier);
 
-extern void FIDA_PSOL(realtype* t, realtype* yy, realtype* yp, realtype* rr,
-                      realtype* r, realtype* z, realtype* c_j, realtype* delta,
-                      realtype* ewt, long int* ipar, realtype* rpar, int* ier);
+extern void FIDA_PSOL(sunrealtype* t, sunrealtype* yy, sunrealtype* yp, sunrealtype* rr,
+                      sunrealtype* r, sunrealtype* z, sunrealtype* c_j, sunrealtype* delta,
+                      sunrealtype* ewt, long int* ipar, sunrealtype* rpar, int* ier);
 
 #ifdef __cplusplus
 }
@@ -71,11 +71,11 @@ void FIDA_LSSETPREC(int* flag, int* ier)
 
 /*************************************************/
 
-int FIDAPSet(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, realtype c_j,
+int FIDAPSet(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, sunrealtype c_j,
              void* user_data)
 {
-  realtype *yy_data, *yp_data, *rr_data, *ewtdata;
-  realtype h;
+  sunrealtype *yy_data, *yp_data, *rr_data, *ewtdata;
+  sunrealtype h;
   int ier;
   FIDAUserData IDA_userdata;
 
@@ -108,10 +108,10 @@ int FIDAPSet(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, realtype c_j,
 
 /*************************************************/
 
-int FIDAPSol(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, N_Vector rvec,
-             N_Vector zvec, realtype c_j, realtype delta, void* user_data)
+int FIDAPSol(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, N_Vector rvec,
+             N_Vector zvec, sunrealtype c_j, sunrealtype delta, void* user_data)
 {
-  realtype *yy_data, *yp_data, *rr_data, *ewtdata, *rdata, *zdata;
+  sunrealtype *yy_data, *yp_data, *rr_data, *ewtdata, *rdata, *zdata;
   int ier;
   FIDAUserData IDA_userdata;
 

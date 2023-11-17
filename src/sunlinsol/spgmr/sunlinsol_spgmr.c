@@ -23,8 +23,8 @@
 
 #include "sundials_linearsolver_impl.h"
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 /*
  * -----------------------------------------------------------------
@@ -235,13 +235,13 @@ SUNErrCode SUNLinSolInitialize_SPGMR(SUNLinearSolver S)
   /*   Hessenberg matrix Hes */
   if (content->Hes == NULL)
   {
-    content->Hes = (realtype**)malloc((content->maxl + 1) * sizeof(realtype*));
+    content->Hes = (sunrealtype**)malloc((content->maxl + 1) * sizeof(sunrealtype*));
     SUNAssert(content->Hes, SUN_ERR_MALLOC_FAIL);
 
     for (k = 0; k <= content->maxl; k++)
     {
       content->Hes[k] = NULL;
-      content->Hes[k] = (realtype*)malloc(content->maxl * sizeof(realtype));
+      content->Hes[k] = (sunrealtype*)malloc(content->maxl * sizeof(sunrealtype));
       SUNAssert(content->Hes[k], SUN_ERR_MALLOC_FAIL);
     }
   }
@@ -249,21 +249,21 @@ SUNErrCode SUNLinSolInitialize_SPGMR(SUNLinearSolver S)
   /*   Givens rotation components */
   if (content->givens == NULL)
   {
-    content->givens = (realtype*)malloc(2 * content->maxl * sizeof(realtype));
+    content->givens = (sunrealtype*)malloc(2 * content->maxl * sizeof(sunrealtype));
     SUNAssert(content->givens, SUN_ERR_MALLOC_FAIL);
   }
 
   /*    y and g vectors */
   if (content->yg == NULL)
   {
-    content->yg = (realtype*)malloc((content->maxl + 1) * sizeof(realtype));
+    content->yg = (sunrealtype*)malloc((content->maxl + 1) * sizeof(sunrealtype));
     SUNAssert(content->yg, SUN_ERR_MALLOC_FAIL);
   }
 
   /*    cv vector for fused vector ops */
   if (content->cv == NULL)
   {
-    content->cv = (realtype*)malloc((content->maxl + 1) * sizeof(realtype));
+    content->cv = (sunrealtype*)malloc((content->maxl + 1) * sizeof(sunrealtype));
     SUNAssert(content->cv, SUN_ERR_MALLOC_FAIL);
   }
 
@@ -309,7 +309,7 @@ SUNErrCode SUNLinSolSetScalingVectors_SPGMR(SUNLinearSolver S, N_Vector s1,
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNLinSolSetZeroGuess_SPGMR(SUNLinearSolver S, booleantype onff)
+SUNErrCode SUNLinSolSetZeroGuess_SPGMR(SUNLinearSolver S, sunbooleantype onff)
 {
   /* set flag indicating a zero initial guess */
   SPGMR_CONTENT(S)->zeroguess = onff;
@@ -342,22 +342,22 @@ int SUNLinSolSetup_SPGMR(SUNLinearSolver S, SUNMatrix A)
 }
 
 int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
-                         realtype delta)
+                         sunrealtype delta)
 {
   SUNAssignSUNCTX(S->sunctx);
 
   /* local data and shortcut variables */
   N_Vector *V, xcor, vtemp, s1, s2;
-  realtype **Hes, *givens, *yg, *res_norm;
-  realtype beta, rotation_product, r_norm, s_product, rho;
-  booleantype preOnLeft, preOnRight, scale2, scale1, converged;
-  booleantype* zeroguess;
+  sunrealtype **Hes, *givens, *yg, *res_norm;
+  sunrealtype beta, rotation_product, r_norm, s_product, rho;
+  sunbooleantype preOnLeft, preOnRight, scale2, scale1, converged;
+  sunbooleantype* zeroguess;
   int i, j, k, l, l_plus_1, l_max, krydim, ntries, max_restarts, gstype;
   int* nli;
   void *A_data, *P_data;
   SUNATimesFn atimes;
   SUNPSolveFn psolve;
-  realtype* cv;
+  sunrealtype* cv;
   N_Vector* Xv;
   int status;
 
@@ -391,7 +391,7 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
   *nli      = 0;
   converged = SUNFALSE;
 
-  /* Set booleantype flags for internal solver options */
+  /* Set sunbooleantype flags for internal solver options */
   preOnLeft  = ((SPGMR_CONTENT(S)->pretype == SUN_PREC_LEFT) ||
                (SPGMR_CONTENT(S)->pretype == SUN_PREC_BOTH));
   preOnRight = ((SPGMR_CONTENT(S)->pretype == SUN_PREC_RIGHT) ||
@@ -707,7 +707,7 @@ int SUNLinSolNumIters_SPGMR(SUNLinearSolver S)
   return (SPGMR_CONTENT(S)->numiters);
 }
 
-realtype SUNLinSolResNorm_SPGMR(SUNLinearSolver S)
+sunrealtype SUNLinSolResNorm_SPGMR(SUNLinearSolver S)
 {
   return (SPGMR_CONTENT(S)->resnorm);
 }

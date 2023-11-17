@@ -22,9 +22,9 @@
 #include <sunmatrix/sunmatrix_slunrloc.h>
 #include <superlu_ddefs.h>
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
-#define TWO  RCONST(2.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
+#define TWO  SUN_RCONST(2.0)
 
 /*
  * -----------------------------------------------------------------
@@ -125,7 +125,7 @@ SUNLinearSolver SUNLinSol_SuperLUDIST(N_Vector y, SUNMatrix A, gridinfo_t* grid,
  * -----------------------------------------------------------------
  */
 
-realtype SUNLinSol_SuperLUDIST_GetBerr(SUNLinearSolver LS)
+sunrealtype SUNLinSol_SuperLUDIST_GetBerr(SUNLinearSolver LS)
 {
   return (SLU_BERR(LS));
 }
@@ -210,10 +210,10 @@ int SUNLinSolSetup_SuperLUDIST(SUNLinearSolver S, SUNMatrix A)
 }
 
 int SUNLinSolSolve_SuperLUDIST(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                               N_Vector b, realtype tol)
+                               N_Vector b, sunrealtype tol)
 {
   int retval;
-  realtype* xdata;
+  sunrealtype* xdata;
   SuperMatrix* Asuper;
   NRformat_loc* Astore;
 

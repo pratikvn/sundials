@@ -31,10 +31,10 @@
 extern "C" {
 #endif
 
-extern void FARK_SPJAC(realtype* T, realtype* Y, realtype* FY, long int* N,
-                       long int* NNZ, realtype* JDATA, sunindextype* JRVALS,
-                       sunindextype* JCPTRS, realtype* H, long int* IPAR,
-                       realtype* RPAR, realtype* V1, realtype* V2, realtype* V3,
+extern void FARK_SPJAC(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, long int* N,
+                       long int* NNZ, sunrealtype* JDATA, sunindextype* JRVALS,
+                       sunindextype* JCPTRS, sunrealtype* H, long int* IPAR,
+                       sunrealtype* RPAR, sunrealtype* V1, sunrealtype* V2, sunrealtype* V3,
                        int* ier);
 
 #ifdef __cplusplus
@@ -60,13 +60,13 @@ void FARK_SPARSESETJAC(int* ier)
 
 /* C interface to user-supplied Fortran routine FARKSPJAC; see 
    farkode.h for additional information  */
-int FARKSparseJac(realtype t, N_Vector y, N_Vector fy, SUNMatrix J,
+int FARKSparseJac(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J,
                   void* user_data, N_Vector vtemp1, N_Vector vtemp2,
                   N_Vector vtemp3)
 {
   int ier;
-  realtype *ydata, *fydata, *v1data, *v2data, *v3data, *Jdata;
-  realtype h;
+  sunrealtype *ydata, *fydata, *v1data, *v2data, *v3data, *Jdata;
+  sunrealtype h;
   long int NP, NNZ;
   sunindextype *indexvals, *indexptrs;
   FARKUserData ARK_userdata;

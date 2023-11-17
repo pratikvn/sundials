@@ -61,11 +61,11 @@
 int f(sunrealtype t, N_Vector u, N_Vector f, void* user_data);
 
 // Preconditioner Setup and Solve functions
-int PSetup(realtype t, N_Vector u, N_Vector f, booleantype jok,
-           booleantype* jcurPtr, realtype gamma, void* user_data);
+int PSetup(sunrealtype t, N_Vector u, N_Vector f, sunbooleantype jok,
+           sunbooleantype* jcurPtr, sunrealtype gamma, void* user_data);
 
-int PSolve(realtype t, N_Vector u, N_Vector f, N_Vector r, N_Vector z,
-           realtype gamma, realtype delta, int lr, void* user_data);
+int PSolve(sunrealtype t, N_Vector u, N_Vector f, N_Vector r, N_Vector z,
+           sunrealtype gamma, sunrealtype delta, int lr, void* user_data);
 
 // -----------------------------------------------------------------------------
 // Main Program
@@ -364,8 +364,8 @@ int f(sunrealtype t, N_Vector u, N_Vector f, void* user_data)
 }
 
 // Preconditioner setup routine
-int PSetup(realtype t, N_Vector u, N_Vector f, booleantype jok,
-           booleantype* jcurPtr, realtype gamma, void* user_data)
+int PSetup(sunrealtype t, N_Vector u, N_Vector f, sunbooleantype jok,
+           sunbooleantype* jcurPtr, sunrealtype gamma, void* user_data)
 {
   // Access problem data
   auto udata = static_cast<UserData*>(user_data);
@@ -389,8 +389,8 @@ int PSetup(realtype t, N_Vector u, N_Vector f, booleantype jok,
 }
 
 // Preconditioner solve routine for Pz = r
-int PSolve(realtype t, N_Vector u, N_Vector f, N_Vector r, N_Vector z,
-           realtype gamma, realtype delta, int lr, void* user_data)
+int PSolve(sunrealtype t, N_Vector u, N_Vector f, N_Vector r, N_Vector z,
+           sunrealtype gamma, sunrealtype delta, int lr, void* user_data)
 {
   // Access user_data structure
   UserData* udata = static_cast<UserData*>(user_data);

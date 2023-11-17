@@ -24,12 +24,12 @@
 
 #include "sundials_matrix_impl.h"
 
-#define ZERO RCONST(0.0)
-#define ONE  RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
 
 /* Private function prototypes */
-static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
-static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
+static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B);
+static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x,
                                               N_Vector y);
 
 /*
@@ -83,10 +83,10 @@ SUNMatrix SUNDenseMatrix(sunindextype M, sunindextype N, SUNContext sunctx)
   content->cols  = NULL;
 
   /* Allocate content */
-  content->data = (realtype*)calloc(M * N, sizeof(realtype));
+  content->data = (sunrealtype*)calloc(M * N, sizeof(sunrealtype));
   SUNAssert(content->data, SUN_ERR_MALLOC_FAIL);
 
-  content->cols = (realtype**)malloc(N * sizeof(realtype*));
+  content->cols = (sunrealtype**)malloc(N * sizeof(sunrealtype*));
   SUNAssert(content->cols, SUN_ERR_MALLOC_FAIL);
   for (j = 0; j < N; j++) { content->cols[j] = content->data + j * M; }
 
@@ -149,21 +149,21 @@ sunindextype SUNDenseMatrix_LData(SUNMatrix A)
   return SM_LDATA_D(A);
 }
 
-realtype* SUNDenseMatrix_Data(SUNMatrix A)
+sunrealtype* SUNDenseMatrix_Data(SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_DATA_D(A);
 }
 
-realtype** SUNDenseMatrix_Cols(SUNMatrix A)
+sunrealtype** SUNDenseMatrix_Cols(SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_COLS_D(A);
 }
 
-realtype* SUNDenseMatrix_Column(SUNMatrix A, sunindextype j)
+sunrealtype* SUNDenseMatrix_Column(SUNMatrix A, sunindextype j)
 {
   SUNAssignSUNCTX(A->sunctx);
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
@@ -226,7 +226,7 @@ SUNErrCode SUNMatZero_Dense(SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i;
-  realtype* Adata;
+  sunrealtype* Adata;
 
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
 
@@ -258,7 +258,7 @@ SUNErrCode SUNMatCopy_Dense(SUNMatrix A, SUNMatrix B)
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNMatScaleAddI_Dense(realtype c, SUNMatrix A)
+SUNErrCode SUNMatScaleAddI_Dense(sunrealtype c, SUNMatrix A)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i, j;
@@ -278,7 +278,7 @@ SUNErrCode SUNMatScaleAddI_Dense(realtype c, SUNMatrix A)
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNMatScaleAdd_Dense(realtype c, SUNMatrix A, SUNMatrix B)
+SUNErrCode SUNMatScaleAdd_Dense(sunrealtype c, SUNMatrix A, SUNMatrix B)
 {
   SUNAssignSUNCTX(A->sunctx);
   sunindextype i, j;
@@ -301,7 +301,7 @@ SUNErrCode SUNMatScaleAdd_Dense(realtype c, SUNMatrix A, SUNMatrix B)
 SUNErrCode SUNMatMatvec_Dense(SUNMatrix A, N_Vector x, N_Vector y)
 {
   sunindextype i, j;
-  realtype *col_j, *xd, *yd;
+  sunrealtype *col_j, *xd, *yd;
   SUNAssignSUNCTX(A->sunctx);
 
   SUNCheck(compatibleMatrixAndVectors(A, x, y), SUN_ERR_ARG_DIMSMISMATCH);
@@ -335,7 +335,7 @@ SUNErrCode SUNMatSpace_Dense(SUNMatrix A, long int* lenrw, long int* leniw)
  * -----------------------------------------------------------------
  */
 
-static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
+static sunbooleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
 {
   /* both matrices must have the same shape */
   if ((SM_ROWS_D(A) != SM_ROWS_D(B)) || (SM_COLUMNS_D(A) != SM_COLUMNS_D(B)))
@@ -346,7 +346,7 @@ static booleantype compatibleMatrices(SUNMatrix A, SUNMatrix B)
   return SUNTRUE;
 }
 
-static booleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
+static sunbooleantype compatibleMatrixAndVectors(SUNMatrix A, N_Vector x, N_Vector y)
 {
   /* Vectors must provide nvgetarraypointer and cannot be a parallel vector */
   if (!x->ops->nvgetarraypointer || !y->ops->nvgetarraypointer)

@@ -34,8 +34,8 @@ static void FreeContent(SUNNonlinearSolver NLS);
 #define FP_CONTENT(S) ((SUNNonlinearSolverContent_FixedPoint)(S->content))
 
 /* Constant macros */
-#define ONE  RCONST(1.0)
-#define ZERO RCONST(0.0)
+#define ONE  SUN_RCONST(1.0)
+#define ZERO SUN_RCONST(0.0)
 
 /*==============================================================================
   Constructor to create a new fixed point solver
@@ -167,8 +167,8 @@ SUNErrCode SUNNonlinSolInitialize_FixedPoint(SUNNonlinearSolver NLS)
   ---------------------------------------------------------------------------*/
 
 int SUNNonlinSolSolve_FixedPoint(SUNNonlinearSolver NLS, N_Vector y0,
-                                 N_Vector ycor, N_Vector w, realtype tol,
-                                 booleantype callSetup, void* mem)
+                                 N_Vector ycor, N_Vector w, sunrealtype tol,
+                                 sunbooleantype callSetup, void* mem)
 {
   SUNAssignSUNCTX(NLS->sunctx);
   /* local variables */
@@ -334,7 +334,7 @@ SUNErrCode SUNNonlinSolSetMaxIters_FixedPoint(SUNNonlinearSolver NLS, int maxite
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNNonlinSolSetDamping_FixedPoint(SUNNonlinearSolver NLS, realtype beta)
+SUNErrCode SUNNonlinSolSetDamping_FixedPoint(SUNNonlinearSolver NLS, sunrealtype beta)
 {
   SUNAssignSUNCTX(NLS->sunctx);
   SUNAssert(beta > 0, SUN_ERR_ARG_OUTOFRANGE);
@@ -409,9 +409,9 @@ static SUNErrCode AndersonAccelerate(SUNNonlinearSolver NLS, N_Vector gval,
   SUNAssignSUNCTX(NLS->sunctx);
   /* local variables */
   int nvec, i_pt, i, j, lAA, maa, *ipt_map;
-  realtype a, b, rtemp, c, s, beta, onembeta, *cvals, *R, *gamma;
+  sunrealtype a, b, rtemp, c, s, beta, onembeta, *cvals, *R, *gamma;
   N_Vector fv, vtemp, gold, fold, *df, *dg, *Q, *Xvecs;
-  booleantype damping;
+  sunbooleantype damping;
 
   /* local shortcut variables */
   vtemp   = x; /* use result as temporary vector */
@@ -602,13 +602,13 @@ static SUNErrCode AllocateContent(SUNNonlinearSolver NLS, N_Vector y)
     FP_CONTENT(NLS)->imap = (int*)malloc(m * sizeof(int));
     SUNAssert(FP_CONTENT(NLS)->imap, SUN_ERR_MALLOC_FAIL);
 
-    FP_CONTENT(NLS)->R = (realtype*)malloc((m * m) * sizeof(realtype));
+    FP_CONTENT(NLS)->R = (sunrealtype*)malloc((m * m) * sizeof(sunrealtype));
     SUNAssert(FP_CONTENT(NLS)->R, SUN_ERR_MALLOC_FAIL);
 
-    FP_CONTENT(NLS)->gamma = (realtype*)malloc(m * sizeof(realtype));
+    FP_CONTENT(NLS)->gamma = (sunrealtype*)malloc(m * sizeof(sunrealtype));
     SUNAssert(FP_CONTENT(NLS)->gamma, SUN_ERR_MALLOC_FAIL);
 
-    FP_CONTENT(NLS)->cvals = (realtype*)malloc(2 * (m + 1) * sizeof(realtype));
+    FP_CONTENT(NLS)->cvals = (sunrealtype*)malloc(2 * (m + 1) * sizeof(sunrealtype));
     SUNAssert(FP_CONTENT(NLS)->cvals, SUN_ERR_MALLOC_FAIL);
 
     FP_CONTENT(NLS)->df = N_VCloneVectorArray(m, y);

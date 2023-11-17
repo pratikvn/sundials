@@ -44,7 +44,7 @@
 #include <nvector/nvector_openmp.h> /* OpenMP N_Vector types, fcts., macros */
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/sundials_types.h> /* defs. of realtype, sunindextype, etc */
+#include <sundials/sundials_types.h> /* defs. of sunrealtype, sunindextype, etc */
 #include <sunlinsol/sunlinsol_pcg.h> /* access to PCG SUNLinearSolver        */
 
 #ifdef _OPENMP
@@ -66,13 +66,13 @@ typedef struct
 {
   sunindextype N; /* number of intervals      */
   int nthreads;   /* number of OpenMP threads */
-  realtype dx;    /* mesh spacing             */
-  realtype k;     /* diffusion coefficient    */
+  sunrealtype dx;    /* mesh spacing             */
+  sunrealtype k;     /* diffusion coefficient    */
 }* UserData;
 
 /* User-supplied Functions Called by the Solver */
-static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data);
-static int Jac(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
+static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
+static int Jac(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
                void* user_data, N_Vector tmp);
 
 /* Private function to check function return values */
@@ -82,15 +82,15 @@ static int check_flag(void* flagvalue, const char* funcname, int opt);
 int main(int argc, char* argv[])
 {
   /* general problem parameters */
-  realtype T0    = RCONST(0.0); /* initial time */
-  realtype Tf    = RCONST(1.0); /* final time */
+  sunrealtype T0    = SUN_RCONST(0.0); /* initial time */
+  sunrealtype Tf    = SUN_RCONST(1.0); /* final time */
   int Nt         = 10;          /* total number of output times */
-  realtype rtol  = 1.e-6;       /* relative tolerance */
-  realtype atol  = 1.e-10;      /* absolute tolerance */
+  sunrealtype rtol  = 1.e-6;       /* relative tolerance */
+  sunrealtype atol  = 1.e-10;      /* absolute tolerance */
   UserData udata = NULL;
-  realtype* data;
+  sunrealtype* data;
   sunindextype N = 201; /* spatial mesh size */
-  realtype k     = 0.5; /* heat conductivity */
+  sunrealtype k     = 0.5; /* heat conductivity */
   sunindextype i;
 
   /* general problem variables */
@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
   SUNLinearSolver LS = NULL; /* empty linear solver object */
   void* arkode_mem   = NULL; /* empty ARKStep memory structure */
   FILE *FID, *UFID;
-  realtype t, dTout, tout;
+  sunrealtype t, dTout, tout;
   int iout, num_threads;
   long int nst, nst_a, nfe, nfi, nsetups, nli, nJv, nlcf, nni, ncfn, netf;
 
@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
   udata           = (UserData)malloc(sizeof(*udata));
   udata->N        = N;
   udata->k        = k;
-  udata->dx       = RCONST(1.0) / (N - 1); /* mesh spacing */
+  udata->dx       = SUN_RCONST(1.0) / (N - 1); /* mesh spacing */
   udata->nthreads = num_threads;
 
   /* Initial problem output */
@@ -259,14 +259,14 @@ int main(int argc, char* argv[])
  *--------------------------------*/
 
 /* f routine to compute the ODE RHS function f(t,y). */
-static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data)
+static int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 {
   UserData udata = (UserData)user_data; /* access problem data */
   sunindextype N = udata->N;            /* set variable shortcuts */
-  realtype k     = udata->k;
-  realtype dx    = udata->dx;
-  realtype *Y = NULL, *Ydot = NULL;
-  realtype c1, c2;
+  sunrealtype k     = udata->k;
+  sunrealtype dx    = udata->dx;
+  sunrealtype *Y = NULL, *Ydot = NULL;
+  sunrealtype c1, c2;
   sunindextype i = 0;
   sunindextype isource;
 
@@ -278,7 +278,7 @@ static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 
   /* iterate over domain, computing all equations */
   c1      = k / dx / dx;
-  c2      = -RCONST(2.0) * k / dx / dx;
+  c2      = -SUN_RCONST(2.0) * k / dx / dx;
   isource = N / 2;
   Ydot[0] = 0.0; /* left boundary condition */
 #pragma omp parallel for default(shared) private(i) schedule(static) \
@@ -294,15 +294,15 @@ static int f(realtype t, N_Vector y, N_Vector ydot, void* user_data)
 }
 
 /* Jacobian routine to compute J(t,y) = df/dy. */
-static int Jac(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
+static int Jac(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
                void* user_data, N_Vector tmp)
 {
   UserData udata = (UserData)user_data; /* variable shortcuts */
   sunindextype N = udata->N;
-  realtype k     = udata->k;
-  realtype dx    = udata->dx;
-  realtype *V = NULL, *JV = NULL;
-  realtype c1, c2;
+  sunrealtype k     = udata->k;
+  sunrealtype dx    = udata->dx;
+  sunrealtype *V = NULL, *JV = NULL;
+  sunrealtype c1, c2;
   sunindextype i = 0;
 
   V = N_VGetArrayPointer(v); /* access data arrays */
@@ -313,7 +313,7 @@ static int Jac(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
 
   /* iterate over domain, computing all Jacobian-vector products */
   c1    = k / dx / dx;
-  c2    = -RCONST(2.0) * k / dx / dx;
+  c2    = -SUN_RCONST(2.0) * k / dx / dx;
   JV[0] = 0.0;
 #pragma omp parallel for default(shared) private(i) schedule(static) \
   num_threads(udata->nthreads)

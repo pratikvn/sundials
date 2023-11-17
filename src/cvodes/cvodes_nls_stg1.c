@@ -17,17 +17,17 @@
 #include "cvodes_impl.h"
 
 /* constant macros */
-#define ONE RCONST(1.0)
+#define ONE SUN_RCONST(1.0)
 
 /* private functions */
 static int cvNlsResidualSensStg1(N_Vector ycor, N_Vector res, void* cvode_mem);
 static int cvNlsFPFunctionSensStg1(N_Vector ycor, N_Vector res, void* cvode_mem);
 
-static int cvNlsLSetupSensStg1(booleantype jbad, booleantype* jcur,
+static int cvNlsLSetupSensStg1(sunbooleantype jbad, sunbooleantype* jcur,
                                void* cvode_mem);
 static int cvNlsLSolveSensStg1(N_Vector delta, void* cvode_mem);
 static int cvNlsConvTestSensStg1(SUNNonlinearSolver NLS, N_Vector ycor,
-                                 N_Vector del, realtype tol, N_Vector ewt,
+                                 N_Vector del, sunrealtype tol, N_Vector ewt,
                                  void* cvode_mem);
 
 /* -----------------------------------------------------------------------------
@@ -219,7 +219,7 @@ int cvNlsInitSensStg1(CVodeMem cvode_mem)
   return (CV_SUCCESS);
 }
 
-static int cvNlsLSetupSensStg1(booleantype jbad, booleantype* jcur,
+static int cvNlsLSetupSensStg1(sunbooleantype jbad, sunbooleantype* jcur,
                                void* cvode_mem)
 {
   CVodeMem cv_mem;
@@ -284,13 +284,13 @@ static int cvNlsLSolveSensStg1(N_Vector delta, void* cvode_mem)
 }
 
 static int cvNlsConvTestSensStg1(SUNNonlinearSolver NLS, N_Vector ycor,
-                                 N_Vector delta, realtype tol, N_Vector ewt,
+                                 N_Vector delta, sunrealtype tol, N_Vector ewt,
                                  void* cvode_mem)
 {
   CVodeMem cv_mem;
   int m, retval;
-  realtype del;
-  realtype dcon;
+  sunrealtype del;
+  sunrealtype dcon;
 
   if (cvode_mem == NULL)
   {

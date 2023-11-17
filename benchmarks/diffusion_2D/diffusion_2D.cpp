@@ -22,7 +22,7 @@
 
 #if defined(BENCHMARK_ODE)
 
-int diffusion(realtype t, N_Vector u, N_Vector f, void* user_data)
+int diffusion(sunrealtype t, N_Vector u, N_Vector f, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
@@ -36,7 +36,7 @@ int diffusion(realtype t, N_Vector u, N_Vector f, void* user_data)
   return 0;
 }
 
-int diffusion_jac(realtype t, N_Vector u, N_Vector f, SUNMatrix Jac,
+int diffusion_jac(sunrealtype t, N_Vector u, N_Vector f, SUNMatrix Jac,
                   void* user_data, N_Vector tmp1, N_Vector tmp2, N_Vector tmp3)
 {
   // Access problem data
@@ -58,7 +58,7 @@ int diffusion_jac(realtype t, N_Vector u, N_Vector f, SUNMatrix Jac,
 
 #elif defined(BENCHMARK_DAE)
 
-int diffusion(realtype t, N_Vector u, N_Vector up, N_Vector res, void* user_data)
+int diffusion(sunrealtype t, N_Vector u, N_Vector up, N_Vector res, void* user_data)
 {
   // Access problem data
   UserData* udata = (UserData*)user_data;
@@ -75,7 +75,7 @@ int diffusion(realtype t, N_Vector u, N_Vector up, N_Vector res, void* user_data
   return 0;
 }
 
-int diffusion_jac(realtype t, realtype cj, N_Vector u, N_Vector up,
+int diffusion_jac(sunrealtype t, sunrealtype cj, N_Vector u, N_Vector up,
                   N_Vector res, SUNMatrix Jac, void* user_data, N_Vector tmp1,
                   N_Vector tmp2, N_Vector tmp3)
 {
@@ -687,7 +687,7 @@ int UserOutput::open(UserData* udata)
   if (outproc)
   {
     cout << scientific;
-    cout << setprecision(numeric_limits<realtype>::digits10);
+    cout << setprecision(numeric_limits<sunrealtype>::digits10);
     cout << endl;
     if (error)
     {
@@ -735,7 +735,7 @@ int UserOutput::open(UserData* udata)
     uoutstream << "# je  " << udata->je << endl;
 
     uoutstream << scientific;
-    uoutstream << setprecision(numeric_limits<realtype>::digits10);
+    uoutstream << setprecision(numeric_limits<sunrealtype>::digits10);
 
     if (error)
     {
@@ -764,17 +764,17 @@ int UserOutput::open(UserData* udata)
       eoutstream << "# je  " << udata->je << endl;
 
       eoutstream << scientific;
-      eoutstream << setprecision(numeric_limits<realtype>::digits10);
+      eoutstream << setprecision(numeric_limits<sunrealtype>::digits10);
     }
   }
 
   return 0;
 }
 
-int UserOutput::write(realtype t, N_Vector u, UserData* udata)
+int UserOutput::write(sunrealtype t, N_Vector u, UserData* udata)
 {
   int flag;
-  realtype max;
+  sunrealtype max;
   bool outproc = (udata->myid_c == 0);
 
   if (output > 0)
@@ -790,7 +790,7 @@ int UserOutput::write(realtype t, N_Vector u, UserData* udata)
     }
 
     // Compute rms norm of the state
-    realtype urms = sqrt(N_VDotProd(u, u) / udata->nx / udata->ny);
+    sunrealtype urms = sqrt(N_VDotProd(u, u) / udata->nx / udata->ny);
 
     // Output current status
     if (outproc)
@@ -809,7 +809,7 @@ int UserOutput::write(realtype t, N_Vector u, UserData* udata)
       flag = CopyDataFromDevice(u);
       if (check_flag(&flag, "CopyDataFromDevice", 1)) { return -1; }
 
-      realtype* uarray = N_VGetArrayPointer(u);
+      sunrealtype* uarray = N_VGetArrayPointer(u);
       if (check_flag((void*)uarray, "N_VGetArrayPointer", 0)) { return -1; }
 
       uoutstream << t << " ";
@@ -826,7 +826,7 @@ int UserOutput::write(realtype t, N_Vector u, UserData* udata)
         if (check_flag(&flag, "CopyDataFromDevice", 1)) { return -1; }
 
         // Output error to disk
-        realtype* earray = N_VGetArrayPointer(error);
+        sunrealtype* earray = N_VGetArrayPointer(error);
         if (check_flag((void*)earray, "N_VGetArrayPointer", 0)) { return -1; }
 
         eoutstream << t << " ";
@@ -885,7 +885,7 @@ int UserOutput::close(UserData* udata)
 // -----------------------------------------------------------------------------
 
 // Compute the solution error
-int SolutionError(realtype t, N_Vector u, N_Vector e, UserData* udata)
+int SolutionError(sunrealtype t, N_Vector u, N_Vector e, UserData* udata)
 {
   // Compute true solution
   int flag = Solution(t, e, udata);

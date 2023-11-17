@@ -30,10 +30,10 @@
 extern "C" {
 #endif
 
-extern void FIDA_DJAC(long int* N, realtype* T, realtype* Y, realtype* YP,
-                      realtype* R, realtype* J, realtype* CJ, realtype* EWT,
-                      realtype* H, long int* IPAR, realtype* RPAR, realtype* V1,
-                      realtype* V2, realtype* V3, int* IER);
+extern void FIDA_DJAC(long int* N, sunrealtype* T, sunrealtype* Y, sunrealtype* YP,
+                      sunrealtype* R, sunrealtype* J, sunrealtype* CJ, sunrealtype* EWT,
+                      sunrealtype* H, long int* IPAR, sunrealtype* RPAR, sunrealtype* V1,
+                      sunrealtype* V2, sunrealtype* V3, int* IER);
 
 #ifdef __cplusplus
 }
@@ -62,13 +62,13 @@ void FIDA_DENSESETJAC(int* flag, int* ier)
 
 /*************************************************/
 
-int FIDADenseJac(realtype t, realtype c_j, N_Vector yy, N_Vector yp,
+int FIDADenseJac(sunrealtype t, sunrealtype c_j, N_Vector yy, N_Vector yp,
                  N_Vector rr, SUNMatrix J, void* user_data, N_Vector vtemp1,
                  N_Vector vtemp2, N_Vector vtemp3)
 {
-  realtype *yy_data, *yp_data, *rr_data, *jacdata, *ewtdata, *v1data, *v2data,
+  sunrealtype *yy_data, *yp_data, *rr_data, *jacdata, *ewtdata, *v1data, *v2data,
     *v3data;
-  realtype h;
+  sunrealtype h;
   long int N;
   int ier;
   FIDAUserData IDA_userdata;

@@ -21,11 +21,11 @@
  * Notes:
  *   - The definition of the generic SUNMatrix structure can be found
  *     in the header file sundials_matrix.h.
- *   - The definition of the type 'realtype' can be found in the
+ *   - The definition of the type 'sunrealtype' can be found in the
  *     header file sundials_types.h, and it may be changed (at the
  *     configuration stage) according to the user's needs.
  *     The sundials_types.h file also contains the definition
- *     for the type 'booleantype' and 'indextype'.
+ *     for the type 'sunbooleantype' and 'indextype'.
  * -----------------------------------------------------------------
  */
 
@@ -59,7 +59,7 @@ struct _SUNMatrixContent_Sparse {
   sunindextype N;
   sunindextype NNZ;
   sunindextype NP;
-  realtype *data;
+  sunrealtype *data;
   int sparsetype;
   sunindextype *indexvals;
   sunindextype *indexptrs;
@@ -105,10 +105,10 @@ SUNMatrix SUNSparseMatrix(sunindextype M, sunindextype N, sunindextype NNZ,
                           int sparsetype, SUNContext sunctx);
 
 SUNDIALS_EXPORT
-SUNMatrix SUNSparseFromDenseMatrix(SUNMatrix A, realtype droptol, int sparsetype);
+SUNMatrix SUNSparseFromDenseMatrix(SUNMatrix A, sunrealtype droptol, int sparsetype);
 
 SUNDIALS_EXPORT
-SUNMatrix SUNSparseFromBandMatrix(SUNMatrix A, realtype droptol, int sparsetype);
+SUNMatrix SUNSparseFromBandMatrix(SUNMatrix A, sunrealtype droptol, int sparsetype);
 
 SUNDIALS_EXPORT
 SUNErrCode SUNSparseMatrix_ToCSR(const SUNMatrix A, SUNMatrix* Bout);
@@ -141,7 +141,7 @@ SUNDIALS_EXPORT
 int SUNSparseMatrix_SparseType(SUNMatrix A);
 
 SUNDIALS_EXPORT
-realtype* SUNSparseMatrix_Data(SUNMatrix A);
+sunrealtype* SUNSparseMatrix_Data(SUNMatrix A);
 
 SUNDIALS_EXPORT
 sunindextype* SUNSparseMatrix_IndexValues(SUNMatrix A);
@@ -165,10 +165,10 @@ SUNDIALS_EXPORT
 SUNErrCode SUNMatCopy_Sparse(SUNMatrix A, SUNMatrix B);
 
 SUNDIALS_EXPORT
-SUNErrCode SUNMatScaleAdd_Sparse(realtype c, SUNMatrix A, SUNMatrix B);
+SUNErrCode SUNMatScaleAdd_Sparse(sunrealtype c, SUNMatrix A, SUNMatrix B);
 
 SUNDIALS_EXPORT
-SUNErrCode SUNMatScaleAddI_Sparse(realtype c, SUNMatrix A);
+SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A);
 
 SUNDIALS_EXPORT
 SUNErrCode SUNMatMatvec_Sparse(SUNMatrix A, N_Vector x, N_Vector y);

@@ -33,12 +33,12 @@
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
-extern void FIDA_ROOTFN(realtype*, /* T    */
-                        realtype*, /* Y    */
-                        realtype*, /* YP   */
-                        realtype*, /* G    */
+extern void FIDA_ROOTFN(sunrealtype*, /* T    */
+                        sunrealtype*, /* Y    */
+                        sunrealtype*, /* YP   */
+                        sunrealtype*, /* G    */
                         long int*, /* IPAR */
-                        realtype*, /* RPAR */
+                        sunrealtype*, /* RPAR */
                         int*);     /* IER  */
 #ifdef __cplusplus
 }
@@ -73,11 +73,11 @@ void FIDA_ROOTFREE(void)
 
 /***************************************************************************/
 
-int FIDArootfunc(realtype t, N_Vector y, N_Vector yp, realtype* gout,
+int FIDArootfunc(sunrealtype t, N_Vector y, N_Vector yp, sunrealtype* gout,
                  void* user_data)
 {
   int ier;
-  realtype *ydata, *ypdata;
+  sunrealtype *ydata, *ypdata;
   FIDAUserData IDA_userdata;
 
   ydata  = N_VGetArrayPointer(y);

@@ -458,7 +458,7 @@ int Test_SUNLinSolSetup(SUNLinearSolver S, SUNMatrix A, int myid)
  * 'setup' by the Test_SUNLinSolSetup() function prior to this call.
  * --------------------------------------------------------------------*/
 int Test_SUNLinSolSolve(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
-                        realtype tol, booleantype zeroguess, int myid)
+                        realtype tol, sunbooleantype zeroguess, int myid)
 {
   int failure;
   double start_time, stop_time;
@@ -469,7 +469,7 @@ int Test_SUNLinSolSolve(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
 
   /* set initial guess for the linear system */
   if (zeroguess) { N_VConst(ZERO, y); }
-  else { N_VAddConst(x, SUNRsqrt(UNIT_ROUNDOFF), y); }
+  else { N_VAddConst(x, SUNRsqrt(SUN_UNIT_ROUNDOFF), y); }
 
   sync_device();
 

@@ -19,11 +19,11 @@
 #include "cvode_diag_impl.h"
 #include "cvode_impl.h"
 
-#define ZERO   RCONST(0.0)
-#define PT1    RCONST(0.1)
-#define FRACT  RCONST(0.1)
-#define ONEPT5 RCONST(1.50)
-#define ONE    RCONST(1.0)
+#define ZERO   SUN_RCONST(0.0)
+#define PT1    SUN_RCONST(0.1)
+#define FRACT  SUN_RCONST(0.1)
+#define ONEPT5 SUN_RCONST(1.50)
+#define ONE    SUN_RCONST(1.0)
 
 /*
  * -----------------------------------------------------------------
@@ -31,8 +31,8 @@
  * -----------------------------------------------------------------
  */
 
-int cvEwtSetSS_fused(const booleantype atolmin0, const realtype reltol,
-                     const realtype Sabstol, const N_Vector ycur,
+int cvEwtSetSS_fused(const sunbooleantype atolmin0, const sunrealtype reltol,
+                     const sunrealtype Sabstol, const N_Vector ycur,
                      N_Vector tempv, N_Vector weight)
 {
   SUNAssignSUNCTX(ycur->sunctx);
@@ -54,7 +54,7 @@ int cvEwtSetSS_fused(const booleantype atolmin0, const realtype reltol,
  * -----------------------------------------------------------------
  */
 
-int cvEwtSetSV_fused(const booleantype atolmin0, const realtype reltol,
+int cvEwtSetSV_fused(const sunbooleantype atolmin0, const sunrealtype reltol,
                      const N_Vector Vabstol, const N_Vector ycur,
                      N_Vector tempv, N_Vector weight)
 {
@@ -96,7 +96,7 @@ int cvCheckConstraints_fused(const N_Vector c, const N_Vector ewt,
  * -----------------------------------------------------------------
  */
 
-int cvNlsResid_fused(const realtype rl1, const realtype ngamma,
+int cvNlsResid_fused(const sunrealtype rl1, const sunrealtype ngamma,
                      const N_Vector zn1, const N_Vector ycor,
                      const N_Vector ftemp, N_Vector res)
 {
@@ -112,7 +112,7 @@ int cvNlsResid_fused(const realtype rl1, const realtype ngamma,
  * -----------------------------------------------------------------
  */
 
-int cvDiagSetup_formY(const realtype h, const realtype r, const N_Vector fpred,
+int cvDiagSetup_formY(const sunrealtype h, const sunrealtype r, const N_Vector fpred,
                       const N_Vector zn1, const N_Vector ypred, N_Vector ftemp,
                       N_Vector y)
 {
@@ -129,8 +129,8 @@ int cvDiagSetup_formY(const realtype h, const realtype r, const N_Vector fpred,
  * -----------------------------------------------------------------
  */
 
-int cvDiagSetup_buildM(const realtype fract, const realtype uround,
-                       const realtype h, const N_Vector ftemp,
+int cvDiagSetup_buildM(const sunrealtype fract, const sunrealtype uround,
+                       const sunrealtype h, const N_Vector ftemp,
                        const N_Vector fpred, const N_Vector ewt, N_Vector bit,
                        N_Vector bitcomp, N_Vector y, N_Vector M)
 {
@@ -155,7 +155,7 @@ int cvDiagSetup_buildM(const realtype fract, const realtype uround,
  * -----------------------------------------------------------------
  */
 
-int cvDiagSolve_updateM(const realtype r, N_Vector M)
+int cvDiagSolve_updateM(const sunrealtype r, N_Vector M)
 {
   SUNAssignSUNCTX(M->sunctx);
   SUNCheckCallLastErrNoRet(N_VInv(M, M));

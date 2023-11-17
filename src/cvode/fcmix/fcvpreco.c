@@ -35,13 +35,13 @@
 extern "C" {
 #endif
 
-extern void FCV_PSET(realtype* T, realtype* Y, realtype* FY, booleantype* JOK,
-                     booleantype* JCUR, realtype* GAMMA, realtype* H,
-                     long int* IPAR, realtype* RPAR, int* IER);
+extern void FCV_PSET(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunbooleantype* JOK,
+                     sunbooleantype* JCUR, sunrealtype* GAMMA, sunrealtype* H,
+                     long int* IPAR, sunrealtype* RPAR, int* IER);
 
-extern void FCV_PSOL(realtype* T, realtype* Y, realtype* FY, realtype* R,
-                     realtype* Z, realtype* GAMMA, realtype* DELTA, int* LR,
-                     long int* IPAR, realtype* RPAR, int* IER);
+extern void FCV_PSOL(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* R,
+                     sunrealtype* Z, sunrealtype* GAMMA, sunrealtype* DELTA, int* LR,
+                     long int* IPAR, sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -68,12 +68,12 @@ void FCV_LSSETPREC(int* flag, int* ier)
    A return flag ier from FCVPSET is returned by FCVPSet.
    Auxiliary data is assumed to be communicated by common blocks. */
 
-int FCVPSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
-            booleantype* jcurPtr, realtype gamma, void* user_data)
+int FCVPSet(sunrealtype t, N_Vector y, N_Vector fy, sunbooleantype jok,
+            sunbooleantype* jcurPtr, sunrealtype gamma, void* user_data)
 {
   int ier = 0;
-  realtype *ydata, *fydata;
-  realtype h;
+  sunrealtype *ydata, *fydata;
+  sunrealtype h;
   FCVUserData CV_userdata;
 
   CVodeGetLastStep(CV_cvodemem, &h);
@@ -98,11 +98,11 @@ int FCVPSet(realtype t, N_Vector y, N_Vector fy, booleantype jok,
    A return flag ier from FCVPSOL is returned by FCVPSol.
    Auxiliary data is assumed to be communicated by Common blocks. */
 
-int FCVPSol(realtype t, N_Vector y, N_Vector fy, N_Vector r, N_Vector z,
-            realtype gamma, realtype delta, int lr, void* user_data)
+int FCVPSol(sunrealtype t, N_Vector y, N_Vector fy, N_Vector r, N_Vector z,
+            sunrealtype gamma, sunrealtype delta, int lr, void* user_data)
 {
   int ier = 0;
-  realtype *ydata, *fydata, *rdata, *zdata;
+  sunrealtype *ydata, *fydata, *rdata, *zdata;
   FCVUserData CV_userdata;
 
   ydata  = N_VGetArrayPointer(y);

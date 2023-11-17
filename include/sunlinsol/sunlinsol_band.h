@@ -68,7 +68,7 @@ int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A);
 
 SUNDIALS_EXPORT
 int SUNLinSolSolve_Band(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                        N_Vector b, realtype tol);
+                        N_Vector b, sunrealtype tol);
 
 SUNDIALS_EXPORT
 sunindextype SUNLinSolLastFlag_Band(SUNLinearSolver S);

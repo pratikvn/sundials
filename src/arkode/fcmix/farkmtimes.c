@@ -33,9 +33,9 @@
 extern "C" {
 #endif
 
-extern void FARK_MTSETUP(realtype* T, long int* IPAR, realtype* RPAR, int* IER);
-extern void FARK_MTIMES(realtype* V, realtype* MV, realtype* T, long int* IPAR,
-                        realtype* RPAR, int* IER);
+extern void FARK_MTSETUP(sunrealtype* T, long int* IPAR, sunrealtype* RPAR, int* IER);
+extern void FARK_MTIMES(sunrealtype* V, sunrealtype* MV, sunrealtype* T, long int* IPAR,
+                        sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -62,7 +62,7 @@ void FARK_LSSETMASS(int* ier)
 
 /* C interface to user-supplied Fortran routine FARKMTSETUP; see
    farkode.h for further information */
-int FARKMTSetup(realtype t, void* user_data)
+int FARKMTSetup(sunrealtype t, void* user_data)
 {
   FARKUserData ARK_userdata;
   int ier      = 0;
@@ -73,9 +73,9 @@ int FARKMTSetup(realtype t, void* user_data)
 
 /* C interface to user-supplied Fortran routine FARKMTIMES; see
    farkode.h for further information */
-int FARKMtimes(N_Vector v, N_Vector Mv, realtype t, void* user_data)
+int FARKMtimes(N_Vector v, N_Vector Mv, sunrealtype t, void* user_data)
 {
-  realtype *vdata, *Mvdata;
+  sunrealtype *vdata, *Mvdata;
   FARKUserData ARK_userdata;
   int ier = 0;
 

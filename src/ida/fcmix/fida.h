@@ -157,8 +157,8 @@
  Real numbers:  At compilation, SUNDIALS allows the configuration option
  '--with-precision', that accepts values of 'single', 'double' or
  'extended' (the default is 'double').  This choice dictates the size of a
- SUNDIALS 'realtype' variable.  The corresponding Fortran types for these
- 'realtype' sizes are:
+ SUNDIALS 'sunrealtype' variable.  The corresponding Fortran types for these
+ 'sunrealtype' sizes are:
    single   -- equivalent to a REAL or REAL*4 in Fortran
    double   -- equivalent to a DOUBLE PRECISION or REAL*8 in Fortran
    extended -- equivalent to a REAL*16 in Fortran
@@ -174,14 +174,14 @@
       It must set the R array to F(t,y,y'), the residual of the DAE system.
 
       The arguments are:
-        T    -- current time [realtype, input]
-        Y    -- array containing state variables [realtype, input]
-        YP   -- array containing state variable derivatives [realtype, input]
-        R    -- array containing DAE residuals [realtype, output]
+        T    -- current time [sunrealtype, input]
+        Y    -- array containing state variables [sunrealtype, input]
+        YP   -- array containing state variable derivatives [sunrealtype, input]
+        R    -- array containing DAE residuals [sunrealtype, output]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                   >0 if a recoverable error occurred,
@@ -201,22 +201,22 @@
 
       The arguments are:
         NEQ  -- number of rows in the matrix [long int, input]
-        T    -- current time [realtype, input]
-        Y    -- array containing state variables [realtype, input]
-        YP   -- array containing state variable derivatives [realtype, input]
-        R    -- array containing DAE residuals [realtype, input]
-        DJAC -- 2D array containing the jacobian entries [realtype of size
+        T    -- current time [sunrealtype, input]
+        Y    -- array containing state variables [sunrealtype, input]
+        YP   -- array containing state variable derivatives [sunrealtype, input]
+        R    -- array containing DAE residuals [sunrealtype, input]
+        DJAC -- 2D array containing the jacobian entries [sunrealtype of size
                 (NEQ,NEQ), output]
         CJ   -- scalar in the system Jacobian proportional to inverse step
-                size [realtype, input]
-        EWT  -- array containing error weight vector [realtype, input]
-        H    -- current step size [realtype, input]
+                size [sunrealtype, input]
+        EWT  -- array containing error weight vector [sunrealtype, input]
+        H    -- current step size [sunrealtype, input]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         WK*  -- array containing temporary workspace of same size as Y
-                [realtype, input]
+                [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                   >0 if a recoverable error occurred,
@@ -242,22 +242,22 @@
         MU   -- upper half-bandwidth of the matrix [long int, input]
         ML   -- lower half-bandwidth of the matrix [long int, input]
         MDIM -- leading dimension of BJAC array [long int, input]
-        T    -- current time [realtype, input]
-        Y    -- array containing state variables [realtype, input]
-        YP   -- array containing state variable derivatives [realtype, input]
-        R    -- array containing DAE residuals [realtype, input]
-        DJAC -- 2D array containing the jacobian entries [realtype of size
+        T    -- current time [sunrealtype, input]
+        Y    -- array containing state variables [sunrealtype, input]
+        YP   -- array containing state variable derivatives [sunrealtype, input]
+        R    -- array containing DAE residuals [sunrealtype, input]
+        DJAC -- 2D array containing the jacobian entries [sunrealtype of size
                 (NEQ,NEQ), output]
         CJ   -- scalar in the system Jacobian proportional to inverse step
-                size [realtype, input]
-        EWT  -- array containing error weight vector [realtype, input]
-        H    -- current step size [realtype, input]
+                size [sunrealtype, input]
+        EWT  -- array containing error weight vector [sunrealtype, input]
+        H    -- current step size [sunrealtype, input]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         WK*  -- array containing temporary workspace of same size as Y
-                [realtype, input]
+                [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                   >0 if a recoverable error occurred,
@@ -280,27 +280,27 @@
       form (see sunmatrix_sparse.h for more information).
 
       The arguments are:
-          T    -- current time [realtype, input]
+          T    -- current time [sunrealtype, input]
           CJ   -- scalar in the system Jacobian proportional
-                  to inverse step size [realtype, input]
-          Y    -- array containing state variables [realtype, input]
-          YP   -- array containing state derivatives [realtype, input]
-          R    -- array containing system residual F(T, Y, YP) [realtype, input]
+                  to inverse step size [sunrealtype, input]
+          Y    -- array containing state variables [sunrealtype, input]
+          YP   -- array containing state derivatives [sunrealtype, input]
+          R    -- array containing system residual F(T, Y, YP) [sunrealtype, input]
           N    -- number of matrix rows/columns in Jacobian [int, input]
           NNZ  -- allocated length of nonzero storage [int, input]
           JDATA -- nonzero values in Jacobian
-                  [realtype of length NNZ, output]
+                  [sunrealtype of length NNZ, output]
           JRVALS -- row [column] indices for each nonzero in Jacobian
                    [int of length NNZ, output]
           JCPTRS -- pointers to each Jacobian column [row] in preceding arrays
                   [int of length N+1, output]
-          H    -- current step size [realtype, input]
+          H    -- current step size [sunrealtype, input]
           IPAR -- array containing integer user data that was passed to
                   FIDAMALLOC [long int, input]
           RPAR -- array containing real user data that was passed to
-                  FIDAMALLOC [realtype, input]
+                  FIDAMALLOC [sunrealtype, input]
           WK*  -- array containing temporary workspace of same size as Y
-                  [realtype, input]
+                  [sunrealtype, input]
           IER  -- return flag [int, output]:
                      0 if successful,
                     >0 if a recoverable error occurred,
@@ -325,18 +325,18 @@
       user-provided FIDAJTIMES routine (see below).
 
       The arguments are:
-        T    -- current time [realtype, input]
-        Y    -- array containing state variables [realtype, input]
-        YP   -- array containing state variable derivatives [realtype, input]
-        R    -- array containing DAE residuals [realtype, input]
+        T    -- current time [sunrealtype, input]
+        Y    -- array containing state variables [sunrealtype, input]
+        YP   -- array containing state variable derivatives [sunrealtype, input]
+        R    -- array containing DAE residuals [sunrealtype, input]
         CJ   -- scalar in the system Jacobian proportional to inverse step
-                size [realtype, input]
-        EWT  -- array containing error weight vector [realtype, input]
-        H    -- current step size [realtype, input]
+                size [sunrealtype, input]
+        EWT  -- array containing error weight vector [sunrealtype, input]
+        H    -- current step size [sunrealtype, input]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                    nonzero if an error.
@@ -356,20 +356,20 @@
       is stored in V, and store the product in FJV.
 
       The arguments are:
-        T    -- current time [realtype, input]
-        Y    -- array containing state variables [realtype, input]
-        YP   -- array containing state variable derivatives [realtype, input]
-        R    -- array containing DAE residuals [realtype, input]
-        V    -- array containing vector to multiply [realtype, input]
-        FJV  -- array containing product vector [realtype, output]
+        T    -- current time [sunrealtype, input]
+        Y    -- array containing state variables [sunrealtype, input]
+        YP   -- array containing state variable derivatives [sunrealtype, input]
+        R    -- array containing DAE residuals [sunrealtype, input]
+        V    -- array containing vector to multiply [sunrealtype, input]
+        FJV  -- array containing product vector [sunrealtype, output]
         CJ   -- scalar in the system Jacobian proportional to inverse step
-                size [realtype, input]
-        EWT  -- array containing error weight vector [realtype, input]
-        H    -- current step size [realtype, input]
+                size [sunrealtype, input]
+        EWT  -- array containing error weight vector [sunrealtype, input]
+        H    -- current step size [sunrealtype, input]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                    nonzero if an error.
@@ -389,18 +389,18 @@
       systems by FIDAPSOL.
 
       The arguments are:
-        T    -- current time [realtype, input]
-        Y    -- array containing state variables [realtype, input]
-        YP   -- array containing state variable derivatives [realtype, input]
-        R    -- array containing DAE residuals [realtype, input]
+        T    -- current time [sunrealtype, input]
+        Y    -- array containing state variables [sunrealtype, input]
+        YP   -- array containing state variable derivatives [sunrealtype, input]
+        R    -- array containing DAE residuals [sunrealtype, input]
         CJ   -- scalar in the system Jacobian proportional to inverse step
-                size [realtype, input]
-        EWT  -- array containing error weight vector [realtype, input]
-        H    -- current step size [realtype, input]
+                size [sunrealtype, input]
+        EWT  -- array containing error weight vector [sunrealtype, input]
+        H    -- current step size [sunrealtype, input]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                    nonzero if an error.
@@ -414,20 +414,20 @@
       where r = RV is input, and store the solution z in ZV.
 
       The arguments are:
-        T    -- current time [realtype, input]
-        Y    -- array containing state variables [realtype, input]
-        YP   -- array containing state variable derivatives [realtype, input]
-        R    -- array containing DAE residuals [realtype, input]
-        RV   -- right-hand side array [realtype, input]
-        ZV   -- solution array [realtype, output]
+        T    -- current time [sunrealtype, input]
+        Y    -- array containing state variables [sunrealtype, input]
+        YP   -- array containing state variable derivatives [sunrealtype, input]
+        R    -- array containing DAE residuals [sunrealtype, input]
+        RV   -- right-hand side array [sunrealtype, input]
+        ZV   -- solution array [sunrealtype, output]
         CJ   -- scalar in the system Jacobian proportional to inverse step
-                size [realtype, input]
-        DELTA -- desired residual tolerance [realtype, input]
-        EWT  -- array containing error weight vector [realtype, input]
+                size [sunrealtype, input]
+        DELTA -- desired residual tolerance [sunrealtype, input]
+        EWT  -- array containing error weight vector [sunrealtype, input]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                    nonzero if an error.
@@ -444,12 +444,12 @@
       vector Y.
 
       The arguments are:
-        Y    -- array containing state variables [realtype, input]
-        EWT  -- array containing the error weight vector [realtype, output]
+        Y    -- array containing state variables [sunrealtype, input]
+        EWT  -- array containing the error weight vector [sunrealtype, output]
         IPAR -- array containing integer user data that was passed to
                 FIDAMALLOC [long int, input]
         RPAR -- array containing real user data that was passed to
-                FIDAMALLOC [realtype, input]
+                FIDAMALLOC [sunrealtype, input]
         IER  -- return flag [int, output]:
                    0 if successful,
                    nonzero if an error.
@@ -590,22 +590,22 @@
         1                IOUT, ROUT, IPAR, RPAR, IER)
 
       The arguments are:
-         T0 = initial value of t [realtype, input]
-         Y0 = array of initial conditions for y(t0) [realtype, input]
-         YP0 = array of initial conditions for y'(t0) [realtype, input]
+         T0 = initial value of t [sunrealtype, input]
+         Y0 = array of initial conditions for y(t0) [sunrealtype, input]
+         YP0 = array of initial conditions for y'(t0) [sunrealtype, input]
          IATOL = type for absolute tolerance ATOL [int, input]:
                    1 = scalar,
                    2 = array,
                    3 = user-supplied function; the user must supply a routine
                        FIDAEWT to compute the error weight vector.
-         RTOL = scalar relative tolerance [realtype, input]
-         ATOL = scalar or array absolute tolerance [realtype, input]
+         RTOL = scalar relative tolerance [sunrealtype, input]
+         ATOL = scalar or array absolute tolerance [sunrealtype, input]
          IOUT = array of length at least 21 for integer optional outputs
                 [long int, output]
          ROUT = array of length at least 6 for real optional outputs
-                [realtype, output]
+                [sunrealtype, output]
          IPAR = array of user integer data [long int, input/output]
-         RPAR = array with user real data [realtype, input/output]
+         RPAR = array with user real data [sunrealtype, input/output]
          IER  = return completion flag [int, output]:
                    0 = SUCCESS,
                   -1 = failure (see printed message for failure details).
@@ -635,7 +635,7 @@
             HCUR    = ROUT( 3) -> IDAGetCurrentStep
             TCUR    = ROUT( 4) -> IDAGetCurrentTime
             TOLSFAC = ROUT( 5) -> IDAGetTolScaleFactor
-            UNITRND = ROUT( 6) -> UNIT_ROUNDOFF
+            UNITRND = ROUT( 6) -> SUN_UNIT_ROUNDOFF
       See the IDA manual for details.
 
   (5.5) To attach the linear solver created in step (5.3) to the 
@@ -734,9 +734,9 @@
 
         CALL FIDASETRIN(KEY, VALUE, IER)
 
-      to set the realtype value VALUE to the optional input specified by the
+      to set the sunrealtype value VALUE to the optional input specified by the
       quoted character string KEY.  VALUE must be a Fortran real-valued
-      number of size commensurate with the SUNDIALS "realtype".  KEY must
+      number of size commensurate with the SUNDIALS "sunrealtype".  KEY must
       one of the following: INIT_STEP, MAX_STEP, MIIN_STEP, STOP_TIME,
       NLCONV_COEF. The int return flag IER is 0 if successful, and nonzero
       otherwise.
@@ -746,7 +746,7 @@
 
         CALL FIDASETVIN(KEY, ARRAY, IER)
 
-      where ARRAY is an array of realtype and the quoted character string
+      where ARRAY is an array of sunrealtype and the quoted character string
       KEY is one of: ID_VEC or CONSTR_VEC.  The int return flag IER is 0
       if successful, and nonzero otherwise.
 
@@ -780,7 +780,7 @@
                  2 = IDA_Y_INIT
                  (See user guide for additional details)
          TOUT  = the first value of t at which a solution will
-                 be requested from FIDASOLVE [realtype, input].
+                 be requested from FIDASOLVE [sunrealtype, input].
          IER   = return completion flag [int, output].
 
   (5.17) The FSUNKLU solver will reuse much of the factorization information
@@ -826,10 +826,10 @@
          CALL FIDASOLVE(TOUT, TRET, Y, YP, ITASK, IER)
 
       The arguments are:
-        TOUT = next value of t at which a solution is desired [realtype, input]
-        TRET = value of t reached by the solver [realtype, output]
-        Y = array containing state variables on output [realtype, output]
-        YP = array containing state derivatives on output [realtype, output]
+        TOUT = next value of t at which a solution is desired [sunrealtype, input]
+        TRET = value of t reached by the solver [sunrealtype, output]
+        Y = array containing state variables on output [sunrealtype, output]
+        YP = array containing state derivatives on output [sunrealtype, output]
         ITASK = task indicator [int, input]:
                    1 = normal mode (overshoot TOUT and interpolate)
                    2 = one-step mode (return after each internal step taken)
@@ -857,9 +857,9 @@
 
       The arguments are:
         T = time at which solution derivative is desired, within the interval
-            [TCUR-HU,TCUR], [realtype, input].
+            [TCUR-HU,TCUR], [sunrealtype, input].
         K = derivative order (0 .le. K .le. QU) [int, input]
-        DKY = array containing computed K-th derivative of y [realtype, output]
+        DKY = array containing computed K-th derivative of y [sunrealtype, output]
         IER = return flag [int, output]: 0=success, <0 = illegal argument.
 
   -----------------------------------------------------------------------------
@@ -871,7 +871,7 @@
         CALL FIDAGETERRWEIGHTS(EWT, IER)
 
       The arguments are:
-        EWT = array containing the error weight vector [realtype, output]
+        EWT = array containing the error weight vector [sunrealtype, output]
         IER = return flag [int, output]: 0=success, nonzero if an error.
 
   -----------------------------------------------------------------------------
@@ -883,7 +883,7 @@
         CALL FIDAGETESTLOCALERR(ELE, IER)
 
       The arguments are:
-        ELE = array with the estimated local error vector [realtype, output]
+        ELE = array with the estimated local error vector [sunrealtype, output]
         IER = return flag [int, output]: 0=success, nonzero if an error.
 
   -----------------------------------------------------------------------------
@@ -905,7 +905,7 @@
 #include <sundials/sundials_linearsolver.h>  /* definition of type SUNLinearSolver */
 #include <sundials/sundials_matrix.h>        /* definition of type SUNMatrix */
 #include <sundials/sundials_nvector.h>       /* definition of type N_Vector */
-#include <sundials/sundials_types.h>         /* definition of type realtype */
+#include <sundials/sundials_types.h>         /* definition of type sunrealtype */
 
 #ifdef __cplusplus  /* wrapper to enable C++ usage */
 extern "C" {
@@ -1002,30 +1002,30 @@ extern "C" {
 /* Type for user data */
 
 typedef struct {
-  realtype *rpar;
+  sunrealtype *rpar;
   long int *ipar;
 } *FIDAUserData;
 
 /* Prototypes of exported functions */
 
-void FIDA_MALLOC(realtype *t0, realtype *yy0, realtype *yp0,
-                 int *iatol, realtype *rtol, realtype *atol,
-                 long int *iout, realtype *rout,
-                 long int *ipar, realtype *rpar, int *ier);
-void FIDA_REINIT(realtype *t0, realtype *yy0, realtype *yp0,
-                 int *iatol, realtype *rtol, realtype *atol,
+void FIDA_MALLOC(sunrealtype *t0, sunrealtype *yy0, sunrealtype *yp0,
+                 int *iatol, sunrealtype *rtol, sunrealtype *atol,
+                 long int *iout, sunrealtype *rout,
+                 long int *ipar, sunrealtype *rpar, int *ier);
+void FIDA_REINIT(sunrealtype *t0, sunrealtype *yy0, sunrealtype *yp0,
+                 int *iatol, sunrealtype *rtol, sunrealtype *atol,
                  int *ier);
 
 void FIDA_SETIIN(char key_name[], long int *ival, int *ier);
-void FIDA_SETRIN(char key_name[], realtype *rval, int *ier);
-void FIDA_SETVIN(char key_name[], realtype *vval, int *ier);
+void FIDA_SETRIN(char key_name[], sunrealtype *rval, int *ier);
+void FIDA_SETVIN(char key_name[], sunrealtype *vval, int *ier);
 
-void FIDA_TOLREINIT(int *iatol, realtype *rtol, realtype *atol, int *ier);
-void FIDA_CALCIC(int *icopt, realtype *tout1, int *ier);
+void FIDA_TOLREINIT(int *iatol, sunrealtype *rtol, sunrealtype *atol, int *ier);
+void FIDA_CALCIC(int *icopt, sunrealtype *tout1, int *ier);
 
 void FIDA_LSINIT(int *ier);
-void FIDA_LSSETEPSLIN(realtype *eplifac, int *ier);
-void FIDA_LSSETINCREMENTFACTOR(realtype *dqincfac, int *ier);
+void FIDA_LSSETEPSLIN(sunrealtype *eplifac, int *ier);
+void FIDA_LSSETINCREMENTFACTOR(sunrealtype *dqincfac, int *ier);
 void FIDA_LSSETJAC(int *flag, int *ier);
 void FIDA_LSSETPREC(int *flag, int *ier);
 void FIDA_DENSESETJAC(int *flag, int *ier);
@@ -1035,53 +1035,53 @@ void FIDA_SPARSESETJAC(int *ier);
 /*** DEPRECATED ***/  
 void FIDA_DLSINIT(int *ier);
 void FIDA_SPILSINIT(int *ier);
-void FIDA_SPILSSETEPSLIN(realtype *eplifac, int *ier);
-void FIDA_SPILSSETINCREMENTFACTOR(realtype *dqincfac, int *ier);
+void FIDA_SPILSSETEPSLIN(sunrealtype *eplifac, int *ier);
+void FIDA_SPILSSETINCREMENTFACTOR(sunrealtype *dqincfac, int *ier);
 void FIDA_SPILSSETJAC(int *flag, int *ier);
 void FIDA_SPILSSETPREC(int *flag, int *ier);
 /******************/  
   
 void FIDA_NLSINIT(int *ier);
 
-void FIDA_SOLVE(realtype *tout, realtype *tret, realtype *yret,
-                realtype *ypret, int *itask, int *ier);
+void FIDA_SOLVE(sunrealtype *tout, sunrealtype *tret, sunrealtype *yret,
+                sunrealtype *ypret, int *itask, int *ier);
 
 void FIDA_FREE(void);
 void FIDA_EWTSET(int *flag, int *ier);
-void FIDA_GETDKY(realtype *t, int *k, realtype *dky, int *ier);
-void FIDA_GETERRWEIGHTS(realtype *eweight, int *ier);
-void FIDA_GETESTLOCALERR(realtype *ele, int *ier);
+void FIDA_GETDKY(sunrealtype *t, int *k, sunrealtype *dky, int *ier);
+void FIDA_GETERRWEIGHTS(sunrealtype *eweight, int *ier);
+void FIDA_GETESTLOCALERR(sunrealtype *ele, int *ier);
 
 /* Prototypes: Functions Called by the IDA Solver */
 
-int FIDAresfn(realtype t, N_Vector yy, N_Vector yp, N_Vector rr, void *user_data);
+int FIDAresfn(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr, void *user_data);
 
-int FIDADenseJac(realtype t, realtype c_j, N_Vector yy, N_Vector yp,
+int FIDADenseJac(sunrealtype t, sunrealtype c_j, N_Vector yy, N_Vector yp,
                  N_Vector rr, SUNMatrix Jac, void *user_data,
                  N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
-int FIDABandJac(realtype t, realtype c_j, N_Vector yy, N_Vector yp,
+int FIDABandJac(sunrealtype t, sunrealtype c_j, N_Vector yy, N_Vector yp,
                 N_Vector rr, SUNMatrix Jac, void *user_data,
                 N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
-int FIDASparseJac(realtype t, realtype c_j, N_Vector y, N_Vector yp,
+int FIDASparseJac(sunrealtype t, sunrealtype c_j, N_Vector y, N_Vector yp,
 		  N_Vector rr, SUNMatrix Jac, void *user_data,
 		  N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3);
 
-int FIDAJTSetup(realtype t, N_Vector y, N_Vector yp, N_Vector r,
-                realtype c_j, void *user_data);
+int FIDAJTSetup(sunrealtype t, N_Vector y, N_Vector yp, N_Vector r,
+                sunrealtype c_j, void *user_data);
 
-int FIDAJtimes(realtype t, N_Vector yy, N_Vector yp, N_Vector rr,
+int FIDAJtimes(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr,
                N_Vector v, N_Vector Jv,
-               realtype c_j, void *user_data,
+               sunrealtype c_j, void *user_data,
                N_Vector vtemp1, N_Vector vtemp2);
 
-int FIDAPSet(realtype t, N_Vector yy, N_Vector yp, N_Vector rr,
-             realtype c_j, void *user_data);
+int FIDAPSet(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr,
+             sunrealtype c_j, void *user_data);
 
-int FIDAPSol(realtype t, N_Vector yy, N_Vector yp, N_Vector rr,
+int FIDAPSol(sunrealtype t, N_Vector yy, N_Vector yp, N_Vector rr,
              N_Vector rvec, N_Vector zvec,
-             realtype c_j, realtype delta, void *user_data);
+             sunrealtype c_j, sunrealtype delta, void *user_data);
 
 int FIDAEwtSet(N_Vector yy, N_Vector ewt, void *user_data);
 
@@ -1097,7 +1097,7 @@ extern SUNLinearSolver F2C_IDA_linsol;       /* defined in FSUNLINSOL module */
 extern SUNNonlinearSolver F2C_IDA_nonlinsol; /* defined in FSUNNONLINSOL module */
 extern void *IDA_idamem;                     /* defined in fida.c */
 extern long int *IDA_iout;                   /* defined in fida.c */
-extern realtype *IDA_rout;                   /* defined in fida.c */
+extern sunrealtype *IDA_rout;                   /* defined in fida.c */
 extern int IDA_nrtfn;                        /* defined in fida.c */
 
 #ifdef __cplusplus

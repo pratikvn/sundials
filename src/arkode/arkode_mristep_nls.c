@@ -164,9 +164,9 @@ int MRIStepSetNlsRhsFn(void* arkode_mem, ARKRhsFn nls_fsi)
   This routine provides access to the relevant data needed to
   compute the nonlinear system function.
   ---------------------------------------------------------------*/
-int MRIStepGetNonlinearSystemData(void* arkode_mem, realtype* tcur,
+int MRIStepGetNonlinearSystemData(void* arkode_mem, sunrealtype* tcur,
                                   N_Vector* zpred, N_Vector* z, N_Vector* F,
-                                  realtype* gamma, N_Vector* sdata,
+                                  sunrealtype* gamma, N_Vector* sdata,
                                   void** user_data)
 {
   ARKodeMem ark_mem;
@@ -288,7 +288,7 @@ int mriStep_Nls(ARKodeMem ark_mem, int nflag)
 {
   SUNAssignSUNCTX(ark_mem->sunctx);
   ARKodeMRIStepMem step_mem;
-  booleantype callLSetup;
+  sunbooleantype callLSetup;
   long int nls_iters_inc = 0;
   long int nls_fails_inc = 0;
   int nls_status;
@@ -343,7 +343,7 @@ int mriStep_Nls(ARKodeMem ark_mem, int nflag)
   SUNCheckCallLastErrNoRet(N_VConst(ZERO, step_mem->zcor));
 
   /* Reset the stored residual norm (for iterative linear solvers) */
-  step_mem->eRNrm = RCONST(0.1) * step_mem->nlscoef;
+  step_mem->eRNrm = SUN_RCONST(0.1) * step_mem->nlscoef;
 
   /* solve the nonlinear system for the actual correction */
   nls_status = SUNCheckCallLastErrNoRet(
@@ -389,7 +389,7 @@ int mriStep_Nls(ARKodeMem ark_mem, int nflag)
   This routine wraps the ARKODE linear solver interface 'setup'
   routine for use by the nonlinear solver object.
   ---------------------------------------------------------------*/
-int mriStep_NlsLSetup(booleantype jbad, booleantype* jcur, void* arkode_mem)
+int mriStep_NlsLSetup(sunbooleantype jbad, sunbooleantype* jcur, void* arkode_mem)
 {
   ARKodeMem ark_mem;
   ARKodeMRIStepMem step_mem;
@@ -487,7 +487,7 @@ int mriStep_NlsResidual(N_Vector zcor, N_Vector r, void* arkode_mem)
   ARKodeMem ark_mem;
   ARKodeMRIStepMem step_mem;
   int retval;
-  realtype c[3];
+  sunrealtype c[3];
   N_Vector X[3];
 
   /* access ARKodeMRIStepMem structure */
@@ -597,12 +597,12 @@ int mriStep_NlsFPFunction(N_Vector zcor, N_Vector g, void* arkode_mem)
       is provided.
   ---------------------------------------------------------------*/
 int mriStep_NlsConvTest(SUNNonlinearSolver NLS, N_Vector y, N_Vector del,
-                        realtype tol, N_Vector ewt, void* arkode_mem)
+                        sunrealtype tol, N_Vector ewt, void* arkode_mem)
 {
   /* temporary variables */
   ARKodeMem ark_mem;
   ARKodeMRIStepMem step_mem;
-  realtype delnrm, dcon;
+  sunrealtype delnrm, dcon;
   int m, retval;
 
   /* access ARKodeMRIStepMem structure */

@@ -50,12 +50,12 @@ using namespace oneapi::mkl::lapack;
 // Getrf scratch space size and memory
 #define LS_F_SCRATCH_SIZE(S) (LS_CONTENT(S)->f_scratch_size)
 #define LS_F_SCRATCH(S)      (LS_CONTENT(S)->f_scratchpad)
-#define LS_F_SCRATCHp(S)     ((realtype*)LS_CONTENT(S)->f_scratchpad->ptr)
+#define LS_F_SCRATCHp(S)     ((sunrealtype*)LS_CONTENT(S)->f_scratchpad->ptr)
 
 // Getrs scratch space size and memory
 #define LS_S_SCRATCH_SIZE(S) (LS_CONTENT(S)->s_scratch_size)
 #define LS_S_SCRATCH(S)      (LS_CONTENT(S)->s_scratchpad)
-#define LS_S_SCRATCHp(S)     ((realtype*)LS_CONTENT(S)->s_scratchpad->ptr)
+#define LS_S_SCRATCHp(S)     ((sunrealtype*)LS_CONTENT(S)->s_scratchpad->ptr)
 
 // Memory type, helper, and SYCL queue
 #define LS_MEM_TYPE(S)   (LS_CONTENT(S)->mem_type)
@@ -181,13 +181,13 @@ SUNLinearSolver SUNLinSol_OneMklDense(N_Vector y, SUNMatrix Amat,
   if (num_blocks > 1)
   {
 #ifdef SUNDIALS_ONEMKL_USE_GETRF_LOOP
-    LS_F_SCRATCH_SIZE(S) = getrf_scratchpad_size<realtype>(*queue, // device queue
+    LS_F_SCRATCH_SIZE(S) = getrf_scratchpad_size<sunrealtype>(*queue, // device queue
                                                            M, // rows in A_i
                                                            N, // columns in A_i
                                                            M); // leading dimension
 #else
     LS_F_SCRATCH_SIZE(S) =
-      getrf_batch_scratchpad_size<realtype>(*queue,      // device queue
+      getrf_batch_scratchpad_size<sunrealtype>(*queue,      // device queue
                                             M,           // rows in A_i
                                             N,           // columns in A_i
                                             M,           // leading dimension
@@ -198,7 +198,7 @@ SUNLinearSolver SUNLinSol_OneMklDense(N_Vector y, SUNMatrix Amat,
 
 #ifdef SUNDIALS_ONEMKL_USE_GETRS_LOOP
     LS_S_SCRATCH_SIZE(S) =
-      getrs_scratchpad_size<realtype>(*queue, // device queue
+      getrs_scratchpad_size<sunrealtype>(*queue, // device queue
                                       oneapi::mkl::transpose::nontrans,
                                       M,  // number of rows in A
                                       1,  // number of right-hand sizes
@@ -206,7 +206,7 @@ SUNLinearSolver SUNLinSol_OneMklDense(N_Vector y, SUNMatrix Amat,
                                       M); // leading dimension of B
 #else
     LS_S_SCRATCH_SIZE(S) =
-      getrs_batch_scratchpad_size<realtype>(*queue, // device queue
+      getrs_batch_scratchpad_size<sunrealtype>(*queue, // device queue
                                             oneapi::mkl::transpose::nontrans,
                                             M,     // number of rows in A_i
                                             1,     // number of right-hand sides
@@ -220,13 +220,13 @@ SUNLinearSolver SUNLinSol_OneMklDense(N_Vector y, SUNMatrix Amat,
   }
   else
   {
-    LS_F_SCRATCH_SIZE(S) = getrf_scratchpad_size<realtype>(*queue, // device queue
+    LS_F_SCRATCH_SIZE(S) = getrf_scratchpad_size<sunrealtype>(*queue, // device queue
                                                            M, // rows in A_i
                                                            N, // columns in A_i
                                                            M); // leading dimension
 
     LS_S_SCRATCH_SIZE(S) =
-      getrs_scratchpad_size<realtype>(*queue, // device queue
+      getrs_scratchpad_size<sunrealtype>(*queue, // device queue
                                       oneapi::mkl::transpose::nontrans,
                                       M,  // number of rows in A
                                       1,  // number of right-hand sizes
@@ -236,7 +236,7 @@ SUNLinearSolver SUNLinSol_OneMklDense(N_Vector y, SUNMatrix Amat,
 
   // Allocate factorization scratchpad if necessary
   retval = SUNMemoryHelper_Alloc(LS_MEM_HELPER(S), &(LS_F_SCRATCH(S)),
-                                 LS_F_SCRATCH_SIZE(S) * sizeof(realtype),
+                                 LS_F_SCRATCH_SIZE(S) * sizeof(sunrealtype),
                                  LS_MEM_TYPE(S), queue);
   if (retval)
   {
@@ -247,7 +247,7 @@ SUNLinearSolver SUNLinSol_OneMklDense(N_Vector y, SUNMatrix Amat,
 
   // Allocate solve scratchpad if necessary
   retval = SUNMemoryHelper_Alloc(LS_MEM_HELPER(S), &(LS_S_SCRATCH(S)),
-                                 LS_S_SCRATCH_SIZE(S) * sizeof(realtype),
+                                 LS_S_SCRATCH_SIZE(S) * sizeof(sunrealtype),
                                  LS_MEM_TYPE(S), queue);
   if (retval)
   {
@@ -301,7 +301,7 @@ int SUNLinSolSetup_OneMklDense(SUNLinearSolver S, SUNMatrix A)
   }
 
   // Access A matrix data array
-  realtype* Adata = SUNMatrix_OneMklDense_Data(A);
+  sunrealtype* Adata = SUNMatrix_OneMklDense_Data(A);
   if (!Adata)
   {
     SUNDIALS_DEBUG_ERROR("Matrix data array is NULL\n");
@@ -325,7 +325,7 @@ int SUNLinSolSetup_OneMklDense(SUNLinearSolver S, SUNMatrix A)
   sunindextype N            = SUNMatrix_OneMklDense_BlockColumns(A);
   sunindextype num_blocks   = SUNMatrix_OneMklDense_NumBlocks(A);
   sunindextype scratch_size = LS_F_SCRATCH_SIZE(S);
-  realtype* scratchpad      = LS_F_SCRATCHp(S);
+  sunrealtype* scratchpad      = LS_F_SCRATCHp(S);
 
   if (num_blocks > 1)
   {
@@ -435,7 +435,7 @@ int SUNLinSolSetup_OneMklDense(SUNLinearSolver S, SUNMatrix A)
 }
 
 int SUNLinSolSolve_OneMklDense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                               N_Vector b, realtype tol)
+                               N_Vector b, sunrealtype tol)
 {
   // Check for valid inputs
   if (!S)
@@ -460,10 +460,10 @@ int SUNLinSolSolve_OneMklDense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   }
 
   // Copy b into x
-  N_VScale(RCONST(1.0), b, x);
+  N_VScale(SUN_RCONST(1.0), b, x);
 
   // Access x vector data array
-  realtype* xdata = N_VGetDeviceArrayPointer(x);
+  sunrealtype* xdata = N_VGetDeviceArrayPointer(x);
   if (!xdata)
   {
     SUNDIALS_DEBUG_ERROR("Vector data array is NULL\n");
@@ -472,7 +472,7 @@ int SUNLinSolSolve_OneMklDense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   }
 
   // Access A matrix data array
-  realtype* Adata = SUNMatrix_OneMklDense_Data(A);
+  sunrealtype* Adata = SUNMatrix_OneMklDense_Data(A);
   if (!Adata)
   {
     SUNDIALS_DEBUG_ERROR("Matrix data array is NULL\n");
@@ -496,7 +496,7 @@ int SUNLinSolSolve_OneMklDense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   sunindextype N            = SUNMatrix_OneMklDense_BlockColumns(A);
   sunindextype num_blocks   = SUNMatrix_OneMklDense_NumBlocks(A);
   sunindextype scratch_size = LS_S_SCRATCH_SIZE(S);
-  realtype* scratchpad      = LS_S_SCRATCHp(S);
+  sunrealtype* scratchpad      = LS_S_SCRATCHp(S);
 
   if (num_blocks > 1)
   {

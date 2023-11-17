@@ -29,26 +29,26 @@
 #include "sundials/impl/sundials_errors_impl.h"
 #include "sundials_nvector_impl.h"
 
-#define ZERO   RCONST(0.0)
-#define HALF   RCONST(0.5)
-#define ONE    RCONST(1.0)
-#define ONEPT5 RCONST(1.5)
+#define ZERO   SUN_RCONST(0.0)
+#define HALF   SUN_RCONST(0.5)
+#define ONE    SUN_RCONST(1.0)
+#define ONEPT5 SUN_RCONST(1.5)
 
 /* Private functions for special cases of vector operations */
 static void VCopy_Pthreads(N_Vector x, N_Vector z);             /* z=x       */
 static void VSum_Pthreads(N_Vector x, N_Vector y, N_Vector z);  /* z=x+y     */
 static void VDiff_Pthreads(N_Vector x, N_Vector y, N_Vector z); /* z=x-y     */
 static void VNeg_Pthreads(N_Vector x, N_Vector z);              /* z=-x      */
-static void VScaleSum_Pthreads(realtype c, N_Vector x, N_Vector y,
+static void VScaleSum_Pthreads(sunrealtype c, N_Vector x, N_Vector y,
                                N_Vector z); /* z=c(x+y)  */
-static void VScaleDiff_Pthreads(realtype c, N_Vector x, N_Vector y,
+static void VScaleDiff_Pthreads(sunrealtype c, N_Vector x, N_Vector y,
                                 N_Vector z); /* z=c(x-y)  */
-static void VLin1_Pthreads(realtype a, N_Vector x, N_Vector y,
+static void VLin1_Pthreads(sunrealtype a, N_Vector x, N_Vector y,
                            N_Vector z); /* z=ax+y    */
-static void VLin2_Pthreads(realtype a, N_Vector x, N_Vector y,
+static void VLin2_Pthreads(sunrealtype a, N_Vector x, N_Vector y,
                            N_Vector z);                         /* z=ax-y    */
-static void Vaxpy_Pthreads(realtype a, N_Vector x, N_Vector y); /* y <- ax+y */
-static void VScaleBy_Pthreads(realtype a, N_Vector x);          /* x <- ax   */
+static void Vaxpy_Pthreads(sunrealtype a, N_Vector x, N_Vector y); /* y <- ax+y */
+static void VScaleBy_Pthreads(sunrealtype a, N_Vector x);          /* x <- ax   */
 
 /* Private functions for special cases of vector array operations */
 /* Z=X+Y */
@@ -58,20 +58,20 @@ static SUNErrCode VSumVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* Y,
 static SUNErrCode VDiffVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* Y,
                                             N_Vector* Z);
 /* Z=c(X+Y) */
-static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, realtype c, N_Vector* X,
+static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* X,
                                                 N_Vector* Y, N_Vector* Z);
 /* Z=c(X-Y) */
-static SUNErrCode VScaleDiffVectorArray_Pthreads(int nvec, realtype c,
+static SUNErrCode VScaleDiffVectorArray_Pthreads(int nvec, sunrealtype c,
                                                  N_Vector* X, N_Vector* Y,
                                                  N_Vector* Z);
 /* Z=aX+Y */
-static SUNErrCode VLin1VectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
+static SUNErrCode VLin1VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
                                             N_Vector* Y, N_Vector* Z);
 /* Z=aX-Y */
-static SUNErrCode VLin2VectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
+static SUNErrCode VLin2VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
                                             N_Vector* Y, N_Vector* Z);
 /* Y <- aX+Y */
-static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
+static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
                                             N_Vector* Y);
 
 /* Pthread companion functions for vector operations */
@@ -259,7 +259,7 @@ N_Vector N_VNew_Pthreads(sunindextype length, int num_threads, SUNContext sunctx
   SUNAssignSUNCTX(sunctx);
 
   N_Vector v;
-  realtype* data;
+  sunrealtype* data;
 
   SUNAssert(length > 0, SUN_ERR_ARG_OUTOFRANGE);
 
@@ -271,7 +271,7 @@ N_Vector N_VNew_Pthreads(sunindextype length, int num_threads, SUNContext sunctx
   {
     /* Allocate memory */
     data = NULL;
-    data = (realtype*)malloc(length * sizeof(realtype));
+    data = (sunrealtype*)malloc(length * sizeof(sunrealtype));
     SUNAssert(data, SUN_ERR_MALLOC_FAIL);
 
     /* Attach data */
@@ -287,7 +287,7 @@ N_Vector N_VNew_Pthreads(sunindextype length, int num_threads, SUNContext sunctx
  */
 
 N_Vector N_VMake_Pthreads(sunindextype length, int num_threads,
-                          realtype* v_data, SUNContext sunctx)
+                          sunrealtype* v_data, SUNContext sunctx)
 {
   SUNAssignSUNCTX(sunctx);
 
@@ -337,7 +337,7 @@ void N_VPrint_Pthreads(N_Vector x) { N_VPrintFile_Pthreads(x, stdout); }
 void N_VPrintFile_Pthreads(N_Vector x, FILE* outfile)
 {
   sunindextype i, N;
-  realtype* xd;
+  sunrealtype* xd;
 
   xd = NULL;
 
@@ -409,7 +409,7 @@ N_Vector N_VClone_Pthreads(N_Vector w)
   SUNAssignSUNCTX(w->sunctx);
 
   N_Vector v;
-  realtype* data;
+  sunrealtype* data;
   sunindextype length;
 
   v = NULL;
@@ -422,7 +422,7 @@ N_Vector N_VClone_Pthreads(N_Vector w)
   {
     /* Allocate memory */
     data = NULL;
-    data = (realtype*)malloc(length * sizeof(realtype));
+    data = (sunrealtype*)malloc(length * sizeof(sunrealtype));
     SUNAssert(data, SUN_ERR_MALLOC_FAIL);
 
     /* Attach data */
@@ -481,16 +481,16 @@ void N_VSpace_Pthreads(N_Vector v, sunindextype* lrw, sunindextype* liw)
  * Get vector data pointer
  */
 
-realtype* N_VGetArrayPointer_Pthreads(N_Vector v)
+sunrealtype* N_VGetArrayPointer_Pthreads(N_Vector v)
 {
-  return ((realtype*)NV_DATA_PT(v));
+  return ((sunrealtype*)NV_DATA_PT(v));
 }
 
 /* ----------------------------------------------------------------------------
  * Set vector data pointer
  */
 
-void N_VSetArrayPointer_Pthreads(realtype* v_data, N_Vector v)
+void N_VSetArrayPointer_Pthreads(sunrealtype* v_data, N_Vector v)
 {
   if (NV_LENGTH_PT(v) > 0) { NV_DATA_PT(v) = v_data; }
 
@@ -501,7 +501,7 @@ void N_VSetArrayPointer_Pthreads(realtype* v_data, N_Vector v)
  * Compute linear sum z[i] = a*x[i]+b*y[i]
  */
 
-void N_VLinearSum_Pthreads(realtype a, N_Vector x, realtype b, N_Vector y,
+void N_VLinearSum_Pthreads(sunrealtype a, N_Vector x, sunrealtype b, N_Vector y,
                            N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
@@ -512,9 +512,9 @@ void N_VLinearSum_Pthreads(realtype a, N_Vector x, realtype b, N_Vector y,
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
 
-  realtype c;
+  sunrealtype c;
   N_Vector v1, v2;
-  booleantype test;
+  sunbooleantype test;
 
   if ((b == ONE) && (z == y))
   { /* BLAS usage: axpy y <- ax+y */
@@ -640,8 +640,8 @@ void N_VLinearSum_Pthreads(realtype a, N_Vector x, realtype b, N_Vector y,
 static void* N_VLinearSum_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype a, b;
-  realtype *xd, *yd, *zd;
+  sunrealtype a, b;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -667,7 +667,7 @@ static void* N_VLinearSum_PT(void* thread_data)
  * Assigns constant value to all vector elements, z[i] = c
  */
 
-void N_VConst_Pthreads(realtype c, N_Vector z)
+void N_VConst_Pthreads(sunrealtype c, N_Vector z)
 {
   SUNAssignSUNCTX(z->sunctx);
 
@@ -723,8 +723,8 @@ void N_VConst_Pthreads(realtype c, N_Vector z)
 static void* N_VConst_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype c;
-  realtype* zd;
+  sunrealtype c;
+  sunrealtype* zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -804,7 +804,7 @@ void N_VProd_Pthreads(N_Vector x, N_Vector y, N_Vector z)
 static void* N_VProd_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *yd, *zd;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -885,7 +885,7 @@ void N_VDiv_Pthreads(N_Vector x, N_Vector y, N_Vector z)
 static void* N_VDiv_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *yd, *zd;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -909,7 +909,7 @@ static void* N_VDiv_PT(void* thread_data)
  * Compute scaler multiplication z[i] = c*x[i]
  */
 
-void N_VScale_Pthreads(realtype c, N_Vector x, N_Vector z)
+void N_VScale_Pthreads(sunrealtype c, N_Vector x, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -981,8 +981,8 @@ void N_VScale_Pthreads(realtype c, N_Vector x, N_Vector z)
 static void* N_VScale_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype c;
-  realtype *xd, *zd;
+  sunrealtype c;
+  sunrealtype *xd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -1062,7 +1062,7 @@ void N_VAbs_Pthreads(N_Vector x, N_Vector z)
 static void* N_VAbs_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *zd;
+  sunrealtype *xd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -1141,7 +1141,7 @@ void N_VInv_Pthreads(N_Vector x, N_Vector z)
 static void* N_VInv_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *zd;
+  sunrealtype *xd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -1164,7 +1164,7 @@ static void* N_VInv_PT(void* thread_data)
  * Compute componentwise addition of a scaler to a vector z[i] = x[i] + b
  */
 
-void N_VAddConst_Pthreads(N_Vector x, realtype b, N_Vector z)
+void N_VAddConst_Pthreads(N_Vector x, sunrealtype b, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1221,8 +1221,8 @@ void N_VAddConst_Pthreads(N_Vector x, realtype b, N_Vector z)
 static void* N_VAddConst_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype b;
-  realtype *xd, *zd;
+  sunrealtype b;
+  sunrealtype *xd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -1246,7 +1246,7 @@ static void* N_VAddConst_PT(void* thread_data)
  * Computes the dot product of two vectors, a = sum(x[i]*y[i])
  */
 
-realtype N_VDotProd_Pthreads(N_Vector x, N_Vector y)
+sunrealtype N_VDotProd_Pthreads(N_Vector x, N_Vector y)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1256,7 +1256,7 @@ realtype N_VDotProd_Pthreads(N_Vector x, N_Vector y)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype sum = ZERO;
+  sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -1310,8 +1310,8 @@ realtype N_VDotProd_Pthreads(N_Vector x, N_Vector y)
 static void* N_VDotProd_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *yd;
-  realtype local_sum, *global_sum;
+  sunrealtype *xd, *yd;
+  sunrealtype local_sum, *global_sum;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -1344,7 +1344,7 @@ static void* N_VDotProd_PT(void* thread_data)
  * Computes max norm of the vector
  */
 
-realtype N_VMaxNorm_Pthreads(N_Vector x)
+sunrealtype N_VMaxNorm_Pthreads(N_Vector x)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1354,7 +1354,7 @@ realtype N_VMaxNorm_Pthreads(N_Vector x)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype max = ZERO;
+  sunrealtype max = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -1407,8 +1407,8 @@ realtype N_VMaxNorm_Pthreads(N_Vector x)
 static void* N_VMaxNorm_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype* xd;
-  realtype local_max, *global_max;
+  sunrealtype* xd;
+  sunrealtype local_max, *global_max;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -1443,10 +1443,10 @@ static void* N_VMaxNorm_PT(void* thread_data)
  * Computes weighted root mean square norm of a vector
  */
 
-realtype N_VWrmsNorm_Pthreads(N_Vector x, N_Vector w)
+sunrealtype N_VWrmsNorm_Pthreads(N_Vector x, N_Vector w)
 {
   SUNAssignSUNCTX(x->sunctx);
-  realtype sqrsum = SUNCheckCallLastErrNoRet(N_VWSqrSumLocal_Pthreads(x, w));
+  sunrealtype sqrsum = SUNCheckCallLastErrNoRet(N_VWSqrSumLocal_Pthreads(x, w));
   return (SUNRsqrt(sqrsum / (NV_LENGTH_PT(x))));
 }
 
@@ -1454,7 +1454,7 @@ realtype N_VWrmsNorm_Pthreads(N_Vector x, N_Vector w)
  * Computes weighted square sum of a vector
  */
 
-realtype N_VWSqrSumLocal_Pthreads(N_Vector x, N_Vector w)
+sunrealtype N_VWSqrSumLocal_Pthreads(N_Vector x, N_Vector w)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1464,7 +1464,7 @@ realtype N_VWSqrSumLocal_Pthreads(N_Vector x, N_Vector w)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype sum = ZERO;
+  sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -1518,8 +1518,8 @@ realtype N_VWSqrSumLocal_Pthreads(N_Vector x, N_Vector w)
 static void* N_VWSqrSum_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *wd;
-  realtype local_sum, *global_sum;
+  sunrealtype *xd, *wd;
+  sunrealtype local_sum, *global_sum;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -1552,10 +1552,10 @@ static void* N_VWSqrSum_PT(void* thread_data)
  * Computes weighted root mean square norm of a masked vector
  */
 
-realtype N_VWrmsNormMask_Pthreads(N_Vector x, N_Vector w, N_Vector id)
+sunrealtype N_VWrmsNormMask_Pthreads(N_Vector x, N_Vector w, N_Vector id)
 {
   SUNAssignSUNCTX(x->sunctx);
-  realtype sqrsummask =
+  sunrealtype sqrsummask =
     SUNCheckCallLastErrNoRet(N_VWSqrSumMaskLocal_Pthreads(x, w, id));
   return (SUNRsqrt(sqrsummask / (NV_LENGTH_PT(x))));
 }
@@ -1564,7 +1564,7 @@ realtype N_VWrmsNormMask_Pthreads(N_Vector x, N_Vector w, N_Vector id)
  * Computes weighted square sum of a masked vector
  */
 
-realtype N_VWSqrSumMaskLocal_Pthreads(N_Vector x, N_Vector w, N_Vector id)
+sunrealtype N_VWSqrSumMaskLocal_Pthreads(N_Vector x, N_Vector w, N_Vector id)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1574,7 +1574,7 @@ realtype N_VWSqrSumMaskLocal_Pthreads(N_Vector x, N_Vector w, N_Vector id)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype sum = ZERO;
+  sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -1629,8 +1629,8 @@ realtype N_VWSqrSumMaskLocal_Pthreads(N_Vector x, N_Vector w, N_Vector id)
 static void* N_VWSqrSumMask_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *wd, *idd;
-  realtype local_sum, *global_sum;
+  sunrealtype *xd, *wd, *idd;
+  sunrealtype local_sum, *global_sum;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -1667,7 +1667,7 @@ static void* N_VWSqrSumMask_PT(void* thread_data)
  * Finds the minimun component of a vector
  */
 
-realtype N_VMin_Pthreads(N_Vector x)
+sunrealtype N_VMin_Pthreads(N_Vector x)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1677,7 +1677,7 @@ realtype N_VMin_Pthreads(N_Vector x)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype min;
+  sunrealtype min;
 
   /* initialize global min */
   min = NV_Ith_PT(x, 0);
@@ -1733,8 +1733,8 @@ realtype N_VMin_Pthreads(N_Vector x)
 static void* N_VMin_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype* xd;
-  realtype local_min, *global_min;
+  sunrealtype* xd;
+  sunrealtype local_min, *global_min;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -1769,7 +1769,7 @@ static void* N_VMin_PT(void* thread_data)
  * Computes weighted L2 norm of a vector
  */
 
-realtype N_VWL2Norm_Pthreads(N_Vector x, N_Vector w)
+sunrealtype N_VWL2Norm_Pthreads(N_Vector x, N_Vector w)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1779,7 +1779,7 @@ realtype N_VWL2Norm_Pthreads(N_Vector x, N_Vector w)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype sum = ZERO;
+  sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -1833,8 +1833,8 @@ realtype N_VWL2Norm_Pthreads(N_Vector x, N_Vector w)
 static void* N_VWL2Norm_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *wd;
-  realtype local_sum, *global_sum;
+  sunrealtype *xd, *wd;
+  sunrealtype local_sum, *global_sum;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -1867,7 +1867,7 @@ static void* N_VWL2Norm_PT(void* thread_data)
  * Computes L1 norm of a vector
  */
 
-realtype N_VL1Norm_Pthreads(N_Vector x)
+sunrealtype N_VL1Norm_Pthreads(N_Vector x)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -1877,7 +1877,7 @@ realtype N_VL1Norm_Pthreads(N_Vector x)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype sum = ZERO;
+  sunrealtype sum = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -1930,8 +1930,8 @@ realtype N_VL1Norm_Pthreads(N_Vector x)
 static void* N_VL1Norm_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype* xd;
-  realtype local_sum, *global_sum;
+  sunrealtype* xd;
+  sunrealtype local_sum, *global_sum;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -1963,7 +1963,7 @@ static void* N_VL1Norm_PT(void* thread_data)
  * Compare vector component values to a scaler
  */
 
-void N_VCompare_Pthreads(realtype c, N_Vector x, N_Vector z)
+void N_VCompare_Pthreads(sunrealtype c, N_Vector x, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -2020,8 +2020,8 @@ void N_VCompare_Pthreads(realtype c, N_Vector x, N_Vector z)
 static void* N_VCompare_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype c;
-  realtype *xd, *zd;
+  sunrealtype c;
+  sunrealtype *xd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -2045,7 +2045,7 @@ static void* N_VCompare_PT(void* thread_data)
  * Compute componentwise inverse z[i] = ONE/x[i] and check if x[i] == ZERO
  */
 
-booleantype N_VInvTest_Pthreads(N_Vector x, N_Vector z)
+sunbooleantype N_VInvTest_Pthreads(N_Vector x, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -2055,7 +2055,7 @@ booleantype N_VInvTest_Pthreads(N_Vector x, N_Vector z)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
 
-  realtype val = ZERO;
+  sunrealtype val = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -2105,8 +2105,8 @@ booleantype N_VInvTest_Pthreads(N_Vector x, N_Vector z)
 static void* N_VInvTest_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *zd;
-  realtype local_val, *global_val;
+  sunrealtype *xd, *zd;
+  sunrealtype local_val, *global_val;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -2139,7 +2139,7 @@ static void* N_VInvTest_PT(void* thread_data)
  * Compute constraint mask of a vector
  */
 
-booleantype N_VConstrMask_Pthreads(N_Vector c, N_Vector x, N_Vector m)
+sunbooleantype N_VConstrMask_Pthreads(N_Vector c, N_Vector x, N_Vector m)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -2149,7 +2149,7 @@ booleantype N_VConstrMask_Pthreads(N_Vector c, N_Vector x, N_Vector m)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
 
-  realtype val = ZERO;
+  sunrealtype val = ZERO;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(x);
@@ -2200,8 +2200,8 @@ booleantype N_VConstrMask_Pthreads(N_Vector c, N_Vector x, N_Vector m)
 static void* N_VConstrMask_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *cd, *xd, *md;
-  realtype local_val, *global_val;
+  sunrealtype *cd, *xd, *md;
+  sunrealtype local_val, *global_val;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -2244,7 +2244,7 @@ static void* N_VConstrMask_PT(void* thread_data)
  * Compute minimum componentwise quotient
  */
 
-realtype N_VMinQuotient_Pthreads(N_Vector num, N_Vector denom)
+sunrealtype N_VMinQuotient_Pthreads(N_Vector num, N_Vector denom)
 {
   SUNAssignSUNCTX(num->sunctx);
 
@@ -2254,7 +2254,7 @@ realtype N_VMinQuotient_Pthreads(N_Vector num, N_Vector denom)
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
   pthread_mutex_t global_mutex;
-  realtype min = BIG_REAL;
+  sunrealtype min = SUN_BIG_REAL;
 
   /* allocate threads and thread data structs */
   N        = NV_LENGTH_PT(num);
@@ -2308,8 +2308,8 @@ realtype N_VMinQuotient_Pthreads(N_Vector num, N_Vector denom)
 static void* N_VMinQuotient_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *nd, *dd;
-  realtype local_min, *global_min;
+  sunrealtype *nd, *dd;
+  sunrealtype local_min, *global_min;
   Pthreads_Data* my_data;
   pthread_mutex_t* global_mutex;
 
@@ -2326,7 +2326,7 @@ static void* N_VMinQuotient_PT(void* thread_data)
   end   = my_data->end;
 
   /* compute minimum quotient */
-  local_min = BIG_REAL;
+  local_min = SUN_BIG_REAL;
   for (i = start; i < end; i++)
   {
     if (dd[i] == ZERO) { continue; }
@@ -2352,7 +2352,7 @@ static void* N_VMinQuotient_PT(void* thread_data)
  * Compute the linear combination z = c[i]*X[i]
  */
 
-SUNErrCode N_VLinearCombination_Pthreads(int nvec, realtype* c, N_Vector* X,
+SUNErrCode N_VLinearCombination_Pthreads(int nvec, sunrealtype* c, N_Vector* X,
                                          N_Vector z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
@@ -2432,9 +2432,9 @@ static void* N_VLinearCombination_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype* c  = NULL;
-  realtype* xd = NULL;
-  realtype* zd = NULL;
+  sunrealtype* c  = NULL;
+  sunrealtype* xd = NULL;
+  sunrealtype* zd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -2489,7 +2489,7 @@ static void* N_VLinearCombination_PT(void* thread_data)
  * Compute multiple linear sums Z[i] = Y[i] + a*x
  */
 
-SUNErrCode N_VScaleAddMulti_Pthreads(int nvec, realtype* a, N_Vector x,
+SUNErrCode N_VScaleAddMulti_Pthreads(int nvec, sunrealtype* a, N_Vector x,
                                      N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(x->sunctx);
@@ -2563,10 +2563,10 @@ static void* N_VScaleAddMulti_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype* a  = NULL;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype* a  = NULL;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -2607,7 +2607,7 @@ static void* N_VScaleAddMulti_PT(void* thread_data)
  */
 
 SUNErrCode N_VDotProdMulti_Pthreads(int nvec, N_Vector x, N_Vector* Y,
-                                    realtype* dotprods)
+                                    sunrealtype* dotprods)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -2690,10 +2690,10 @@ static void* N_VDotProdMulti_PT(void* thread_data)
   pthread_mutex_t* lock;
 
   int i;
-  realtype sum;
-  realtype* dotprods = NULL;
-  realtype* xd       = NULL;
-  realtype* yd       = NULL;
+  sunrealtype sum;
+  sunrealtype* dotprods = NULL;
+  sunrealtype* xd       = NULL;
+  sunrealtype* yd       = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -2731,8 +2731,8 @@ static void* N_VDotProdMulti_PT(void* thread_data)
  * Compute multiple linear sums Z[i] = a*X[i] + b*Y[i]
  */
 
-SUNErrCode N_VLinearSumVectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
-                                            realtype b, N_Vector* Y, N_Vector* Z)
+SUNErrCode N_VLinearSumVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
+                                            sunrealtype b, N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -2742,10 +2742,10 @@ SUNErrCode N_VLinearSumVectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
   Pthreads_Data* thread_data;
   pthread_attr_t attr;
 
-  realtype c;
+  sunrealtype c;
   N_Vector* V1;
   N_Vector* V2;
-  booleantype test;
+  sunbooleantype test;
 
   /* invalid number of vectors */
   SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
@@ -2888,10 +2888,10 @@ static void* N_VLinearSumVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype a, b;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype a, b;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -2919,7 +2919,7 @@ static void* N_VLinearSumVectorArray_PT(void* thread_data)
  * Scale multiple vectors Z[i] = c[i]*X[i]
  */
 
-SUNErrCode N_VScaleVectorArray_Pthreads(int nvec, realtype* c, N_Vector* X,
+SUNErrCode N_VScaleVectorArray_Pthreads(int nvec, sunrealtype* c, N_Vector* X,
                                         N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
@@ -2992,9 +2992,9 @@ static void* N_VScaleVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype* c;
-  realtype* xd = NULL;
-  realtype* zd = NULL;
+  sunrealtype* c;
+  sunrealtype* xd = NULL;
+  sunrealtype* zd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -3033,7 +3033,7 @@ static void* N_VScaleVectorArray_PT(void* thread_data)
  * Set multiple vectors to a constant value Z[i] = c
  */
 
-SUNErrCode N_VConstVectorArray_Pthreads(int nvec, realtype c, N_Vector* Z)
+SUNErrCode N_VConstVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* Z)
 {
   SUNAssignSUNCTX(Z[0]->sunctx);
 
@@ -3104,7 +3104,7 @@ static void* N_VConstVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype* zd = NULL;
+  sunrealtype* zd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -3128,7 +3128,7 @@ static void* N_VConstVectorArray_PT(void* thread_data)
  */
 
 SUNErrCode N_VWrmsNormVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* W,
-                                           realtype* nrm)
+                                           sunrealtype* nrm)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -3214,10 +3214,10 @@ static void* N_VWrmsNormVectorArray_PT(void* thread_data)
   pthread_mutex_t* lock;
 
   int i;
-  realtype sum;
-  realtype* nrm = NULL;
-  realtype* xd  = NULL;
-  realtype* wd  = NULL;
+  sunrealtype sum;
+  sunrealtype* nrm = NULL;
+  sunrealtype* xd  = NULL;
+  sunrealtype* wd  = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -3250,7 +3250,7 @@ static void* N_VWrmsNormVectorArray_PT(void* thread_data)
  */
 
 SUNErrCode N_VWrmsNormMaskVectorArray_Pthreads(int nvec, N_Vector* X, N_Vector* W,
-                                               N_Vector id, realtype* nrm)
+                                               N_Vector id, sunrealtype* nrm)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
 
@@ -3337,11 +3337,11 @@ static void* N_VWrmsNormMaskVectorArray_PT(void* thread_data)
   pthread_mutex_t* lock;
 
   int i;
-  realtype sum;
-  realtype* nrm = NULL;
-  realtype* xd  = NULL;
-  realtype* wd  = NULL;
-  realtype* idd = NULL;
+  sunrealtype sum;
+  sunrealtype* nrm = NULL;
+  sunrealtype* xd  = NULL;
+  sunrealtype* wd  = NULL;
+  sunrealtype* idd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -3377,7 +3377,7 @@ static void* N_VWrmsNormMaskVectorArray_PT(void* thread_data)
  * Scale and add a vector to multiple vectors Z = Y + a*X
  */
 
-SUNErrCode N_VScaleAddMultiVectorArray_Pthreads(int nvec, int nsum, realtype* a,
+SUNErrCode N_VScaleAddMultiVectorArray_Pthreads(int nvec, int nsum, sunrealtype* a,
                                                 N_Vector* X, N_Vector** Y,
                                                 N_Vector** Z)
 {
@@ -3495,10 +3495,10 @@ static void* N_VScaleAddMultiVectorArray_PT(void* thread_data)
   sunindextype k, start, end;
 
   int i, j;
-  realtype* a  = NULL;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype* a  = NULL;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -3546,7 +3546,7 @@ static void* N_VScaleAddMultiVectorArray_PT(void* thread_data)
  */
 
 SUNErrCode N_VLinearCombinationVectorArray_Pthreads(int nvec, int nsum,
-                                                    realtype* c, N_Vector** X,
+                                                    sunrealtype* c, N_Vector** X,
                                                     N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0][0]->sunctx);
@@ -3558,7 +3558,7 @@ SUNErrCode N_VLinearCombinationVectorArray_Pthreads(int nvec, int nsum,
   pthread_attr_t attr;
 
   int retval;
-  realtype* ctmp;
+  sunrealtype* ctmp;
   N_Vector* Y;
 
   /* invalid number of vectors */
@@ -3602,7 +3602,7 @@ SUNErrCode N_VLinearCombinationVectorArray_Pthreads(int nvec, int nsum,
   /* should have called N_VScaleVectorArray */
   if (nsum == 1)
   {
-    ctmp = (realtype*)malloc(nvec * sizeof(realtype));
+    ctmp = (sunrealtype*)malloc(nvec * sizeof(sunrealtype));
 
     for (j = 0; j < nvec; j++) { ctmp[j] = c[0]; }
 
@@ -3677,9 +3677,9 @@ static void* N_VLinearCombinationVectorArray_PT(void* thread_data)
 
   int i; /* vector arrays index in summation [0,nsum) */
   int j; /* vector index in vector array     [0,nvec) */
-  realtype* c  = NULL;
-  realtype* zd = NULL;
-  realtype* xd = NULL;
+  sunrealtype* c  = NULL;
+  sunrealtype* zd = NULL;
+  sunrealtype* xd = NULL;
 
   /* extract thread data */
   my_data = (Pthreads_Data*)thread_data;
@@ -3754,7 +3754,7 @@ static void* N_VLinearCombinationVectorArray_PT(void* thread_data)
 SUNErrCode N_VBufSize_Pthreads(N_Vector x, sunindextype* size)
 {
   if (x == NULL) { return (-1); }
-  *size = NV_LENGTH_PT(x) * ((sunindextype)sizeof(realtype));
+  *size = NV_LENGTH_PT(x) * ((sunindextype)sizeof(sunrealtype));
   return SUN_SUCCESS;
 }
 
@@ -3796,7 +3796,7 @@ SUNErrCode N_VBufPack_Pthreads(N_Vector x, void* buf)
 
     /* pack thread data */
     thread_data[i].v1 = NV_DATA_PT(x);
-    thread_data[i].v2 = (realtype*)buf;
+    thread_data[i].v2 = (sunrealtype*)buf;
 
     /* create threads and call pthread companion function */
     pthread_create(&threads[i], &attr, VBufPack_PT, (void*)&thread_data[i]);
@@ -3820,7 +3820,7 @@ SUNErrCode N_VBufPack_Pthreads(N_Vector x, void* buf)
 static void* VBufPack_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *bd;
+  sunrealtype *xd, *bd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -3877,7 +3877,7 @@ SUNErrCode N_VBufUnpack_Pthreads(N_Vector x, void* buf)
 
     /* pack thread data */
     thread_data[i].v1 = NV_DATA_PT(x);
-    thread_data[i].v2 = (realtype*)buf;
+    thread_data[i].v2 = (sunrealtype*)buf;
 
     /* create threads and call pthread companion function */
     pthread_create(&threads[i], &attr, VBufUnpack_PT, (void*)&thread_data[i]);
@@ -3901,7 +3901,7 @@ SUNErrCode N_VBufUnpack_Pthreads(N_Vector x, void* buf)
 static void* VBufUnpack_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *bd;
+  sunrealtype *xd, *bd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -3986,7 +3986,7 @@ static void VCopy_Pthreads(N_Vector x, N_Vector z)
 static void* VCopy_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *zd;
+  sunrealtype *xd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4066,7 +4066,7 @@ static void VSum_Pthreads(N_Vector x, N_Vector y, N_Vector z)
 static void* VSum_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *yd, *zd;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4147,7 +4147,7 @@ static void VDiff_Pthreads(N_Vector x, N_Vector y, N_Vector z)
 static void* VDiff_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *yd, *zd;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4227,7 +4227,7 @@ static void VNeg_Pthreads(N_Vector x, N_Vector z)
 static void* VNeg_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype *xd, *zd;
+  sunrealtype *xd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4250,7 +4250,7 @@ static void* VNeg_PT(void* thread_data)
  * Compute scaled vector sum
  */
 
-static void VScaleSum_Pthreads(realtype c, N_Vector x, N_Vector y, N_Vector z)
+static void VScaleSum_Pthreads(sunrealtype c, N_Vector x, N_Vector y, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -4308,8 +4308,8 @@ static void VScaleSum_Pthreads(realtype c, N_Vector x, N_Vector y, N_Vector z)
 static void* VScaleSum_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype c;
-  realtype *xd, *yd, *zd;
+  sunrealtype c;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4334,7 +4334,7 @@ static void* VScaleSum_PT(void* thread_data)
  * Compute scaled vector difference
  */
 
-static void VScaleDiff_Pthreads(realtype c, N_Vector x, N_Vector y, N_Vector z)
+static void VScaleDiff_Pthreads(sunrealtype c, N_Vector x, N_Vector y, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -4392,8 +4392,8 @@ static void VScaleDiff_Pthreads(realtype c, N_Vector x, N_Vector y, N_Vector z)
 static void* VScaleDiff_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype c;
-  realtype *xd, *yd, *zd;
+  sunrealtype c;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4418,7 +4418,7 @@ static void* VScaleDiff_PT(void* thread_data)
  * Compute vector sum z[i] = a*x[i]+y[i]
  */
 
-static void VLin1_Pthreads(realtype a, N_Vector x, N_Vector y, N_Vector z)
+static void VLin1_Pthreads(sunrealtype a, N_Vector x, N_Vector y, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -4476,8 +4476,8 @@ static void VLin1_Pthreads(realtype a, N_Vector x, N_Vector y, N_Vector z)
 static void* VLin1_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype a;
-  realtype *xd, *yd, *zd;
+  sunrealtype a;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4502,7 +4502,7 @@ static void* VLin1_PT(void* thread_data)
  * Compute vector difference z[i] = a*x[i]-y[i]
  */
 
-static void VLin2_Pthreads(realtype a, N_Vector x, N_Vector y, N_Vector z)
+static void VLin2_Pthreads(sunrealtype a, N_Vector x, N_Vector y, N_Vector z)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -4560,8 +4560,8 @@ static void VLin2_Pthreads(realtype a, N_Vector x, N_Vector y, N_Vector z)
 static void* VLin2_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype a;
-  realtype *xd, *yd, *zd;
+  sunrealtype a;
+  sunrealtype *xd, *yd, *zd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4586,7 +4586,7 @@ static void* VLin2_PT(void* thread_data)
  * Compute special cases of linear sum
  */
 
-static void Vaxpy_Pthreads(realtype a, N_Vector x, N_Vector y)
+static void Vaxpy_Pthreads(sunrealtype a, N_Vector x, N_Vector y)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -4643,8 +4643,8 @@ static void Vaxpy_Pthreads(realtype a, N_Vector x, N_Vector y)
 static void* Vaxpy_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype a;
-  realtype *xd, *yd;
+  sunrealtype a;
+  sunrealtype *xd, *yd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4684,7 +4684,7 @@ static void* Vaxpy_PT(void* thread_data)
  * Compute scaled vector
  */
 
-static void VScaleBy_Pthreads(realtype a, N_Vector x)
+static void VScaleBy_Pthreads(sunrealtype a, N_Vector x)
 {
   SUNAssignSUNCTX(x->sunctx);
 
@@ -4740,8 +4740,8 @@ static void VScaleBy_Pthreads(realtype a, N_Vector x)
 static void* VScaleBy_PT(void* thread_data)
 {
   sunindextype i, start, end;
-  realtype a;
-  realtype* xd;
+  sunrealtype a;
+  sunrealtype* xd;
   Pthreads_Data* my_data;
 
   /* extract thread data */
@@ -4822,9 +4822,9 @@ static void* VSumVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   my_data = (Pthreads_Data*)thread_data;
   start   = my_data->start;
@@ -4897,9 +4897,9 @@ static void* VDiffVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   my_data = (Pthreads_Data*)thread_data;
   start   = my_data->start;
@@ -4916,7 +4916,7 @@ static void* VDiffVectorArray_PT(void* thread_data)
   pthread_exit(NULL);
 }
 
-static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, realtype c, N_Vector* X,
+static SUNErrCode VScaleSumVectorArray_Pthreads(int nvec, sunrealtype c, N_Vector* X,
                                                 N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
@@ -4973,10 +4973,10 @@ static void* VScaleSumVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype c;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype c;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   my_data = (Pthreads_Data*)thread_data;
   start   = my_data->start;
@@ -4994,7 +4994,7 @@ static void* VScaleSumVectorArray_PT(void* thread_data)
   pthread_exit(NULL);
 }
 
-static SUNErrCode VScaleDiffVectorArray_Pthreads(int nvec, realtype c,
+static SUNErrCode VScaleDiffVectorArray_Pthreads(int nvec, sunrealtype c,
                                                  N_Vector* X, N_Vector* Y,
                                                  N_Vector* Z)
 {
@@ -5052,10 +5052,10 @@ static void* VScaleDiffVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype c;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype c;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   my_data = (Pthreads_Data*)thread_data;
   start   = my_data->start;
@@ -5073,7 +5073,7 @@ static void* VScaleDiffVectorArray_PT(void* thread_data)
   pthread_exit(NULL);
 }
 
-static SUNErrCode VLin1VectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
+static SUNErrCode VLin1VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
                                             N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
@@ -5130,10 +5130,10 @@ static void* VLin1VectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype a;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype a;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   my_data = (Pthreads_Data*)thread_data;
   start   = my_data->start;
@@ -5151,7 +5151,7 @@ static void* VLin1VectorArray_PT(void* thread_data)
   pthread_exit(NULL);
 }
 
-static SUNErrCode VLin2VectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
+static SUNErrCode VLin2VectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
                                             N_Vector* Y, N_Vector* Z)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
@@ -5208,10 +5208,10 @@ static void* VLin2VectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype a;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
-  realtype* zd = NULL;
+  sunrealtype a;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
+  sunrealtype* zd = NULL;
 
   my_data = (Pthreads_Data*)thread_data;
   start   = my_data->start;
@@ -5229,7 +5229,7 @@ static void* VLin2VectorArray_PT(void* thread_data)
   pthread_exit(NULL);
 }
 
-static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, realtype a, N_Vector* X,
+static SUNErrCode VaxpyVectorArray_Pthreads(int nvec, sunrealtype a, N_Vector* X,
                                             N_Vector* Y)
 {
   SUNAssignSUNCTX(X[0]->sunctx);
@@ -5285,9 +5285,9 @@ static void* VaxpyVectorArray_PT(void* thread_data)
   sunindextype j, start, end;
 
   int i;
-  realtype a;
-  realtype* xd = NULL;
-  realtype* yd = NULL;
+  sunrealtype a;
+  sunrealtype* xd = NULL;
+  sunrealtype* yd = NULL;
 
   my_data = (Pthreads_Data*)thread_data;
   start   = my_data->start;
@@ -5394,7 +5394,7 @@ static void N_VInitThreadData(Pthreads_Data* thread_data)
  * -----------------------------------------------------------------
  */
 
-SUNErrCode N_VEnableFusedOps_Pthreads(N_Vector v, booleantype tf)
+SUNErrCode N_VEnableFusedOps_Pthreads(N_Vector v, sunbooleantype tf)
 {
   if (tf)
   {

@@ -30,9 +30,9 @@
 extern "C" {
 #endif
 
-extern void FKIN_SPJAC(realtype* Y, realtype* FY, long int* N, long int* NNZ,
-                       realtype* JDATA, sunindextype* JRVALS,
-                       sunindextype* JCPTRS, realtype* V1, realtype* V2,
+extern void FKIN_SPJAC(sunrealtype* Y, sunrealtype* FY, long int* N, long int* NNZ,
+                       sunrealtype* JDATA, sunindextype* JRVALS,
+                       sunindextype* JCPTRS, sunrealtype* V1, sunrealtype* V2,
                        int* ier);
 
 #ifdef __cplusplus
@@ -62,7 +62,7 @@ int FKINSparseJac(N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
                   N_Vector vtemp1, N_Vector vtemp2)
 {
   int ier;
-  realtype *ydata, *fydata, *v1data, *v2data, *Jdata;
+  sunrealtype *ydata, *fydata, *v1data, *v2data, *Jdata;
   long int NP, NNZ;
   sunindextype *indexvals, *indexptrs;
 

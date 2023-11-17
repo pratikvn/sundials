@@ -31,10 +31,10 @@
 extern "C" {
 #endif
 
-extern void FARK_SPMASS(realtype* T, long int* N, long int* NNZ,
-                        realtype* MDATA, sunindextype* MRVALS,
-                        sunindextype* MCPTRS, long int* IPAR, realtype* RPAR,
-                        realtype* V1, realtype* V2, realtype* V3, int* ier);
+extern void FARK_SPMASS(sunrealtype* T, long int* N, long int* NNZ,
+                        sunrealtype* MDATA, sunindextype* MRVALS,
+                        sunindextype* MCPTRS, long int* IPAR, sunrealtype* RPAR,
+                        sunrealtype* V1, sunrealtype* V2, sunrealtype* V3, int* ier);
 
 #ifdef __cplusplus
 }
@@ -53,11 +53,11 @@ void FARK_SPARSESETMASS(int* ier)
 
 /* C interface to user-supplied Fortran routine FARKSPMASS; see 
    farkode.h for additional information  */
-int FARKSparseMass(realtype t, SUNMatrix MassMat, void* user_data,
+int FARKSparseMass(sunrealtype t, SUNMatrix MassMat, void* user_data,
                    N_Vector vtemp1, N_Vector vtemp2, N_Vector vtemp3)
 {
   int ier;
-  realtype *v1data, *v2data, *v3data, *Mdata;
+  sunrealtype *v1data, *v2data, *v3data, *Mdata;
   FARKUserData ARK_userdata;
   long int NP, NNZ;
   sunindextype *indexvals, *indexptrs;

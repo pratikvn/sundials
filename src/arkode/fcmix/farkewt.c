@@ -29,7 +29,7 @@
 extern "C" {
 #endif
 
-extern void FARK_EWT(realtype* Y, realtype* EWT, long int* IPAR, realtype* RPAR,
+extern void FARK_EWT(sunrealtype* Y, sunrealtype* EWT, long int* IPAR, sunrealtype* RPAR,
                      int* IER);
 
 #ifdef __cplusplus
@@ -53,7 +53,7 @@ void FARK_EWTSET(int* flag, int* ier)
 int FARKEwt(N_Vector y, N_Vector ewt, void* user_data)
 {
   int ier = 0;
-  realtype *ydata, *ewtdata;
+  sunrealtype *ydata, *ewtdata;
   FARKUserData ARK_userdata;
 
   ydata        = N_VGetArrayPointer(y);

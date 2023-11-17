@@ -39,11 +39,11 @@
 extern "C" {
 #endif
 
-extern void FK_PSET(realtype* uudata, realtype* uscaledata, realtype* fvaldata,
-                    realtype* fscaledata, int* ier);
+extern void FK_PSET(sunrealtype* uudata, sunrealtype* uscaledata, sunrealtype* fvaldata,
+                    sunrealtype* fscaledata, int* ier);
 
-extern void FK_PSOL(realtype* uudata, realtype* uscaledata, realtype* fvaldata,
-                    realtype* fscaledata, realtype* vvdata, int* ier);
+extern void FK_PSOL(sunrealtype* uudata, sunrealtype* uscaledata, sunrealtype* fvaldata,
+                    sunrealtype* fscaledata, sunrealtype* vvdata, int* ier);
 
 #ifdef __cplusplus
 }
@@ -74,7 +74,7 @@ void FKIN_SPILSSETPREC(int* flag, int* ier) { FKIN_LSSETPREC(flag, ier); }
 int FKINPSet(N_Vector uu, N_Vector uscale, N_Vector fval, N_Vector fscale,
              void* user_data)
 {
-  realtype *udata, *uscaledata, *fdata, *fscaledata;
+  sunrealtype *udata, *uscaledata, *fdata, *fscaledata;
   int ier;
 
   /* Initialize all pointers to NULL */
@@ -107,7 +107,7 @@ int FKINPSet(N_Vector uu, N_Vector uscale, N_Vector fval, N_Vector fscale,
 int FKINPSol(N_Vector uu, N_Vector uscale, N_Vector fval, N_Vector fscale,
              N_Vector vv, void* user_data)
 {
-  realtype *udata, *uscaledata, *fdata, *fscaledata, *vvdata;
+  sunrealtype *udata, *uscaledata, *fdata, *fscaledata, *vvdata;
   int ier;
 
   /* Initialize all pointers to NULL */

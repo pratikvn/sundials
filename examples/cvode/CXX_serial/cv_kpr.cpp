@@ -40,10 +40,10 @@
 // -----------------------------------------------------------------------------
 
 // ODE right-hand side function
-int f(realtype t, N_Vector y, N_Vector ydot, void* user_data);
+int f(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data);
 
 // Jacobian of RHS function
-int J(realtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
+int J(sunrealtype t, N_Vector y, N_Vector fy, SUNMatrix J, void* user_data,
       N_Vector tmp1, N_Vector tmp2, N_Vector tmp3);
 
 // -----------------------------------------------------------------------------
@@ -66,11 +66,11 @@ int main(int argc, char* argv[])
   N_Vector y = N_VNew_Serial(2, sunctx);
   if (check_ptr(y, "N_VNew_Serial")) { return 1; }
 
-  realtype utrue, vtrue;
+  sunrealtype utrue, vtrue;
   flag = true_sol(ZERO, &utrue, &vtrue);
   if (check_flag(flag, "true_sol")) { return 1; }
 
-  realtype* ydata = N_VGetArrayPointer(y);
+  sunrealtype* ydata = N_VGetArrayPointer(y);
   ydata[0]        = utrue;
   ydata[1]        = vtrue;
 
@@ -105,17 +105,17 @@ int main(int argc, char* argv[])
   }
 
   // Attach user data pointer
-  realtype udata[4] = {-TWO, HALF, HALF, -ONE};
+  sunrealtype udata[4] = {-TWO, HALF, HALF, -ONE};
   flag              = CVodeSetUserData(cvode_mem, udata);
   if (check_flag(flag, "CVodeSetUserData")) { return 1; }
 
   // Initial time and fist output time
-  realtype tret = ZERO;
-  realtype tout = tret + opts.dtout;
+  sunrealtype tret = ZERO;
+  sunrealtype tout = tret + opts.dtout;
 
   // Output initial contion
   std::cout << std::scientific;
-  std::cout << std::setprecision(std::numeric_limits<realtype>::digits10);
+  std::cout << std::setprecision(std::numeric_limits<sunrealtype>::digits10);
   std::cout << "           t              ";
   std::cout << "          u              ";
   std::cout << "          v              ";

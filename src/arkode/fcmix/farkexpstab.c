@@ -29,8 +29,8 @@
 extern "C" {
 #endif
 
-extern void FARK_EXPSTAB(realtype* Y, realtype* T, realtype* HSTAB,
-                         long int* IPAR, realtype* RPAR, int* IER);
+extern void FARK_EXPSTAB(sunrealtype* Y, sunrealtype* T, sunrealtype* HSTAB,
+                         long int* IPAR, sunrealtype* RPAR, int* IER);
 
 #ifdef __cplusplus
 }
@@ -54,10 +54,10 @@ void FARK_EXPSTABSET(int* flag, int* ier)
 
 /* C interface to user-supplied fortran routine FARKEXPSTAB; see 
    farkode.h for further information */
-int FARKExpStab(N_Vector y, realtype t, realtype* hstab, void* udata)
+int FARKExpStab(N_Vector y, sunrealtype t, sunrealtype* hstab, void* udata)
 {
   int ier = 0;
-  realtype* ydata;
+  sunrealtype* ydata;
   FARKUserData ARK_userdata;
 
   ydata        = N_VGetArrayPointer(y);

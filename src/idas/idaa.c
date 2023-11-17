@@ -29,11 +29,11 @@
 /*                 IDAA Private Constants                          */
 /*=================================================================*/
 
-#define ZERO        RCONST(0.0)       /* real   0.0 */
-#define ONE         RCONST(1.0)       /* real   1.0 */
-#define TWO         RCONST(2.0)       /* real   2.0 */
-#define HUNDRED     RCONST(100.0)     /* real 100.0 */
-#define FUZZ_FACTOR RCONST(1000000.0) /* fuzz factor for IDAAgetY */
+#define ZERO        SUN_RCONST(0.0)       /* real   0.0 */
+#define ONE         SUN_RCONST(1.0)       /* real   1.0 */
+#define TWO         SUN_RCONST(2.0)       /* real   2.0 */
+#define HUNDRED     SUN_RCONST(100.0)     /* real 100.0 */
+#define FUZZ_FACTOR SUN_RCONST(1000000.0) /* fuzz factor for IDAAgetY */
 
 /*=================================================================*/
 /*               Private Functions Prototypes                      */
@@ -42,44 +42,44 @@
 static IDAckpntMem IDAAckpntInit(IDAMem IDA_mem);
 static IDAckpntMem IDAAckpntNew(IDAMem IDA_mem);
 static void IDAAckpntCopyVectors(IDAMem IDA_mem, IDAckpntMem ck_mem);
-static booleantype IDAAckpntAllocVectors(IDAMem IDA_mem, IDAckpntMem ck_mem);
+static sunbooleantype IDAAckpntAllocVectors(IDAMem IDA_mem, IDAckpntMem ck_mem);
 static void IDAAckpntDelete(IDAckpntMem *ck_memPtr);
 
 static void IDAAbckpbDelete(IDABMem* IDAB_memPtr);
 
-static booleantype IDAAdataMalloc(IDAMem IDA_mem);
+static sunbooleantype IDAAdataMalloc(IDAMem IDA_mem);
 static void IDAAdataFree(IDAMem IDA_mem);
 static int  IDAAdataStore(IDAMem IDA_mem, IDAckpntMem ck_mem);
 
 static int  IDAAckpntGet(IDAMem IDA_mem, IDAckpntMem ck_mem);
 
-static booleantype IDAAhermiteMalloc(IDAMem IDA_mem);
+static sunbooleantype IDAAhermiteMalloc(IDAMem IDA_mem);
 static void        IDAAhermiteFree(IDAMem IDA_mem);
 static int         IDAAhermiteStorePnt(IDAMem IDA_mem, IDAdtpntMem d);
-static int         IDAAhermiteGetY(IDAMem IDA_mem, realtype t,
+static int         IDAAhermiteGetY(IDAMem IDA_mem, sunrealtype t,
                                    N_Vector yy, N_Vector yp,
                                    N_Vector *yyS, N_Vector *ypS);
 
-static booleantype IDAApolynomialMalloc(IDAMem IDA_mem);
+static sunbooleantype IDAApolynomialMalloc(IDAMem IDA_mem);
 static void        IDAApolynomialFree(IDAMem IDA_mem);
 static int         IDAApolynomialStorePnt(IDAMem IDA_mem, IDAdtpntMem d);
-static int         IDAApolynomialGetY(IDAMem IDA_mem, realtype t,
+static int         IDAApolynomialGetY(IDAMem IDA_mem, sunrealtype t,
                                       N_Vector yy, N_Vector yp,
                                       N_Vector *yyS, N_Vector *ypS);
 
-static int IDAAfindIndex(IDAMem ida_mem, realtype t, long int* indx,
-                         booleantype* newpoint);
+static int IDAAfindIndex(IDAMem ida_mem, sunrealtype t, long int* indx,
+                         sunbooleantype* newpoint);
 
-static int IDAAres(realtype tt, N_Vector yyB, N_Vector ypB, N_Vector resvalB,
+static int IDAAres(sunrealtype tt, N_Vector yyB, N_Vector ypB, N_Vector resvalB,
                    void* ida_mem);
 
-static int IDAArhsQ(realtype tt, N_Vector yyB, N_Vector ypB, N_Vector rrQB,
+static int IDAArhsQ(sunrealtype tt, N_Vector yyB, N_Vector ypB, N_Vector rrQB,
                     void* ida_mem);
 
 static int IDAAGettnSolutionYp(IDAMem IDA_mem, N_Vector yp);
 static int IDAAGettnSolutionYpS(IDAMem IDA_mem, N_Vector* ypS);
 
-extern int IDAGetSolution(void* ida_mem, realtype t, N_Vector yret,
+extern int IDAGetSolution(void* ida_mem, sunrealtype t, N_Vector yret,
                           N_Vector ypret);
 
 /*=================================================================*/
@@ -363,7 +363,7 @@ static void IDAAbckpbDelete(IDABMem* IDAB_memPtr)
  *  ncheckPtr points to the number of check points stored so far.
 */
 
-int IDASolveF(void* ida_mem, realtype tout, realtype* tret, N_Vector yret,
+int IDASolveF(void* ida_mem, sunrealtype tout, sunrealtype* tret, N_Vector yret,
               N_Vector ypret, int itask, int* ncheckPtr)
 {
   IDAadjMem IDAADJ_mem;
@@ -372,8 +372,8 @@ int IDASolveF(void* ida_mem, realtype tout, realtype* tret, N_Vector yret,
   IDAdtpntMem *dt_mem;
   long int nstloc;
   int flag, i;
-  booleantype allocOK, earlyret;
-  realtype ttest;
+  sunbooleantype allocOK, earlyret;
+  sunrealtype ttest;
 
   /* Is the mem OK? */
   if (ida_mem == NULL)
@@ -736,7 +736,7 @@ int IDACreateB(void* ida_mem, int* which)
   return (IDA_SUCCESS);
 }
 
-int IDAInitB(void* ida_mem, int which, IDAResFnB resB, realtype tB0,
+int IDAInitB(void* ida_mem, int which, IDAResFnB resB, sunrealtype tB0,
              N_Vector yyB0, N_Vector ypB0)
 {
   IDAadjMem IDAADJ_mem;
@@ -822,7 +822,7 @@ int IDAInitB(void* ida_mem, int which, IDAResFnB resB, realtype tB0,
   return (flag);
 }
 
-int IDAInitBS(void* ida_mem, int which, IDAResFnBS resS, realtype tB0,
+int IDAInitBS(void* ida_mem, int which, IDAResFnBS resS, sunrealtype tB0,
               N_Vector yyB0, N_Vector ypB0)
 {
   IDAadjMem IDAADJ_mem;
@@ -916,7 +916,7 @@ int IDAInitBS(void* ida_mem, int which, IDAResFnBS resS, realtype tB0,
   return (IDA_SUCCESS);
 }
 
-int IDAReInitB(void* ida_mem, int which, realtype tB0, N_Vector yyB0,
+int IDAReInitB(void* ida_mem, int which, sunrealtype tB0, N_Vector yyB0,
                N_Vector ypB0)
 {
   IDAadjMem IDAADJ_mem;
@@ -982,7 +982,7 @@ int IDAReInitB(void* ida_mem, int which, realtype tB0, N_Vector yyB0,
   return (flag);
 }
 
-int IDASStolerancesB(void* ida_mem, int which, realtype relTolB, realtype absTolB)
+int IDASStolerancesB(void* ida_mem, int which, sunrealtype relTolB, sunrealtype absTolB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -1031,7 +1031,7 @@ int IDASStolerancesB(void* ida_mem, int which, realtype relTolB, realtype absTol
   return IDASStolerances(ida_memB, relTolB, absTolB);
 }
 
-int IDASVtolerancesB(void* ida_mem, int which, realtype relTolB, N_Vector absTolB)
+int IDASVtolerancesB(void* ida_mem, int which, sunrealtype relTolB, N_Vector absTolB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -1080,8 +1080,8 @@ int IDASVtolerancesB(void* ida_mem, int which, realtype relTolB, N_Vector absTol
   return IDASVtolerances(ida_memB, relTolB, absTolB);
 }
 
-int IDAQuadSStolerancesB(void* ida_mem, int which, realtype reltolQB,
-                         realtype abstolQB)
+int IDAQuadSStolerancesB(void* ida_mem, int which, sunrealtype reltolQB,
+                         sunrealtype abstolQB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -1127,7 +1127,7 @@ int IDAQuadSStolerancesB(void* ida_mem, int which, realtype reltolQB,
   return IDAQuadSStolerances(ida_memB, reltolQB, abstolQB);
 }
 
-int IDAQuadSVtolerancesB(void* ida_mem, int which, realtype reltolQB,
+int IDAQuadSVtolerancesB(void* ida_mem, int which, sunrealtype reltolQB,
                          N_Vector abstolQB)
 {
   IDAMem IDA_mem;
@@ -1369,7 +1369,7 @@ int IDAQuadReInitB(void* ida_mem, int which, N_Vector yQB0)
  * a call to IDACalcIC is NOT necessary (for index-one problems).
 */
 
-int IDACalcICB(void* ida_mem, int which, realtype tout1, N_Vector yy0,
+int IDACalcICB(void* ida_mem, int which, sunrealtype tout1, N_Vector yy0,
                N_Vector yp0)
 {
   IDAMem IDA_mem;
@@ -1453,7 +1453,7 @@ int IDACalcICB(void* ida_mem, int which, realtype tout1, N_Vector yy0,
  * It calls IDACalcIC for the 'which' backward problem.
 */
 
-int IDACalcICBS(void* ida_mem, int which, realtype tout1, N_Vector yy0,
+int IDACalcICBS(void* ida_mem, int which, sunrealtype tout1, N_Vector yy0,
                 N_Vector yp0, N_Vector* yyS0, N_Vector* ypS0)
 {
   IDAMem IDA_mem;
@@ -1584,15 +1584,15 @@ int IDACalcICBS(void* ida_mem, int which, realtype tout1, N_Vector yy0,
  * when called in ONE_STEP mode.
  */
 
-int IDASolveB(void* ida_mem, realtype tBout, int itaskB)
+int IDASolveB(void* ida_mem, sunrealtype tBout, int itaskB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
   IDAckpntMem ck_mem;
   IDABMem IDAB_mem, tmp_IDAB_mem;
   int flag = 0, sign;
-  realtype tfuzz, tBret, tBn;
-  booleantype gotCkpnt, reachedTBout, isActive;
+  sunrealtype tfuzz, tBret, tBn;
+  sunbooleantype gotCkpnt, reachedTBout, isActive;
 
   /* Is the mem OK? */
   if (ida_mem == NULL)
@@ -1855,7 +1855,7 @@ int IDASolveB(void* ida_mem, realtype tBout, int itaskB)
  * in tret) as that at which IDASolveBreturned the solution.
  */
 
-int IDAGetB(void* ida_mem, int which, realtype* tret, N_Vector yy, N_Vector yp)
+int IDAGetB(void* ida_mem, int which, sunrealtype* tret, N_Vector yy, N_Vector yp)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -1913,7 +1913,7 @@ int IDAGetB(void* ida_mem, int which, realtype* tret, N_Vector yy, N_Vector yp)
  * returned the solution.
  */
 
-int IDAGetQuadB(void* ida_mem, int which, realtype* tret, N_Vector qB)
+int IDAGetQuadB(void* ida_mem, int which, sunrealtype* tret, N_Vector qB)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -2162,7 +2162,7 @@ static void IDAAckpntDelete(IDAckpntMem *ck_memPtr)
  * current state of IDAMem.
  *
  */
-static booleantype IDAAckpntAllocVectors(IDAMem IDA_mem, IDAckpntMem ck_mem)
+static sunbooleantype IDAAckpntAllocVectors(IDAMem IDA_mem, IDAckpntMem ck_mem)
 {
   int j, jj;
 
@@ -2334,7 +2334,7 @@ static void IDAAckpntCopyVectors(IDAMem IDA_mem, IDAckpntMem ck_mem)
  * at any other time.
 */
 
-static booleantype IDAAdataMalloc(IDAMem IDA_mem)
+static sunbooleantype IDAAdataMalloc(IDAMem IDA_mem)
 {
   IDAadjMem IDAADJ_mem;
   IDAdtpntMem *dt_mem;
@@ -2410,7 +2410,7 @@ static int IDAAdataStore(IDAMem IDA_mem, IDAckpntMem ck_mem)
 {
   IDAadjMem IDAADJ_mem;
   IDAdtpntMem *dt_mem;
-  realtype t;
+  sunrealtype t;
   long int i;
   int flag, sign;
 
@@ -2583,7 +2583,7 @@ static int IDAAckpntGet(IDAMem IDA_mem, IDAckpntMem ck_mem)
  * at any other time.
  */
 
-static booleantype IDAAhermiteMalloc(IDAMem IDA_mem)
+static sunbooleantype IDAAhermiteMalloc(IDAMem IDA_mem)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
@@ -2591,7 +2591,7 @@ static booleantype IDAAhermiteMalloc(IDAMem IDA_mem)
   IDAdtpntMem *dt_mem;
   IDAhermiteDataMem content;
   long int i, ii=0;
-  booleantype allocOK;
+  sunbooleantype allocOK;
 
   allocOK = SUNTRUE;
 
@@ -2837,7 +2837,7 @@ static int IDAAhermiteStorePnt(IDAMem IDA_mem, IDAdtpntMem d)
  * can be directly called by the user through IDAGetAdjY
  */
 
-static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
+static int IDAAhermiteGetY(IDAMem IDA_mem, sunrealtype t, N_Vector yy, N_Vector yp,
                            N_Vector* yyS, N_Vector* ypS)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
@@ -2846,19 +2846,19 @@ static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
   IDAdtpntMem *dt_mem;
   IDAhermiteDataMem content0, content1;
 
-  realtype t0, t1, delta;
-  realtype factor1, factor2, factor3;
+  sunrealtype t0, t1, delta;
+  sunrealtype factor1, factor2, factor3;
 
   N_Vector y0, yd0, y1, yd1;
   N_Vector *yS0 = NULL, *ySd0 = NULL, *yS1, *ySd1;
 
   int flag, is, NS;
   long int indx;
-  booleantype newpoint;
+  sunbooleantype newpoint;
 
   /* local variables for fused vector oerations */
   int retval;
-  realtype cvals[4];
+  sunrealtype cvals[4];
   N_Vector Xvecs[4];
   N_Vector* XXvecs[4];
 
@@ -3074,7 +3074,7 @@ static int IDAAhermiteGetY(IDAMem IDA_mem, realtype t, N_Vector yy, N_Vector yp,
  * data point.
  */
 
-static booleantype IDAApolynomialMalloc(IDAMem IDA_mem)
+static sunbooleantype IDAApolynomialMalloc(IDAMem IDA_mem)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
@@ -3082,7 +3082,7 @@ static booleantype IDAApolynomialMalloc(IDAMem IDA_mem)
   IDAdtpntMem *dt_mem;
   IDApolynomialDataMem content;
   long int i, ii=0;
-  booleantype allocOK;
+  sunbooleantype allocOK;
 
   allocOK = SUNTRUE;
 
@@ -3346,7 +3346,7 @@ static int IDAApolynomialStorePnt(IDAMem IDA_mem, IDAdtpntMem d)
  * can be directly called by the user through CVodeGetAdjY.
  */
 
-static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
+static int IDAApolynomialGetY(IDAMem IDA_mem, sunrealtype t, N_Vector yy,
                               N_Vector yp, N_Vector* yyS, N_Vector* ypS)
 {
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
@@ -3357,8 +3357,8 @@ static int IDAApolynomialGetY(IDAMem IDA_mem, realtype t, N_Vector yy,
 
   int flag, dir, order, i, j, is, NS, retval;
   long int indx, base;
-  booleantype newpoint;
-  realtype delt, factor, Psi, Psiprime;
+  sunbooleantype newpoint;
+  sunrealtype delt, factor, Psi, Psiprime;
 
   IDAADJ_mem = IDA_mem->ida_adj_mem;
   dt_mem     = IDAADJ_mem->dt_mem;
@@ -3552,7 +3552,7 @@ static int IDAAGettnSolutionYp(IDAMem IDA_mem, N_Vector yp)
   SUNAssignSUNCTX(IDA_mem->ida_sunctx);
 
   int j, kord, retval;
-  realtype C, D, gam;
+  sunrealtype C, D, gam;
 
   if (IDA_mem->ida_nst == 0)
   {
@@ -3596,7 +3596,7 @@ static int IDAAGettnSolutionYp(IDAMem IDA_mem, N_Vector yp)
 static int IDAAGettnSolutionYpS(IDAMem IDA_mem, N_Vector* ypS)
 {
   int j, kord, is, retval;
-  realtype C, D, gam;
+  sunrealtype C, D, gam;
 
   if (IDA_mem->ida_nst == 0)
   {
@@ -3646,14 +3646,14 @@ static int IDAAGettnSolutionYpS(IDAMem IDA_mem, N_Vector* ypS)
  * find indx (t is too far beyond limits).
  */
 
-static int IDAAfindIndex(IDAMem ida_mem, realtype t, long int* indx,
-                         booleantype* newpoint)
+static int IDAAfindIndex(IDAMem ida_mem, sunrealtype t, long int* indx,
+                         sunbooleantype* newpoint)
 {
   IDAadjMem IDAADJ_mem;
   IDAMem IDA_mem;
   IDAdtpntMem *dt_mem;
   int sign;
-  booleantype to_left, to_right;
+  sunbooleantype to_left, to_right;
 
   IDA_mem    = (IDAMem)ida_mem;
   IDAADJ_mem = IDA_mem->ida_adj_mem;
@@ -3733,7 +3733,7 @@ static int IDAAfindIndex(IDAMem ida_mem, realtype t, long int* indx,
  * The user must allocate space for y.
  */
 
-int IDAGetAdjY(void* ida_mem, realtype t, N_Vector yy, N_Vector yp)
+int IDAGetAdjY(void* ida_mem, sunrealtype t, N_Vector yy, N_Vector yp)
 {
   IDAMem IDA_mem;
   IDAadjMem IDAADJ_mem;
@@ -3763,7 +3763,7 @@ int IDAGetAdjY(void* ida_mem, realtype t, N_Vector yy, N_Vector yp)
  * the user.
 */
 
-static int IDAAres(realtype tt, N_Vector yyB, N_Vector ypB, N_Vector rrB,
+static int IDAAres(sunrealtype tt, N_Vector yyB, N_Vector ypB, N_Vector rrB,
                    void* ida_mem)
 {
   IDAadjMem IDAADJ_mem;
@@ -3826,7 +3826,7 @@ static int IDAAres(realtype tt, N_Vector yyB, N_Vector ypB, N_Vector rrB,
  * be of IDAQuadRhsFn type.
 */
 
-static int IDAArhsQ(realtype tt, N_Vector yyB, N_Vector ypB, N_Vector resvalQB,
+static int IDAArhsQ(sunrealtype tt, N_Vector yyB, N_Vector ypB, N_Vector resvalQB,
                     void* ida_mem)
 {
   IDAMem IDA_mem;

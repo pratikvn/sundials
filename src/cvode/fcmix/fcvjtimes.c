@@ -36,12 +36,12 @@
 extern "C" {
 #endif
 
-extern void FCV_JTSETUP(realtype* T, realtype* Y, realtype* FY, realtype* H,
-                        long int* IPAR, realtype* RPAR, int* IER);
+extern void FCV_JTSETUP(sunrealtype* T, sunrealtype* Y, sunrealtype* FY, sunrealtype* H,
+                        long int* IPAR, sunrealtype* RPAR, int* IER);
 
-extern void FCV_JTIMES(realtype* V, realtype* JV, realtype* T, realtype* Y,
-                       realtype* FY, realtype* H, long int* IPAR,
-                       realtype* RPAR, realtype* WRK, int* IER);
+extern void FCV_JTIMES(sunrealtype* V, sunrealtype* JV, sunrealtype* T, sunrealtype* Y,
+                       sunrealtype* FY, sunrealtype* H, long int* IPAR,
+                       sunrealtype* RPAR, sunrealtype* WRK, int* IER);
 
 #ifdef __cplusplus
 }
@@ -66,10 +66,10 @@ void FCV_LSSETJAC(int* flag, int* ier)
    using the routine N_VGetArrayPointer from NVECTOR.
    A return flag ier from FCVJTSETUP is returned by FCVJTSetup. */
 
-int FCVJTSetup(realtype t, N_Vector y, N_Vector fy, void* user_data)
+int FCVJTSetup(sunrealtype t, N_Vector y, N_Vector fy, void* user_data)
 {
-  realtype *ydata, *fydata;
-  realtype h;
+  sunrealtype *ydata, *fydata;
+  sunrealtype h;
   FCVUserData CV_userdata;
   int ier = 0;
 
@@ -88,11 +88,11 @@ int FCVJTSetup(realtype t, N_Vector y, N_Vector fy, void* user_data)
    using the routine N_VGetArrayPointer from NVECTOR.
    A return flag ier from FCVJTIMES is returned by FCVJtimes. */
 
-int FCVJtimes(N_Vector v, N_Vector Jv, realtype t, N_Vector y, N_Vector fy,
+int FCVJtimes(N_Vector v, N_Vector Jv, sunrealtype t, N_Vector y, N_Vector fy,
               void* user_data, N_Vector work)
 {
-  realtype *vdata, *Jvdata, *ydata, *fydata, *wkdata;
-  realtype h;
+  sunrealtype *vdata, *Jvdata, *ydata, *fydata, *wkdata;
+  sunrealtype h;
   FCVUserData CV_userdata;
 
   int ier = 0;
