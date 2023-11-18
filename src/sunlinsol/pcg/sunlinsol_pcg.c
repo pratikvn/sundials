@@ -47,7 +47,7 @@
 
 SUNLinearSolver SUNLinSol_PCG(N_Vector y, int pretype, int maxl, SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNLinearSolver S;
   SUNLinearSolverContent_PCG content;
 
@@ -130,7 +130,7 @@ SUNLinearSolver SUNLinSol_PCG(N_Vector y, int pretype, int maxl, SUNContext sunc
 
 SUNErrCode SUNLinSol_PCGSetPrecType(SUNLinearSolver S, int pretype)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   /* Check for legal pretype */
   SUNAssert((pretype == SUN_PREC_NONE) || (pretype == SUN_PREC_LEFT) ||
               (pretype == SUN_PREC_RIGHT) || (pretype == SUN_PREC_BOTH),
@@ -173,7 +173,7 @@ SUNLinearSolver_ID SUNLinSolGetID_PCG(SUNLinearSolver S)
 
 SUNErrCode SUNLinSolInitialize_PCG(SUNLinearSolver S)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   if (PCG_CONTENT(S)->maxl <= 0) { PCG_CONTENT(S)->maxl = SUNPCG_MAXL_DEFAULT; }
 
   SUNAssert(PCG_CONTENT(S)->ATimes, SUN_ERR_ARG_CORRUPT);
@@ -261,7 +261,7 @@ int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x, N_Vector b,
                        sunrealtype delta)
 {
   /* local data and shortcut variables */
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunrealtype alpha, beta, r0_norm, rho, rz, rz_old;
   N_Vector r, p, z, Ap, w;
   sunbooleantype UsePrec, UseScaling, converged;
@@ -490,7 +490,7 @@ sunindextype SUNLinSolLastFlag_PCG(SUNLinearSolver S)
 SUNErrCode SUNLinSolSpace_PCG(SUNLinearSolver S, long int* lenrwLS,
                               long int* leniwLS)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunindextype liw1, lrw1;
   SUNCheckCallLastErrNoRet(N_VSpace(PCG_CONTENT(S)->r, &lrw1, &liw1));
   *lenrwLS = 1 + lrw1 * 4;

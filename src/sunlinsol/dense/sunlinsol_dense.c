@@ -45,7 +45,7 @@
 
 SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNLinearSolver S;
   SUNLinearSolverContent_Dense content;
   sunindextype MatrixRows;
@@ -117,7 +117,7 @@ SUNErrCode SUNLinSolInitialize_Dense(SUNLinearSolver S)
 
 int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunrealtype** A_cols;
   sunindextype* pivots;
 
@@ -146,7 +146,7 @@ int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_Dense(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
                          sunrealtype tol)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunrealtype **A_cols, *xdata;
   sunindextype* pivots;
 
@@ -181,7 +181,7 @@ sunindextype SUNLinSolLastFlag_Dense(SUNLinearSolver S)
 SUNErrCode SUNLinSolSpace_Dense(SUNLinearSolver S, long int* lenrwLS,
                                 long int* leniwLS)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   SUNAssert(SUNLinSolGetID(S) == SUNLINEARSOLVER_DENSE, SUN_ERR_ARG_WRONGTYPE);
   *leniwLS = 2 + DENSE_CONTENT(S)->N;
   *lenrwLS = 0;

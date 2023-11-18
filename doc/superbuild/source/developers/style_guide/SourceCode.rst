@@ -529,7 +529,7 @@ Coding Conventions and Rules
    In addition, internal helper functions may or may-not return a ``SUNErrCode``.
 
 #. Functions that need a ``SUNContext`` object should unpack it from the first argument
-   that has a reference to the object using the ``SUNAssignSUNCTX()`` macro. This
+   that has a reference to the object using the ``SUNFunctionBegin()`` macro. This
    should be done before any other line in the function when possible, otherwise
    it should be done as soon as possible.  For example,
 
@@ -537,7 +537,7 @@ Coding Conventions and Rules
 
       SUNErrCode N_VLinearCombination_Serial(int nvec, sunrealtype* c, N_Vector* X, N_Vector z)
       {
-         SUNAssignSUNCTX(X[0]->sunctx); // Correct
+         SUNFunctionBegin(X[0]->sunctx); // Correct
          
          int          i;
          sunindextype j, N;
@@ -563,7 +563,7 @@ Coding Conventions and Rules
          sunrealtype*    zd=NULL;
          sunrealtype*    xd=NULL;
 
-         SUNAssignSUNCTX(X[0]->sunctx); // Incorrect
+         SUNFunctionBegin(X[0]->sunctx); // Incorrect
 
          /* invalid number of vectors */
          SUNAssert(nvec >= 1, SUN_ERR_ARG_OUTOFRANGE);
@@ -589,7 +589,7 @@ Coding Conventions and Rules
 
          cv_mem = (CVodeMem) cvode_mem;
 
-         SUNAssignSUNCTX(cv_mem->sunctx); // Correct
+         SUNFunctionBegin(cv_mem->sunctx); // Correct
 
          // ...
       }
@@ -639,7 +639,7 @@ Coding Conventions and Rules
       
       SUNLinearSolver SUNLinSol_Band(N_Vector y, SUNMatrix A, SUNContext sunctx)
       {
-         SUNAssignSUNCTX(sunctx);
+         SUNFunctionBegin(sunctx);
          SUNLinearSolver S;
          SUNLinearSolverContent_Band content;
          sunindextype MatrixRows;

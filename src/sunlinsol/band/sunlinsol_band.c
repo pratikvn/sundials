@@ -47,7 +47,7 @@
 
 SUNLinearSolver SUNLinSol_Band(N_Vector y, SUNMatrix A, SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNLinearSolver S;
   SUNLinearSolverContent_Band content;
   sunindextype MatrixRows;
@@ -124,7 +124,7 @@ SUNErrCode SUNLinSolInitialize_Band(SUNLinearSolver S)
 
 int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunrealtype** A_cols;
   sunindextype* pivots;
 
@@ -160,7 +160,7 @@ int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_Band(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
                         sunrealtype tol)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunrealtype **A_cols, *xdata;
   sunindextype* pivots;
 
@@ -196,7 +196,7 @@ sunindextype SUNLinSolLastFlag_Band(SUNLinearSolver S)
 SUNErrCode SUNLinSolSpace_Band(SUNLinearSolver S, long int* lenrwLS,
                                long int* leniwLS)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   SUNAssert(SUNLinSolGetID(S) == SUNLINEARSOLVER_BAND, SUN_ERR_ARG_WRONGTYPE);
   *leniwLS = 2 + BAND_CONTENT(S)->N;
   *lenrwLS = 0;

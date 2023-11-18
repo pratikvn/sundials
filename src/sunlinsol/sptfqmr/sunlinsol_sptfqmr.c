@@ -47,7 +47,7 @@
 SUNLinearSolver SUNLinSol_SPTFQMR(N_Vector y, int pretype, int maxl,
                                   SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNLinearSolver S;
   SUNLinearSolverContent_SPTFQMR content;
 
@@ -146,7 +146,7 @@ SUNLinearSolver SUNLinSol_SPTFQMR(N_Vector y, int pretype, int maxl,
 
 SUNErrCode SUNLinSol_SPTFQMRSetPrecType(SUNLinearSolver S, int pretype)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   /* Check for legal pretype */
   SUNAssert((pretype == SUN_PREC_NONE) || (pretype == SUN_PREC_LEFT) ||
               (pretype == SUN_PREC_RIGHT) || (pretype == SUN_PREC_BOTH),
@@ -189,7 +189,7 @@ SUNLinearSolver_ID SUNLinSolGetID_SPTFQMR(SUNLinearSolver S)
 
 SUNErrCode SUNLinSolInitialize_SPTFQMR(SUNLinearSolver S)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   SUNLinearSolverContent_SPTFQMR content;
 
   /* set shortcut to SPTFQMR memory structure */
@@ -284,7 +284,7 @@ int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
                            N_Vector b, sunrealtype delta)
 {
   /* local data and shortcut variables */
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunrealtype alpha, tau, eta, beta, c, sigma, v_bar, omega;
   sunrealtype rho[2];
   sunrealtype r_init_norm, r_curr_norm;
@@ -823,7 +823,7 @@ sunindextype SUNLinSolLastFlag_SPTFQMR(SUNLinearSolver S)
 SUNErrCode SUNLinSolSpace_SPTFQMR(SUNLinearSolver S, long int* lenrwLS,
                                   long int* leniwLS)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunindextype liw1, lrw1;
   if (SPTFQMR_CONTENT(S)->vtemp1->ops->nvspace)
   {

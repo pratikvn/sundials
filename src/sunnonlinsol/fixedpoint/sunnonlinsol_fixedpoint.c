@@ -43,7 +43,7 @@ static void FreeContent(SUNNonlinearSolver NLS);
 
 SUNNonlinearSolver SUNNonlinSol_FixedPoint(N_Vector y, int m, SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNNonlinearSolver NLS                       = NULL;
   SUNNonlinearSolverContent_FixedPoint content = NULL;
 
@@ -109,7 +109,7 @@ SUNNonlinearSolver SUNNonlinSol_FixedPoint(N_Vector y, int m, SUNContext sunctx)
 SUNNonlinearSolver SUNNonlinSol_FixedPointSens(int count, N_Vector y, int m,
                                                SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNNonlinearSolver NLS = NULL;
   N_Vector w             = NULL;
 
@@ -137,7 +137,7 @@ SUNNonlinearSolver_Type SUNNonlinSolGetType_FixedPoint(SUNNonlinearSolver NLS)
 
 SUNErrCode SUNNonlinSolInitialize_FixedPoint(SUNNonlinearSolver NLS)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   /* check that all required function pointers have been set */
   SUNAssert(FP_CONTENT(NLS)->Sys && FP_CONTENT(NLS)->CTest, SUN_ERR_ARG_CORRUPT);
 
@@ -170,7 +170,7 @@ int SUNNonlinSolSolve_FixedPoint(SUNNonlinearSolver NLS, N_Vector y0,
                                  N_Vector ycor, N_Vector w, sunrealtype tol,
                                  sunbooleantype callSetup, void* mem)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   /* local variables */
   int retval;
   N_Vector yprev, gy, delta;
@@ -305,7 +305,7 @@ SUNErrCode SUNNonlinSolFree_FixedPoint(SUNNonlinearSolver NLS)
 SUNErrCode SUNNonlinSolSetSysFn_FixedPoint(SUNNonlinearSolver NLS,
                                            SUNNonlinSolSysFn SysFn)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   SUNAssert(SysFn, SUN_ERR_ARG_CORRUPT);
   FP_CONTENT(NLS)->Sys = SysFn;
   return SUN_SUCCESS;
@@ -315,7 +315,7 @@ SUNErrCode SUNNonlinSolSetConvTestFn_FixedPoint(SUNNonlinearSolver NLS,
                                                 SUNNonlinSolConvTestFn CTestFn,
                                                 void* ctest_data)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   SUNAssert(CTestFn, SUN_ERR_ARG_CORRUPT);
 
   FP_CONTENT(NLS)->CTest = CTestFn;
@@ -328,7 +328,7 @@ SUNErrCode SUNNonlinSolSetConvTestFn_FixedPoint(SUNNonlinearSolver NLS,
 
 SUNErrCode SUNNonlinSolSetMaxIters_FixedPoint(SUNNonlinearSolver NLS, int maxiters)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   SUNAssert(maxiters >= 1, SUN_ERR_ARG_OUTOFRANGE);
   FP_CONTENT(NLS)->maxiters = maxiters;
   return SUN_SUCCESS;
@@ -337,7 +337,7 @@ SUNErrCode SUNNonlinSolSetMaxIters_FixedPoint(SUNNonlinearSolver NLS, int maxite
 SUNErrCode SUNNonlinSolSetDamping_FixedPoint(SUNNonlinearSolver NLS,
                                              sunrealtype beta)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   SUNAssert(beta > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   if (beta < ONE)
@@ -407,7 +407,7 @@ SUNErrCode SUNNonlinSolGetSysFn_FixedPoint(SUNNonlinearSolver NLS,
 static SUNErrCode AndersonAccelerate(SUNNonlinearSolver NLS, N_Vector gval,
                                      N_Vector x, N_Vector xold, int iter)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   /* local variables */
   int nvec, i_pt, i, j, lAA, maa, *ipt_map;
   sunrealtype a, b, rtemp, c, s, beta, onembeta, *cvals, *R, *gamma;
@@ -584,7 +584,7 @@ static SUNErrCode AndersonAccelerate(SUNNonlinearSolver NLS, N_Vector gval,
 
 static SUNErrCode AllocateContent(SUNNonlinearSolver NLS, N_Vector y)
 {
-  SUNAssignSUNCTX(NLS->sunctx);
+  SUNFunctionBegin(NLS->sunctx);
   int m = FP_CONTENT(NLS)->m;
 
   FP_CONTENT(NLS)->yprev = SUNCheckCallLastErr(N_VClone(y));

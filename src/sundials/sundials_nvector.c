@@ -345,7 +345,7 @@ void N_VSetArrayPointer(sunrealtype* v_data, N_Vector v)
   return;
 }
 
-void* N_VGetCommunicator(N_Vector v)
+SUNComm N_VGetCommunicator(N_Vector v)
 {
   if (v->ops->nvgetcommunicator) { return (v->ops->nvgetcommunicator(v)); }
   else { return (SUN_COMM_NULL); }

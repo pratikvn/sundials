@@ -88,7 +88,7 @@ N_Vector_ID N_VGetVectorID_OpenMP(N_Vector v) { return SUNDIALS_NVEC_OPENMP; }
 N_Vector N_VNewEmpty_OpenMP(sunindextype length, int num_threads,
                             SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   N_Vector v;
   N_VectorContent_OpenMP content;
 
@@ -180,7 +180,7 @@ N_Vector N_VNewEmpty_OpenMP(sunindextype length, int num_threads,
 
 N_Vector N_VNew_OpenMP(sunindextype length, int num_threads, SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   N_Vector v;
   sunrealtype* data;
 
@@ -208,7 +208,7 @@ N_Vector N_VNew_OpenMP(sunindextype length, int num_threads, SUNContext sunctx)
 N_Vector N_VMake_OpenMP(sunindextype length, sunrealtype* v_data,
                         int num_threads, SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   N_Vector v;
 
   SUNAssert(length > 0, SUN_ERR_ARG_OUTOFRANGE);
@@ -229,7 +229,7 @@ N_Vector N_VMake_OpenMP(sunindextype length, sunrealtype* v_data,
 
 N_Vector* N_VCloneVectorArray_OpenMP(int count, N_Vector w)
 {
-  SUNAssignSUNCTX(w->sunctx);
+  SUNFunctionBegin(w->sunctx);
   N_Vector* result = SUNCheckCallLastErrNull(N_VCloneVectorArray(count, w));
   return result;
 }
@@ -291,7 +291,7 @@ N_Vector N_VCloneEmpty_OpenMP(N_Vector w)
 
   if (w == NULL) { return (NULL); }
 
-  SUNAssignSUNCTX(w->sunctx);
+  SUNFunctionBegin(w->sunctx);
 
   /* Create vector */
   v = NULL;
@@ -323,7 +323,7 @@ N_Vector N_VCloneEmpty_OpenMP(N_Vector w)
 
 N_Vector N_VClone_OpenMP(N_Vector w)
 {
-  SUNAssignSUNCTX(w->sunctx);
+  SUNFunctionBegin(w->sunctx);
   N_Vector v;
   sunrealtype* data;
   sunindextype length;
@@ -1042,7 +1042,7 @@ sunrealtype N_VWSqrSumMaskLocal_OpenMP(N_Vector x, N_Vector w, N_Vector id)
 SUNErrCode N_VLinearCombination_OpenMP(int nvec, sunrealtype* c, N_Vector* X,
                                        N_Vector z)
 {
-  SUNAssignSUNCTX(X[0]->sunctx);
+  SUNFunctionBegin(X[0]->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1135,7 +1135,7 @@ SUNErrCode N_VLinearCombination_OpenMP(int nvec, sunrealtype* c, N_Vector* X,
 SUNErrCode N_VScaleAddMulti_OpenMP(int nvec, sunrealtype* a, N_Vector x,
                                    N_Vector* Y, N_Vector* Z)
 {
-  SUNAssignSUNCTX(x->sunctx);
+  SUNFunctionBegin(x->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1198,7 +1198,7 @@ SUNErrCode N_VScaleAddMulti_OpenMP(int nvec, sunrealtype* a, N_Vector x,
 SUNErrCode N_VDotProdMulti_OpenMP(int nvec, N_Vector x, N_Vector* Y,
                                   sunrealtype* dotprods)
 {
-  SUNAssignSUNCTX(x->sunctx);
+  SUNFunctionBegin(x->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1255,7 +1255,7 @@ SUNErrCode N_VDotProdMulti_OpenMP(int nvec, N_Vector x, N_Vector* Y,
 SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec, sunrealtype a, N_Vector* X,
                                           sunrealtype b, N_Vector* Y, N_Vector* Z)
 {
-  SUNAssignSUNCTX(X[0]->sunctx);
+  SUNFunctionBegin(X[0]->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1380,7 +1380,7 @@ SUNErrCode N_VLinearSumVectorArray_OpenMP(int nvec, sunrealtype a, N_Vector* X,
 SUNErrCode N_VScaleVectorArray_OpenMP(int nvec, sunrealtype* c, N_Vector* X,
                                       N_Vector* Z)
 {
-  SUNAssignSUNCTX(X[0]->sunctx);
+  SUNFunctionBegin(X[0]->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1440,7 +1440,7 @@ SUNErrCode N_VScaleVectorArray_OpenMP(int nvec, sunrealtype* c, N_Vector* X,
 
 SUNErrCode N_VConstVectorArray_OpenMP(int nvec, sunrealtype c, N_Vector* Z)
 {
-  SUNAssignSUNCTX(Z[0]->sunctx);
+  SUNFunctionBegin(Z[0]->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1480,7 +1480,7 @@ SUNErrCode N_VConstVectorArray_OpenMP(int nvec, sunrealtype c, N_Vector* Z)
 SUNErrCode N_VWrmsNormVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
                                          sunrealtype* nrm)
 {
-  SUNAssignSUNCTX(X[0]->sunctx);
+  SUNFunctionBegin(X[0]->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1533,7 +1533,7 @@ SUNErrCode N_VWrmsNormVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
 SUNErrCode N_VWrmsNormMaskVectorArray_OpenMP(int nvec, N_Vector* X, N_Vector* W,
                                              N_Vector id, sunrealtype* nrm)
 {
-  SUNAssignSUNCTX(X[0]->sunctx);
+  SUNFunctionBegin(X[0]->sunctx);
 
   int i;
   sunindextype j, N;
@@ -1592,7 +1592,7 @@ SUNErrCode N_VScaleAddMultiVectorArray_OpenMP(int nvec, int nsum,
                                               sunrealtype* a, N_Vector* X,
                                               N_Vector** Y, N_Vector** Z)
 {
-  SUNAssignSUNCTX(X[0]->sunctx);
+  SUNFunctionBegin(X[0]->sunctx);
 
   int i, j;
   sunindextype k, N;
@@ -1705,7 +1705,7 @@ SUNErrCode N_VLinearCombinationVectorArray_OpenMP(int nvec, int nsum,
                                                   sunrealtype* c, N_Vector** X,
                                                   N_Vector* Z)
 {
-  SUNAssignSUNCTX(X[0][0]->sunctx);
+  SUNFunctionBegin(X[0][0]->sunctx);
 
   int i;          /* vector arrays index in summation [0,nsum) */
   int j;          /* vector index in vector array     [0,nvec) */
@@ -1870,7 +1870,7 @@ SUNErrCode N_VBufSize_OpenMP(N_Vector x, sunindextype* size)
 
 SUNErrCode N_VBufPack_OpenMP(N_Vector x, void* buf)
 {
-  SUNAssignSUNCTX(x->sunctx);
+  SUNFunctionBegin(x->sunctx);
 
   sunindextype i, N;
   sunrealtype* xd = NULL;
@@ -1890,7 +1890,7 @@ SUNErrCode N_VBufPack_OpenMP(N_Vector x, void* buf)
 
 SUNErrCode N_VBufUnpack_OpenMP(N_Vector x, void* buf)
 {
-  SUNAssignSUNCTX(x->sunctx);
+  SUNFunctionBegin(x->sunctx);
 
   sunindextype i, N;
   sunrealtype* xd = NULL;

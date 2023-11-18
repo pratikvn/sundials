@@ -48,7 +48,7 @@
 SUNLinearSolver SUNLinSol_SPGMR(N_Vector y, int pretype, int maxl,
                                 SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNLinearSolver S;
   SUNLinearSolverContent_SPGMR content;
 
@@ -139,7 +139,7 @@ SUNLinearSolver SUNLinSol_SPGMR(N_Vector y, int pretype, int maxl,
 
 SUNErrCode SUNLinSol_SPGMRSetPrecType(SUNLinearSolver S, int pretype)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   /* Check for legal pretype */
   SUNAssert((pretype == SUN_PREC_NONE) || (pretype == SUN_PREC_LEFT) ||
               (pretype == SUN_PREC_RIGHT) || (pretype == SUN_PREC_BOTH),
@@ -156,7 +156,7 @@ SUNErrCode SUNLinSol_SPGMRSetPrecType(SUNLinearSolver S, int pretype)
 
 SUNErrCode SUNLinSol_SPGMRSetGSType(SUNLinearSolver S, int gstype)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   /* Check for legal gstype */
   SUNAssert(gstype == SUN_MODIFIED_GS || gstype == SUN_CLASSICAL_GS,
             SUN_ERR_ARG_OUTOFRANGE);
@@ -200,7 +200,7 @@ SUNErrCode SUNLinSolInitialize_SPGMR(SUNLinearSolver S)
 {
   int k;
   SUNLinearSolverContent_SPGMR content;
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
 
   /* set shortcut to SPGMR memory structure */
   content = SPGMR_CONTENT(S);
@@ -346,7 +346,7 @@ int SUNLinSolSetup_SPGMR(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
                          sunrealtype delta)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
 
   /* local data and shortcut variables */
   N_Vector *V, xcor, vtemp, s1, s2;
@@ -727,7 +727,7 @@ sunindextype SUNLinSolLastFlag_SPGMR(SUNLinearSolver S)
 SUNErrCode SUNLinSolSpace_SPGMR(SUNLinearSolver S, long int* lenrwLS,
                                 long int* leniwLS)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   int maxl;
   sunindextype liw1, lrw1;
   maxl = SPGMR_CONTENT(S)->maxl;

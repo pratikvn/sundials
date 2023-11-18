@@ -191,7 +191,7 @@ SUNErrCode SUNProfiler_Create(SUNComm comm, const char* title, SUNProfiler* p)
   /* Attach the comm, duplicating it if MPI is used. */
 #if SUNDIALS_MPI_ENABLED
   profiler->comm = SUN_COMM_NULL;
-  if (comm != SUN_COMM_NULL) { MPI_Comm_dup(comm, &profiler->comm); }
+  if (comm != SUN_COMM_NULL) { MPI_Comm_dup(comm, profiler->comm); }
 #else
   profiler->comm = comm;
 #endif
@@ -219,7 +219,7 @@ SUNErrCode SUNProfiler_Free(SUNProfiler* p)
     SUNHashMap_Destroy(&(*p)->map, sunTimerStructFree);
     sunTimerStructFree((void*)(*p)->overhead);
 #if SUNDIALS_MPI_ENABLED
-    if ((*p)->comm != SUN_COMM_NULL) { MPI_Comm_free(&(*p)->comm); }
+    if ((*p)->comm != SUN_COMM_NULL) { MPI_Comm_free((*p)->comm); }
 #endif
     free((*p)->title);
     free(*p);

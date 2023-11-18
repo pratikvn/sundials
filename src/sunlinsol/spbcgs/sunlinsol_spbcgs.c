@@ -49,7 +49,7 @@
 SUNLinearSolver SUNLinSol_SPBCGS(N_Vector y, int pretype, int maxl,
                                  SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNLinearSolver S;
   SUNLinearSolverContent_SPBCGS content;
 
@@ -148,7 +148,7 @@ SUNLinearSolver SUNLinSol_SPBCGS(N_Vector y, int pretype, int maxl,
 
 SUNErrCode SUNLinSol_SPBCGSSetPrecType(SUNLinearSolver S, int pretype)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   /* Check for legal pretype */
   SUNAssert((pretype == SUN_PREC_NONE) || (pretype == SUN_PREC_LEFT) ||
               (pretype == SUN_PREC_RIGHT) || (pretype == SUN_PREC_BOTH),
@@ -191,7 +191,7 @@ SUNLinearSolver_ID SUNLinSolGetID_SPBCGS(SUNLinearSolver S)
 
 SUNErrCode SUNLinSolInitialize_SPBCGS(SUNLinearSolver S)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
 
   if (SPBCGS_CONTENT(S)->maxl <= 0)
   {
@@ -284,7 +284,7 @@ int SUNLinSolSetup_SPBCGS(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_SPBCGS(SUNLinearSolver S, SUNMatrix A, N_Vector x,
                           N_Vector b, sunrealtype delta)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   /* local data and shortcut variables */
   sunrealtype alpha, beta, omega, omega_denom, beta_num, beta_denom, r_norm, rho;
   N_Vector r_star, r, p, q, u, Ap, vtemp;
@@ -679,7 +679,7 @@ sunindextype SUNLinSolLastFlag_SPBCGS(SUNLinearSolver S)
 SUNErrCode SUNLinSolSpace_SPBCGS(SUNLinearSolver S, long int* lenrwLS,
                                  long int* leniwLS)
 {
-  SUNAssignSUNCTX(S->sunctx);
+  SUNFunctionBegin(S->sunctx);
   sunindextype liw1, lrw1;
   if (SPBCGS_CONTENT(S)->vtemp->ops->nvspace)
   {

@@ -1790,7 +1790,7 @@ int ARKStepSetMaxNonlinIters(void* arkode_mem, int maxcor)
                                  &ark_mem, &step_mem);
   if (retval != ARK_SUCCESS) { return (retval); }
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
+  SUNFunctionBegin(ark_mem->sunctx);
 
   /* Return error message if no NLS module is present */
   if (step_mem->NLS == NULL)
@@ -1992,7 +1992,7 @@ int ARKStepGetEstLocalErrors(void* arkode_mem, N_Vector ele)
                                  &ark_mem, &step_mem);
   if (retval != ARK_SUCCESS) { return (retval); }
 
-  SUNAssignSUNCTX(ark_mem->sunctx);
+  SUNFunctionBegin(ark_mem->sunctx);
 
   /* copy vector to output */
   SUNCheckCallLastErrNoRet(N_VScale(ONE, ark_mem->tempv1, ele));
