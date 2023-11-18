@@ -21,11 +21,12 @@
 module fsundials_context_mod
  use, intrinsic :: ISO_C_BINDING
  use fsundials_types_mod
+ use fsundials_types_mod
  implicit none
  private
 
  ! DECLARATION CONSTRUCTS
-<<<<<<< HEAD
+ public :: FSUNContext_Create
  public :: FSUNContext_GetLastError
  public :: FSUNContext_PeekLastError
 
@@ -42,9 +43,6 @@ module fsundials_context_mod
  public :: FSUNContext_PushErrHandler
  public :: FSUNContext_PopErrHandler
  public :: FSUNContext_ClearHandlers
-=======
- public :: FSUNContext_Create
->>>>>>> feature/sunmpicomm-formatted
  public :: FSUNContext_GetProfiler
  public :: FSUNContext_SetProfiler
  public :: FSUNContext_GetLogger
@@ -53,24 +51,24 @@ module fsundials_context_mod
 
 ! WRAPPER DECLARATIONS
 interface
-<<<<<<< HEAD
-function swigc_FSUNContext_GetLastError(farg1, farg2) &
-bind(C, name="_wrap_FSUNContext_GetLastError") &
-result(fresult)
-use, intrinsic :: ISO_C_BINDING
-type(C_PTR), value :: farg1
-=======
 function swigc_FSUNContext_Create(farg1, farg2) &
 bind(C, name="_wrap_FSUNContext_Create") &
 result(fresult)
 use, intrinsic :: ISO_C_BINDING
 integer(C_INT), intent(in) :: farg1
->>>>>>> feature/sunmpicomm-formatted
 type(C_PTR), value :: farg2
 integer(C_INT) :: fresult
 end function
 
-<<<<<<< HEAD
+function swigc_FSUNContext_GetLastError(farg1, farg2) &
+bind(C, name="_wrap_FSUNContext_GetLastError") &
+result(fresult)
+use, intrinsic :: ISO_C_BINDING
+type(C_PTR), value :: farg1
+type(C_PTR), value :: farg2
+integer(C_INT) :: fresult
+end function
+
 function swigc_FSUNContext_PeekLastError(farg1, farg2) &
 bind(C, name="_wrap_FSUNContext_PeekLastError") &
 result(fresult)
@@ -107,8 +105,6 @@ type(C_PTR), value :: farg1
 integer(C_INT) :: fresult
 end function
 
-=======
->>>>>>> feature/sunmpicomm-formatted
 function swigc_FSUNContext_GetProfiler(farg1, farg2) &
 bind(C, name="_wrap_FSUNContext_GetProfiler") &
 result(fresult)
@@ -158,7 +154,22 @@ end interface
 
 contains
  ! MODULE SUBPROGRAMS
-<<<<<<< HEAD
+function FSUNContext_Create(comm, ctx) &
+result(swig_result)
+use, intrinsic :: ISO_C_BINDING
+integer(C_INT) :: swig_result
+integer :: comm
+type(C_PTR), target, intent(inout) :: ctx
+integer(C_INT) :: fresult 
+integer(C_INT) :: farg1 
+type(C_PTR) :: farg2 
+
+farg1 = int(comm, C_INT)
+farg2 = c_loc(ctx)
+fresult = swigc_FSUNContext_Create(farg1, farg2)
+swig_result = fresult
+end function
+
 function FSUNContext_GetLastError(sunctx, last_err) &
 result(swig_result)
 use, intrinsic :: ISO_C_BINDING
@@ -233,21 +244,6 @@ type(C_PTR) :: farg1
 
 farg1 = sunctx
 fresult = swigc_FSUNContext_ClearHandlers(farg1)
-=======
-function FSUNContext_Create(comm, ctx) &
-result(swig_result)
-use, intrinsic :: ISO_C_BINDING
-integer(C_INT) :: swig_result
-integer :: comm
-type(C_PTR), target, intent(inout) :: ctx
-integer(C_INT) :: fresult 
-integer(C_INT) :: farg1 
-type(C_PTR) :: farg2 
-
-farg1 = int(comm, C_INT)
-farg2 = c_loc(ctx)
-fresult = swigc_FSUNContext_Create(farg1, farg2)
->>>>>>> feature/sunmpicomm-formatted
 swig_result = fresult
 end function
 

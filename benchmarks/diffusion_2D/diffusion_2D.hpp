@@ -25,6 +25,7 @@
 #include <iostream>
 #include <limits>
 #include <sstream>
+#include <sundials/sundials_core.hpp>
 #include <vector>
 
 #include "mpi.h"

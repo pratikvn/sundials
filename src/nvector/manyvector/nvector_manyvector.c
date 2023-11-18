@@ -17,7 +17,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #ifdef MANYVECTOR_BUILD_WITH_MPI
 #include <nvector/nvector_mpimanyvector.h>
 #include <sundials/impl/sundials_mpi_errors_impl.h>
@@ -196,17 +195,32 @@ N_Vector N_VMake_MPIManyVector(MPI_Comm comm, sunindextype num_subvectors,
     /* determine rank of this task in subvector communicator
        (serial vectors default to rank=0) */
     rank = SubvectorMPIRank(vec_array[i]);
-    MVASSERT(rank >= 0, SUN_ERR_GENERIC);
+    if (rank < 0)
+    {
+      N_VDestroy(v);
+      return (NULL);
+    }
 
     /* accumulate contribution from root tasks */
-    MVASSERT(vec_array[i]->ops->nvgetlength, SUN_ERR_ARG_CORRUPT);
-    if (rank == 0) { local_length += N_VGetLength(vec_array[i]); }
+    if (vec_array[i]->ops->nvgetlength)
+    {
+      if (rank == 0) { local_length += N_VGetLength(vec_array[i]); }
+    }
+    else
+    {
+      N_VDestroy(v);
+      return (NULL);
+    }
   }
   if (content->comm != MPI_COMM_NULL)
   {
-    SUNCheckMPICallNoRet(MPI_Allreduce(&local_length, &(content->global_length),
-                                       1, MPI_SUNINDEXTYPE, MPI_SUM,
-                                       content->comm));
+    retval = MPI_Allreduce(&local_length, &(content->global_length), 1,
+                           MPI_SUNINDEXTYPE, MPI_SUM, content->comm);
+    if (retval != MPI_SUCCESS)
+    {
+      N_VDestroy(v);
+      return (NULL);
+    }
   }
   else { content->global_length = local_length; }
 
@@ -468,7 +482,6 @@ void MVAPPEND(N_VPrint)(N_Vector x)
   {
     N_VPrint(MANYVECTOR_SUBVEC(x, i));
   }
-
   return;
 }
 
@@ -568,14 +581,13 @@ void MVAPPEND(N_VSpace)(N_Vector v, sunindextype* lrw, sunindextype* liw)
 
 #ifdef MANYVECTOR_BUILD_WITH_MPI
 /* This function retrieves the MPI Communicator from an MPIManyVector object. */
-void* N_VGetCommunicator_MPIManyVector(N_Vector v)
+MPI_Comm N_VGetCommunicator_MPIManyVector(N_Vector v)
 {
-  if (MANYVECTOR_COMM(v) == MPI_COMM_NULL) { return NULL; }
-  else { return ((void*)&MANYVECTOR_COMM(v)); }
+  return (MANYVECTOR_COMM(v));
 }
 #else
 /* This function retrieves the MPI Communicator from a ManyVector object. */
-void* N_VGetCommunicator_ManyVector(N_Vector v) { return NULL; }
+SUNComm N_VGetCommunicator_ManyVector(N_Vector v) { return SUN_COMM_NULL; }
 #endif
 
 /* This function retrieves the global length of a ManyVector object. */

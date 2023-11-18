@@ -40,7 +40,7 @@ SUNMemory SUNMemoryNewEmpty(void)
 
 SUNMemoryHelper SUNMemoryHelper_NewEmpty(SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNMemoryHelper helper = NULL;
 
   helper = (SUNMemoryHelper)malloc(sizeof(struct _SUNMemoryHelper));
@@ -119,9 +119,9 @@ SUNErrCode SUNMemoryHelper_GetAllocStats(SUNMemoryHelper helper,
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(helper));
   if (helper->ops->getallocstats)
   {
-    return helper->ops->getallocstats(helper, mem_type, num_allocations,
-                                      num_deallocations, bytes_allocated,
-                                      bytes_high_watermark);
+    ier = helper->ops->getallocstats(helper, mem_type, num_allocations,
+                                     num_deallocations, bytes_allocated,
+                                     bytes_high_watermark);
   }
   else { ier = SUN_ERR_NOT_IMPLEMENTED; }
   SUNDIALS_MARK_FUNCTION_END(getSUNProfiler(helper));
@@ -208,7 +208,7 @@ SUNErrCode SUNMemoryHelper_Destroy(SUNMemoryHelper helper)
 
 SUNMemoryHelper SUNMemoryHelper_Clone(SUNMemoryHelper helper)
 {
-  SUNAssignSUNCTX(helper->sunctx);
+  SUNFunctionBegin(helper->sunctx);
   if (!helper->ops->clone)
   {
     if (helper->content)

@@ -15,18 +15,14 @@
 #include <sundials/impl/sundials_errors_impl.h>
 #include <sundials/sundials_config.h>
 
+#include "sundials/sundials_errors.h"
 #include "sundials/sundials_types.h"
 
 #if SUNDIALS_MPI_ENABLED
 #include <mpi.h>
-#include <sundials/sundials_mpi_types.h>
 #endif
 
 #if defined(SUNDIALS_HAVE_POSIX_TIMERS)
-/* Minimum POSIX version needed for struct timespec and clock_monotonic */
-#if !defined(_POSIX_C_SOURCE) || (_POSIX_C_SOURCE < 199309L)
-#define _POSIX_C_SOURCE 199309L
-#endif
 #include <stddef.h>
 #include <time.h>
 #include <unistd.h>
@@ -158,22 +154,21 @@ struct _SUNProfiler
   double sundials_time;
 };
 
-SUNErrCode SUNProfiler_Create(void* comm, const char* title, SUNProfiler* p)
+SUNErrCode SUNProfiler_Create(SUNComm comm, const char* title, SUNProfiler* p)
 {
   SUNProfiler profiler;
   int max_entries;
   char* max_entries_env;
 
   *p = profiler = (SUNProfiler)malloc(sizeof(struct _SUNProfiler));
-
-  if (profiler == NULL) { return (-1); }
+  if (!profiler) { return SUN_ERR_MALLOC_FAIL; }
 
   profiler->overhead = sunTimerStructNew();
   if (!profiler->overhead)
   {
     free(profiler);
     *p = profiler = NULL;
-    return (-1);
+    return SUN_ERR_MALLOC_FAIL;
   }
 
   sunStartTiming(profiler->overhead);
@@ -190,17 +185,13 @@ SUNErrCode SUNProfiler_Create(void* comm, const char* title, SUNProfiler* p)
     sunTimerStructFree((void*)profiler->overhead);
     free(profiler);
     *p = profiler = NULL;
-    return (-1);
+    return SUN_ERR_MALLOC_FAIL;
   }
 
   /* Attach the comm, duplicating it if MPI is used. */
 #if SUNDIALS_MPI_ENABLED
-  profiler->comm = NULL;
-  if (comm != NULL)
-  {
-    profiler->comm = malloc(sizeof(MPI_Comm));
-    MPI_Comm_dup(*((MPI_Comm*)comm), (MPI_Comm*)profiler->comm);
-  }
+  profiler->comm = SUN_COMM_NULL;
+  if (comm != SUN_COMM_NULL) { MPI_Comm_dup(comm, &profiler->comm); }
 #else
   profiler->comm = comm;
 #endif
@@ -216,13 +207,11 @@ SUNErrCode SUNProfiler_Create(void* comm, const char* title, SUNProfiler* p)
   SUNDIALS_MARK_BEGIN(profiler, SUNDIALS_ROOT_TIMER);
   sunStopTiming(profiler->overhead);
 
-  return (0);
+  return SUN_SUCCESS;
 }
 
 SUNErrCode SUNProfiler_Free(SUNProfiler* p)
 {
-  if (p == NULL) { return (-1); }
-
   SUNDIALS_MARK_END(*p, SUNDIALS_ROOT_TIMER);
 
   if (*p)
@@ -230,18 +219,14 @@ SUNErrCode SUNProfiler_Free(SUNProfiler* p)
     SUNHashMap_Destroy(&(*p)->map, sunTimerStructFree);
     sunTimerStructFree((void*)(*p)->overhead);
 #if SUNDIALS_MPI_ENABLED
-    if ((*p)->comm)
-    {
-      MPI_Comm_free((*p)->comm);
-      free((*p)->comm);
-    }
+    if ((*p)->comm != SUN_COMM_NULL) { MPI_Comm_free(&(*p)->comm); }
 #endif
     free((*p)->title);
     free(*p);
   }
   *p = NULL;
 
-  return (0);
+  return SUN_SUCCESS;
 }
 
 SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
@@ -249,7 +234,6 @@ SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
   SUNErrCode ier;
   sunTimerStruct* timer = NULL;
 
-  if (p == NULL) { return (-1); }
   sunStartTiming(p->overhead);
 
   if (SUNHashMap_GetValue(p->map, name, (void**)&timer))
@@ -258,18 +242,10 @@ SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
     ier   = SUNHashMap_Insert(p->map, name, (void*)timer);
     if (ier)
     {
-#ifdef SUNDIALS_DEBUG
-      slen   = strlen(name);
-      errmsg = malloc(slen * sizeof(char));
-      snprintf(errmsg,
-               128 + slen, "(((( [ERROR] in SUNProfilerBegin: SUNHashMapInsert failed with code %d while inserting %s))))\n",
-               ier, name);
-      SUNDIALS_DEBUG_PRINT(errmsg);
-      free(errmsg);
-#endif
       sunTimerStructFree(timer);
       sunStopTiming(p->overhead);
-      return (-1);
+      if (ier == -1) { return SUN_ERR_PROFILER_MAPINSERT; }
+      if (ier == -2) { return SUN_ERR_PROFILER_MAPFULL; }
     }
   }
 
@@ -277,7 +253,7 @@ SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
   sunStartTiming(timer);
 
   sunStopTiming(p->overhead);
-  return (0);
+  return SUN_SUCCESS;
 }
 
 SUNErrCode SUNProfiler_End(SUNProfiler p, const char* name)
@@ -285,19 +261,20 @@ SUNErrCode SUNProfiler_End(SUNProfiler p, const char* name)
   SUNErrCode ier;
   sunTimerStruct* timer;
 
-  if (p == NULL) { return (-1); }
   sunStartTiming(p->overhead);
 
-  if (SUNHashMap_GetValue(p->map, name, (void**)&timer))
+  ier = SUNHashMap_GetValue(p->map, name, (void**)&timer);
+  if (ier)
   {
     sunStopTiming(p->overhead);
-    return (-1);
+    if (ier == -1) { return SUN_ERR_PROFILER_MAPGET; }
+    if (ier == -2) { return SUN_ERR_PROFILER_MAPKEYNOTFOUND; }
   }
 
   sunStopTiming(timer);
 
   sunStopTiming(p->overhead);
-  return (0);
+  return SUN_SUCCESS;
 }
 
 int SUNProfiler_GetTimerResolution(SUNProfiler p, double* resolution)
@@ -307,7 +284,7 @@ int SUNProfiler_GetTimerResolution(SUNProfiler p, double* resolution)
   clock_getres(CLOCK_MONOTONIC, &spec);
   *resolution = 1e-9 * ((double)spec.tv_nsec);
 
-  return (0);
+  return SUN_SUCCESS;
 #elif (defined(WIN32) || defined(_WIN32))
   static LARGE_INTEGER ticks_per_sec;
 
@@ -319,7 +296,7 @@ int SUNProfiler_GetTimerResolution(SUNProfiler p, double* resolution)
 
   *resolution = (double)ticks_per_sec.QuadPart;
 
-  return (0);
+  return SUN_SUCCESS;
 #else
 #error SUNProfiler needs POSIX or Windows timers
 #endif
@@ -333,7 +310,7 @@ int SUNProfiler_GetElapsedTime(SUNProfiler p, const char* name, double* time)
 
   *time = timer->elapsed;
 
-  return (0);
+  return SUN_SUCCESS;
 }
 
 SUNErrCode SUNProfiler_Reset(SUNProfiler p)
@@ -364,6 +341,7 @@ SUNErrCode SUNProfiler_Reset(SUNProfiler p)
 
 SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
 {
+  SUNErrCode ier             = 0;
   int i                      = 0;
   int rank                   = 0;
   sunTimerStruct* timer      = NULL;
@@ -376,10 +354,9 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
   SUNDIALS_MARK_END(p, SUNDIALS_ROOT_TIMER);
   SUNDIALS_MARK_BEGIN(p, SUNDIALS_ROOT_TIMER);
 
-  if (SUNHashMap_GetValue(p->map, SUNDIALS_ROOT_TIMER, (void**)&timer))
-  {
-    return (-1);
-  }
+  ier = SUNHashMap_GetValue(p->map, SUNDIALS_ROOT_TIMER, (void**)&timer);
+  if (ier == -1) { return SUN_ERR_PROFILER_MAPGET; }
+  if (ier == -2) { return SUN_ERR_PROFILER_MAPKEYNOTFOUND; }
   p->sundials_time = timer->elapsed;
 
 #if SUNDIALS_MPI_ENABLED
@@ -395,7 +372,10 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
   {
     double resolution;
     /* Sort the timers in descending order */
-    if (SUNHashMap_Sort(p->map, &sorted, sunCompareTimes)) { return (-1); }
+    if (SUNHashMap_Sort(p->map, &sorted, sunCompareTimes))
+    {
+      return SUN_ERR_PROFILER_MAPSORT;
+    }
     SUNProfiler_GetTimerResolution(p, &resolution);
     fprintf(fp, "\n============================================================"
                 "====================================================\n");
@@ -408,7 +388,7 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
                 "==================================================\n");
 
 #if SUNDIALS_MPI_ENABLED
-    if (p->comm == NULL)
+    if (p->comm == SUN_COMM_NULL)
     {
       printf(
         "WARNING: no MPI communicator provided, times shown are for rank 0\n");
@@ -436,7 +416,7 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
     fprintf(fp, "\n");
   }
 
-  return (0);
+  return SUN_SUCCESS;
 }
 
 #if SUNDIALS_MPI_ENABLED
@@ -515,7 +495,7 @@ SUNErrCode sunCollectTimers(SUNProfiler p)
   free(reduced);
   free(values);
 
-  return (0);
+  return SUN_SUCCESS;
 }
 #endif
 
@@ -544,7 +524,7 @@ int sunCompareTimes(const void* l, const void* r)
   const SUNHashMapKeyValue left  = *((SUNHashMapKeyValue*)l);
   const SUNHashMapKeyValue right = *((SUNHashMapKeyValue*)r);
 
-  if (left == NULL && right == NULL) { return (0); }
+  if (left == NULL && right == NULL) { return SUN_SUCCESS; }
   if (left == NULL) { return (1); }
   if (right == NULL) { return (-1); }
 
@@ -553,7 +533,8 @@ int sunCompareTimes(const void* l, const void* r)
 
   if (left_max < right_max) { return (1); }
   if (left_max > right_max) { return (-1); }
-  return (0);
+
+  return SUN_SUCCESS;
 }
 
 int sunclock_gettime_monotonic(sunTimespec* ts)

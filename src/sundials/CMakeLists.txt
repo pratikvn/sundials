@@ -22,7 +22,6 @@ install(CODE "MESSAGE(\"\nInstall shared components\n\")")
 # Add variable sundials_HEADERS with the exported SUNDIALS header files
 set(sundials_HEADERS
   sundials_adaptcontroller.h
-  sundials_base.hpp
   sundials_band.h
   sundials_base.hpp
   sundials_context.h
@@ -58,6 +57,10 @@ set(sundials_HEADERS
 
 if(BUILD_FORTRAN_MODULE_INTERFACE)
   list(APPEND sundials_HEADERS sundials_futils.h)
+endif()
+
+if(ENABLE_MPI)
+  list(APPEND sundials_HEADERS sundials_mpi_errors.h)
 endif()
 
 if(ENABLE_CUDA)
@@ -99,6 +102,10 @@ set(sundials_SOURCES
   sundials_version.c
   )
 
+if(ENABLE_MPI)
+  list(APPEND sundials_SOURCES sundials_mpi_errors.c)
+endif()
+
 if(SUNDIALS_BUILD_WITH_PROFILING)
   message(WARNING "SUNDIALS built with profiling turned on, performance may be affected.")
   list(APPEND sundials_SOURCES sundials_profiler.c)
@@ -111,7 +118,7 @@ endif()
 # Add prefix with complete path to the source files
 add_prefix(${SUNDIALS_SOURCE_DIR}/src/sundials/ sundials_SOURCES)
 
-if(ENABLE_MPI AND MPI_C_FOUND)
+if(ENABLE_MPI)
   set(_link_mpi_if_needed PUBLIC MPI::MPI_C)
 endif()
 
@@ -132,8 +139,6 @@ sundials_add_library(sundials_core
     ${sundials_HEADERS}
   INCLUDE_SUBDIR
     sundials
-  INCLUDE_DIRECTORIES
-    ${_include_mpi_if_needed}
   LINK_LIBRARIES
     ${_link_mpi_if_needed}
   OUTPUT_NAME

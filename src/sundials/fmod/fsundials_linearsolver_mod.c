@@ -198,24 +198,15 @@ SWIGEXPORT int _wrap_FSUNModifiedGS(void *farg1, void *farg2, int const *farg3, 
   int arg3 ;
   int arg4 ;
   sunrealtype *arg5 = (sunrealtype *) 0 ;
-<<<<<<< HEAD
   SUNErrCode result;
-=======
-  int result;
->>>>>>> feature/sunmpicomm-formatted
   
   arg1 = (N_Vector *)(farg1);
   arg2 = (sunrealtype **)(farg2);
   arg3 = (int)(*farg3);
   arg4 = (int)(*farg4);
   arg5 = (sunrealtype *)(farg5);
-<<<<<<< HEAD
   result = (SUNErrCode)SUNModifiedGS(arg1,arg2,arg3,arg4,arg5);
   fresult = (SUNErrCode)(result);
-=======
-  result = (int)SUNModifiedGS(arg1,arg2,arg3,arg4,arg5);
-  fresult = (int)(result);
->>>>>>> feature/sunmpicomm-formatted
   return fresult;
 }
 

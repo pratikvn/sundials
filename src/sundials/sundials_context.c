@@ -31,27 +31,39 @@
 void sunAdiakCollectMetadata();
 #endif
 
-int SUNContext_Create(void* comm, SUNContext* sunctx)
+int SUNContext_Create(SUNComm comm, SUNContext* sunctx_out)
 {
   SUNProfiler profiler = NULL;
   SUNLogger logger     = NULL;
-#if defined(SUNDIALS_BUILD_WITH_PROFILING) && !defined(SUNDIALS_CALIPER_ENABLED)
-  if (SUNProfiler_Create(comm, "SUNContext Default", &profiler))
-  {
-    return (-1);
-  }
-#endif
+  SUNContext sunctx    = NULL;
+
+  sunctx = (SUNContext)malloc(sizeof(struct SUNContext_));
+
+  /* SUNContext_Create cannot assert or log since the SUNContext is not yet
+   * created */
+  if (!sunctx) { return SUN_ERR_MALLOC_FAIL; }
+
+  SUNFunctionBegin(sunctx);
 
 #ifdef SUNDIALS_ADIAK_ENABLED
-  adiak_init(comm);
-  sunAdiakCollectMetadata(comm);
+  adiak_init(&comm);
+  sunAdiakCollectMetadata();
 #endif
 
+  /* Since this function used to take a void* comm that was NULL 
+     when the comm was to be ignored, we check if its NULL here
+     and translate it to SUN_COMM_NULL to make the transition 
+     easier for users. */
+  if (!comm) { comm = SUN_COMM_NULL; }
+
 #if SUNDIALS_LOGGING_LEVEL > 0
-#if defined(SUNDIALS_LOGGING_ENABLE_MPI)
+#if SUNDIALS_MPI_ENABLED
   if (SUNLogger_CreateFromEnv(comm, &logger)) { return SUN_ERR_LOGGER_CORRUPT; }
 #else
-  if (SUNLogger_CreateFromEnv(NULL, &logger)) { return SUN_ERR_LOGGER_CORRUPT; }
+  if (SUNLogger_CreateFromEnv(SUN_COMM_NULL, &logger))
+  {
+    return SUN_ERR_LOGGER_CORRUPT;
+  }
 #endif
 #else
   if (SUNLogger_Create(NULL, 0, &logger)) { return SUN_ERR_LOGGER_CORRUPT; }
@@ -73,7 +85,7 @@ int SUNContext_Create(void* comm, SUNContext* sunctx)
   sunctx->err_handler  = SUNErrHandler_Create(SUNLogErrHandlerFn, NULL);
   sunctx->comm         = comm;
 
-  *sunctx_ptr = sunctx;
+  *sunctx_out = sunctx;
 
   return SUN_SUCCESS;
 }

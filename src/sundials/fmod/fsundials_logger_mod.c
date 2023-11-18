@@ -238,7 +238,7 @@ SWIGEXPORT int _wrap_FSUNLogger_Create(int const *farg1, int const *farg2, void 
   SUNComm arg1 ;
   int arg2 ;
   SUNLogger *arg3 = (SUNLogger *) 0 ;
-  int result;
+  SUNErrCode result;
   
 #if SUNDIALS_MPI_ENABLED
   int flag = 0;
@@ -246,15 +246,15 @@ SWIGEXPORT int _wrap_FSUNLogger_Create(int const *farg1, int const *farg2, void 
   if(flag) {
     arg1 = MPI_Comm_f2c((MPI_Fint)(*farg1));
   } else {
-    arg1 = SUN_COMM_NULL;
+    arg1 = 0;
   }
 #else
   arg1 = *farg1;
 #endif
   arg2 = (int)(*farg2);
   arg3 = (SUNLogger *)(farg3);
-  result = (int)SUNLogger_Create(arg1,arg2,arg3);
-  fresult = (int)(result);
+  result = (SUNErrCode)SUNLogger_Create(arg1,arg2,arg3);
+  fresult = (SUNErrCode)(result);
   return fresult;
 }
 
@@ -271,7 +271,7 @@ SWIGEXPORT int _wrap_FSUNLogger_CreateFromEnv(int const *farg1, void *farg2) {
   if(flag) {
     arg1 = MPI_Comm_f2c((MPI_Fint)(*farg1));
   } else {
-    arg1 = SUN_COMM_NULL;
+    arg1 = 0;
   }
 #else
   arg1 = *farg1;
@@ -401,35 +401,3 @@ SWIGEXPORT int _wrap_FSUNLogger_Destroy(void *farg1) {
 
 
 
-<<<<<<< HEAD
-SWIGEXPORT int _wrap_FSUNLogger_Create(void *farg1, int const *farg2, void *farg3) {
-  int fresult ;
-  void *arg1 = (void *) 0 ;
-  int arg2 ;
-  SUNLogger *arg3 = (SUNLogger *) 0 ;
-  SUNErrCode result;
-#ifdef SUNDIALS_LOGGING_ENABLE_MPI
-  MPI_Comm comm;
-#endif
-
-  arg1 = (void *)(farg1);
-  arg2 = (int)(*farg2);
-  arg3 = (SUNLogger *)(farg3);
-#ifdef SUNDIALS_LOGGING_ENABLE_MPI
-  if (arg1 != NULL) {
-    comm = MPI_Comm_f2c(*((MPI_Fint *) arg1));
-    result = (SUNErrCode)SUNLogger_Create((void*)&comm,arg2,arg3);
-  }
-  else {
-    result = (SUNErrCode)SUNLogger_Create(arg1,arg2,arg3);
-  }
-#else
-  result = (SUNErrCode)SUNLogger_Create(arg1,arg2,arg3);
-#endif
-  fresult = (SUNErrCode)(result);
-  return fresult;
-}
-
-
-=======
->>>>>>> feature/sunmpicomm-formatted

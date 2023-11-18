@@ -22,6 +22,8 @@
 #include <sundials/impl/sundials_errors_impl.h>
 #include <sundials/sundials_core.h>
 
+#include "sundials/sundials_types.h"
+
 #if defined(SUNDIALS_BUILD_WITH_PROFILING)
 static SUNProfiler getSUNProfiler(SUNMatrix A) { return (A->sunctx->profiler); }
 #endif
@@ -32,7 +34,7 @@ static SUNProfiler getSUNProfiler(SUNMatrix A) { return (A->sunctx->profiler); }
 
 SUNMatrix SUNMatNewEmpty(SUNContext sunctx)
 {
-  SUNAssignSUNCTX(sunctx);
+  SUNFunctionBegin(sunctx);
   SUNMatrix A;
   SUNMatrix_Ops ops;
 
@@ -89,7 +91,7 @@ void SUNMatFreeEmpty(SUNMatrix A)
 
 SUNErrCode SUNMatCopyOps(SUNMatrix A, SUNMatrix B)
 {
-  SUNAssignSUNCTX(A->sunctx);
+  SUNFunctionBegin(A->sunctx);
   /* Check that ops structures exist */
   SUNAssert(A && A->ops && A && A->ops, SUN_ERR_ARG_CORRUPT);
   SUNAssert(B && B->ops && B && B->ops, SUN_ERR_ARG_CORRUPT);

@@ -1805,8 +1805,7 @@ int ARKStepSetMaxNonlinIters(void* arkode_mem, int maxcor)
   else { step_mem->maxcor = maxcor; }
 
   /* send argument to NLS structure */
-  retval = SUNNonlinSolSetMaxIters(step_mem->NLS, step_mem->maxcor);
-  SUNCheckCallNoRet(retval);
+  retval = SUNNonlinSolSetMaxIters(step_mem->NLS, step_mem->maxcor); SUNCheckCallNoRet(retval);
   if (retval != SUN_SUCCESS)
   {
     arkProcessError(ark_mem, ARK_NLS_OP_ERR, __LINE__, __func__, __FILE__,

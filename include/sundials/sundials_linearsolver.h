@@ -174,7 +174,7 @@ SUNDIALS_EXPORT
 SUNErrCode SUNLinSolSetScalingVectors(SUNLinearSolver S, N_Vector s1,
                                       N_Vector s2);
 
-SUNDIALS_EXPORT
+SUNDIALS_EXPORT 
 SUNErrCode SUNLinSolSetZeroGuess(SUNLinearSolver S, sunbooleantype onoff);
 
 SUNDIALS_EXPORT
@@ -183,16 +183,15 @@ SUNErrCode SUNLinSolInitialize(SUNLinearSolver S);
 SUNDIALS_EXPORT
 int SUNLinSolSetup(SUNLinearSolver S, SUNMatrix A);
 
-SUNDIALS_EXPORT
-int SUNLinSolSolve(SUNLinearSolver S, SUNMatrix A, N_Vector x,
-                   N_Vector b, sunrealtype tol);
+SUNDIALS_EXPORT 
+int SUNLinSolSolve(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b, sunrealtype tol);
 
 /* TODO(CJB): We should consider changing the return type to long int since
  batched solvers could in theory return a very large number here. */
 SUNDIALS_EXPORT
 int SUNLinSolNumIters(SUNLinearSolver S);
 
-SUNDIALS_EXPORT
+SUNDIALS_EXPORT 
 sunrealtype SUNLinSolResNorm(SUNLinearSolver S);
 
 SUNDIALS_EXPORT

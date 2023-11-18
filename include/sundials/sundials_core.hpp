@@ -19,5 +19,6 @@
 #include <sundials/sundials_matrix.hpp>
 #include <sundials/sundials_nonlinearsolver.hpp>
 #include <sundials/sundials_nvector.hpp>
+#include <sundials/sundials_profiler.hpp>
 
 #endif /* _SUNDIALS_CORE_HPP */

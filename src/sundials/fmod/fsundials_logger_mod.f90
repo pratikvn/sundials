@@ -20,11 +20,9 @@
 
 module fsundials_logger_mod
  use, intrinsic :: ISO_C_BINDING
-<<<<<<< HEAD
  use fsundials_context_mod
  use fsundials_types_mod
-=======
->>>>>>> feature/sunmpicomm-formatted
+ use fsundials_types_mod
  use fsundials_types_mod
  implicit none
  private

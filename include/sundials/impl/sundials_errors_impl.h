@@ -22,16 +22,18 @@
 
 #include <sundials/sundials_errors.h>
 
-/* The SUNAssignSUNCTX macro is used to declare the SUNContext
+#define SUNCTX sunctx_local_scope_
+
+/* The SUNFunctionBegin macro is used to declare the SUNContext
    object to be used a function. */
 #if !defined(SUNDIALS_DISABLE_ERROR_CHECKS)
-#define SUNAssignSUNCTX(sunctx) \
-  SUNContext sunctx_ = sunctx;  \
-  (void)sunctx_
+#define SUNFunctionBegin(sunctx) \
+  SUNContext SUNCTX = sunctx;  \
+  (void)SUNCTX
 #else
-#define SUNAssignSUNCTX(sunctx) \
-  SUNContext sunctx_ = sunctx;  \
-  (void)sunctx_
+#define SUNFunctionBegin(sunctx) \
+  SUNContext SUNCTX = sunctx;  \
+  (void)SUNCTX
 #endif
 
 /* ----------------------------------------------------------------------------
@@ -45,7 +47,7 @@
   do {                                                                         \
     if (SUNHintFalse(!(expr)))                                                 \
     {                                                                          \
-      SUNHandleErrWithMsg(__LINE__, __func__, __FILE__, #expr, code, sunctx_); \
+      SUNHandleErrWithMsg(__LINE__, __func__, __FILE__, #expr, code, SUNCTX); \
     }                                                                          \
   }                                                                            \
   while (0)
@@ -63,8 +65,8 @@
     if (SUNHintFalse(sun_chk_call_err_code_ < 0))                        \
     {                                                                    \
       SUNHandleErr(__LINE__, __func__, __FILE__, sun_chk_call_err_code_, \
-                   sunctx_);                                             \
-      (void)SUNGetLastErr(sunctx_);                                      \
+                   SUNCTX);                                             \
+      (void)SUNGetLastErr(SUNCTX);                                      \
     }                                                                    \
   }                                                                      \
   while (0)
@@ -81,7 +83,7 @@
     if (SUNHintFalse(sun_chk_call_err_code_ < 0))                        \
     {                                                                    \
       SUNHandleErr(__LINE__, __func__, __FILE__, sun_chk_call_err_code_, \
-                   sunctx_);                                             \
+                   SUNCTX);                                             \
       return sun_chk_call_err_code_;                                     \
     }                                                                    \
   }                                                                      \
@@ -98,7 +100,7 @@
     if (SUNHintFalse(sun_chk_call_err_code_ < 0))                        \
     {                                                                    \
       SUNHandleErr(__LINE__, __func__, __FILE__, sun_chk_call_err_code_, \
-                   sunctx_);                                             \
+                   SUNCTX);                                             \
       return NULL;                                                       \
     }                                                                    \
   }                                                                      \
@@ -115,7 +117,7 @@
     if (SUNHintFalse(sun_chk_call_err_code_ < 0))                        \
     {                                                                    \
       SUNHandleErr(__LINE__, __func__, __FILE__, sun_chk_call_err_code_, \
-                   sunctx_);                                             \
+                   SUNCTX);                                             \
       return;                                                            \
     }                                                                    \
   }                                                                      \
@@ -129,29 +131,25 @@
    value, and calls the error handler. */
 
 #if !defined(SUNDIALS_DISABLE_ERROR_CHECKS)
-#define SUNCheckCallLastErrNoRet(call) \
-  call;                                \
-  SUNCheckCallNoRet(SUNGetLastErr(sunctx_))
+#define SUNCheckLastErrNoRet() \
+  SUNCheckCallNoRet(SUNGetLastErr(SUNCTX))
 
-/* Same as SUNCheckCallLastErrNoRet, but returns with the error code. */
-#define SUNCheckCallLastErr(call) \
-  call;                           \
-  SUNCheckCall(SUNGetLastErr(sunctx_))
+/* Same as SUNCheckLastErrNoRet, but returns with the error code. */
+#define SUNCheckLastErr() \
+  SUNCheckCall(SUNGetLastErr(SUNCTX))
 
-/* Same as SUNCheckCallLastErrNoRet, but returns void. */
-#define SUNCheckCallLastErrVoid(call) \
-  call;                               \
-  SUNCheckCallVoid(SUNGetLastErr(sunctx_))
+/* Same as SUNCheckLastErrNoRet, but returns void. */
+#define SUNCheckLastErrVoid() \
+  SUNCheckCallVoid(SUNGetLastErr(SUNCTX))
 
-/* Same as SUNCheckCallLastErrNoRet, but returns NULL. */
-#define SUNCheckCallLastErrNull(call) \
-  call;                               \
-  SUNCheckCallNull(SUNGetLastErr(sunctx_))
+/* Same as SUNCheckLastErrNoRet, but returns NULL. */
+#define SUNCheckLastErrNull() \
+  SUNCheckCallNull(SUNGetLastErr(SUNCTX))
 #else
-#define SUNCheckCallLastErrNoRet(call) call
-#define SUNCheckCallLastErr(call)      call
-#define SUNCheckCallLastErrVoid(call)  call
-#define SUNCheckCallLastErrNull(call)  call
+#define SUNCheckLastErrNoRet() 
+#define SUNCheckLastErr()      
+#define SUNCheckLastErrVoid()  
+#define SUNCheckLastErrNull()  
 #endif
 
 /* SUNAssert checks if an expression is true.
@@ -162,7 +160,7 @@
     if (!(expr))                                                       \
     {                                                                  \
       SUNAssertErrHandlerFn(__LINE__, __func__, __FILE__, #expr, code, \
-                            sunctx_->err_handler->data, sunctx_);      \
+                            SUNCTX->err_handler->data, SUNCTX);      \
     }                                                                  \
   }                                                                    \
   while (0)

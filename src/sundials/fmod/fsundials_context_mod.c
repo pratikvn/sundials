@@ -227,6 +227,30 @@ SWIGINTERN SwigClassWrapper SwigClassWrapper_uninitialized() {
     return result;
 }
 
+SWIGEXPORT int _wrap_FSUNContext_Create(int const *farg1, void *farg2) {
+  int fresult ;
+  SUNComm arg1 ;
+  SUNContext *arg2 = (SUNContext *) 0 ;
+  SUNErrCode result;
+  
+#if SUNDIALS_MPI_ENABLED
+  int flag = 0;
+  MPI_Initialized(&flag);
+  if(flag) {
+    arg1 = MPI_Comm_f2c((MPI_Fint)(*farg1));
+  } else {
+    arg1 = 0;
+  }
+#else
+  arg1 = *farg1;
+#endif
+  arg2 = (SUNContext *)(farg2);
+  result = (SUNErrCode)SUNContext_Create(arg1,arg2);
+  fresult = (SUNErrCode)(result);
+  return fresult;
+}
+
+
 SWIGEXPORT int _wrap_FSUNContext_GetLastError(void *farg1, int *farg2) {
   int fresult ;
   SUNContext arg1 = (SUNContext) 0 ;
@@ -296,30 +320,6 @@ SWIGEXPORT int _wrap_FSUNContext_ClearHandlers(void *farg1) {
 }
 
 
-SWIGEXPORT int _wrap_FSUNContext_Create(int const *farg1, void *farg2) {
-  int fresult ;
-  SUNComm arg1 ;
-  SUNContext *arg2 = (SUNContext *) 0 ;
-  int result;
-  
-#if SUNDIALS_MPI_ENABLED
-  int flag = 0;
-  MPI_Initialized(&flag);
-  if(flag) {
-    arg1 = MPI_Comm_f2c((MPI_Fint)(*farg1));
-  } else {
-    arg1 = SUN_COMM_NULL;
-  }
-#else
-  arg1 = *farg1;
-#endif
-  arg2 = (SUNContext *)(farg2);
-  result = (int)SUNContext_Create(arg1,arg2);
-  fresult = (int)(result);
-  return fresult;
-}
-
-
 SWIGEXPORT int _wrap_FSUNContext_GetProfiler(void *farg1, void *farg2) {
   int fresult ;
   SUNContext arg1 = (SUNContext) 0 ;
@@ -379,11 +379,11 @@ SWIGEXPORT int _wrap_FSUNContext_SetLogger(void *farg1, void *farg2) {
 SWIGEXPORT int _wrap_FSUNContext_Free(void *farg1) {
   int fresult ;
   SUNContext *arg1 = (SUNContext *) 0 ;
-  int result;
+  SUNErrCode result;
   
   arg1 = (SUNContext *)(farg1);
-  result = (int)SUNContext_Free(arg1);
-  fresult = (int)(result);
+  result = (SUNErrCode)SUNContext_Free(arg1);
+  fresult = (SUNErrCode)(result);
   return fresult;
 }
 

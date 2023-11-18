@@ -111,7 +111,7 @@ class GridStrideExecPolicy : public ExecPolicy
 public:
   GridStrideExecPolicy(const size_t blockDim, const size_t gridDim,
                        hipStream_t stream = 0)
-    : ExecPolicy(stream), blockDim_(blockDim), gridDim_(gridDim)
+    : blockDim_(blockDim), gridDim_(gridDim), ExecPolicy(stream)
   {}
 
   GridStrideExecPolicy(const GridStrideExecPolicy& ex)
@@ -152,7 +152,7 @@ class BlockReduceAtomicExecPolicy : public ExecPolicy
 public:
   BlockReduceAtomicExecPolicy(const size_t blockDim, const size_t gridDim = 0,
                               hipStream_t stream = 0)
-    : ExecPolicy(stream), blockDim_(blockDim), gridDim_(gridDim)
+    : blockDim_(blockDim), gridDim_(gridDim), ExecPolicy(stream)
   {
     if (blockDim < 1 || blockDim % WARP_SIZE)
     {

@@ -17,9 +17,8 @@
 # Enable testing with 'make test'
 include(CTest)
 
-# Set up testRunner
+# Check if development tests are enabled
 if (SUNDIALS_TEST_DEVTESTS OR BUILD_BENCHMARKS)
-
   # Python is needed to use the test runner
   find_package(PythonInterp REQUIRED)
   if(${PYTHON_VERSION_MAJOR} LESS 3)
@@ -115,7 +114,7 @@ if(SUNDIALS_TEST_DEVTESTS)
       add_dependencies(setup_local_ci setup_local_ci_${index_size}_${precision_})
 
       set(container_test_exe ./test_driver.sh)
-      set(container_test_exe_args --testtype CUSTOM --env env/docker.sh --tpls --realtype ${precision_} --indexsize ${index_size})
+      set(container_test_exe_args --testtype CUSTOM --env env/docker.sh --tpls --sunrealtype ${precision_} --indexsize ${index_size})
       set(container_exe_args exec -w ${SUNDIALS_TEST_CONTAINER_MNT}/test ${container} ${container_test_exe} ${container_test_exe_args})
       add_custom_target(test_local_ci_${index_size}_${precision_}
         COMMENT "Running tests in CI container ${container}:${tag}"
@@ -137,22 +136,24 @@ endif()
 
 # Check if unit tests are enabled
 if(SUNDIALS_TEST_UNITTESTS)
-  # message(WARNING "Could not find Google Test so we are cloning it from GitHub...")
-  # include(FetchContent)
-  # FetchContent_Declare(
-  #   googletest
-  #   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-  # )
-  # if(WIN32)
-  #   # For Windows: Prevent overriding the parent project's compiler/linker settings
-  #   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-  # endif()
-  # FetchContent_GetProperties(googletest)
-  # if(NOT googletest_POPULATED)
-  #   FetchContent_Populate(googletest)
-  #   add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
-  # endif()
-  # include(GoogleTest)
+  find_package(GTest)
+  if(NOT TARGET GTest::gtest_main)
+    include(FetchContent)
+    FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+    )
+    if(WIN32)
+      # For Windows: Prevent overriding the parent project's compiler/linker settings
+      set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    endif()
+    FetchContent_GetProperties(googletest)
+    if(NOT googletest_POPULATED)
+      FetchContent_Populate(googletest)
+      add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+    endif()
+    include(GoogleTest)
+  endif()
 endif()
 
 # If examples are installed, create post install smoke test targets

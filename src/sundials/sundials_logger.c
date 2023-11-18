@@ -22,7 +22,7 @@
 
 #include "sundials/sundials_types.h"
 
-#ifdef SUNDIALS_LOGGING_ENABLE_MPI
+#if SUNDIALS_MPI_ENABLED
 #include <mpi.h>
 #endif
 
@@ -96,7 +96,7 @@ static sunbooleantype sunLoggerIsOutputRank(SUNLogger logger, int* rank_ref)
 
   if (logger->commptr)
   {
-    MPI_Comm_rank(SUNLOGGER_MPICOMM(logger), &rank);
+    if (logger->comm != SUN_COMM_NULL) { MPI_Comm_rank(logger->comm, &rank); }
 
     if (logger->output_rank < 0)
     {
@@ -118,7 +118,7 @@ static sunbooleantype sunLoggerIsOutputRank(SUNLogger logger, int* rank_ref)
   return retval;
 }
 
-SUNErrCode SUNLogger_Create(void* comm, int output_rank, SUNLogger* logger_ptr)
+SUNErrCode SUNLogger_Create(SUNComm comm, int output_rank, SUNLogger* logger_ptr)
 {
   SUNLogger logger = NULL;
 
@@ -126,16 +126,12 @@ SUNErrCode SUNLogger_Create(void* comm, int output_rank, SUNLogger* logger_ptr)
   if (logger == NULL) { return SUN_ERR_MALLOC_FAIL; }
 
   /* Attach the comm, duplicating it if MPI is used. */
-#ifdef SUNDIALS_LOGGING_ENABLE_MPI
-  logger->commptr = NULL;
-  if (comm != NULL)
-  {
-    logger->commptr = malloc(sizeof(MPI_Comm));
-    MPI_Comm_dup(*((MPI_Comm*)comm), (MPI_Comm*)logger->commptr);
-  }
+#if SUNDIALS_MPI_ENABLED
+  logger->comm = SUN_COMM_NULL;
+  if (comm != SUN_COMM_NULL) { MPI_Comm_dup(comm, &logger->comm); }
 #else
-  // if (comm != NULL) { return SUN_ERR_ARG_CORRUPT; } // TODO(CJB): if we do this, then you cant use the logger with MPI when SUNDIALS_LOGGING_ENABLE_MPI=OFF
-  logger->commptr = NULL;
+  logger->comm = SUN_COMM_NULL;
+  if (comm != SUN_COMM_NULL) { return SUN_ERR_ARG_CORRUPT; }
 #endif
   logger->output_rank = output_rank;
   logger->content     = NULL;
@@ -162,7 +158,7 @@ SUNErrCode SUNLogger_Create(void* comm, int output_rank, SUNLogger* logger_ptr)
   return SUN_SUCCESS;
 }
 
-SUNErrCode SUNLogger_CreateFromEnv(void* comm, SUNLogger* logger)
+SUNErrCode SUNLogger_CreateFromEnv(SUNComm comm, SUNLogger* logger)
 {
   SUNErrCode retval = SUN_SUCCESS;
 

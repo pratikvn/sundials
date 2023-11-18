@@ -298,7 +298,7 @@ SWIGEXPORT int _wrap_FN_VGetCommunicator(N_Vector farg1) {
   arg1 = (N_Vector)(farg1);
   result = (SUNComm)N_VGetCommunicator(arg1);
 #if SUNDIALS_MPI_ENABLED
-  if (result != SUN_COMM_NULL) {
+  if (result != 0) {
     fresult = (int)(MPI_Comm_c2f(result));
   }
 #else
@@ -620,23 +620,14 @@ SWIGEXPORT int _wrap_FN_VDotProdMulti(int const *farg1, N_Vector farg2, void *fa
   N_Vector arg2 = (N_Vector) 0 ;
   N_Vector *arg3 = (N_Vector *) 0 ;
   sunrealtype *arg4 = (sunrealtype *) 0 ;
-<<<<<<< HEAD
   SUNErrCode result;
-=======
-  int result;
->>>>>>> feature/sunmpicomm-formatted
   
   arg1 = (int)(*farg1);
   arg2 = (N_Vector)(farg2);
   arg3 = (N_Vector *)(farg3);
   arg4 = (sunrealtype *)(farg4);
-<<<<<<< HEAD
   result = (SUNErrCode)N_VDotProdMulti(arg1,arg2,arg3,arg4);
   fresult = (SUNErrCode)(result);
-=======
-  result = (int)N_VDotProdMulti(arg1,arg2,arg3,arg4);
-  fresult = (int)(result);
->>>>>>> feature/sunmpicomm-formatted
   return fresult;
 }
 
@@ -703,23 +694,14 @@ SWIGEXPORT int _wrap_FN_VWrmsNormVectorArray(int const *farg1, void *farg2, void
   N_Vector *arg2 = (N_Vector *) 0 ;
   N_Vector *arg3 = (N_Vector *) 0 ;
   sunrealtype *arg4 = (sunrealtype *) 0 ;
-<<<<<<< HEAD
   SUNErrCode result;
-=======
-  int result;
->>>>>>> feature/sunmpicomm-formatted
   
   arg1 = (int)(*farg1);
   arg2 = (N_Vector *)(farg2);
   arg3 = (N_Vector *)(farg3);
   arg4 = (sunrealtype *)(farg4);
-<<<<<<< HEAD
   result = (SUNErrCode)N_VWrmsNormVectorArray(arg1,arg2,arg3,arg4);
   fresult = (SUNErrCode)(result);
-=======
-  result = (int)N_VWrmsNormVectorArray(arg1,arg2,arg3,arg4);
-  fresult = (int)(result);
->>>>>>> feature/sunmpicomm-formatted
   return fresult;
 }
 
@@ -731,24 +713,15 @@ SWIGEXPORT int _wrap_FN_VWrmsNormMaskVectorArray(int const *farg1, void *farg2, 
   N_Vector *arg3 = (N_Vector *) 0 ;
   N_Vector arg4 = (N_Vector) 0 ;
   sunrealtype *arg5 = (sunrealtype *) 0 ;
-<<<<<<< HEAD
   SUNErrCode result;
-=======
-  int result;
->>>>>>> feature/sunmpicomm-formatted
   
   arg1 = (int)(*farg1);
   arg2 = (N_Vector *)(farg2);
   arg3 = (N_Vector *)(farg3);
   arg4 = (N_Vector)(farg4);
   arg5 = (sunrealtype *)(farg5);
-<<<<<<< HEAD
   result = (SUNErrCode)N_VWrmsNormMaskVectorArray(arg1,arg2,arg3,arg4,arg5);
   fresult = (SUNErrCode)(result);
-=======
-  result = (int)N_VWrmsNormMaskVectorArray(arg1,arg2,arg3,arg4,arg5);
-  fresult = (int)(result);
->>>>>>> feature/sunmpicomm-formatted
   return fresult;
 }
 
@@ -883,23 +856,14 @@ SWIGEXPORT int _wrap_FN_VDotProdMultiLocal(int const *farg1, N_Vector farg2, voi
   N_Vector arg2 = (N_Vector) 0 ;
   N_Vector *arg3 = (N_Vector *) 0 ;
   sunrealtype *arg4 = (sunrealtype *) 0 ;
-<<<<<<< HEAD
   SUNErrCode result;
-=======
-  int result;
->>>>>>> feature/sunmpicomm-formatted
   
   arg1 = (int)(*farg1);
   arg2 = (N_Vector)(farg2);
   arg3 = (N_Vector *)(farg3);
   arg4 = (sunrealtype *)(farg4);
-<<<<<<< HEAD
   result = (SUNErrCode)N_VDotProdMultiLocal(arg1,arg2,arg3,arg4);
   fresult = (SUNErrCode)(result);
-=======
-  result = (int)N_VDotProdMultiLocal(arg1,arg2,arg3,arg4);
-  fresult = (int)(result);
->>>>>>> feature/sunmpicomm-formatted
   return fresult;
 }
 
@@ -909,22 +873,13 @@ SWIGEXPORT int _wrap_FN_VDotProdMultiAllReduce(int const *farg1, N_Vector farg2,
   int arg1 ;
   N_Vector arg2 = (N_Vector) 0 ;
   sunrealtype *arg3 = (sunrealtype *) 0 ;
-<<<<<<< HEAD
   SUNErrCode result;
-=======
-  int result;
->>>>>>> feature/sunmpicomm-formatted
   
   arg1 = (int)(*farg1);
   arg2 = (N_Vector)(farg2);
   arg3 = (sunrealtype *)(farg3);
-<<<<<<< HEAD
   result = (SUNErrCode)N_VDotProdMultiAllReduce(arg1,arg2,arg3);
   fresult = (SUNErrCode)(result);
-=======
-  result = (int)N_VDotProdMultiAllReduce(arg1,arg2,arg3);
-  fresult = (int)(result);
->>>>>>> feature/sunmpicomm-formatted
   return fresult;
 }
 
