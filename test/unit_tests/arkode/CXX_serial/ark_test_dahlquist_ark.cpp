@@ -55,7 +55,7 @@ enum class mass_matrix_type
   time_dependent
 };
 
-enum class method_type
+enum class rk_type
 {
   expl,
   impl,
@@ -79,6 +79,8 @@ struct ProblemData
 // Problem options
 struct ProblemOptions
 {
+  mass_matrix_type  m_type = mass_matrix_type::identity;
+
   // Initial time
   sunrealtype t0 = ZERO;
 
@@ -93,6 +95,14 @@ struct ProblemOptions
   // 0 = Hermite
   // 1 = Lagrange
   interp_type i_type = interp_type::hermite;
+
+  // Predictor type
+  // 0 = trivial
+  // 1 = maximum order (dense output)
+  int p_type = 0;
+
+  // Runge-Kutta type
+  rk_type r_type;
 };
 
 // User-supplied Functions called by the solver
@@ -115,12 +125,12 @@ int get_method_properties(ARKodeButcherTable Be, ARKodeButcherTable Bi,
                           int& stages, int& order, bool& explicit_first_stage,
                           bool& stiffly_accurate, bool& fsal);
 
-int expected_rhs_evals(method_type m_type, interp_type i_type, int stages,
-                       bool explicit_first_stage, bool stiffly_accurate,
-                       bool fsal, void* arkstep_mem, long int& nfe_expected,
-                       long int& nfi_expected);
+int expected_rhs_evals(ProblemOptions& prob_opts, int stages, int order, bool
+                       explicit_first_stage, bool stiffly_accurate, bool fsal,
+                       void* arkstep_mem, long int& nfe_expected, long int&
+                       nfi_expected);
 
-int check_rhs_evals(method_type m_type, void* arkstep_mem,
+int check_rhs_evals(rk_type r_type, void* arkstep_mem,
                     long int nfe_expected, long int nfi_expected);
 
 // -----------------------------------------------------------------------------
@@ -139,14 +149,17 @@ int main(int argc, char* argv[])
     if (std::stoi(argv[1]) == 1)
     {
       prob_data.m_type = mass_matrix_type::fixed;
+      prob_opts.m_type = mass_matrix_type::fixed;
     }
     else if (std::stoi(argv[1]) == 2)
     {
       prob_data.m_type = mass_matrix_type::time_dependent;
+      prob_opts.m_type = mass_matrix_type::time_dependent;
     }
     else
     {
       prob_data.m_type = mass_matrix_type::identity;
+      prob_opts.m_type = mass_matrix_type::identity;
     }
   }
 
@@ -159,6 +172,17 @@ int main(int argc, char* argv[])
     else
     {
       prob_opts.i_type = interp_type::hermite;
+    }
+  }
+
+  if (argc > 3)
+  {
+    prob_opts.p_type = std::stoi(argv[3]);
+    if (prob_opts.p_type > 1)
+    {
+      std::cerr << "ERROR: Only the trivial (0) and max order (1) "
+                << "predictors are supported" << std::endl;
+      return 1;
     }
   }
 
@@ -188,6 +212,14 @@ int main(int argc, char* argv[])
   else
   {
     std::cout << "  interp type  = Lagrange\n";
+  }
+  if (prob_opts.p_type == 0)
+  {
+    std::cout << "  pred type    = Trivial (0)\n";
+  }
+  else
+  {
+    std::cout << "  pred type    = Max order (1)\n";
   }
 
   // Create SUNDIALS context
@@ -414,10 +446,9 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
   int numfails = 0;
 
   // Determine method type
-  method_type m_type;
-  if (Be && !Bi) { m_type = method_type::expl; }
-  else if (!Be && Bi) { m_type = method_type::impl; }
-  else if (Be && Bi) { m_type = method_type::imex; }
+  if (Be && !Bi) { prob_opts.r_type = rk_type::expl; }
+  else if (!Be && Bi) { prob_opts.r_type = rk_type::impl; }
+  else if (Be && Bi) { prob_opts.r_type = rk_type::imex; }
   else
   {
     std::cerr << "ERROR: Both Butcher tables are NULL" << std::endl;
@@ -444,11 +475,11 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
   // Create integrator based on type
   void* arkstep_mem = nullptr;
 
-  if (m_type == method_type::expl)
+  if (prob_opts.r_type == rk_type::expl)
   {
     arkstep_mem = ARKStepCreate(fe, nullptr, prob_opts.t0, y, sunctx);
   }
-  else if (m_type == method_type::impl)
+  else if (prob_opts.r_type == rk_type::impl)
   {
     arkstep_mem = ARKStepCreate(nullptr, fi, prob_opts.t0, y, sunctx);
   }
@@ -470,7 +501,7 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
   flag = ARKStepSetFixedStep(arkstep_mem, prob_opts.h);
   if (check_flag(&flag, "ARKStepSetFixedStep", 1)) return 1;
 
-  // Attach Butcher tables <<<<<<< correct method order?
+  // Attach Butcher tables (ignore actual method order)
   flag = ARKStepSetTables(arkstep_mem, 1, 0, Bi, Be);
   if (check_flag(&flag, "ARKStepSetTables", 1)) return 1;
 
@@ -485,7 +516,7 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
   SUNMatrix A        = nullptr;
   SUNLinearSolver LS = nullptr;
 
-  if (m_type == method_type::impl || m_type == method_type::imex)
+  if (prob_opts.r_type == rk_type::impl || prob_opts.r_type == rk_type::imex)
   {
     // Initialize dense matrix data structures and solvers
     A = SUNDenseMatrix(1, 1, sunctx);
@@ -505,6 +536,10 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
     // Specify linearly implicit RHS, with non-time-dependent Jacobian
     flag = ARKStepSetLinear(arkstep_mem, 0);
     if (check_flag(&flag, "ARKStepSetLinear", 1)) return 1;
+
+    // Specify implicit predictor method
+    flag = ARKStepSetPredictorMethod(arkstep_mem, prob_opts.p_type);
+    if (check_flag(&flag, "ARKStepSetPredictorMethod", 1)) return 1;
   }
 
   // Create mass matrix and linear solver (if necessary)
@@ -552,12 +587,12 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
     t_out += prob_opts.h;
 
     // Check statistics
-    flag = expected_rhs_evals(m_type, prob_opts.i_type, stages,
-                              explicit_first_stage, stiffly_accurate, fsal,
-                              arkstep_mem,nfe_expected, nfi_expected);
+    flag = expected_rhs_evals(prob_opts, stages, order, explicit_first_stage,
+                              stiffly_accurate, fsal, arkstep_mem,nfe_expected,
+                              nfi_expected);
     if (check_flag(&flag, "expected_rhs_evals", 1)) return 1;
 
-    numfails += check_rhs_evals(m_type, arkstep_mem, nfe_expected, nfi_expected);
+    numfails += check_rhs_evals(prob_opts.r_type, arkstep_mem, nfe_expected, nfi_expected);
 
     if (numfails)
     {
@@ -587,18 +622,22 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
 
     // Stiffly accurate (and FSAL) methods do not require an additional RHS
     // evaluation to get the new RHS value at the end of a step for dense
-    // output. However, for methods with an explicit first stage this evaluation
-    // can be used at the start of the next step. For methods with an implicit
-    // first stage that are not stiffly accurate this evaluation replaces one
-    // that would happen at the end of the next step (this is accounted for in
-    // expected_rhs_evals after the next step is taken below).
+    // output. Methods with an explicit first stage can use this RHS value at
+    // the start of the next step.
+    //
+    // If a method has an implicit first stage but is not stiffly accurate, the
+    // evaluation needed for interpolation replaces one that would happen at the
+    // end of the next step (this is accounted for in expected_rhs_evals after
+    // the next step is taken below). However, if the trivial predictor is used
+    // then the RHS evaluation can be reused across the stage solves in the
+    // initial evaluation of the residual.
     if (prob_opts.i_type == interp_type::hermite && !stiffly_accurate)
     {
-      if (m_type == method_type::expl || m_type == method_type::imex)
+      if (prob_opts.r_type == rk_type::expl || prob_opts.r_type == rk_type::imex)
       {
         nfe_expected++;
       }
-      if (m_type == method_type::impl || m_type == method_type::imex)
+      if (prob_opts.r_type == rk_type::impl || prob_opts.r_type == rk_type::imex)
       {
         nfi_expected++;
       }
@@ -611,17 +650,17 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
     int degree = (order == 1) ? 1 : order - 1;
     if (prob_opts.i_type == interp_type::hermite && degree > 3)
     {
-      if (m_type == method_type::expl || m_type == method_type::imex)
+      if (prob_opts.r_type == rk_type::expl || prob_opts.r_type == rk_type::imex)
       {
         extra_fe_evals += (degree == 4) ? 1 : 4;
       }
-      if (m_type == method_type::impl || m_type == method_type::imex)
+      if (prob_opts.r_type == rk_type::impl || prob_opts.r_type == rk_type::imex)
       {
         extra_fi_evals += (degree == 4) ? 1 : 4;
       }
     }
 
-    numfails += check_rhs_evals(m_type, arkstep_mem,
+    numfails += check_rhs_evals(prob_opts.r_type, arkstep_mem,
                                 nfe_expected + extra_fe_evals,
                                 nfi_expected + extra_fi_evals);
 
@@ -642,12 +681,12 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
     t_out += prob_opts.h;
 
     // Check statistics
-    flag = expected_rhs_evals(m_type, prob_opts.i_type, stages,
-                              explicit_first_stage, stiffly_accurate, fsal,
-                              arkstep_mem, nfe_expected, nfi_expected);
+    flag = expected_rhs_evals(prob_opts, stages, order, explicit_first_stage,
+                              stiffly_accurate, fsal, arkstep_mem, nfe_expected,
+                              nfi_expected);
     if (check_flag(&flag, "expected_rhs_evals", 1)) return 1;
 
-    numfails += check_rhs_evals(m_type, arkstep_mem,
+    numfails += check_rhs_evals(prob_opts.r_type, arkstep_mem,
                                 nfe_expected + extra_fe_evals,
                                 nfi_expected + extra_fi_evals);
 
@@ -725,40 +764,78 @@ int get_method_properties(ARKodeButcherTable Be, ARKodeButcherTable Bi,
   return 0;
 }
 
-int expected_rhs_evals(method_type m_type, interp_type i_type, int stages,
-                       bool explicit_first_stage, bool stiffly_accurate,
-                       bool fsal, void* arkstep_mem,
-                       long int& nfe_expected, long int& nfi_expected)
+int expected_rhs_evals(ProblemOptions& prob_opts, int stages, int order, bool
+                       explicit_first_stage, bool stiffly_accurate, bool fsal,
+                       void* arkstep_mem, long int& nfe_expected, long int&
+                       nfi_expected)
 {
   int flag = 0;
 
   // Get number of steps and nonlinear solver iterations
   long int nst = 0;
-  flag         = ARKStepGetNumSteps(arkstep_mem, &nst);
+
+  flag = ARKStepGetNumSteps(arkstep_mem, &nst);
   if (check_flag(&flag, "ARKStepGetNumSteps", 1)) return 1;
 
-  long int nni = 0;
-  if (m_type == method_type::impl || m_type == method_type::imex)
+  long int nni            = 0;
+  long int extra_fe_evals = 0;
+  long int extra_fi_evals = 0;
+
+  bool save_fn_for_residual = ((prob_opts.p_type == 0) &&
+                               (prob_opts.m_type == mass_matrix_type::fixed ||
+                                prob_opts.m_type == mass_matrix_type::identity) &&
+                               ((prob_opts.r_type == rk_type::impl) ||
+                                (prob_opts.r_type == rk_type::imex && explicit_first_stage)));
+
+  if (prob_opts.r_type == rk_type::impl || prob_opts.r_type == rk_type::imex)
   {
     flag = ARKStepGetNumNonlinSolvIters(arkstep_mem, &nni);
     if (check_flag(&flag, "ARKStepGetNumNonlinSolvIters", 1)) return 1;
+
+    // Remove one evaluation per implicit stage
+    int implicit_stages = (explicit_first_stage) ? stages - 1 : stages;
+
+    if (save_fn_for_residual)
+    {
+      extra_fi_evals -= implicit_stages * nst;
+    }
+
+    // With higher order methods some predictors require additional RHS when
+    // using Hermite interpolation (note default degree is order - 1, except
+    // for first order where the degree is 1.
+    int degree = (order == 1) ? 1 : order - 1;
+
+    if (prob_opts.p_type != 0 && prob_opts.i_type == interp_type::hermite && degree > 3)
+    {
+      if (prob_opts.r_type == rk_type::expl || prob_opts.r_type == rk_type::imex)
+      {
+        extra_fe_evals = (degree == 4) ? 1 : 4;
+      }
+      if (prob_opts.r_type == rk_type::impl || prob_opts.r_type == rk_type::imex)
+      {
+        extra_fi_evals = (degree == 4) ? 1 : 4;
+      }
+      extra_fe_evals *= implicit_stages * (nst - 1);
+      extra_fi_evals *= implicit_stages * (nst - 1);
+    }
   }
 
   // Expected number of explicit functions evaluations
-  nfe_expected = 0;
-  if (m_type == method_type::expl || m_type == method_type::imex)
+  nfe_expected = extra_fe_evals;
+
+  if (prob_opts.r_type == rk_type::expl || prob_opts.r_type == rk_type::imex)
   {
     if (fsal)
     {
       // Save one function evaluation after first step
-      nfe_expected = stages + (stages - 1) * (nst - 1);
+      nfe_expected += stages + (stages - 1) * (nst - 1);
     }
     else
     {
-      nfe_expected = stages * nst;
+      nfe_expected += stages * nst;
     }
 
-    if (i_type == interp_type::hermite && !explicit_first_stage)
+    if (prob_opts.i_type == interp_type::hermite && !explicit_first_stage)
     {
       if (stiffly_accurate)
       {
@@ -771,23 +848,37 @@ int expected_rhs_evals(method_type m_type, interp_type i_type, int stages,
         nfe_expected += nst;
       }
     }
+
+    if (prob_opts.i_type == interp_type::lagrange && save_fn_for_residual
+        && !explicit_first_stage)
+    {
+      if (stiffly_accurate)
+      {
+        nfe_expected++;
+      }
+      else
+      {
+        nfe_expected += nst;
+      }
+    }
   }
 
   // Expected number of implicit functions evaluations
-  nfi_expected = 0;
-  if (m_type == method_type::impl || m_type == method_type::imex)
+  nfi_expected = extra_fi_evals;
+
+  if (prob_opts.r_type == rk_type::impl || prob_opts.r_type == rk_type::imex)
   {
     if (fsal)
     {
       // Save one function evaluation after first step
-      nfi_expected = stages + (stages - 1) * (nst - 1) + nni;
+      nfi_expected += stages + (stages - 1) * (nst - 1) + nni;
     }
     else
     {
-      nfi_expected = stages * nst + nni;
+      nfi_expected += stages * nst + nni;
     }
 
-    if (i_type == interp_type::hermite && !explicit_first_stage)
+    if (prob_opts.i_type == interp_type::hermite && !explicit_first_stage)
     {
       if (stiffly_accurate)
       {
@@ -800,11 +891,24 @@ int expected_rhs_evals(method_type m_type, interp_type i_type, int stages,
         nfi_expected += nst;
       }
     }
+
+    if (prob_opts.i_type == interp_type::lagrange && save_fn_for_residual &&
+        !explicit_first_stage)
+    {
+      if (stiffly_accurate)
+      {
+        nfi_expected++;
+      }
+      else
+      {
+        nfi_expected += nst;
+      }
+    }
   }
 
   std::cout << "Steps: " << nst << std::endl;
 
-  if (m_type == method_type::impl || m_type == method_type::imex)
+  if (prob_opts.r_type == rk_type::impl || prob_opts.r_type == rk_type::imex)
   {
     std::cout << "NLS iters: " << nni << std::endl;
   }
@@ -812,13 +916,13 @@ int expected_rhs_evals(method_type m_type, interp_type i_type, int stages,
   return 0;
 }
 
-int check_rhs_evals(method_type m_type, void* arkstep_mem,
+int check_rhs_evals(rk_type r_type, void* arkstep_mem,
                     long int nfe_expected, long int nfi_expected)
 {
   int flag = 0;
 
-  long int nst = 0;
-  flag         = ARKStepGetNumSteps(arkstep_mem, &nst);
+  long int nst;
+  flag = ARKStepGetNumSteps(arkstep_mem, &nst);
   if (check_flag(&flag, "ARKStepGetNumSteps", 1)) return 1;
 
   long int nfe, nfi;
@@ -826,13 +930,13 @@ int check_rhs_evals(method_type m_type, void* arkstep_mem,
   if (check_flag(&flag, "ARKStepGetNumRhsEvals", 1)) return 1;
 
 
-  if (m_type == method_type::expl || m_type == method_type::imex)
+  if (r_type == rk_type::expl || r_type == rk_type::imex)
   {
     std::cout << "Fe RHS evals:\n"
               << "  actual:   " << nfe << "\n"
               << "  expected: " << nfe_expected << "\n";
   }
-  if (m_type == method_type::impl || m_type == method_type::imex)
+  if (r_type == rk_type::impl || r_type == rk_type::imex)
   {
     std::cout << "Fi RHS evals:\n"
               << "  actual:   " << nfi << "\n"
