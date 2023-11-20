@@ -73,7 +73,7 @@ struct ProblemData
 {
   sunrealtype lambda_e = NEG_ONE;
   sunrealtype lambda_i = NEG_ONE;
-  prob_type   p_type   = prob_type::identity;
+  prob_type   m_type   = prob_type::identity;
 };
 
 // Problem options
@@ -138,15 +138,15 @@ int main(int argc, char* argv[])
   {
     if (std::stoi(argv[1]) == 1)
     {
-      prob_data.p_type = prob_type::fixed_mass_matrix;
+      prob_data.m_type = prob_type::fixed_mass_matrix;
     }
     else if (std::stoi(argv[1]) == 2)
     {
-      prob_data.p_type = prob_type::time_dependent_mass_matrix;
+      prob_data.m_type = prob_type::time_dependent_mass_matrix;
     }
     else
     {
-      prob_data.p_type = prob_type::identity;
+      prob_data.m_type = prob_type::identity;
     }
   }
 
@@ -164,11 +164,11 @@ int main(int argc, char* argv[])
 
   // Output problem setup
   std::cout << "\nDahlquist ODE test problem:\n";
-  if (prob_data.p_type == prob_type::identity)
+  if (prob_data.m_type == prob_type::identity)
   {
     std::cout << "  problem type = Identity\n";
   }
-  else if (prob_data.p_type == prob_type::fixed_mass_matrix)
+  else if (prob_data.m_type == prob_type::fixed_mass_matrix)
   {
     std::cout << "  problem type = Fixed mass matrix\n";
   }
@@ -511,8 +511,8 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
   SUNMatrix M = nullptr;
   SUNLinearSolver MLS = nullptr;
 
-  if (prob_data.p_type == prob_type::fixed_mass_matrix ||
-      prob_data.p_type == prob_type::time_dependent_mass_matrix)
+  if (prob_data.m_type == prob_type::fixed_mass_matrix ||
+      prob_data.m_type == prob_type::time_dependent_mass_matrix)
   {
     M = SUNDenseMatrix(1, 1, sunctx);
     if (check_flag((void *)M, "SUNDenseMatrix", 0)) return 1;
@@ -521,7 +521,7 @@ int run_tests(ARKodeButcherTable Be, ARKodeButcherTable Bi,
     if (check_flag((void *)MLS, "SUNLinSol_Dense", 0)) return 1;
 
     int time_dep = 0;
-    if (prob_data.p_type == prob_type::time_dependent_mass_matrix)
+    if (prob_data.m_type == prob_type::time_dependent_mass_matrix)
       time_dep = 1;
 
     flag = ARKStepSetMassLinearSolver(arkstep_mem, MLS, M, time_dep);
@@ -861,11 +861,11 @@ int fe(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
   yd_data[0] = prob_data->lambda_e * y_data[0];
 
-  if (prob_data->p_type == prob_type::fixed_mass_matrix)
+  if (prob_data->m_type == prob_type::fixed_mass_matrix)
   {
     yd_data[0] *= TWO;
   }
-  else if (prob_data->p_type == prob_type::time_dependent_mass_matrix)
+  else if (prob_data->m_type == prob_type::time_dependent_mass_matrix)
   {
     yd_data[0] *= TWO + std::cos(t);
   }
@@ -882,11 +882,11 @@ int fi(sunrealtype t, N_Vector y, N_Vector ydot, void* user_data)
 
   yd_data[0] = prob_data->lambda_i * y_data[0];
 
-  if (prob_data->p_type == prob_type::fixed_mass_matrix)
+  if (prob_data->m_type == prob_type::fixed_mass_matrix)
   {
     yd_data[0] *= TWO;
   }
-  else if (prob_data->p_type == prob_type::time_dependent_mass_matrix)
+  else if (prob_data->m_type == prob_type::time_dependent_mass_matrix)
   {
     yd_data[0] *= TWO + std::cos(t);
   }
@@ -912,7 +912,7 @@ int MassMatrix(sunrealtype t, SUNMatrix M, void *user_data, N_Vector tmp1,
   sunrealtype* M_data    = SUNDenseMatrix_Data(M);
   ProblemData* prob_data = static_cast<ProblemData*>(user_data);
 
-  if (prob_data->p_type == prob_type::fixed_mass_matrix)
+  if (prob_data->m_type == prob_type::fixed_mass_matrix)
   {
     M_data[0] = TWO;
   }
