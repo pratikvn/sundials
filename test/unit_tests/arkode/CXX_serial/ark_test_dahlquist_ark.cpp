@@ -363,13 +363,13 @@ int main(int argc, char* argv[])
      "ARKODE_ARK324L2SA_DIRK_4_2_3",
      "ARKODE_ARK436L2SA_DIRK_6_3_4",
      "ARKODE_ARK437L2SA_DIRK_7_3_4",
-     "ARKODE_ARK548L2SA_ERK_8_4_5",
-     "ARKODE_ARK548L2SAb_ERK_8_4_5"};
+     "ARKODE_ARK548L2SA_DIRK_8_4_5",
+     "ARKODE_ARK548L2SAb_DIRK_8_4_5"};
 
   for (int i = 0; i < 6; i++)
   {
-    Be = ARKodeButcherTable_LoadERKByName(ark_methods_erk[0]);
-    Bi = ARKodeButcherTable_LoadDIRKByName(ark_methods_dirk[0]);
+    Be = ARKodeButcherTable_LoadERKByName(ark_methods_erk[i]);
+    Bi = ARKodeButcherTable_LoadDIRKByName(ark_methods_dirk[i]);
 
     flag = get_method_properties(Be, Bi, stages, order, explicit_first_stage,
                                  stiffly_accurate, fsal);
@@ -944,7 +944,7 @@ int check_flag(void* flagvalue, const std::string funcname, int opt)
   else if (opt == 1)
   {
     errflag = (int*)flagvalue;
-    if (*errflag < 0)
+    if (*errflag != 0)
     {
       std::cerr << "\nSUNDIALS_ERROR: " << funcname
                 << " failed with flag = " << *errflag << "\n\n";
