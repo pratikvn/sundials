@@ -69,7 +69,7 @@ SUNMatrix SUNBandMatrixStorage(sunindextype N, sunindextype mu, sunindextype ml,
 
   /* Create an empty matrix object */
   A = NULL;
-  A = SUNCheckCallLastErrNull(SUNMatNewEmpty(sunctx));
+  A = SUNMatNewEmpty(sunctx); SUNCheckLastErrNull();
 
   /* Attach operations */
   A->ops->getid     = SUNMatGetID_Band;
@@ -232,9 +232,9 @@ SUNMatrix_ID SUNMatGetID_Band(SUNMatrix A) { return SUNMATRIX_BAND; }
 SUNMatrix SUNMatClone_Band(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNMatrix B = SUNCheckCallLastErrNull(
-    SUNBandMatrixStorage(SM_COLUMNS_B(A), SM_UBAND_B(A), SM_LBAND_B(A),
-                         SM_SUBAND_B(A), A->sunctx));
+  SUNMatrix B = SUNBandMatrixStorage(SM_COLUMNS_B(A), SM_UBAND_B(A), SM_LBAND_B(A),
+                         SM_SUBAND_B(A), A->sunctx);
+  SUNCheckLastErrNull();
   return (B);
 }
 
@@ -387,8 +387,8 @@ SUNErrCode SUNMatMatvec_Band(SUNMatrix A, N_Vector x, N_Vector y)
   SUNCheck(compatibleMatrixAndVectors(A, x, y), SUN_ERR_ARG_DIMSMISMATCH);
 
   /* access vector data (return if failure) */
-  xd = SUNCheckCallLastErr(N_VGetArrayPointer(x));
-  yd = SUNCheckCallLastErr(N_VGetArrayPointer(y));
+  xd = N_VGetArrayPointer(x); SUNCheckLastErr();
+  yd = N_VGetArrayPointer(y); SUNCheckLastErr();
 
   /* Perform operation */
   for (i = 0; i < SM_ROWS_B(A); i++) { yd[i] = ZERO; }
@@ -455,8 +455,8 @@ SUNErrCode SMScaleAddNew_Band(sunrealtype c, SUNMatrix A, SUNMatrix B)
   ml  = SUNMAX(SM_LBAND_B(A), SM_LBAND_B(B));
   mu  = SUNMAX(SM_UBAND_B(A), SM_UBAND_B(B));
   smu = SUNMIN(SM_COLUMNS_B(A) - 1, mu + ml);
-  C   = SUNCheckCallLastErr(
-    SUNBandMatrixStorage(SM_COLUMNS_B(A), mu, ml, smu, A->sunctx));
+  C   = SUNBandMatrixStorage(SM_COLUMNS_B(A), mu, ml, smu, A->sunctx);
+  SUNCheckLastErr();
 
   /* scale/add c*A into new matrix */
   for (j = 0; j < SM_COLUMNS_B(A); j++)

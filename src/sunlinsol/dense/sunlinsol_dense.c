@@ -60,7 +60,7 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
 
   /* Create an empty linear solver */
   S = NULL;
-  S = SUNCheckCallLastErrNull(SUNLinSolNewEmpty(sunctx));
+  S = SUNLinSolNewEmpty(sunctx); SUNCheckLastErrNull();
 
   /* Attach operations */
   S->ops->gettype    = SUNLinSolGetType_Dense;
@@ -151,14 +151,14 @@ int SUNLinSolSolve_Dense(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
   sunindextype* pivots;
 
   /* copy b into x */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, b, x));
+  N_VScale(ONE, b, x); SUNCheckLastErrNoRet();
 
   /* access data pointers (return with failure on NULL) */
   A_cols = NULL;
   xdata  = NULL;
   pivots = NULL;
-  A_cols = SUNCheckCallLastErrNoRet(SUNDenseMatrix_Cols(A));
-  xdata  = SUNCheckCallLastErrNoRet(N_VGetArrayPointer(x));
+  A_cols = SUNDenseMatrix_Cols(A); SUNCheckLastErrNoRet();
+  xdata  = N_VGetArrayPointer(x); SUNCheckLastErrNoRet();
   pivots = PIVOTS(S);
   if ((A_cols == NULL) || (xdata == NULL) || (pivots == NULL))
   {

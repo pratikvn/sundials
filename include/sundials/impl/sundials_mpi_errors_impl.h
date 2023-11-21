@@ -21,6 +21,7 @@
 #define _SUNDIALS_MPI_ERRORS_IMPL_H
 
 #include <mpi.h>
+#include <sundials/sundials_errors.h>
 #include <sundials/sundials_mpi_errors.h>
 
 #if !defined(SUNDIALS_DISABLE_ERROR_CHECKS)
@@ -29,7 +30,7 @@
     int sun_chk_mpi_call_err_code_ = call;                                   \
     if (sun_chk_mpi_call_err_code_ != MPI_SUCCESS)                           \
     {                                                                        \
-      SUNHandleErr(__LINE__, __func__, __FILE__, SUN_ERR_MPI_FAIL, sunctx_); \
+      SUNHandleErr(__LINE__, __func__, __FILE__, SUN_ERR_MPI_FAIL, SUNCTX); \
       return SUN_ERR_MPI_FAIL;                                               \
     }                                                                        \
   }                                                                          \
@@ -44,7 +45,7 @@
     int sun_chk_mpi_call_err_code_ = call;                                   \
     if (sun_chk_mpi_call_err_code_ != MPI_SUCCESS)                           \
     {                                                                        \
-      SUNHandleErr(__LINE__, __func__, __FILE__, SUN_ERR_MPI_FAIL, sunctx_); \
+      SUNHandleErr(__LINE__, __func__, __FILE__, SUN_ERR_MPI_FAIL, SUNCTX); \
       return NULL;                                                           \
     }                                                                        \
   }                                                                          \
@@ -59,7 +60,7 @@
     int sun_chk_mpi_call_err_code_ = call;                                   \
     if (sun_chk_mpi_call_err_code_ != MPI_SUCCESS)                           \
     {                                                                        \
-      SUNHandleErr(__LINE__, __func__, __FILE__, SUN_ERR_MPI_FAIL, sunctx_); \
+      SUNHandleErr(__LINE__, __func__, __FILE__, SUN_ERR_MPI_FAIL, SUNCTX); \
     }                                                                        \
   }                                                                          \
   while (0)
@@ -75,7 +76,7 @@
     if (!(expr))                                                          \
     {                                                                     \
       SUNMPIAssertErrHandlerFn(__LINE__, __func__, __FILE__, #expr, code, \
-                               sunctx_->err_handler->data, sunctx_);      \
+                               SUNCTX->err_handler->data, SUNCTX);      \
     }                                                                     \
   }                                                                       \
   while (0)

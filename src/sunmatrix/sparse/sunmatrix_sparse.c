@@ -68,7 +68,7 @@ SUNMatrix SUNSparseMatrix(sunindextype M, sunindextype N, sunindextype NNZ,
 
   /* Create an empty matrix object */
   A = NULL;
-  A = SUNCheckCallLastErrNull(SUNMatNewEmpty(sunctx));
+  A = SUNMatNewEmpty(sunctx); SUNCheckLastErrNull();
 
   /* Attach operations */
   A->ops->getid     = SUNMatGetID_Sparse;
@@ -166,7 +166,7 @@ SUNMatrix SUNSparseFromDenseMatrix(SUNMatrix Ad, sunrealtype droptol,
 
   /* allocate sparse matrix */
   As = NULL;
-  As = SUNCheckCallLastErrNull(SUNSparseMatrix(M, N, nnz, sparsetype, Ad->sunctx));
+  As = SUNSparseMatrix(M, N, nnz, sparsetype, Ad->sunctx); SUNCheckLastErrNull();
 
   /* copy nonzeros from Ad into As, based on CSR/CSC type */
   nnz = 0;
@@ -241,7 +241,7 @@ SUNMatrix SUNSparseFromBandMatrix(SUNMatrix Ab, sunrealtype droptol,
   }
 
   /* allocate sparse matrix */
-  As = SUNCheckCallLastErrNull(SUNSparseMatrix(M, N, nnz, sparsetype, Ab->sunctx));
+  As = SUNSparseMatrix(M, N, nnz, sparsetype, Ab->sunctx); SUNCheckLastErrNull();
 
   /* copy nonzeros from Ab into As, based on CSR/CSC type */
   nnz = 0;
@@ -292,9 +292,9 @@ SUNErrCode SUNSparseMatrix_ToCSR(const SUNMatrix A, SUNMatrix* Bout)
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
   SUNAssert(SM_SPARSETYPE_S(A) == CSC_MAT, SUN_ERR_ARG_OUTOFRANGE);
 
-  *Bout = SUNCheckCallLastErr(SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
-                                              SM_NNZ_S(A), CSR_MAT, A->sunctx));
-
+  *Bout = SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
+                                              SM_NNZ_S(A), CSR_MAT, A->sunctx);
+  SUNCheckLastErr();
   SUNCheckCall(format_convert(A, *Bout));
   return SUN_SUCCESS;
 }
@@ -308,8 +308,9 @@ SUNErrCode SUNSparseMatrix_ToCSC(const SUNMatrix A, SUNMatrix* Bout)
   SUNAssert(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
   SUNAssert(SM_SPARSETYPE_S(A) == CSR_MAT, SUN_ERR_ARG_OUTOFRANGE);
 
-  *Bout = SUNCheckCallLastErr(SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
-                                              SM_NNZ_S(A), CSC_MAT, A->sunctx));
+  *Bout = SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
+                                              SM_NNZ_S(A), CSC_MAT, A->sunctx);
+  SUNCheckLastErr();
 
   SUNCheckCall(format_convert(A, *Bout));
   return SUN_SUCCESS;
@@ -486,9 +487,9 @@ SUNMatrix_ID SUNMatGetID_Sparse(SUNMatrix A) { return SUNMATRIX_SPARSE; }
 SUNMatrix SUNMatClone_Sparse(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNMatrix B = SUNCheckCallLastErrNull(
-    SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A), SM_NNZ_S(A),
-                    SM_SPARSETYPE_S(A), A->sunctx));
+  SUNMatrix B = SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A), SM_NNZ_S(A),
+                    SM_SPARSETYPE_S(A), A->sunctx);
+  SUNCheckLastErrNull();
   return (B);
 }
 
@@ -739,9 +740,10 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
     x = (sunrealtype*)malloc(M * sizeof(sunrealtype));
 
     /* create new matrix for sum */
-    C = SUNCheckCallLastErr(SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
+    C = SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
                                             Ap[N] + newvals, SM_SPARSETYPE_S(A),
-                                            A->sunctx));
+                                            A->sunctx);
+    SUNCheckLastErr();
 
     /* access data from CSR structures (return if failure) */
     Cp = Ci = NULL;
@@ -968,9 +970,10 @@ SUNErrCode SUNMatScaleAdd_Sparse(sunrealtype c, SUNMatrix A, SUNMatrix B)
   else
   {
     /* create new matrix for sum */
-    C = SUNCheckCallLastErr(SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
+    C = SUNSparseMatrix(SM_ROWS_S(A), SM_COLUMNS_S(A),
                                             Ap[N] + newvals, SM_SPARSETYPE_S(A),
-                                            A->sunctx));
+                                            A->sunctx);
+    SUNCheckLastErr();
 
     /* access data from CSR structures (return if failure) */
     Cp = Ci = NULL;
@@ -1149,8 +1152,8 @@ SUNErrCode Matvec_SparseCSC(SUNMatrix A, N_Vector x, N_Vector y)
   SUNCheck(Ax, SUN_ERR_ARG_CORRUPT);
 
   /* access vector data (return if failure) */
-  xd = SUNCheckCallLastErr(N_VGetArrayPointer(x));
-  yd = SUNCheckCallLastErr(N_VGetArrayPointer(y));
+  xd = N_VGetArrayPointer(x); SUNCheckLastErr();
+  yd = N_VGetArrayPointer(y); SUNCheckLastErr();
 
   /* initialize result */
   for (i = 0; i < SM_ROWS_S(A); i++) { yd[i] = 0.0; }
@@ -1188,8 +1191,8 @@ SUNErrCode Matvec_SparseCSR(SUNMatrix A, N_Vector x, N_Vector y)
   SUNCheck(Ax, SUN_ERR_ARG_CORRUPT);
 
   /* access vector data (return if failure) */
-  xd = SUNCheckCallLastErr(N_VGetArrayPointer(x));
-  yd = SUNCheckCallLastErr(N_VGetArrayPointer(y));
+  xd = N_VGetArrayPointer(x); SUNCheckLastErr();
+  yd = N_VGetArrayPointer(y); SUNCheckLastErr();
 
   /* initialize result */
   for (i = 0; i < SM_ROWS_S(A); i++) { yd[i] = 0.0; }

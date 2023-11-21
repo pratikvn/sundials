@@ -142,7 +142,7 @@ SUNDIALS_EXPORT
 void N_VSetArrayPointer_Parallel(sunrealtype* v_data, N_Vector v);
 
 SUNDIALS_EXPORT
-void* N_VGetCommunicator_Parallel(N_Vector v);
+MPI_Comm N_VGetCommunicator_Parallel(N_Vector v);
 
 /* standard vector operations */
 

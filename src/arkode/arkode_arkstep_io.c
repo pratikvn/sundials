@@ -789,7 +789,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
     ark_mem->hadapt_mem->owncontroller = SUNFALSE;
     if (retval != SUNADAPTCONTROLLER_SUCCESS)
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE", "ARKStepSetOptimalParams",
+      arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                       "SUNAdaptController_Destroy failure");
       return (ARK_MEM_FAIL);
     }
@@ -804,8 +804,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
     hadapt_mem->hcontroller = SUNAdaptController_PI(ark_mem->sunctx);
     if (hadapt_mem->hcontroller == NULL)
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                      "ARKStepSetOptimalParams",
+      arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                       "SUNAdaptController_PI allocation failure");
       return (ARK_MEM_FAIL);
     }
@@ -828,8 +827,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_PID(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_PID allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -850,8 +848,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_I(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_I allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -873,8 +870,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_PID(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_PID allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -900,8 +896,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_PID(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_PID allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -934,8 +929,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_PID(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_PID allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -956,8 +950,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_PID(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_PID allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -982,8 +975,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_PID(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_PID allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -1009,8 +1001,7 @@ int ARKStepSetOptimalParams(void* arkode_mem)
       hadapt_mem->hcontroller = SUNAdaptController_PI(ark_mem->sunctx);
       if (hadapt_mem->hcontroller == NULL)
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
-                        "ARKStepSetOptimalParams",
+        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
                         "SUNAdaptController_PI allocation failure");
         return (ARK_MEM_FAIL);
       }
@@ -1582,8 +1573,7 @@ int ARKStepSetTableNum(void* arkode_mem, ARKODE_DIRKTableID itable,
           (itable == ARKODE_ARK548L2SAb_DIRK_8_4_5)) &&
         !((etable == ARKODE_ARK2_ERK_3_1_2) && (itable == ARKODE_ARK2_DIRK_3_1_2)))
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep",
-                      "ARKStepSetTableNum",
+      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
                       "Incompatible Butcher tables for ARK method");
       return (ARK_ILL_INPUT);
     }
@@ -1805,7 +1795,8 @@ int ARKStepSetMaxNonlinIters(void* arkode_mem, int maxcor)
   else { step_mem->maxcor = maxcor; }
 
   /* send argument to NLS structure */
-  retval = SUNNonlinSolSetMaxIters(step_mem->NLS, step_mem->maxcor); SUNCheckCallNoRet(retval);
+  retval = SUNNonlinSolSetMaxIters(step_mem->NLS, step_mem->maxcor);
+  SUNCheckCallNoRet(retval);
   if (retval != SUN_SUCCESS)
   {
     arkProcessError(ark_mem, ARK_NLS_OP_ERR, __LINE__, __func__, __FILE__,
@@ -1995,7 +1986,8 @@ int ARKStepGetEstLocalErrors(void* arkode_mem, N_Vector ele)
   SUNFunctionBegin(ark_mem->sunctx);
 
   /* copy vector to output */
-  SUNCheckCallLastErrNoRet(N_VScale(ONE, ark_mem->tempv1, ele));
+  N_VScale(ONE, ark_mem->tempv1, ele);
+  SUNCheckLastErrNoRet();
 
   return (ARK_SUCCESS);
 }
