@@ -117,7 +117,8 @@ typedef struct ARKodeARKStepMemRec {
                             nonlinear equation                       */
 
   int      convfail;     /* NLS fail flag (for interface routines)   */
-  sunbooleantype jcur;      /* is Jacobian info for lin solver current? */
+  sunbooleantype jcur;   /* is Jacobian info for lin solver current? */
+  N_Vector fn_implicit;  /* alias to saved implicit function evaluation */
 
   /* Linear Solver Data */
   ARKLinsolInitFn      linit;
