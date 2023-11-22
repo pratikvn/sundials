@@ -50,7 +50,7 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
   /* Check the CVODE memory pointer */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "CVodeSetProjFn", MSG_CV_MEM_NULL);
+    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSG_CV_MEM_NULL);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -58,16 +58,14 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
   /* Check if the projection function is NULL */
   if (pfun == NULL)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetProjFn",
-                   "The projection function is NULL.");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "The projection function is NULL.");
     return (CV_ILL_INPUT);
   }
 
   /* Check for compatible method */
   if (cv_mem->cv_lmm != CV_BDF)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetProjFn",
-                   "Projection is only supported with BDF methods.");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Projection is only supported with BDF methods.");
     return (CV_ILL_INPUT);
   }
 
@@ -75,8 +73,7 @@ int CVodeSetProjFn(void* cvode_mem, CVProjFn pfun)
   retval = cvProjCreate(&(cv_mem->proj_mem));
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_MEM_FAIL, "CVODE", "CVodeSetProjFn",
-                   MSG_CV_MEM_FAIL);
+    cvProcessError(cv_mem, CV_MEM_FAIL, __LINE__, __func__, __FILE__, MSG_CV_MEM_FAIL);
     return (CV_MEM_FAIL);
   }
 
@@ -286,8 +283,7 @@ int cvDoProjection(CVodeMem cv_mem, int* nflagPtr, sunrealtype saved_t,
   /* Access projection memory */
   if (cv_mem->proj_mem == NULL)
   {
-    cvProcessError(cv_mem, CV_PROJ_MEM_NULL, "CVODE", "cvDoProjection",
-                   MSG_CV_PROJ_MEM_NULL);
+    cvProcessError(cv_mem, CV_PROJ_MEM_NULL, __LINE__, __func__, __FILE__, MSG_CV_PROJ_MEM_NULL);
     return (CV_PROJ_MEM_NULL);
   }
   proj_mem = cv_mem->proj_mem;
@@ -437,7 +433,7 @@ static int cvAccessProjMem(void* cvode_mem, const char* fname, CVodeMem* cv_mem,
   /* Access cvode memory */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, "CVODE", fname, MSG_CV_MEM_NULL);
+    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSG_CV_MEM_NULL);
     return (CV_MEM_NULL);
   }
   *cv_mem = (CVodeMem)cvode_mem;
@@ -445,8 +441,7 @@ static int cvAccessProjMem(void* cvode_mem, const char* fname, CVodeMem* cv_mem,
   /* Access projection memory */
   if ((*cv_mem)->proj_mem == NULL)
   {
-    cvProcessError(*cv_mem, CV_PROJ_MEM_NULL, "CVODE", fname,
-                   MSG_CV_PROJ_MEM_NULL);
+    cvProcessError(*cv_mem, CV_PROJ_MEM_NULL, __LINE__, __func__, __FILE__, MSG_CV_PROJ_MEM_NULL);
     return (CV_PROJ_MEM_NULL);
   }
   *proj_mem = (CVodeProjMem)(*cv_mem)->proj_mem;

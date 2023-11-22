@@ -39,6 +39,13 @@ extern "C" {
 #define RSYMW "23.16g"
 #endif
 
+/*===============================================================
+  SHORTCUTS
+  ===============================================================*/
+
+#define CV_PROFILER cv_mem->cv_sunctx->profiler
+#define CV_LOGGER cv_mem->cv_sunctx->logger
+
 /*
  * =================================================================
  *   I N T E R N A L   C O N S T A N T S
@@ -613,6 +620,8 @@ int cvEwtSet(N_Vector ycur, N_Vector weight, void *data);
 
 /* High level error handler */
 
+// void cvProcessError(CVodeMem cv_mem, int error_code, const char* module,
+                    // const char* fname, const char* msgfmt, ...);
 void cvProcessError(CVodeMem cv_mem, int error_code, int line, const char *func,
                     const char *file, const char *msgfmt, ...);
 
@@ -620,9 +629,6 @@ void cvProcessError(CVodeMem cv_mem, int error_code, int line, const char *func,
 
 void cvErrHandler(int error_code, const char *module, const char *function,
                   char *msg, void *data);
-
-int cvSunErrHandlerFn(int line, const char* func, const char* file, SUNErrCode err_code, void* err_user_data,
-                      SUNContext sunctx);
 
 /* Nonlinear solver initialization */
 

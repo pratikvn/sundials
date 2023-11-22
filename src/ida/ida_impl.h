@@ -38,6 +38,13 @@ extern "C" {
 #define RSYMW "23.16g"
 #endif
 
+/*===============================================================
+  SHORTCUTS
+  ===============================================================*/
+
+#define IDA_PROFILER IDA_mem->ida_sunctx->profiler
+#define IDA_LOGGER IDA_mem->ida_sunctx->logger
+
 /*
  * =================================================================
  *   M A I N    I N T E G R A T O R    M E M O R Y    B L O C K

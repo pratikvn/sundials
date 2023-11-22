@@ -37,6 +37,13 @@ extern "C" {
 #define RSYMW "23.16g"
 #endif
 
+/*=================================================================*/
+/* Shortcuts                                                       */
+/*=================================================================*/
+
+#define CV_PROFILER cv_mem->cv_sunctx->profiler
+#define CV_LOGGER cv_mem->cv_sunctx->logger
+
 /*
  * =================================================================
  *   I N T E R N A L   C O N S T A N T S
@@ -1135,7 +1142,7 @@ int cvEwtSet(N_Vector ycur, N_Vector weight, void *data);
 /* High level error handler */
 
 void cvProcessError(CVodeMem cv_mem, int error_code, int line, const char *func,
-                    const char* file, const char *msgfmt, ...);
+                    const char *file, const char *msgfmt, ...);
 
 /* Prototype of internal ErrHandler function */
 

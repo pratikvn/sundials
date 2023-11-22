@@ -147,7 +147,7 @@ static void sunResetTiming(sunTimerStruct* entry)
 
 struct _SUNProfiler
 {
-  void* comm;
+  SUNComm comm;
   char* title;
   SUNHashMap map;
   sunTimerStruct* overhead;

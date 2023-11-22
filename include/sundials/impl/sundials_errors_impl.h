@@ -26,15 +26,9 @@
 
 /* The SUNFunctionBegin macro is used to declare the SUNContext
    object to be used a function. */
-#if !defined(SUNDIALS_DISABLE_ERROR_CHECKS)
 #define SUNFunctionBegin(sunctx) \
   SUNContext SUNCTX = sunctx;  \
   (void)SUNCTX
-#else
-#define SUNFunctionBegin(sunctx) \
-  SUNContext SUNCTX = sunctx;  \
-  (void)SUNCTX
-#endif
 
 /* ----------------------------------------------------------------------------
  * Error checking macros
