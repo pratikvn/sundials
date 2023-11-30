@@ -74,13 +74,7 @@ if(BUILD_NVECTOR_KOKKOS)
   message(STATUS "Added BUILD_NVECTOR_KOKKOS module")
   add_library(sundials_nveckokkos INTERFACE)
   target_link_libraries(sundials_nveckokkos INTERFACE sundials_core)
-  if(ENABLE_HIP)
-    target_link_libraries(sundials_nveckokkos INTERFACE
-    Kokkos::kokkos hip::device)
-  else()
-    target_link_libraries(sundials_nveckokkos INTERFACE
-    Kokkos::kokkos)
-  endif()
+  target_link_libraries(sundials_nveckokkos INTERFACE Kokkos::kokkos)
   target_include_directories(sundials_nveckokkos INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/include>

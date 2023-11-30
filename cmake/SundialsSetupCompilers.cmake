@@ -369,7 +369,9 @@ endif()
 # ===============================================================
 
 if(ENABLE_HIP)
-  include(SundialsSetupHIP)
+  #include(SundialsSetupHIP)
+  enable_language(HIP)
+  set(HIP_FOUND TRUE)
   # we treat HIP as both a TPL and a language
   list(APPEND SUNDIALS_TPL_LIST "HIP")
 endif()

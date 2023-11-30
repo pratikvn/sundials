@@ -117,7 +117,7 @@ if(SUPERLUDIST_ROCM)
   find_package(hipblas REQUIRED)
   find_package(rocsolver REQUIRED)
   find_package(rocblas REQUIRED)
-  list(APPEND SUPERLUDIST_LINK_LIBRARIES hip::device roc::hipblas roc::rocblas roc::rocsolver)
+  list(APPEND SUPERLUDIST_LINK_LIBRARIES roc::hipblas roc::rocblas roc::rocsolver)
 endif()
 
 # set package variables including SUPERLUDIST_FOUND

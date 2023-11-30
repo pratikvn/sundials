@@ -24,6 +24,8 @@ foreach(test_tuple ${unit_tests})
   # test source files once for testing with different inputs
   if(NOT TARGET ${test})
 
+    set_source_files_properties(${test}.cpp PROPERTIES LANGUAGE HIP)
+
     # test source files
     add_executable(${test} ${test}.cpp)
 
@@ -36,7 +38,7 @@ foreach(test_tuple ${unit_tests})
       ${CMAKE_SOURCE_DIR}/src)
 
     # libraries to link against
-    target_link_libraries(${test} PRIVATE sundials_core sundials_sunmemhip_obj hip::device ${EXE_EXTRA_LINK_LIBS})
+    target_link_libraries(${test} PRIVATE sundials_core sundials_sunmemhip_obj ${EXE_EXTRA_LINK_LIBS})
 
   endif()
 

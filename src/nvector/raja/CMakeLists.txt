@@ -24,7 +24,7 @@ if(SUNDIALS_RAJA_BACKENDS MATCHES "CUDA")
 elseif(SUNDIALS_RAJA_BACKENDS MATCHES "HIP")
   set(_sunmemlib sundials_sunmemhip_obj)
   set(_lib_output_name sundials_nvechipraja)
-  set(_hip_lib_or_not hip::device)
+  set_source_files_properties(nvector_raja.cpp PROPERTIES LANGUAGE HIP)
   set(_cxx_std cxx_std_14)
 elseif(SUNDIALS_RAJA_BACKENDS MATCHES "SYCL")
   set(_sunmemlib sundials_sunmemsycl_obj)
@@ -45,7 +45,7 @@ sundials_add_library(sundials_nvecraja
   OBJECT_LIBRARIES
     ${_sunmemlib}
   LINK_LIBRARIES
-    PUBLIC ${_hip_lib_or_not} RAJA
+    PUBLIC RAJA
   COMPILE_OPTIONS
     PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--expt-extended-lambda>
   COMPILE_DEFINITIONS

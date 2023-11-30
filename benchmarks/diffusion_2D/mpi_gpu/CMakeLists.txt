@@ -68,6 +68,10 @@ foreach(test_tuple ${tests})
 
   else()
 
+    foreach(file ${sources})
+      set_source_files_properties(${file} PROPERTIES LANGUAGE HIP)
+    endforeach()
+
     set(target ${package}_diffusion_2D_mpihip)
 
   endif()
@@ -77,7 +81,7 @@ foreach(test_tuple ${tests})
   # if("${backend}" STREQUAL "USE_CUDA")
   #  sundials_add_benchmark(${target} ${target} diffusion_2D
   #    ENABLE_GPU
-  #    NUM_CORES ${SUNDIALS_BENCHMARK_NUM_GPUS} 
+  #    NUM_CORES ${SUNDIALS_BENCHMARK_NUM_GPUS}
   #  )
   #endif()
 
@@ -115,8 +119,7 @@ foreach(test_tuple ${tests})
       PRIVATE
       sundials_${package}
       sundials_nvecmpiplusx
-      sundials_nvechip
-      hip::device)
+      sundials_nvechip)
 
   endif()
 

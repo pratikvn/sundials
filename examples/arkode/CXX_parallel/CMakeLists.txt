@@ -155,9 +155,9 @@ if(ENABLE_RAJA AND (SUNDIALS_PRECISION MATCHES "DOUBLE") AND
   set(OTHER_LIBS RAJA ${OTHER_LIBS})
 
   # If RAJA has HIP enabled, we have to link to HIP even if we dont use it
-  if(RAJA_BACKENDS MATCHES "HIP")
-    set(OTHER_LIBS hip::device ${OTHER_LIBS})
-  endif()
+  # if(RAJA_BACKENDS MATCHES "HIP")
+  #   set(OTHER_LIBS hip::device ${OTHER_LIBS})
+  # endif()
 
   # If RAJA has OpenMP enabled, we have to link to OpenMP even if we dont use it
   if((RAJA_BACKENDS MATCHES "TARGET_OPENMP") OR (RAJA_BACKENDS MATCHES "OPENMP"))
@@ -205,7 +205,7 @@ if(ENABLE_RAJA AND (SUNDIALS_PRECISION MATCHES "DOUBLE") AND
       set(hip_raja_examples
         "ark_brusselator1D_task_local_nls.cpp\;USE_HIP_NVEC\;--monitor\;1\;4\;exclude\;2")
       set(SUNDIALS_LIBS sundials_arkode sundials_nvecmpiplusx sundials_nvechip)
-      build_examples(hip_raja_examples CXX)
+      build_examples(hip_raja_examples HIP)
     endif()
 
     # ---------------------

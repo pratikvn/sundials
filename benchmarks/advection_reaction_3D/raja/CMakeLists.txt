@@ -141,6 +141,12 @@ if(BUILD_ARKODE AND BUILD_CVODE AND BUILD_IDA)
 
   if(BUILD_NVECTOR_HIP)
 
+    set_source_files_properties(advection_reaction_3D.cpp
+      PROPERTIES LANGUAGE HIP)
+    set_source_files_properties(arkode_driver.cpp PROPERTIES LANGUAGE HIP)
+    set_source_files_properties(cvode_driver.cpp PROPERTIES LANGUAGE HIP)
+    set_source_files_properties(ida_driver.cpp PROPERTIES LANGUAGE HIP)
+
     add_executable(advection_reaction_3D_raja_mpihip
       advection_reaction_3D.cpp
       advection_reaction_3D.hpp
@@ -151,6 +157,10 @@ if(BUILD_ARKODE AND BUILD_CVODE AND BUILD_IDA)
       ParallelGrid.hpp
       check_retval.h
       backends.hpp)
+
+    # ensure the linker language is reset to CXX
+    # set_target_properties(advection_reaction_3D_raja_mpihip
+    #   PROPERTIES LINKER_LANGUAGE CXX)
 
     target_include_directories(advection_reaction_3D_raja_mpihip
       PRIVATE
@@ -165,7 +175,6 @@ if(BUILD_ARKODE AND BUILD_CVODE AND BUILD_IDA)
       sundials_nvecmpiplusx
       sundials_nvechip
       RAJA
-      hip::device
       ${MPI_CXX_LIBRARIES}
       ${OTHER_LIBS})
 

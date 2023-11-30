@@ -48,6 +48,8 @@ foreach(example_tuple ${all_examples})
   # extract the file name without extension
   get_filename_component(example_target ${example} NAME_WE)
 
+  set_source_files_properties(${example} PROPERTIES LANGUAGE HIP)
+
   if (NOT TARGET ${example_target})
     # example source files
     add_executable(${example_target} ${example})
@@ -56,7 +58,7 @@ foreach(example_tuple ${all_examples})
     set_target_properties(${example_target} PROPERTIES FOLDER "Examples")
 
     # libraries to link against
-    target_link_libraries(${example_target} PRIVATE hip::device ${SUNDIALS_LIBS} ${EXE_EXTRA_LINK_LIBS})
+    target_link_libraries(${example_target} PRIVATE ${SUNDIALS_LIBS} ${EXE_EXTRA_LINK_LIBS})
   endif()
 
   # check if example args are provided and set the test name
