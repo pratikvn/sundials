@@ -57,6 +57,10 @@
 #include <mpi.h>
 #endif
 
+#if SUNDIALS_MPI_ENABLED
+#include <mpi.h>
+#endif
+
 #ifdef __cplusplus  /* wrapper to enable C++ usage */
 extern "C" {
 #endif
@@ -189,7 +193,7 @@ typedef struct SUNContext_* SUNContext;
 typedef struct SUNErrHandler_* SUNErrHandler;
 
 /* SUNDIALS profiler */
-typedef struct _SUNProfiler* SUNProfiler;
+typedef struct SUNProfiler_* SUNProfiler;
 
 /* SUNDIALS logger */
 typedef struct SUNLogger_* SUNLogger;
@@ -199,9 +203,9 @@ typedef struct SUNLogger_* SUNLogger;
  * ---------------------------------------------------------------------------*/
 
 /* Error handler function */
-typedef int (*SUNErrHandlerFn)(int line, const char* func, const char* file,
-                               const char* msg, SUNErrCode err_code,
-                               void* err_user_data, SUNContext sunctx);
+typedef void (*SUNErrHandlerFn)(int line, const char* func, const char* file,
+                                const char* msg, SUNErrCode err_code,
+                                void* err_user_data, SUNContext sunctx);
 
 /*
  *------------------------------------------------------------------
@@ -212,11 +216,19 @@ typedef int (*SUNErrHandlerFn)(int line, const char* func, const char* file,
  *------------------------------------------------------------------
  */
 
+ /* We don't define SUN_COMM_NULL when SWIG is processing the header
+    because we manually insert the wrapper code for SUN_COMM_NULL
+    (and %ignoring it in the SWIG code doesn't seem to work). */
+
 #if SUNDIALS_MPI_ENABLED
+#ifndef SWIG
 #define SUN_COMM_NULL MPI_COMM_NULL
+#endif
 typedef MPI_Comm SUNComm;
 #else
+#ifndef SWIG
 #define SUN_COMM_NULL 0
+#endif
 typedef int SUNComm;
 #endif
 

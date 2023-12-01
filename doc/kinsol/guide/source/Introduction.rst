@@ -97,9 +97,6 @@ from ``sundials_types.h`` and replaced with ``sunrealtype`` and
 the header file ``sundials_types_deprecated.h`` but will be fully removed in the
 next major release.
 
-Fixed the build system support for MAGMA when using a NVIDIA HPC SDK installation of CUDA
-and fixed the targets used for rocBLAS and rocSPARSE.
-
 Improved computational complexity of ``SUNMatScaleAddI_Sparse`` from ``O(M*N)`` to
 ``O(NNZ)``.
 
@@ -109,6 +106,8 @@ Fixed missing soversions in some ``SUNLinearSolver`` and ``SUNNonlinearSolver``
 CMake targets.
 
 Added Fortran support for the LAPACK  dense ``SUNLinearSolver`` implementation.
+
+SUNDIALS now has more robust and uniform error handling. See :numref:`SUNDIALS.Errors` for details.
 
 **Breaking change** 
 We have replaced the use of a type-erased (i.e., ``void*``) pointer to a
@@ -131,11 +130,27 @@ and a typedef to a ``MPI_Comm`` in builds with MPI. Here is what this means:
   ``N_VGetCommunicator``, since it now returns a ``SUNComm``. 
 
 The change away from type-erased pointers for :c:type:`SUNComm` fixes problems like the 
-one described in `GitHub Issue #275 <https://github.com/LLNL/sundials/issues/275>`.
+one described in `GitHub Issue #275 <https://github.com/LLNL/sundials/issues/275>_`.
+
+**Breaking change**
+The SUNLogger is now always MPI-aware if MPI is enabled in SUNDIALS and the
+``SUNDIALS_LOGGING_ENABLE_MPI`` CMake option and macro definition were removed 
+accordingly.
 
 **Breaking change**
 Functions, types and header files that were previously deprecated have been
-removed. 
+removed.
+
+**Breaking change**
+Users now need to link to ``sundials_core`` in addition to the libraries already linked to. 
+This will be picked up automatically in projects that use the SUNDIALS CMake target. The library ``sundials_generic`` has been superceded by ``sundials_core`` and is no longer available.
+This fixes some duplicate symbol errors on Windows when linking to multiple SUNDIALS libraries.
+
+Changes in v6.6.2
+-----------------
+
+Fixed the build system support for MAGMA when using a NVIDIA HPC SDK installation of CUDA  
+and fixed the targets used for rocBLAS and rocSPARSE.  
 
 Changes in v6.6.1
 -----------------

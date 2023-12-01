@@ -455,6 +455,7 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
     N_VScale(ONE, V[0], vtemp);
     SUNCheckLastErrNoRet();
   }
+  else { N_VScale(ONE, V[0], vtemp); }
 
   if (scale1)
   {
@@ -576,6 +577,7 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
         N_VScale(ONE, V[l_plus_1], vtemp);
         SUNCheckLastErrNoRet();
       }
+      else { N_VScale(ONE, V[l_plus_1], vtemp); }
 
       /* Apply left scaling: V[l+1] = s1 P1_inv A P2_inv s2_inv V[l] */
       if (scale1)
@@ -686,6 +688,7 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
         N_VScale(ONE, xcor, vtemp);
         SUNCheckLastErrNoRet();
       }
+      else { N_VScale(ONE, xcor, vtemp); }
 
       /* Add vtemp to initial x to get final solution x, and return */
       if (*zeroguess)
@@ -758,6 +761,7 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
       N_VScale(ONE, xcor, vtemp);
       SUNCheckLastErrNoRet();
     }
+    else { N_VScale(ONE, xcor, vtemp); }
 
     /* Add vtemp to initial x to get final solution x, and return */
     if (*zeroguess)

@@ -154,9 +154,6 @@ release, but for some applications a value of :math:`0` is more appropriate.
 Users who notice that their simulations encounter a large number of
 temporal error test failures may want to experiment with adjusting this value.
 
-Fixed the build system support for MAGMA when using a NVIDIA HPC SDK installation of CUDA
-and fixed the targets used for rocBLAS and rocSPARSE.
-
 Fixed a regression introduced by the stop time bug fix in v6.6.1 where ARKODE
 steppers would return at the stop time rather than the requested output time if
 the stop time was reached in the same step in which the output time was passed.
@@ -188,6 +185,8 @@ This fixes `GitHub Issue #312 <https://github.com/LLNL/sundials/issues/312>`_.
 
 Added Fortran support for the LAPACK  dense ``SUNLinearSolver`` implementation.
 
+SUNDIALS now has more robust and uniform error handling. See :numref:`SUNDIALS.Errors` for details.
+
 **Breaking change** 
 We have replaced the use of a type-erased (i.e., ``void*``) pointer to a
 communicator in place of ``MPI_Comm`` throughout the SUNDIALS API with a
@@ -209,12 +208,32 @@ and a typedef to a ``MPI_Comm`` in builds with MPI. Here is what this means:
   ``N_VGetCommunicator``, since it now returns a ``SUNComm``. 
 
 The change away from type-erased pointers for :c:type:`SUNComm` fixes problems like the 
-one described in `GitHub Issue #275 <https://github.com/LLNL/sundials/issues/275>`.
+one described in `GitHub Issue #275 <https://github.com/LLNL/sundials/issues/275>_`.
+
+**Breaking change**
+The SUNLogger is now always MPI-aware if MPI is enabled in SUNDIALS and the
+``SUNDIALS_LOGGING_ENABLE_MPI`` CMake option and macro definition were removed 
+accordingly.
 
 **Breaking change**
 Functions, types and header files that were previously deprecated have been
-removed. 
+removed.
 
+**Breaking change**
+Users now need to link to ``sundials_core`` in addition to the libraries already linked to. 
+This will be picked up automatically in projects that use the SUNDIALS CMake target. The library ``sundials_generic`` has been superceded by ``sundials_core`` and is no longer available.
+This fixes some duplicate symbol errors on Windows when linking to multiple SUNDIALS libraries.
+
+**Breaking change**
+Users now need to link to ``sundials_core`` in addition to the libraries already linked to. 
+This will be picked up automatically in projects that use the SUNDIALS CMake target. The library ``sundials_generic`` has been superceded by ``sundials_core`` and is no longer available.
+
+
+Changes in v5.6.2
+-----------------
+
+Fixed the build system support for MAGMA when using a NVIDIA HPC SDK installation of CUDA
+and fixed the targets used for rocBLAS and rocSPARSE.
 
 Changes in v5.6.1
 -----------------

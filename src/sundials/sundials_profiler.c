@@ -12,7 +12,7 @@
  * SUNDIALS Copyright End
  * -----------------------------------------------------------------*/
 
-#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include <sundials/sundials_config.h>
 
 #include "sundials/sundials_errors.h"
@@ -145,7 +145,7 @@ static void sunResetTiming(sunTimerStruct* entry)
   This structure holds all of the timers in a map.s
  */
 
-struct _SUNProfiler
+struct SUNProfiler_
 {
   SUNComm comm;
   char* title;
@@ -160,8 +160,9 @@ SUNErrCode SUNProfiler_Create(SUNComm comm, const char* title, SUNProfiler* p)
   int max_entries;
   char* max_entries_env;
 
-  *p = profiler = (SUNProfiler)malloc(sizeof(struct _SUNProfiler));
-  if (!profiler) { return SUN_ERR_MALLOC_FAIL; }
+  *p = profiler = (SUNProfiler)malloc(sizeof(struct SUNProfiler_));
+
+  if (profiler == NULL) { return SUN_SUCCESS; }
 
   profiler->overhead = sunTimerStructNew();
   if (!profiler->overhead)
@@ -193,7 +194,12 @@ SUNErrCode SUNProfiler_Create(SUNComm comm, const char* title, SUNProfiler* p)
   profiler->comm = SUN_COMM_NULL;
   if (comm != SUN_COMM_NULL) { MPI_Comm_dup(comm, &profiler->comm); }
 #else
-  profiler->comm = comm;
+  if (comm != SUN_COMM_NULL)
+  {
+    free(profiler);
+    return -1;
+  }
+  profiler->comm = SUN_COMM_NULL;
 #endif
 
   /* Copy the title of the profiler (note strlen does not include terminating
@@ -234,6 +240,8 @@ SUNErrCode SUNProfiler_Begin(SUNProfiler p, const char* name)
   SUNErrCode ier;
   sunTimerStruct* timer = NULL;
 
+  if (!p) { return SUN_ERR_ARG_CORRUPT; }
+
   sunStartTiming(p->overhead);
 
   if (SUNHashMap_GetValue(p->map, name, (void**)&timer))
@@ -261,6 +269,8 @@ SUNErrCode SUNProfiler_End(SUNProfiler p, const char* name)
   SUNErrCode ier;
   sunTimerStruct* timer;
 
+  if (!p) { return SUN_ERR_ARG_CORRUPT; }
+
   sunStartTiming(p->overhead);
 
   ier = SUNHashMap_GetValue(p->map, name, (void**)&timer);
@@ -279,6 +289,8 @@ SUNErrCode SUNProfiler_End(SUNProfiler p, const char* name)
 
 int SUNProfiler_GetTimerResolution(SUNProfiler p, double* resolution)
 {
+  if (!p) { return SUN_ERR_ARG_CORRUPT; }
+
 #if defined(SUNDIALS_HAVE_POSIX_TIMERS)
   sunTimespec spec;
   clock_getres(CLOCK_MONOTONIC, &spec);
@@ -306,6 +318,8 @@ int SUNProfiler_GetElapsedTime(SUNProfiler p, const char* name, double* time)
 {
   sunTimerStruct* timer;
 
+  if (!p) { return SUN_ERR_ARG_CORRUPT; }
+
   if (SUNHashMap_GetValue(p->map, name, (void**)&timer)) { return (-1); }
 
   *time = timer->elapsed;
@@ -317,6 +331,8 @@ SUNErrCode SUNProfiler_Reset(SUNProfiler p)
 {
   int i                 = 0;
   sunTimerStruct* timer = NULL;
+
+  if (!p) { return SUN_ERR_ARG_CORRUPT; }
 
   /* Reset the overhead timer */
   sunResetTiming(p->overhead);
@@ -347,7 +363,8 @@ SUNErrCode SUNProfiler_Print(SUNProfiler p, FILE* fp)
   sunTimerStruct* timer      = NULL;
   SUNHashMapKeyValue* sorted = NULL;
 
-  if (p == NULL) { return (-1); }
+  if (!p) { return SUN_ERR_ARG_CORRUPT; }
+
   sunStartTiming(p->overhead);
 
   /* Get the total SUNDIALS time up to this point */
@@ -524,7 +541,7 @@ int sunCompareTimes(const void* l, const void* r)
   const SUNHashMapKeyValue left  = *((SUNHashMapKeyValue*)l);
   const SUNHashMapKeyValue right = *((SUNHashMapKeyValue*)r);
 
-  if (left == NULL && right == NULL) { return SUN_SUCCESS; }
+  if (left == NULL && right == NULL) { return 0; }
   if (left == NULL) { return (1); }
   if (right == NULL) { return (-1); }
 

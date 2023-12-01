@@ -19,31 +19,31 @@
 #ifndef _SUNDIALS_CONTEXT_H
 #define _SUNDIALS_CONTEXT_H
 
-#include <sundials/impl/sundials_context_impl.h>
+#include <sundials/priv/sundials_context_impl.h>
 
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
 #endif
 
 SUNDIALS_EXPORT
-SUNErrCode SUNContext_Create(SUNComm comm, SUNContext* ctx);
+SUNErrCode SUNContext_Create(SUNComm comm, SUNContext* sunctx_out);
 
 SUNDIALS_EXPORT
-SUNErrCode SUNContext_GetLastError(SUNContext sunctx, SUNErrCode* last_err);
+SUNErrCode SUNContext_GetLastError(SUNContext sunctx);
 
 SUNDIALS_EXPORT
-SUNErrCode SUNContext_PeekLastError(SUNContext sunctx, SUNErrCode* last_err);
+SUNErrCode SUNContext_PeekLastError(SUNContext sunctx);
 
 SUNDIALS_EXPORT
-SUNErrHandler SUNContext_PushErrHandler(SUNContext sunctx,
-                                        SUNErrHandlerFn err_fn,
-                                        void* err_user_data);
+SUNErrCode SUNContext_PushErrHandler(SUNContext sunctx,
+                                     SUNErrHandlerFn err_fn,
+                                     void* err_user_data);
 
 SUNDIALS_EXPORT
 SUNErrCode SUNContext_PopErrHandler(SUNContext sunctx);
 
 SUNDIALS_EXPORT
-SUNErrCode SUNContext_ClearHandlers(SUNContext sunctx);
+SUNErrCode SUNContext_ClearErrHandlers(SUNContext sunctx);
 
 SUNDIALS_EXPORT
 SUNErrCode SUNContext_GetProfiler(SUNContext sunctx, SUNProfiler* profiler);

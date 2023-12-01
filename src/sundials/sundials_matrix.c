@@ -19,9 +19,10 @@
  * -----------------------------------------------------------------*/
 
 #include <stdlib.h>
-#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include <sundials/sundials_core.h>
 
+#include "sundials/sundials_errors.h"
 #include "sundials/sundials_types.h"
 
 #if defined(SUNDIALS_BUILD_WITH_PROFILING)
@@ -34,6 +35,8 @@ static SUNProfiler getSUNProfiler(SUNMatrix A) { return (A->sunctx->profiler); }
 
 SUNMatrix SUNMatNewEmpty(SUNContext sunctx)
 {
+  if (sunctx == NULL) { return NULL; }
+
   SUNFunctionBegin(sunctx);
   SUNMatrix A;
   SUNMatrix_Ops ops;
@@ -93,8 +96,8 @@ SUNErrCode SUNMatCopyOps(SUNMatrix A, SUNMatrix B)
 {
   SUNFunctionBegin(A->sunctx);
   /* Check that ops structures exist */
-  SUNAssert(A && A->ops && A && A->ops, SUN_ERR_ARG_CORRUPT);
-  SUNAssert(B && B->ops && B && B->ops, SUN_ERR_ARG_CORRUPT);
+  SUNAssert(A && A->ops, SUN_ERR_ARG_CORRUPT);
+  SUNAssert(B && B->ops, SUN_ERR_ARG_CORRUPT);
 
   /* Copy ops from A to B */
   B->ops->getid       = A->ops->getid;
@@ -202,7 +205,7 @@ SUNErrCode SUNMatScaleAddI(sunrealtype c, SUNMatrix A)
 
 SUNErrCode SUNMatMatvecSetup(SUNMatrix A)
 {
-  SUNErrCode ier = 0;
+  SUNErrCode ier = SUN_SUCCESS;
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(A));
   if (A->ops->matvecsetup) { ier = A->ops->matvecsetup(A); }
   SUNDIALS_MARK_FUNCTION_END(getSUNProfiler(A));

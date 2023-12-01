@@ -178,35 +178,6 @@
  { printf("In " DECL ": " MSG); assert(0); RETURNNULL; }
 
 
-enum {
-    SWIG_MEM_OWN = 0x01,
-    SWIG_MEM_RVALUE = 0x02,
-    SWIG_MEM_CONST = 0x04
-};
-
-
-#define SWIG_check_mutable(SWIG_CLASS_WRAPPER, TYPENAME, FNAME, FUNCNAME, RETURNNULL) \
-    if ((SWIG_CLASS_WRAPPER).cmemflags & SWIG_MEM_CONST) { \
-        SWIG_exception_impl(FUNCNAME, SWIG_TypeError, \
-            "Cannot pass const " TYPENAME " (class " FNAME ") " \
-            "as a mutable reference", \
-            RETURNNULL); \
-    }
-
-
-#define SWIG_check_nonnull(SWIG_CLASS_WRAPPER, TYPENAME, FNAME, FUNCNAME, RETURNNULL) \
-  if (!(SWIG_CLASS_WRAPPER).cptr) { \
-    SWIG_exception_impl(FUNCNAME, SWIG_TypeError, \
-                        "Cannot pass null " TYPENAME " (class " FNAME ") " \
-                        "as a reference", RETURNNULL); \
-  }
-
-
-#define SWIG_check_mutable_nonnull(SWIG_CLASS_WRAPPER, TYPENAME, FNAME, FUNCNAME, RETURNNULL) \
-    SWIG_check_nonnull(SWIG_CLASS_WRAPPER, TYPENAME, FNAME, FUNCNAME, RETURNNULL); \
-    SWIG_check_mutable(SWIG_CLASS_WRAPPER, TYPENAME, FNAME, FUNCNAME, RETURNNULL);
-
-
 #include <stdio.h>
 #if defined(_MSC_VER) || defined(__BORLANDC__) || defined(_WATCOM)
 # ifndef snprintf
@@ -235,20 +206,6 @@ enum {
 #include "sundials/sundials_errors.h"
 
 
-typedef struct {
-    void* cptr;
-    int cmemflags;
-} SwigClassWrapper;
-
-
-SWIGINTERN SwigClassWrapper SwigClassWrapper_uninitialized() {
-    SwigClassWrapper result;
-    result.cptr = NULL;
-    result.cmemflags = 0;
-    return result;
-}
-
-
 #include <stdlib.h>
 #ifdef _MSC_VER
 # ifndef strtoull
@@ -258,41 +215,6 @@ SWIGINTERN SwigClassWrapper SwigClassWrapper_uninitialized() {
 #  define strtoll _strtoi64
 # endif
 #endif
-
-
-#include <string.h>
-
-
-SWIGINTERN void SWIG_assign(SwigClassWrapper* self, SwigClassWrapper other) {
-  if (self->cptr == NULL) {
-    /* LHS is unassigned */
-    if (other.cmemflags & SWIG_MEM_RVALUE) {
-      /* Capture pointer from RHS, clear 'moving' flag */
-      self->cptr = other.cptr;
-      self->cmemflags = other.cmemflags & (~SWIG_MEM_RVALUE);
-    } else {
-      /* Become a reference to the other object */
-      self->cptr = other.cptr;
-      self->cmemflags = other.cmemflags & (~SWIG_MEM_OWN);
-    }
-  } else if (other.cptr == NULL) {
-    /* Replace LHS with a null pointer */
-    free(self->cptr);
-    *self = SwigClassWrapper_uninitialized();
-  } else {
-    if (self->cmemflags & SWIG_MEM_OWN) {
-      free(self->cptr);
-    }
-    self->cptr = other.cptr;
-    if (other.cmemflags & SWIG_MEM_RVALUE) {
-      /* Capture RHS */
-      self->cmemflags = other.cmemflags & ~SWIG_MEM_RVALUE;
-    } else {
-      /* Point to RHS */
-      self->cmemflags = other.cmemflags & ~SWIG_MEM_OWN;
-    }
-  }
-}
 
 
 typedef struct {
@@ -308,133 +230,10 @@ SWIGINTERN SwigArrayWrapper SwigArrayWrapper_uninitialized() {
   return result;
 }
 
-SWIGEXPORT void _wrap_SUNErrHandler__previous_set(SwigClassWrapper const *farg1, void *farg2) {
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  SUNErrHandler arg2 = (SUNErrHandler) 0 ;
-  
-  SWIG_check_mutable_nonnull(*farg1, "struct SUNErrHandler_ *", "SUNErrHandler_", "SUNErrHandler_::previous", return );
-  arg1 = (struct SUNErrHandler_ *)(farg1->cptr);
-  arg2 = (SUNErrHandler)(farg2);
-  if (arg1) (arg1)->previous = arg2;
-}
 
+#include <string.h>
 
-SWIGEXPORT void * _wrap_SUNErrHandler__previous_get(SwigClassWrapper const *farg1) {
-  void * fresult ;
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  SUNErrHandler result;
-  
-  SWIG_check_mutable_nonnull(*farg1, "struct SUNErrHandler_ *", "SUNErrHandler_", "SUNErrHandler_::previous", return 0);
-  arg1 = (struct SUNErrHandler_ *)(farg1->cptr);
-  result = (SUNErrHandler) ((arg1)->previous);
-  fresult = result;
-  return fresult;
-}
-
-
-SWIGEXPORT void _wrap_SUNErrHandler__call_set(SwigClassWrapper const *farg1, SUNErrHandlerFn farg2) {
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  SUNErrHandlerFn arg2 = (SUNErrHandlerFn) 0 ;
-  
-  SWIG_check_mutable_nonnull(*farg1, "struct SUNErrHandler_ *", "SUNErrHandler_", "SUNErrHandler_::call", return );
-  arg1 = (struct SUNErrHandler_ *)(farg1->cptr);
-  arg2 = (SUNErrHandlerFn)(farg2);
-  if (arg1) (arg1)->call = arg2;
-}
-
-
-SWIGEXPORT SUNErrHandlerFn _wrap_SUNErrHandler__call_get(SwigClassWrapper const *farg1) {
-  SUNErrHandlerFn fresult ;
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  SUNErrHandlerFn result;
-  
-  SWIG_check_mutable_nonnull(*farg1, "struct SUNErrHandler_ *", "SUNErrHandler_", "SUNErrHandler_::call", return 0);
-  arg1 = (struct SUNErrHandler_ *)(farg1->cptr);
-  result = (SUNErrHandlerFn) ((arg1)->call);
-  fresult = result;
-  return fresult;
-}
-
-
-SWIGEXPORT void _wrap_SUNErrHandler__data_set(SwigClassWrapper const *farg1, void *farg2) {
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  void *arg2 = (void *) 0 ;
-  
-  SWIG_check_mutable_nonnull(*farg1, "struct SUNErrHandler_ *", "SUNErrHandler_", "SUNErrHandler_::data", return );
-  arg1 = (struct SUNErrHandler_ *)(farg1->cptr);
-  arg2 = (void *)(farg2);
-  if (arg1) (arg1)->data = arg2;
-}
-
-
-SWIGEXPORT void * _wrap_SUNErrHandler__data_get(SwigClassWrapper const *farg1) {
-  void * fresult ;
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  void *result = 0 ;
-  
-  SWIG_check_mutable_nonnull(*farg1, "struct SUNErrHandler_ *", "SUNErrHandler_", "SUNErrHandler_::data", return 0);
-  arg1 = (struct SUNErrHandler_ *)(farg1->cptr);
-  result = (void *) ((arg1)->data);
-  fresult = result;
-  return fresult;
-}
-
-
-SWIGEXPORT SwigClassWrapper _wrap_new_SUNErrHandler_() {
-  SwigClassWrapper fresult ;
-  struct SUNErrHandler_ *result = 0 ;
-  
-  result = (struct SUNErrHandler_ *)calloc(1, sizeof(struct SUNErrHandler_));
-  fresult.cptr = result;
-  fresult.cmemflags = SWIG_MEM_RVALUE | (1 ? SWIG_MEM_OWN : 0);
-  return fresult;
-}
-
-
-SWIGEXPORT void _wrap_delete_SUNErrHandler_(SwigClassWrapper *farg1) {
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  
-  SWIG_check_mutable(*farg1, "struct SUNErrHandler_ *", "SUNErrHandler_", "SUNErrHandler_::~SUNErrHandler_()", return );
-  arg1 = (struct SUNErrHandler_ *)(farg1->cptr);
-  free((char *) arg1);
-}
-
-
-SWIGEXPORT void _wrap_SUNErrHandler__op_assign__(SwigClassWrapper *farg1, SwigClassWrapper const *farg2) {
-  struct SUNErrHandler_ *arg1 = (struct SUNErrHandler_ *) 0 ;
-  struct SUNErrHandler_ *arg2 = 0 ;
-  
-  (void)sizeof(arg1);
-  (void)sizeof(arg2);
-  SWIG_assign(farg1, *farg2);
-  
-}
-
-
-SWIGEXPORT void * _wrap_FSUNErrHandler_Create(SUNErrHandlerFn farg1, void *farg2) {
-  void * fresult ;
-  SUNErrHandlerFn arg1 = (SUNErrHandlerFn) 0 ;
-  void *arg2 = (void *) 0 ;
-  SUNErrHandler result;
-  
-  arg1 = (SUNErrHandlerFn)(farg1);
-  arg2 = (void *)(farg2);
-  result = (SUNErrHandler)SUNErrHandler_Create(arg1,arg2);
-  fresult = result;
-  return fresult;
-}
-
-
-SWIGEXPORT void _wrap_FSUNErrHandler_Destroy(void *farg1) {
-  SUNErrHandler arg1 = (SUNErrHandler) 0 ;
-  
-  arg1 = (SUNErrHandler)(farg1);
-  SUNErrHandler_Destroy(arg1);
-}
-
-
-SWIGEXPORT int _wrap_FSUNLogErrHandlerFn(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, void *farg6, SwigClassWrapper const *farg7) {
-  int fresult ;
+SWIGEXPORT void _wrap_FSUNLogErrHandlerFn(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, void *farg6, void *farg7) {
   int arg1 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -442,7 +241,6 @@ SWIGEXPORT int _wrap_FSUNLogErrHandlerFn(int const *farg1, SwigArrayWrapper *far
   SUNErrCode arg5 ;
   void *arg6 = (void *) 0 ;
   SUNContext arg7 = (SUNContext) 0 ;
-  int result;
   
   arg1 = (int)(*farg1);
   arg2 = (char *)(farg2->data);
@@ -450,16 +248,12 @@ SWIGEXPORT int _wrap_FSUNLogErrHandlerFn(int const *farg1, SwigArrayWrapper *far
   arg4 = (char *)(farg4->data);
   arg5 = (SUNErrCode)(*farg5);
   arg6 = (void *)(farg6);
-  SWIG_check_mutable(*farg7, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNLogErrHandlerFn(int,char const *,char const *,char const *,SUNErrCode,void *,SUNContext)", return 0);
-  arg7 = (SUNContext)(farg7->cptr);
-  result = (int)SUNLogErrHandlerFn(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7);
-  fresult = (int)(result);
-  return fresult;
+  arg7 = (SUNContext)(farg7);
+  SUNLogErrHandlerFn(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7);
 }
 
 
-SWIGEXPORT int _wrap_FSUNAbortErrHandlerFn(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, void *farg6, SwigClassWrapper const *farg7) {
-  int fresult ;
+SWIGEXPORT void _wrap_FSUNAbortErrHandlerFn(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, void *farg6, void *farg7) {
   int arg1 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -467,7 +261,6 @@ SWIGEXPORT int _wrap_FSUNAbortErrHandlerFn(int const *farg1, SwigArrayWrapper *f
   SUNErrCode arg5 ;
   void *arg6 = (void *) 0 ;
   SUNContext arg7 = (SUNContext) 0 ;
-  int result;
   
   arg1 = (int)(*farg1);
   arg2 = (char *)(farg2->data);
@@ -475,16 +268,12 @@ SWIGEXPORT int _wrap_FSUNAbortErrHandlerFn(int const *farg1, SwigArrayWrapper *f
   arg4 = (char *)(farg4->data);
   arg5 = (SUNErrCode)(*farg5);
   arg6 = (void *)(farg6);
-  SWIG_check_mutable(*farg7, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNAbortErrHandlerFn(int,char const *,char const *,char const *,SUNErrCode,void *,SUNContext)", return 0);
-  arg7 = (SUNContext)(farg7->cptr);
-  result = (int)SUNAbortErrHandlerFn(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7);
-  fresult = (int)(result);
-  return fresult;
+  arg7 = (SUNContext)(farg7);
+  SUNAbortErrHandlerFn(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7);
 }
 
 
-SWIGEXPORT int _wrap_FSUNAssertErrHandlerFn(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, void *farg6, SwigClassWrapper const *farg7) {
-  int fresult ;
+SWIGEXPORT void _wrap_FSUNAssertErrHandlerFn(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, void *farg6, void *farg7) {
   int arg1 ;
   char *arg2 = (char *) 0 ;
   char *arg3 = (char *) 0 ;
@@ -492,7 +281,6 @@ SWIGEXPORT int _wrap_FSUNAssertErrHandlerFn(int const *farg1, SwigArrayWrapper *
   SUNErrCode arg5 ;
   void *arg6 = (void *) 0 ;
   SUNContext arg7 = (SUNContext) 0 ;
-  int result;
   
   arg1 = (int)(*farg1);
   arg2 = (char *)(farg2->data);
@@ -500,124 +288,23 @@ SWIGEXPORT int _wrap_FSUNAssertErrHandlerFn(int const *farg1, SwigArrayWrapper *
   arg4 = (char *)(farg4->data);
   arg5 = (SUNErrCode)(*farg5);
   arg6 = (void *)(farg6);
-  SWIG_check_mutable(*farg7, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNAssertErrHandlerFn(int,char const *,char const *,char const *,SUNErrCode,void *,SUNContext)", return 0);
-  arg7 = (SUNContext)(farg7->cptr);
-  result = (int)SUNAssertErrHandlerFn(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7);
-  fresult = (int)(result);
-  return fresult;
+  arg7 = (SUNContext)(farg7);
+  SUNAssertErrHandlerFn(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7);
 }
 
 
-SWIGEXPORT SwigArrayWrapper _wrap_FSUNGetErrMsg(int const *farg1, SwigClassWrapper const *farg2) {
+SWIGEXPORT SwigArrayWrapper _wrap_FSUNGetErrMsg(int const *farg1, void *farg2) {
   SwigArrayWrapper fresult ;
   SUNErrCode arg1 ;
   SUNContext arg2 = (SUNContext) 0 ;
   char *result = 0 ;
   
   arg1 = (SUNErrCode)(*farg1);
-  SWIG_check_mutable(*farg2, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNGetErrMsg(SUNErrCode,SUNContext)", return SwigArrayWrapper_uninitialized());
-  arg2 = (SUNContext)(farg2->cptr);
+  arg2 = (SUNContext)(farg2);
   result = (char *)SUNGetErrMsg(arg1,arg2);
   fresult.size = strlen((const char*)(result));
   fresult.data = (char *)(result);
   return fresult;
-}
-
-
-SWIGEXPORT int _wrap_FSUNGetLastErr(SwigClassWrapper const *farg1) {
-  int fresult ;
-  SUNContext arg1 = (SUNContext) 0 ;
-  SUNErrCode result;
-  
-  SWIG_check_mutable(*farg1, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNGetLastErr(SUNContext)", return 0);
-  arg1 = (SUNContext)(farg1->cptr);
-  result = (SUNErrCode)SUNGetLastErr(arg1);
-  fresult = (SUNErrCode)(result);
-  return fresult;
-}
-
-
-SWIGEXPORT int _wrap_FSUNSetLastErr(int const *farg1, SwigClassWrapper const *farg2) {
-  int fresult ;
-  SUNErrCode arg1 ;
-  SUNContext arg2 = (SUNContext) 0 ;
-  SUNErrCode result;
-  
-  arg1 = (SUNErrCode)(*farg1);
-  SWIG_check_mutable(*farg2, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNSetLastErr(SUNErrCode,SUNContext)", return 0);
-  arg2 = (SUNContext)(farg2->cptr);
-  result = (SUNErrCode)SUNSetLastErr(arg1,arg2);
-  fresult = (SUNErrCode)(result);
-  return fresult;
-}
-
-
-SWIGEXPORT int _wrap_FSUNPeekLastErr(SwigClassWrapper const *farg1) {
-  int fresult ;
-  SUNContext arg1 = (SUNContext) 0 ;
-  SUNErrCode result;
-  
-  SWIG_check_mutable(*farg1, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNPeekLastErr(SUNContext)", return 0);
-  arg1 = (SUNContext)(farg1->cptr);
-  result = (SUNErrCode)SUNPeekLastErr(arg1);
-  fresult = (SUNErrCode)(result);
-  return fresult;
-}
-
-
-SWIGEXPORT void _wrap_FSUNHandleErr(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, int const *farg4, SwigClassWrapper const *farg5) {
-  int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  SUNErrCode arg4 ;
-  SUNContext arg5 = (SUNContext) 0 ;
-  
-  arg1 = (int)(*farg1);
-  arg2 = (char *)(farg2->data);
-  arg3 = (char *)(farg3->data);
-  arg4 = (SUNErrCode)(*farg4);
-  SWIG_check_mutable(*farg5, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNHandleErr(int,char const *,char const *,SUNErrCode,SUNContext)", return );
-  arg5 = (SUNContext)(farg5->cptr);
-  SUNHandleErr(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5);
-}
-
-
-SWIGEXPORT void _wrap_FSUNHandleErrWithMsg(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, SwigClassWrapper const *farg6) {
-  int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  char *arg4 = (char *) 0 ;
-  SUNErrCode arg5 ;
-  SUNContext arg6 = (SUNContext) 0 ;
-  
-  arg1 = (int)(*farg1);
-  arg2 = (char *)(farg2->data);
-  arg3 = (char *)(farg3->data);
-  arg4 = (char *)(farg4->data);
-  arg5 = (SUNErrCode)(*farg5);
-  SWIG_check_mutable(*farg6, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNHandleErrWithMsg(int,char const *,char const *,char const *,SUNErrCode,SUNContext)", return );
-  arg6 = (SUNContext)(farg6->cptr);
-  SUNHandleErrWithMsg(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6);
-}
-
-
-SWIGEXPORT void _wrap_FSUNHandleErrWithFmtMsg(int const *farg1, SwigArrayWrapper *farg2, SwigArrayWrapper *farg3, SwigArrayWrapper *farg4, int const *farg5, SwigClassWrapper const *farg6) {
-  int arg1 ;
-  char *arg2 = (char *) 0 ;
-  char *arg3 = (char *) 0 ;
-  char *arg4 = (char *) 0 ;
-  SUNErrCode arg5 ;
-  SUNContext arg6 = (SUNContext) 0 ;
-  void *arg7 = 0 ;
-  
-  arg1 = (int)(*farg1);
-  arg2 = (char *)(farg2->data);
-  arg3 = (char *)(farg3->data);
-  arg4 = (char *)(farg4->data);
-  arg5 = (SUNErrCode)(*farg5);
-  SWIG_check_mutable(*farg6, "SUNContext", "SWIGTYPE_p_SUNContext_", "SUNHandleErrWithFmtMsg(int,char const *,char const *,char const *,SUNErrCode,SUNContext,...)", return );
-  arg6 = (SUNContext)(farg6->cptr);
-  SUNHandleErrWithFmtMsg(arg1,(char const *)arg2,(char const *)arg3,(char const *)arg4,arg5,arg6,arg7);
 }
 
 

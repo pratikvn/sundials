@@ -12,6 +12,7 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include <sundials/sundials_core.h>
 
 #include "sundials/sundials_types.h"
@@ -82,8 +83,7 @@ int secondHandler(int line, const char* func, const char* file, const char* msg,
                   SUNErrCode err_code, void* err_user_data, SUNContext sunctx)
 {
   std::vector<int>* order = static_cast<std::vector<int>*>(err_user_data);
-  order->push_back(1);
-  return 0;
+  order->push_back(0);
 }
 
 int thirdHandler(int line, const char* func, const char* file, const char* msg,
@@ -91,13 +91,12 @@ int thirdHandler(int line, const char* func, const char* file, const char* msg,
 {
   std::vector<int>* order = static_cast<std::vector<int>*>(err_user_data);
   order->push_back(2);
-  return 0;
 }
 
 TEST_F(SUNContextErrFunctionTests, SUNContextPushErrHandlerWorks)
 {
   std::vector<int> order = {};
-  SUNContext_ClearHandlers(sunctx);
+  SUNContext_ClearErrHandlers(sunctx);
   SUNContext_PushErrHandler(sunctx, firstHandler, static_cast<void*>(&order));
   SUNContext_PushErrHandler(sunctx, secondHandler, static_cast<void*>(&order));
   SUNContext_PushErrHandler(sunctx, thirdHandler, static_cast<void*>(&order));
@@ -111,7 +110,7 @@ TEST_F(SUNContextErrFunctionTests, SUNContextPushErrHandlerWorks)
 TEST_F(SUNContextErrFunctionTests, SUNContextPopErrHandlerWorks)
 {
   std::vector<int> order = {};
-  SUNContext_ClearHandlers(sunctx);
+  SUNContext_ClearErrHandlers(sunctx);
   SUNContext_PushErrHandler(sunctx, firstHandler, static_cast<void*>(&order));
   SUNContext_PushErrHandler(sunctx, secondHandler, static_cast<void*>(&order));
   SUNContext_PushErrHandler(sunctx, thirdHandler, static_cast<void*>(&order));

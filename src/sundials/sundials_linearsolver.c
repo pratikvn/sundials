@@ -19,8 +19,12 @@
  * -----------------------------------------------------------------*/
 
 #include <stdlib.h>
-#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include <sundials/sundials_core.h>
+#include <sundials/sundials_errors.h>
+
+#include "sundials_iterative_impl.h"
+#include "sundials_logger_impl.h"
 
 #if defined(SUNDIALS_BUILD_WITH_PROFILING)
 static SUNProfiler getSUNProfiler(SUNLinearSolver S)
@@ -35,11 +39,12 @@ static SUNProfiler getSUNProfiler(SUNLinearSolver S)
 
 SUNLinearSolver SUNLinSolNewEmpty(SUNContext sunctx)
 {
-  SUNFunctionBegin(sunctx);
   SUNLinearSolver LS;
   SUNLinearSolver_Ops ops;
 
-  /* a context is required */
+  if (sunctx == NULL) { return NULL; }
+
+  SUNFunctionBegin(sunctx);
 
   /* create linear solver object */
   LS = NULL;
@@ -113,7 +118,7 @@ SUNErrCode SUNLinSolSetATimes(SUNLinearSolver S, void* A_data, SUNATimesFn ATime
   SUNErrCode ier;
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(S));
   if (S->ops->setatimes) { ier = S->ops->setatimes(S, A_data, ATimes); }
-  else { ier = SUNLS_SUCCESS; }
+  else { ier = SUN_SUCCESS; }
   SUNDIALS_MARK_FUNCTION_END(getSUNProfiler(S));
   return (ier);
 }
@@ -127,7 +132,7 @@ SUNErrCode SUNLinSolSetPreconditioner(SUNLinearSolver S, void* P_data,
   {
     ier = S->ops->setpreconditioner(S, P_data, Pset, Psol);
   }
-  else { ier = SUNLS_SUCCESS; }
+  else { ier = SUN_SUCCESS; }
   SUNDIALS_MARK_FUNCTION_END(getSUNProfiler(S));
   return (ier);
 }
@@ -137,15 +142,15 @@ SUNErrCode SUNLinSolSetScalingVectors(SUNLinearSolver S, N_Vector s1, N_Vector s
   SUNErrCode ier;
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(S));
   if (S->ops->setscalingvectors) { ier = S->ops->setscalingvectors(S, s1, s2); }
-  else { ier = SUNLS_SUCCESS; }
+  else { ier = SUN_SUCCESS; }
   SUNDIALS_MARK_FUNCTION_END(getSUNProfiler(S));
   return (ier);
 }
 
 SUNErrCode SUNLinSolSetZeroGuess(SUNLinearSolver S, sunbooleantype onoff)
 {
-  if (S->ops->setzeroguess) { return ((int)S->ops->setzeroguess(S, onoff)); }
-  else { return SUNLS_SUCCESS; }
+  if (S->ops->setzeroguess) { return (S->ops->setzeroguess(S, onoff)); }
+  else { return SUN_SUCCESS; }
 }
 
 SUNErrCode SUNLinSolInitialize(SUNLinearSolver S)
@@ -153,7 +158,7 @@ SUNErrCode SUNLinSolInitialize(SUNLinearSolver S)
   SUNErrCode ier;
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(S));
   if (S->ops->initialize) { ier = S->ops->initialize(S); }
-  else { ier = SUNLS_SUCCESS; }
+  else { ier = SUN_SUCCESS; }
   SUNDIALS_MARK_FUNCTION_END(getSUNProfiler(S));
   return (ier);
 }
@@ -209,12 +214,12 @@ N_Vector SUNLinSolResid(SUNLinearSolver S)
 sunindextype SUNLinSolLastFlag(SUNLinearSolver S)
 {
   if (S->ops->lastflag) { return ((sunindextype)S->ops->lastflag(S)); }
-  else { return SUNLS_SUCCESS; }
+  else { return 0; }
 }
 
 SUNErrCode SUNLinSolSpace(SUNLinearSolver S, long int* lenrwLS, long int* leniwLS)
 {
-  if (S->ops->space) { return ((int)S->ops->space(S, lenrwLS, leniwLS)); }
+  if (S->ops->space) { return (S->ops->space(S, lenrwLS, leniwLS)); }
   else
   {
     *lenrwLS = 0;
@@ -225,7 +230,7 @@ SUNErrCode SUNLinSolSpace(SUNLinearSolver S, long int* lenrwLS, long int* leniwL
 
 SUNErrCode SUNLinSolFree(SUNLinearSolver S)
 {
-  if (S == NULL) { return SUNLS_SUCCESS; }
+  if (S == NULL) { return SUN_SUCCESS; }
 
   /* if the free operation exists use it */
   if (S->ops)
@@ -248,5 +253,5 @@ SUNErrCode SUNLinSolFree(SUNLinearSolver S)
   free(S);
   S = NULL;
 
-  return (SUNLS_SUCCESS);
+  return SUN_SUCCESS;
 }

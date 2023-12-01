@@ -17,9 +17,11 @@
  * ---------------------------------------------------------------------------*/
 
 #include <stdlib.h>
-#include <sundials/impl/sundials_context_impl.h>
-#include <sundials/impl/sundials_errors_impl.h>
-#include <sundials_nonlinearsolver_impl.h>
+#include <sundials/priv/sundials_context_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
+#include <sundials/sundials_core.h>
+
+#include "sundials_logger_impl.h"
 
 #if defined(SUNDIALS_BUILD_WITH_PROFILING)
 static SUNProfiler getSUNProfiler(SUNNonlinearSolver NLS)
@@ -34,6 +36,8 @@ static SUNProfiler getSUNProfiler(SUNNonlinearSolver NLS)
 
 SUNNonlinearSolver SUNNonlinSolNewEmpty(SUNContext sunctx)
 {
+  if (sunctx == NULL) { return NULL; }
+
   SUNFunctionBegin(sunctx);
   SUNNonlinearSolver NLS;
   SUNNonlinearSolver_Ops ops;
@@ -107,9 +111,9 @@ SUNErrCode SUNNonlinSolInitialize(SUNNonlinearSolver NLS)
   return (ier);
 }
 
-SUNErrCode SUNNonlinSolSetup(SUNNonlinearSolver NLS, N_Vector y, void* mem)
+int SUNNonlinSolSetup(SUNNonlinearSolver NLS, N_Vector y, void* mem)
 {
-  SUNErrCode ier;
+  int ier;
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(NLS));
   if (NLS->ops->setup) { ier = NLS->ops->setup(NLS, y, mem); }
   else { ier = SUN_NLS_SUCCESS; }
@@ -162,17 +166,14 @@ SUNErrCode SUNNonlinSolFree(SUNNonlinearSolver NLS)
 /* set the nonlinear system function (required) */
 SUNErrCode SUNNonlinSolSetSysFn(SUNNonlinearSolver NLS, SUNNonlinSolSysFn SysFn)
 {
-  return ((int)NLS->ops->setsysfn(NLS, SysFn));
+  return (NLS->ops->setsysfn(NLS, SysFn));
 }
 
 /* set the linear solver setup function (optional) */
 SUNErrCode SUNNonlinSolSetLSetupFn(SUNNonlinearSolver NLS,
                                    SUNNonlinSolLSetupFn LSetupFn)
 {
-  if (NLS->ops->setlsetupfn)
-  {
-    return ((int)NLS->ops->setlsetupfn(NLS, LSetupFn));
-  }
+  if (NLS->ops->setlsetupfn) { return (NLS->ops->setlsetupfn(NLS, LSetupFn)); }
   else { return (SUN_SUCCESS); }
 }
 
@@ -180,10 +181,7 @@ SUNErrCode SUNNonlinSolSetLSetupFn(SUNNonlinearSolver NLS,
 SUNErrCode SUNNonlinSolSetLSolveFn(SUNNonlinearSolver NLS,
                                    SUNNonlinSolLSolveFn LSolveFn)
 {
-  if (NLS->ops->setlsolvefn)
-  {
-    return ((int)NLS->ops->setlsolvefn(NLS, LSolveFn));
-  }
+  if (NLS->ops->setlsolvefn) { return (NLS->ops->setlsolvefn(NLS, LSolveFn)); }
   else { return (SUN_SUCCESS); }
 }
 
@@ -194,17 +192,14 @@ SUNErrCode SUNNonlinSolSetConvTestFn(SUNNonlinearSolver NLS,
 {
   if (NLS->ops->setctestfn)
   {
-    return ((int)NLS->ops->setctestfn(NLS, CTestFn, ctest_data));
+    return (NLS->ops->setctestfn(NLS, CTestFn, ctest_data));
   }
   else { return (SUN_SUCCESS); }
 }
 
 SUNErrCode SUNNonlinSolSetMaxIters(SUNNonlinearSolver NLS, int maxiters)
 {
-  if (NLS->ops->setmaxiters)
-  {
-    return ((int)NLS->ops->setmaxiters(NLS, maxiters));
-  }
+  if (NLS->ops->setmaxiters) { return (NLS->ops->setmaxiters(NLS, maxiters)); }
   else { return (SUN_SUCCESS); }
 }
 
@@ -215,10 +210,7 @@ SUNErrCode SUNNonlinSolSetMaxIters(SUNNonlinearSolver NLS, int maxiters)
 /* get the total number on nonlinear iterations (optional) */
 SUNErrCode SUNNonlinSolGetNumIters(SUNNonlinearSolver NLS, long int* niters)
 {
-  if (NLS->ops->getnumiters)
-  {
-    return ((int)NLS->ops->getnumiters(NLS, niters));
-  }
+  if (NLS->ops->getnumiters) { return (NLS->ops->getnumiters(NLS, niters)); }
   else
   {
     *niters = 0;
@@ -229,7 +221,7 @@ SUNErrCode SUNNonlinSolGetNumIters(SUNNonlinearSolver NLS, long int* niters)
 /* get the iteration count for the current nonlinear solve */
 SUNErrCode SUNNonlinSolGetCurIter(SUNNonlinearSolver NLS, int* iter)
 {
-  if (NLS->ops->getcuriter) { return ((int)NLS->ops->getcuriter(NLS, iter)); }
+  if (NLS->ops->getcuriter) { return (NLS->ops->getcuriter(NLS, iter)); }
   else
   {
     *iter = -1;
@@ -243,7 +235,7 @@ SUNErrCode SUNNonlinSolGetNumConvFails(SUNNonlinearSolver NLS,
 {
   if (NLS->ops->getnumconvfails)
   {
-    return ((int)NLS->ops->getnumconvfails(NLS, nconvfails));
+    return (NLS->ops->getnumconvfails(NLS, nconvfails));
   }
   else
   {

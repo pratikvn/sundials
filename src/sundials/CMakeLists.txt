@@ -41,7 +41,6 @@ set(sundials_HEADERS
   sundials_matrix.hpp
   sundials_memory.h
   sundials_memory.hpp
-  sundials_mpi_errors.h
   sundials_mpi_types.h
   sundials_nonlinearsolver.h
   sundials_nonlinearsolver.hpp
@@ -49,9 +48,8 @@ set(sundials_HEADERS
   sundials_nvector.hpp
   sundials_profiler.h
   sundials_profiler.hpp
-  sundials_logger.h
-  sundials_types.h
   sundials_types_deprecated.h
+  sundials_types.h
   sundials_version.h
   )
 
@@ -151,9 +149,9 @@ sundials_add_library(sundials_core
 
 # Install private headers
 install(FILES 
-  ${SUNDIALS_SOURCE_DIR}/include/sundials/impl/sundials_context_impl.h
-  ${SUNDIALS_SOURCE_DIR}/include/sundials/impl/sundials_errors_impl.h
-  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/sundials/impl")
+  ${SUNDIALS_SOURCE_DIR}/include/sundials/priv/sundials_context_impl.h
+  ${SUNDIALS_SOURCE_DIR}/include/sundials/priv/sundials_errors_impl.h
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/sundials/priv")
 
 # SUNDIALS_EXPORT macro
 include(GenerateExportHeader)

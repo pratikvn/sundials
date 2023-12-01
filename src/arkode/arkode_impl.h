@@ -27,8 +27,8 @@
 #include <sundials/sundials_linearsolver.h>
 #include <sundials/sundials_adaptcontroller.h>
 
-#include <sundials/impl/sundials_context_impl.h>
-#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/priv/sundials_context_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include "sundials_logger_impl.h"
 #include "arkode_types_impl.h"
 #include "arkode_adapt_impl.h"

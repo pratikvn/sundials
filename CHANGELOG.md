@@ -48,9 +48,6 @@ CMake targets.
 
 Added Fortran support for the LAPACK dense `SUNLinearSolver` implementation.
 
-Fixed the build system support for MAGMA when using a NVIDIA HPC SDK installation of CUDA
-and fixed the targets used for rocBLAS and rocSPARSE.
-
 Added the third order ERK method `ARKODE_SHU_OSHER_3_2_3`, the fourth order
 ERK method `ARKODE_SOFRONIOU_SPALETTA_5_3_4`, the sixth order ERK method
 `ARKODE_VERNER_9_5_6`, the seventh order ERK method `ARKODE_VERNER_10_6_7`,
@@ -60,16 +57,19 @@ method `ARKODE_VERNER_16_8_9`.
 Changed the `SUNProfiler` so that it does not rely on `MPI_WTime` in any case.
 This fixes https://github.com/LLNL/sundials/issues/312. 
 
+SUNDIALS now has more robust and uniform error handling. See the "Error Handling"
+section in the user guide for details.
+
 **Breaking change** 
 We have replaced the use of a type-erased (i.e., `void*`) pointer to a
 communicator in place of `MPI_Comm` throughout the SUNDIALS API with a
-:c:type:`SUNComm`, which is just a typedef to an `int` in builds without MPI
+`SUNComm`, which is just a typedef to an `int` in builds without MPI
 and a typedef to a `MPI_Comm` in builds with MPI. Here is what this means:
 
 - All users will need to update their codes because the call to 
-  `SUNContext_Create` now takes a :c:type:`SUNComm` instead
+  `SUNContext_Create` now takes a `SUNComm` instead
   of type-erased pointer to a communicator. For non-MPI codes,
-  pass :c:type:`SUN_COMM_NULL` to the `comm` argument instead of
+  pass `SUN_COMM_NULL` to the `comm` argument instead of
   `NULL`. For MPI codes, pass the `MPI_Comm` directly. 
   The required change should be doable with a find-and-replace. 
 
@@ -81,11 +81,22 @@ and a typedef to a `MPI_Comm` in builds with MPI. Here is what this means:
   `N_VGetCommunicator`, since it now returns a `SUNComm`. 
 
 The change away from type-erased pointers for `SUNComm` fixes problems like the 
-one described in `GitHub Issue #275 <https://github.com/LLNL/sundials/issues/275>`.
+one described in `[GitHub Issue #275](https://github.com/LLNL/sundials/issues/275)`.
 
 **Breaking change**
 Functions, types and header files that were previously deprecated have been
-removed. 
+removed.  Additionally, the `SUNDIALS_LOGGING_ENABLE_MPI` macro was removed.
+
+**Breaking change**
+Users now need to link to `sundials_core` in addition to the libraries already linked to. 
+This will be picked up automatically in projects that use the SUNDIALS CMake target.
+The library `sundials_generic` has been superceded by `sundials_core` and is no longer available.
+This fixes some duplicate symbol errors on Windows when linking to multiple SUNDIALS libraries.
+
+## Changes to SUNDIALS in release 6.6.2
+
+Fixed the build system support for MAGMA when using a NVIDIA HPC SDK installation of CUDA
+and fixed the targets used for rocBLAS and rocSPARSE.
 
 ## Changes to SUNDIALS in release 6.6.1
 
