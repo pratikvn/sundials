@@ -20,7 +20,7 @@
 #include <stdarg.h>
 
 #include <cvodes/cvodes.h>
-#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include "cvodes_proj_impl.h"
 #include <sundials/priv/sundials_context_impl.h>
 #include "sundials_logger_impl.h"

@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "sundials/impl/sundials_errors_impl.h"
+#include "sundials/priv/sundials_errors_impl.h"
 #include "sundials_nvector_impl.h"
 
 #define ZERO   SUN_RCONST(0.0)

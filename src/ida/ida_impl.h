@@ -22,8 +22,8 @@
 #include <stdarg.h>
 
 #include <ida/ida.h>
-#include <sundials/impl/sundials_errors_impl.h>
-#include <sundials/impl/sundials_context_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
+#include <sundials/priv/sundials_context_impl.h>
 #include "sundials_logger_impl.h"
 
 #ifdef __cplusplus  /* wrapper to enable C++ usage */

@@ -22,7 +22,7 @@
 #include <mpi.h>
 #include <sundials/sundials_core.h>
 #include <nvector/nvector_mpimanyvector.h>
-#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
 
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {

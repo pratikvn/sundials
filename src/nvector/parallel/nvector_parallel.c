@@ -19,8 +19,8 @@
 #include <nvector/nvector_parallel.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sundials/impl/sundials_errors_impl.h>
-#include <sundials/impl/sundials_mpi_errors_impl.h>
+#include <sundials/priv/sundials_errors_impl.h>
+#include <sundials/priv/sundials_mpi_errors_impl.h>
 
 #define ZERO   SUN_RCONST(0.0)
 #define HALF   SUN_RCONST(0.5)
