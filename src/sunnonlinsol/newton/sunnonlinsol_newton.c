@@ -21,8 +21,8 @@
 #include <sundials/sundials_math.h>
 #include <sundials/sundials_nvector_senswrapper.h>
 #include <sunnonlinsol/sunnonlinsol_newton.h>
-
-#include "sundials_nonlinearsolver_impl.h"
+#include <sundials/priv/sundials_errors_impl.h>
+#include "sundials_logger_impl.h"
 
 /* Content structure accessibility macros  */
 #define NEWTON_CONTENT(S) ((SUNNonlinearSolverContent_Newton)(S->content))

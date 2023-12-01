@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sunlinsol/sunlinsol_band.h>
-
-#include "sundials_linearsolver_impl.h"
+#include <sundials/sundials_math.h>
+#include <sundials/priv/sundials_errors_impl.h>
 
 #define ZERO           SUN_RCONST(0.0)
 #define ONE            SUN_RCONST(1.0)

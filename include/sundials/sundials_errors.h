@@ -42,6 +42,9 @@
   ENTRY(SUN_ERR_NOT_IMPLEMENTED,                                               \
         "operation is not implemented: function pointer is NULL")              \
                                                                                \
+  ENTRY(SUN_ERR_MANYVECTOR_COMMNOTSAME,                                        \
+        "the MPI communicators provided to the manyvector are not the same")   \
+                                                                               \
   ENTRY(SUN_ERR_PROFILER_MAPFULL,                                              \
         "the number of profiler entries exceeded SUNPROFILER_MAX_ENTRIES")     \
   ENTRY(SUN_ERR_PROFILER_MAPGET, "unknown error getting SUNProfiler timer")    \

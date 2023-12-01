@@ -20,9 +20,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include <sunmatrix/sunmatrix_dense.h>
 
-#include "sundials_matrix_impl.h"
 
 #define ZERO SUN_RCONST(0.0)
 #define ONE  SUN_RCONST(1.0)

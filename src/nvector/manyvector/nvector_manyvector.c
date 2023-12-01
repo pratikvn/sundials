@@ -32,12 +32,6 @@
 #define MVAPPEND(fun) fun##_ManyVector
 #endif
 
-#ifdef MANYVECTOR_BUILD_WITH_MPI
-#define MVASSERT(expr, code) SUNMPIAssert(expr, code)
-#else
-#define MVASSERT(expr, code) SUNAssert(expr, code)
-#endif
-
 #define ZERO SUN_RCONST(0.0)
 #define ONE  SUN_RCONST(1.0)
 
@@ -83,10 +77,10 @@ N_Vector N_VMake_MPIManyVector(MPI_Comm comm, sunindextype num_subvectors,
   int rank;
 
   /* Check that input N_Vectors are non-NULL */
-  MVASSERT(vec_array, SUN_ERR_ARG_CORRUPT);
+  SUNAssert(vec_array, SUN_ERR_ARG_CORRUPT);
   for (i = 0; i < num_subvectors; i++)
   {
-    MVASSERT(vec_array[i], SUN_ERR_ARG_CORRUPT);
+    SUNAssert(vec_array[i], SUN_ERR_ARG_CORRUPT);
   }
 
   /* Create vector */
@@ -162,7 +156,7 @@ N_Vector N_VMake_MPIManyVector(MPI_Comm comm, sunindextype num_subvectors,
   /* Create content */
   content = NULL;
   content = (N_VectorContent_MPIManyVector)malloc(sizeof *content);
-  MVASSERT(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   v->content = content;
@@ -175,7 +169,7 @@ N_Vector N_VMake_MPIManyVector(MPI_Comm comm, sunindextype num_subvectors,
   content->own_data       = SUNFALSE;
   content->subvec_array   = NULL;
   content->subvec_array = (N_Vector*)malloc(num_subvectors * sizeof(N_Vector));
-  MVASSERT(content->subvec_array, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(content->subvec_array, SUN_ERR_MALLOC_FAIL);
 
   for (i = 0; i < num_subvectors; i++)
   {
@@ -266,7 +260,7 @@ N_Vector N_VNew_MPIManyVector(sunindextype num_subvectors, N_Vector* vec_array,
     else
     {
       SUNCheckMPICallNoRet(MPI_Comm_compare(*vcomm, comm, &comparison));
-      MVASSERT((comparison == MPI_IDENT) || (comparison == MPI_CONGRUENT),
+      SUNAssert((comparison == MPI_IDENT) || (comparison == MPI_CONGRUENT),
                SUN_ERR_MANYVECTOR_COMMNOTSAME);
     }
   }
@@ -294,10 +288,10 @@ N_Vector N_VNew_ManyVector(sunindextype num_subvectors, N_Vector* vec_array,
   sunindextype i, local_length;
 
   /* Check that input N_Vectors are non-NULL */
-  MVASSERT(vec_array, SUN_ERR_ARG_CORRUPT);
+  SUNAssert(vec_array, SUN_ERR_ARG_CORRUPT);
   for (i = 0; i < num_subvectors; i++)
   {
-    MVASSERT(vec_array[i], SUN_ERR_ARG_CORRUPT);
+    SUNAssert(vec_array[i], SUN_ERR_ARG_CORRUPT);
   }
 
   /* Create vector */
@@ -371,7 +365,7 @@ N_Vector N_VNew_ManyVector(sunindextype num_subvectors, N_Vector* vec_array,
   /* Create content */
   content = NULL;
   content = (N_VectorContent_ManyVector)malloc(sizeof *content);
-  MVASSERT(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   v->content = content;
@@ -384,7 +378,7 @@ N_Vector N_VNew_ManyVector(sunindextype num_subvectors, N_Vector* vec_array,
 
   content->subvec_array = NULL;
   content->subvec_array = (N_Vector*)malloc(num_subvectors * sizeof(N_Vector));
-  MVASSERT(content->subvec_array, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(content->subvec_array, SUN_ERR_MALLOC_FAIL);
 
   for (i = 0; i < num_subvectors; i++)
   {
@@ -395,7 +389,7 @@ N_Vector N_VNew_ManyVector(sunindextype num_subvectors, N_Vector* vec_array,
   local_length = 0;
   for (i = 0; i < num_subvectors; i++)
   {
-    MVASSERT(vec_array[i]->ops->nvgetlength, SUN_ERR_ARG_CORRUPT);
+    SUNAssert(vec_array[i]->ops->nvgetlength, SUN_ERR_ARG_CORRUPT);
     local_length += N_VGetLength(vec_array[i]);
   }
   content->global_length = local_length;
@@ -409,7 +403,7 @@ N_Vector N_VNew_ManyVector(sunindextype num_subvectors, N_Vector* vec_array,
 N_Vector MVAPPEND(N_VGetSubvector)(N_Vector v, sunindextype vec_num)
 {
   SUNFunctionBegin(v->sunctx);
-  MVASSERT(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
+  SUNAssert(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
            SUN_ERR_ARG_OUTOFRANGE);
   return (MANYVECTOR_SUBVEC(v, vec_num));
 }
@@ -422,7 +416,7 @@ sunrealtype* MVAPPEND(N_VGetSubvectorArrayPointer)(N_Vector v,
                                                    sunindextype vec_num)
 {
   SUNFunctionBegin(v->sunctx);
-  MVASSERT(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
+  SUNAssert(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
            SUN_ERR_ARG_OUTOFRANGE);
   if (MANYVECTOR_SUBVEC(v, vec_num)->ops->nvgetarraypointer == NULL)
   {
@@ -439,7 +433,7 @@ SUNErrCode MVAPPEND(N_VSetSubvectorArrayPointer)(sunrealtype* v_data, N_Vector v
                                                  sunindextype vec_num)
 {
   SUNFunctionBegin(v->sunctx);
-  MVASSERT(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
+  SUNAssert(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
            SUN_ERR_ARG_OUTOFRANGE);
   /* TODO(CJB): Is it valid to call the function in this case, or do we want to assert? */
   if (MANYVECTOR_SUBVEC(v, vec_num)->ops->nvsetarraypointer == NULL)
@@ -1381,11 +1375,11 @@ SUNErrCode MVAPPEND(N_VDotProdMultiLocal)(int nvec, N_Vector x, N_Vector* Y,
   /* create temporary workspace arrays */
   Ysub = NULL;
   Ysub = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Ysub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Ysub, SUN_ERR_MALLOC_FAIL);
 
   contrib = NULL;
   contrib = (sunrealtype*)malloc(nvec * sizeof(sunrealtype));
-  MVASSERT(contrib, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(contrib, SUN_ERR_MALLOC_FAIL);
 
   /* initialize output */
   for (j = 0; j < nvec; j++) { dotprods[j] = ZERO; }
@@ -1422,7 +1416,7 @@ SUNErrCode N_VDotProdMultiAllReduce_MPIManyVector(int nvec_total, N_Vector x,
                           MPI_SUM, MANYVECTOR_COMM(x)));
   }
 
-  return SUN_ERR_MANYVECTOR_COMMNULL;
+  return SUN_ERR_CORRUPT;
 }
 #endif
 
@@ -1449,7 +1443,7 @@ SUNErrCode MVAPPEND(N_VLinearCombination)(int nvec, sunrealtype* c, N_Vector* X,
   /* create array of nvec N_Vector pointers for reuse within loop */
   Xsub = NULL;
   Xsub = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Xsub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Xsub, SUN_ERR_MALLOC_FAIL);
 
   /* perform operation by calling N_VLinearCombination for each subvector */
   for (i = 0; i < MANYVECTOR_NUM_SUBVECS(z); i++)
@@ -1485,9 +1479,9 @@ SUNErrCode MVAPPEND(N_VScaleAddMulti)(int nvec, sunrealtype* a, N_Vector x,
   /* create arrays of nvec N_Vector pointers for reuse within loop */
   Ysub = Zsub = NULL;
   Ysub        = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Ysub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Ysub, SUN_ERR_MALLOC_FAIL);
   Zsub = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Zsub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Zsub, SUN_ERR_MALLOC_FAIL);
 
   /* perform operation by calling N_VScaleAddMulti for each subvector */
   for (i = 0; i < MANYVECTOR_NUM_SUBVECS(x); i++)
@@ -1564,16 +1558,16 @@ SUNErrCode MVAPPEND(N_VLinearSumVectorArray)(int nvec, sunrealtype a,
   sunindextype i, j;
   N_Vector *Xsub, *Ysub, *Zsub;
 
-  MVASSERT(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssert(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   /* create arrays of nvec N_Vector pointers for reuse within loop */
   Xsub = Ysub = Zsub = NULL;
   Xsub               = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Xsub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Xsub, SUN_ERR_MALLOC_FAIL);
   Ysub = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Ysub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Ysub, SUN_ERR_MALLOC_FAIL);
   Zsub = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Zsub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Zsub, SUN_ERR_MALLOC_FAIL);
 
   /* perform operation by calling N_VLinearSumVectorArray for each subvector */
   for (i = 0; i < MANYVECTOR_NUM_SUBVECS(X[0]); i++)
@@ -1613,14 +1607,14 @@ SUNErrCode MVAPPEND(N_VScaleVectorArray)(int nvec, sunrealtype* c, N_Vector* X,
   sunindextype i, j;
   N_Vector *Xsub, *Zsub;
 
-  MVASSERT(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssert(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   /* create arrays of nvec N_Vector pointers for reuse within loop */
   Xsub = Zsub = NULL;
   Xsub        = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Xsub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Xsub, SUN_ERR_MALLOC_FAIL);
   Zsub = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Zsub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Zsub, SUN_ERR_MALLOC_FAIL);
 
   /* perform operation by calling N_VScaleVectorArray for each subvector */
   for (i = 0; i < MANYVECTOR_NUM_SUBVECS(X[0]); i++)
@@ -1655,12 +1649,12 @@ SUNErrCode MVAPPEND(N_VConstVectorArray)(int nvec, sunrealtype c, N_Vector* Z)
   sunindextype i, j;
   N_Vector* Zsub;
 
-  MVASSERT(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssert(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   /* create array of N_Vector pointers for reuse within loop */
   Zsub = NULL;
   Zsub = (N_Vector*)malloc(nvec * sizeof(N_Vector));
-  MVASSERT(Zsub, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(Zsub, SUN_ERR_MALLOC_FAIL);
 
   /* perform operation by calling N_VConstVectorArray for each subvector */
   for (i = 0; i < MANYVECTOR_NUM_SUBVECS(Z[0]); i++)
@@ -1692,7 +1686,7 @@ SUNErrCode MVAPPEND(N_VWrmsNormVectorArray)(int nvec, N_Vector* X, N_Vector* W,
   sunindextype i;
   int retval;
 
-  MVASSERT(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssert(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   /* call N_VWSqrSumLocal for each (X[i],W[i]) pair */
   for (i = 0; i < nvec; i++)
@@ -1737,7 +1731,7 @@ SUNErrCode MVAPPEND(N_VWrmsNormMaskVectorArray)(int nvec, N_Vector* X,
   sunindextype i;
   int retval;
 
-  MVASSERT(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssert(nvec > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   /* call N_VWSqrSumMaskLocal for each (X[i],W[i]) pair */
   for (i = 0; i < nvec; i++)
@@ -1798,7 +1792,7 @@ SUNErrCode MVAPPEND(N_VBufPack)(N_Vector x, void* buf)
   sunindextype offset; /* subvector buffer offset   */
   sunindextype i;
 
-  MVASSERT(buf, SUN_ERR_ARG_CORRUPT);
+  SUNAssert(buf, SUN_ERR_ARG_CORRUPT);
 
   /* start at the beginning of the output buffer */
   loc = buf;
@@ -1828,7 +1822,7 @@ SUNErrCode MVAPPEND(N_VBufUnpack)(N_Vector x, void* buf)
   sunindextype offset; /* subvector buffer offset   */
   sunindextype i;
 
-  MVASSERT(buf, SUN_ERR_ARG_CORRUPT);
+  SUNAssert(buf, SUN_ERR_ARG_CORRUPT);
 
   /* start at the beginning of the input buffer */
   loc = buf;
@@ -2015,7 +2009,7 @@ static N_Vector ManyVectorClone(N_Vector w, sunbooleantype cloneempty)
   /* Create content */
   content = NULL;
   content = (MVAPPEND(N_VectorContent))malloc(sizeof *content);
-  MVASSERT(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content and ops to new vector, and return */
   v->content = content;
@@ -2034,7 +2028,7 @@ static N_Vector ManyVectorClone(N_Vector w, sunbooleantype cloneempty)
   content->subvec_array = NULL;
   content->subvec_array =
     (N_Vector*)malloc(content->num_subvectors * sizeof(N_Vector));
-  MVASSERT(content->subvec_array, SUN_ERR_MALLOC_FAIL);
+  SUNAssert(content->subvec_array, SUN_ERR_MALLOC_FAIL);
 
   /* Initialize the subvector array to NULL */
   for (i = 0; i < content->num_subvectors; i++)
@@ -2063,7 +2057,7 @@ static N_Vector ManyVectorClone(N_Vector w, sunbooleantype cloneempty)
       content->subvec_array[i] = N_VClone(MANYVECTOR_SUBVEC(w, i));
       SUNCheckLastErrNoRet();
     }
-    MVASSERT(content->subvec_array[i], SUN_ERR_ARG_CORRUPT);
+    SUNAssert(content->subvec_array[i], SUN_ERR_ARG_CORRUPT);
   }
 
   return (v);

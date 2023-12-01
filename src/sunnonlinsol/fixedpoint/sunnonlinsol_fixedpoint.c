@@ -20,8 +20,8 @@
 #include <string.h>
 #include <sundials/sundials_nvector_senswrapper.h>
 #include <sunnonlinsol/sunnonlinsol_fixedpoint.h>
-
-#include "sundials_nonlinearsolver_impl.h"
+#include <sundials/priv/sundials_errors_impl.h>
+#include "sundials_logger_impl.h"
 
 /* Internal utility routines */
 static SUNErrCode AndersonAccelerate(SUNNonlinearSolver NLS, N_Vector gval,

@@ -20,8 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sunlinsol/sunlinsol_spgmr.h>
-
-#include "sundials_linearsolver_impl.h"
+#include <sundials/priv/sundials_errors_impl.h>
+#include <sundials/sundials_math.h>
+#include "sundials_logger_impl.h"
 
 #define ZERO SUN_RCONST(0.0)
 #define ONE  SUN_RCONST(1.0)
@@ -455,7 +456,6 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
     N_VScale(ONE, V[0], vtemp);
     SUNCheckLastErrNoRet();
   }
-  else { N_VScale(ONE, V[0], vtemp); }
 
   if (scale1)
   {
@@ -577,7 +577,6 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
         N_VScale(ONE, V[l_plus_1], vtemp);
         SUNCheckLastErrNoRet();
       }
-      else { N_VScale(ONE, V[l_plus_1], vtemp); }
 
       /* Apply left scaling: V[l+1] = s1 P1_inv A P2_inv s2_inv V[l] */
       if (scale1)
@@ -688,7 +687,6 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
         N_VScale(ONE, xcor, vtemp);
         SUNCheckLastErrNoRet();
       }
-      else { N_VScale(ONE, xcor, vtemp); }
 
       /* Add vtemp to initial x to get final solution x, and return */
       if (*zeroguess)
@@ -761,7 +759,6 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
       N_VScale(ONE, xcor, vtemp);
       SUNCheckLastErrNoRet();
     }
-    else { N_VScale(ONE, xcor, vtemp); }
 
     /* Add vtemp to initial x to get final solution x, and return */
     if (*zeroguess)
