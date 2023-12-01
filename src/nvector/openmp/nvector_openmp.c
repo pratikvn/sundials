@@ -96,7 +96,8 @@ N_Vector N_VNewEmpty_OpenMP(sunindextype length, int num_threads,
 
   /* Create vector */
   v = NULL;
-  v = N_VNewEmpty(sunctx); SUNCheckLastErrNull();
+  v = N_VNewEmpty(sunctx);
+  SUNCheckLastErrNull();
 
   /* Attach operations */
 
@@ -187,7 +188,8 @@ N_Vector N_VNew_OpenMP(sunindextype length, int num_threads, SUNContext sunctx)
   SUNAssert(length > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   v = NULL;
-  v = N_VNewEmpty_OpenMP(length, num_threads, sunctx); SUNCheckLastErrNull();
+  v = N_VNewEmpty_OpenMP(length, num_threads, sunctx);
+  SUNCheckLastErrNull();
 
   /* Create data */
   data = NULL;
@@ -214,7 +216,8 @@ N_Vector N_VMake_OpenMP(sunindextype length, sunrealtype* v_data,
   SUNAssert(length > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   v = NULL;
-  v = N_VNewEmpty_OpenMP(length, num_threads, sunctx); SUNCheckLastErrNull();
+  v = N_VNewEmpty_OpenMP(length, num_threads, sunctx);
+  SUNCheckLastErrNull();
 
   /* Attach data */
   NV_OWN_DATA_OMP(v) = SUNFALSE;
@@ -230,7 +233,8 @@ N_Vector N_VMake_OpenMP(sunindextype length, sunrealtype* v_data,
 N_Vector* N_VCloneVectorArray_OpenMP(int count, N_Vector w)
 {
   SUNFunctionBegin(w->sunctx);
-  N_Vector* result = N_VCloneVectorArray(count, w); SUNCheckLastErrNull();
+  N_Vector* result = N_VCloneVectorArray(count, w);
+  SUNCheckLastErrNull();
   return result;
 }
 
@@ -295,7 +299,8 @@ N_Vector N_VCloneEmpty_OpenMP(N_Vector w)
 
   /* Create vector */
   v = NULL;
-  v = N_VNewEmpty(w->sunctx); SUNCheckLastErrNull();
+  v = N_VNewEmpty(w->sunctx);
+  SUNCheckLastErrNull();
 
   /* Attach operations */
   SUNCheckCallNull(N_VCopyOps(w, v));
@@ -329,7 +334,8 @@ N_Vector N_VClone_OpenMP(N_Vector w)
   sunindextype length;
 
   v = NULL;
-  v = N_VCloneEmpty_OpenMP(w); SUNCheckLastErrNull();
+  v = N_VCloneEmpty_OpenMP(w);
+  SUNCheckLastErrNull();
 
   length = NV_LENGTH_OMP(w);
 

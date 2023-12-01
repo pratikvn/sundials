@@ -151,7 +151,8 @@ int CVodeSetMonitorFn(void* cvode_mem, CVMonitorFn fn)
   cv_mem->cv_monitorfun = fn;
   return (CV_SUCCESS);
 #else
-  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "SUNDIALS was not built with monitoring enabled.");
+  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                 "SUNDIALS was not built with monitoring enabled.");
   return (CV_ILL_INPUT);
 #endif
 }
@@ -174,7 +175,8 @@ int CVodeSetMonitorFrequency(void* cvode_mem, long int nst)
 
   if (nst < 0)
   {
-    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "step interval must be >= 0\n");
+    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "step interval must be >= 0\n");
     return (CV_ILL_INPUT);
   }
 
@@ -184,7 +186,8 @@ int CVodeSetMonitorFrequency(void* cvode_mem, long int nst)
   cv_mem->cv_monitor_interval = nst;
   return (CV_SUCCESS);
 #else
-  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "SUNDIALS was not built with monitoring enabled.");
+  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                 "SUNDIALS was not built with monitoring enabled.");
   return (CV_ILL_INPUT);
 #endif
 }
@@ -210,7 +213,8 @@ int CVodeSetMaxOrd(void* cvode_mem, int maxord)
 
   if (maxord <= 0)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NEG_MAXORD);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NEG_MAXORD);
     return (CV_ILL_INPUT);
   }
 
@@ -222,7 +226,8 @@ int CVodeSetMaxOrd(void* cvode_mem, int maxord)
 
   if (maxord > qmax_alloc)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_MAXORD);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_MAXORD);
     return (CV_ILL_INPUT);
   }
 
@@ -299,7 +304,8 @@ int CVodeSetStabLimDet(void* cvode_mem, sunbooleantype sldet)
 
   if (sldet && (cv_mem->cv_lmm != CV_BDF))
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_SET_SLDET);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_SET_SLDET);
     return (CV_ILL_INPUT);
   }
 
@@ -351,7 +357,8 @@ int CVodeSetMinStep(void* cvode_mem, sunrealtype hmin)
 
   if (hmin < ZERO)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NEG_HMIN);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NEG_HMIN);
     return (CV_ILL_INPUT);
   }
 
@@ -364,7 +371,8 @@ int CVodeSetMinStep(void* cvode_mem, sunrealtype hmin)
 
   if (hmin * cv_mem->cv_hmax_inv > ONE)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_HMIN_HMAX);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_HMIN_HMAX);
     return (CV_ILL_INPUT);
   }
 
@@ -394,7 +402,8 @@ int CVodeSetMaxStep(void* cvode_mem, sunrealtype hmax)
 
   if (hmax < ZERO)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NEG_HMAX);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NEG_HMAX);
     return (CV_ILL_INPUT);
   }
 
@@ -408,7 +417,8 @@ int CVodeSetMaxStep(void* cvode_mem, sunrealtype hmax)
   hmax_inv = ONE / hmax;
   if (hmax_inv * cv_mem->cv_hmin > ONE)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_HMIN_HMAX);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_HMIN_HMAX);
     return (CV_ILL_INPUT);
   }
 
@@ -712,7 +722,8 @@ int CVodeSetStopTime(void* cvode_mem, sunrealtype tstop)
   {
     if ((tstop - cv_mem->cv_tn) * cv_mem->cv_h < ZERO)
     {
-      cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_TSTOP);
+      cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                     MSGCV_BAD_TSTOP);
       return (CV_ILL_INPUT);
     }
   }
@@ -841,7 +852,8 @@ int CVodeSetMaxNonlinIters(void* cvode_mem, int maxcor)
     /* check that the NLS is non-NULL */
     if (cv_mem->NLSsim == NULL)
     {
-      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__, MSGCV_MEM_FAIL);
+      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__,
+                     MSGCV_MEM_FAIL);
       return (CV_MEM_FAIL);
     }
 
@@ -852,7 +864,8 @@ int CVodeSetMaxNonlinIters(void* cvode_mem, int maxcor)
     /* check that the NLS is non-NULL */
     if (cv_mem->NLS == NULL)
     {
-      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__, MSGCV_MEM_FAIL);
+      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__,
+                     MSGCV_MEM_FAIL);
       return (CV_MEM_FAIL);
     }
 
@@ -908,7 +921,8 @@ int CVodeSetLSetupFrequency(void* cvode_mem, long int msbp)
   /* check for a valid input */
   if (msbp < 0)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "A negative setup frequency was provided");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "A negative setup frequency was provided");
     return (CV_ILL_INPUT);
   }
 
@@ -941,7 +955,8 @@ int CVodeSetRootDirection(void* cvode_mem, int* rootdir)
   nrt = cv_mem->cv_nrtfn;
   if (nrt == 0)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NO_ROOT);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_ROOT);
     return (CV_ILL_INPUT);
   }
 
@@ -1014,7 +1029,8 @@ int CVodeSetConstraints(void* cvode_mem, N_Vector constraints)
       constraints->ops->nvconstrmask == NULL ||
       constraints->ops->nvminquotient == NULL)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_NVECTOR);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_NVECTOR);
     return (CV_ILL_INPUT);
   }
 
@@ -1022,7 +1038,8 @@ int CVodeSetConstraints(void* cvode_mem, N_Vector constraints)
   temptest = N_VMaxNorm(constraints);
   if ((temptest > TWOPT5) || (temptest < HALF))
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_CONSTR);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_CONSTR);
     return (CV_ILL_INPUT);
   }
 
@@ -1084,13 +1101,15 @@ int CVodeSetSensDQMethod(void* cvode_mem, int DQtype, sunrealtype DQrhomax)
 
   if ((DQtype != CV_CENTERED) && (DQtype != CV_FORWARD))
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_DQTYPE);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_DQTYPE);
     return (CV_ILL_INPUT);
   }
 
   if (DQrhomax < ZERO)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_DQRHO);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_DQRHO);
     return (CV_ILL_INPUT);
   }
 
@@ -1141,7 +1160,8 @@ int CVodeSetSensMaxNonlinIters(void* cvode_mem, int maxcorS)
     /* check that the NLS is non-NULL */
     if (cv_mem->NLSstg == NULL)
     {
-      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__, MSGCV_MEM_FAIL);
+      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__,
+                     MSGCV_MEM_FAIL);
       return (CV_MEM_FAIL);
     }
 
@@ -1152,7 +1172,8 @@ int CVodeSetSensMaxNonlinIters(void* cvode_mem, int maxcorS)
     /* check that the NLS is non-NULL */
     if (cv_mem->NLSstg1 == NULL)
     {
-      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__, MSGCV_MEM_FAIL);
+      cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__,
+                     MSGCV_MEM_FAIL);
       return (CV_MEM_FAIL);
     }
 
@@ -1182,7 +1203,8 @@ int CVodeSetSensParams(void* cvode_mem, sunrealtype* p, sunrealtype* pbar,
 
   if (cv_mem->cv_SensMallocDone == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -1200,7 +1222,8 @@ int CVodeSetSensParams(void* cvode_mem, sunrealtype* p, sunrealtype* pbar,
     {
       if (pbar[is] == ZERO)
       {
-        cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_PBAR);
+        cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                       MSGCV_BAD_PBAR);
         return (CV_ILL_INPUT);
       }
       cv_mem->cv_pbar[is] = SUNRabs(pbar[is]);
@@ -1219,7 +1242,8 @@ int CVodeSetSensParams(void* cvode_mem, sunrealtype* p, sunrealtype* pbar,
     {
       if (plist[is] < 0)
       {
-        cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_PLIST);
+        cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                       MSGCV_BAD_PLIST);
         return (CV_ILL_INPUT);
       }
       cv_mem->cv_plist[is] = plist[is];
@@ -1250,7 +1274,8 @@ int CVodeSetQuadSensErrCon(void* cvode_mem, sunbooleantype errconQS)
 
   if (cv_mem->cv_SensMallocDone == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -1258,7 +1283,8 @@ int CVodeSetQuadSensErrCon(void* cvode_mem, sunbooleantype errconQS)
 
   if (cv_mem->cv_QuadSensMallocDone == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__, MSGCV_NO_QUADSENSI);
+    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUADSENSI);
     return (CV_NO_QUAD);
   }
 
@@ -1915,7 +1941,8 @@ int CVodeGetQuadNumRhsEvals(void* cvode_mem, long int* nfQevals)
 
   if (cv_mem->cv_quadr == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__, MSGCV_NO_QUAD);
+    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUAD);
     return (CV_NO_QUAD);
   }
 
@@ -1940,7 +1967,8 @@ int CVodeGetQuadNumErrTestFails(void* cvode_mem, long int* nQetfails)
 
   if (cv_mem->cv_quadr == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__, MSGCV_NO_QUAD);
+    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUAD);
     return (CV_NO_QUAD);
   }
 
@@ -1965,7 +1993,8 @@ int CVodeGetQuadErrWeights(void* cvode_mem, N_Vector eQweight)
 
   if (cv_mem->cv_quadr == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__, MSGCV_NO_QUAD);
+    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUAD);
     return (CV_NO_QUAD);
   }
 
@@ -1990,7 +2019,8 @@ int CVodeGetQuadStats(void* cvode_mem, long int* nfQevals, long int* nQetfails)
 
   if (cv_mem->cv_quadr == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__, MSGCV_NO_QUAD);
+    cvProcessError(cv_mem, CV_NO_QUAD, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUAD);
     return (CV_NO_QUAD);
   }
 
@@ -2022,7 +2052,8 @@ int CVodeGetQuadSensNumRhsEvals(void* cvode_mem, long int* nfQSevals)
 
   if (cv_mem->cv_quadr_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__, MSGCV_NO_QUADSENSI);
+    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUADSENSI);
     return (CV_NO_QUADSENS);
   }
 
@@ -2047,7 +2078,8 @@ int CVodeGetQuadSensNumErrTestFails(void* cvode_mem, long int* nQSetfails)
 
   if (cv_mem->cv_quadr_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__, MSGCV_NO_QUADSENSI);
+    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUADSENSI);
     return (CV_NO_QUADSENS);
   }
 
@@ -2073,7 +2105,8 @@ int CVodeGetQuadSensErrWeights(void* cvode_mem, N_Vector* eQSweight)
 
   if (cv_mem->cv_quadr_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__, MSGCV_NO_QUADSENSI);
+    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUADSENSI);
     return (CV_NO_QUADSENS);
   }
   Ns = cv_mem->cv_Ns;
@@ -2106,7 +2139,8 @@ int CVodeGetQuadSensStats(void* cvode_mem, long int* nfQSevals,
 
   if (cv_mem->cv_quadr_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__, MSGCV_NO_QUADSENSI);
+    cvProcessError(cv_mem, CV_NO_QUADSENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_QUADSENSI);
     return (CV_NO_QUADSENS);
   }
 
@@ -2138,7 +2172,8 @@ int CVodeGetSensNumRhsEvals(void* cvode_mem, long int* nfSevals)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2163,7 +2198,8 @@ int CVodeGetNumRhsEvalsSens(void* cvode_mem, long int* nfevalsS)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2188,7 +2224,8 @@ int CVodeGetSensNumErrTestFails(void* cvode_mem, long int* nSetfails)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2213,7 +2250,8 @@ int CVodeGetSensNumLinSolvSetups(void* cvode_mem, long int* nlinsetupsS)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2239,7 +2277,8 @@ int CVodeGetSensErrWeights(void* cvode_mem, N_Vector* eSweight)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2270,7 +2309,8 @@ int CVodeGetSensStats(void* cvode_mem, long int* nfSevals, long int* nfevalsS,
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2298,7 +2338,8 @@ int CVodeGetSensNumNonlinSolvIters(void* cvode_mem, long int* nSniters)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2323,7 +2364,8 @@ int CVodeGetSensNumNonlinSolvConvFails(void* cvode_mem, long int* nSnfails)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2349,7 +2391,8 @@ int CVodeGetSensNonlinSolvStats(void* cvode_mem, long int* nSniters,
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2373,7 +2416,8 @@ int CVodeGetNumStepSensSolveFails(void* cvode_mem, long int* nSncfails)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2401,7 +2445,8 @@ int CVodeGetStgrSensNumNonlinSolvIters(void* cvode_mem, long int* nSTGR1niters)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2432,7 +2477,8 @@ int CVodeGetStgrSensNumNonlinSolvConvFails(void* cvode_mem, long int* nSTGR1nfai
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2464,7 +2510,8 @@ int CVodeGetStgrSensNonlinSolvStats(void* cvode_mem, long int* nSTGR1niters,
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2496,7 +2543,8 @@ int CVodeGetNumStepStgrSensSolveFails(void* cvode_mem, long int* nSTGR1ncfails)
 
   if (cv_mem->cv_sensi == SUNFALSE)
   {
-    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_NO_SENS, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_NO_SENS);
   }
 
@@ -2768,7 +2816,8 @@ int CVodePrintAllStats(void* cvode_mem, FILE* outfile, SUNOutputFormat fmt)
     break;
 
   default:
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Invalid formatting option.");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Invalid formatting option.");
     return (CV_ILL_INPUT);
   }
 

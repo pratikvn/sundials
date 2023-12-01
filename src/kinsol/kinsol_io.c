@@ -130,7 +130,8 @@ int KINSetDamping(void* kinmem, sunrealtype beta)
   /* check for illegal input value */
   if (beta <= ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, "beta <= 0 illegal");
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    "beta <= 0 illegal");
     return (KIN_ILL_INPUT);
   }
 
@@ -170,7 +171,8 @@ int KINSetMAA(void* kinmem, long int maa)
 
   if (maa < 0)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_MAA);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_MAA);
     return (KIN_ILL_INPUT);
   }
 
@@ -202,7 +204,8 @@ int KINSetDelayAA(void* kinmem, long int delay)
   /* check for illegal input value */
   if (delay < 0)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, "delay < 0 illegal");
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    "delay < 0 illegal");
     return (KIN_ILL_INPUT);
   }
 
@@ -231,7 +234,8 @@ int KINSetOrthAA(void* kinmem, int orthaa)
 
   if ((orthaa < KIN_ORTH_MGS) || (orthaa > KIN_ORTH_DCGS2))
   {
-    KINProcessError(kin_mem, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_ORTHAA);
+    KINProcessError(kin_mem, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_ORTHAA);
     return (KIN_ILL_INPUT);
   }
 
@@ -261,7 +265,8 @@ int KINSetDampingAA(void* kinmem, sunrealtype beta)
   /* check for illegal input value */
   if (beta <= ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, "beta <= 0 illegal");
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    "beta <= 0 illegal");
     return (KIN_ILL_INPUT);
   }
 
@@ -324,7 +329,8 @@ int KINSetNumMaxIters(void* kinmem, long int mxiter)
 
   if (mxiter < 0)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_MXITER);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_MXITER);
     return (KIN_ILL_INPUT);
   }
 
@@ -398,7 +404,8 @@ int KINSetMaxSetupCalls(void* kinmem, long int msbset)
 
   if (msbset < 0)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_MSBSET);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_MSBSET);
     return (KIN_ILL_INPUT);
   }
 
@@ -428,7 +435,8 @@ int KINSetMaxSubSetupCalls(void* kinmem, long int msbsetsub)
 
   if (msbsetsub < 0)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_MSBSETSUB);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_MSBSETSUB);
     return (KIN_ILL_INPUT);
   }
 
@@ -459,7 +467,8 @@ int KINSetEtaForm(void* kinmem, int etachoice)
   if ((etachoice != KIN_ETACONSTANT) && (etachoice != KIN_ETACHOICE1) &&
       (etachoice != KIN_ETACHOICE2))
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_ETACHOICE);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_ETACHOICE);
     return (KIN_ILL_INPUT);
   }
 
@@ -488,7 +497,8 @@ int KINSetEtaConstValue(void* kinmem, sunrealtype eta)
 
   if ((eta < ZERO) || (eta > ONE))
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_ETACONST);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_ETACONST);
     return (KIN_ILL_INPUT);
   }
 
@@ -520,7 +530,8 @@ int KINSetEtaParams(void* kinmem, sunrealtype egamma, sunrealtype ealpha)
   {
     if (ealpha != ZERO)
     {
-      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_ALPHA);
+      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                      MSG_BAD_ALPHA);
       return (KIN_ILL_INPUT);
     }
   }
@@ -532,7 +543,8 @@ int KINSetEtaParams(void* kinmem, sunrealtype egamma, sunrealtype ealpha)
   {
     if (egamma != ZERO)
     {
-      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_GAMMA);
+      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                      MSG_BAD_GAMMA);
       return (KIN_ILL_INPUT);
     }
   }
@@ -565,7 +577,8 @@ int KINSetResMonParams(void* kinmem, sunrealtype omegamin, sunrealtype omegamax)
 
   if (omegamin < ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_OMEGA);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_OMEGA);
     return (KIN_ILL_INPUT);
   }
 
@@ -576,7 +589,8 @@ int KINSetResMonParams(void* kinmem, sunrealtype omegamin, sunrealtype omegamax)
 
   if (omegamax < ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_OMEGA);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_OMEGA);
     return (KIN_ILL_INPUT);
   }
 
@@ -584,7 +598,8 @@ int KINSetResMonParams(void* kinmem, sunrealtype omegamin, sunrealtype omegamax)
   {
     if (kin_mem->kin_omega_min > OMEGA_MAX)
     {
-      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_OMEGA);
+      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                      MSG_BAD_OMEGA);
       return (KIN_ILL_INPUT);
     }
     else { kin_mem->kin_omega_max = OMEGA_MAX; }
@@ -593,7 +608,8 @@ int KINSetResMonParams(void* kinmem, sunrealtype omegamin, sunrealtype omegamax)
   {
     if (kin_mem->kin_omega_min > omegamax)
     {
-      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_OMEGA);
+      KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                      MSG_BAD_OMEGA);
       return (KIN_ILL_INPUT);
     }
     else { kin_mem->kin_omega_max = omegamax; }
@@ -624,7 +640,8 @@ int KINSetResMonConstValue(void* kinmem, sunrealtype omegaconst)
 
   if (omegaconst < ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_OMEGA);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_OMEGA);
     return (KIN_ILL_INPUT);
   }
 
@@ -676,7 +693,8 @@ int KINSetMaxNewtonStep(void* kinmem, sunrealtype mxnewtstep)
 
   if (mxnewtstep < ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_MXNEWTSTEP);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_MXNEWTSTEP);
     return (KIN_ILL_INPUT);
   }
 
@@ -708,7 +726,8 @@ int KINSetMaxBetaFails(void* kinmem, long int mxnbcf)
 
   if (mxnbcf < 0)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_MXNBCF);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_MXNBCF);
     return (KIN_ILL_INPUT);
   }
 
@@ -739,7 +758,8 @@ int KINSetRelErrFunc(void* kinmem, sunrealtype relfunc)
 
   if (relfunc < ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_RELFUNC);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_RELFUNC);
     return (KIN_ILL_INPUT);
   }
 
@@ -774,7 +794,8 @@ int KINSetFuncNormTol(void* kinmem, sunrealtype fnormtol)
 
   if (fnormtol < ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_FNORMTOL);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_FNORMTOL);
     return (KIN_ILL_INPUT);
   }
 
@@ -809,7 +830,8 @@ int KINSetScaledStepTol(void* kinmem, sunrealtype scsteptol)
 
   if (scsteptol < ZERO)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_SCSTEPTOL);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_SCSTEPTOL);
     return (KIN_ILL_INPUT);
   }
 
@@ -859,7 +881,8 @@ int KINSetConstraints(void* kinmem, N_Vector constraints)
   temptest = N_VMaxNorm(constraints);
   if (temptest > TWOPT5)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_BAD_CONSTRAINTS);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_BAD_CONSTRAINTS);
     return (KIN_ILL_INPUT);
   }
 
@@ -898,7 +921,8 @@ int KINSetSysFunc(void* kinmem, KINSysFn func)
 
   if (func == NULL)
   {
-    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, MSG_FUNC_NULL);
+    KINProcessError(NULL, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    MSG_FUNC_NULL);
     return (KIN_ILL_INPUT);
   }
 
@@ -1184,7 +1208,8 @@ int KINPrintAllStats(void* kinmem, FILE* outfile, SUNOutputFormat fmt)
     fprintf(outfile, "\n");
     break;
   default:
-    KINProcessError(kin_mem, KIN_ILL_INPUT, __LINE__, __func__, __FILE__, "Invalid formatting option.");
+    KINProcessError(kin_mem, KIN_ILL_INPUT, __LINE__, __func__, __FILE__,
+                    "Invalid formatting option.");
     return (KIN_ILL_INPUT);
   }
 

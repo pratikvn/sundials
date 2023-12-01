@@ -67,7 +67,8 @@ SUNLinearSolver SUNLinSol_Band(N_Vector y, SUNMatrix A, SUNContext sunctx)
 
   /* Create an empty linear solver */
   S = NULL;
-  S = SUNLinSolNewEmpty(sunctx); SUNCheckLastErrNull();
+  S = SUNLinSolNewEmpty(sunctx);
+  SUNCheckLastErrNull();
 
   /* Attach operations */
   S->ops->gettype    = SUNLinSolGetType_Band;
@@ -165,14 +166,17 @@ int SUNLinSolSolve_Band(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
   sunindextype* pivots;
 
   /* copy b into x */
-  N_VScale(ONE, b, x); SUNCheckLastErrNoRet();
+  N_VScale(ONE, b, x);
+  SUNCheckLastErrNoRet();
 
   /* access data pointers (return with failure on NULL) */
   A_cols = NULL;
   xdata  = NULL;
   pivots = NULL;
-  A_cols = SUNBandMatrix_Cols(A); SUNCheckLastErrNoRet();
-  xdata  = N_VGetArrayPointer(x); SUNCheckLastErrNoRet();
+  A_cols = SUNBandMatrix_Cols(A);
+  SUNCheckLastErrNoRet();
+  xdata = N_VGetArrayPointer(x);
+  SUNCheckLastErrNoRet();
   pivots = PIVOTS(S);
   if ((A_cols == NULL) || (xdata == NULL) || (pivots == NULL))
   {

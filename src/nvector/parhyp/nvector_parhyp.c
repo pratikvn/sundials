@@ -454,10 +454,7 @@ void N_VSetArrayPointer_ParHyp(sunrealtype* v_data, N_Vector v)
   /* Not implemented for Hypre vector */
 }
 
-MPI_Comm N_VGetCommunicator_ParHyp(N_Vector v)
-{
-  return (NV_COMM_PH(v));
-}
+MPI_Comm N_VGetCommunicator_ParHyp(N_Vector v) { return (NV_COMM_PH(v)); }
 
 sunindextype N_VGetLength_ParHyp(N_Vector v) { return (NV_GLOBLENGTH_PH(v)); }
 

@@ -2716,8 +2716,8 @@ int arkLsSolve(void* arkode_mem, N_Vector b, sunrealtype tnow, N_Vector ynow,
     arkls_mem->njtsetup++;
     if (arkls_mem->last_flag)
     {
-      arkProcessError(ark_mem, arkls_mem->last_flag, __LINE__, __func__, __FILE__,
-                      MSG_LS_JTSETUP_FAILED);
+      arkProcessError(ark_mem, arkls_mem->last_flag, __LINE__, __func__,
+                      __FILE__, MSG_LS_JTSETUP_FAILED);
       return (arkls_mem->last_flag);
     }
   }
@@ -2734,8 +2734,8 @@ int arkLsSolve(void* arkode_mem, N_Vector b, sunrealtype tnow, N_Vector ynow,
                                                    &jcur, &dgamma_fail);
     if (arkls_mem->last_flag != ARK_SUCCESS)
     {
-      arkProcessError(ark_mem, arkls_mem->last_flag, __LINE__, __func__, __FILE__,
-                      "An error occurred in ark_step_getgammas");
+      arkProcessError(ark_mem, arkls_mem->last_flag, __LINE__, __func__,
+                      __FILE__, "An error occurred in ark_step_getgammas");
       return (arkls_mem->last_flag);
     }
     if (gamrat != ONE) { N_VScale(TWO / (ONE + gamrat), b, b); }
@@ -2993,8 +2993,8 @@ int arkLsMassSetup(void* arkode_mem, sunrealtype t, N_Vector vtemp1,
     arkls_mem->msetuptime = t;
     if (arkls_mem->last_flag != 0)
     {
-      arkProcessError(ark_mem, arkls_mem->last_flag, __LINE__, __func__, __FILE__,
-                      MSG_LS_MTSETUP_FAILED);
+      arkProcessError(ark_mem, arkls_mem->last_flag, __LINE__, __func__,
+                      __FILE__, MSG_LS_MTSETUP_FAILED);
       return (arkls_mem->last_flag);
     }
   }
@@ -3365,7 +3365,8 @@ int arkLs_AccessLMem(void* arkode_mem, const char* fname, ARKodeMem* ark_mem,
   ark_step_lmem = (*ark_mem)->step_getlinmem(arkode_mem);
   if (ark_step_lmem == NULL)
   {
-    arkProcessError(*ark_mem, ARKLS_LMEM_NULL, __LINE__, __func__, __FILE__, MSG_LS_LMEM_NULL);
+    arkProcessError(*ark_mem, ARKLS_LMEM_NULL, __LINE__, __func__, __FILE__,
+                    MSG_LS_LMEM_NULL);
     return (ARKLS_LMEM_NULL);
   }
   *arkls_mem = (ARKLsMem)ark_step_lmem;

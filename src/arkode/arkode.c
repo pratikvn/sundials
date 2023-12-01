@@ -3330,7 +3330,8 @@ int arkAccessHAdaptMem(void* arkode_mem, const char* fname, ARKodeMem* ark_mem,
   *ark_mem = (ARKodeMem)arkode_mem;
   if ((*ark_mem)->hadapt_mem == NULL)
   {
-    arkProcessError(*ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__, MSG_ARKADAPT_NO_MEM);
+    arkProcessError(*ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+                    MSG_ARKADAPT_NO_MEM);
     return (ARK_MEM_NULL);
   }
   *hadapt_mem = (ARKodeHAdaptMem)(*ark_mem)->hadapt_mem;
@@ -3343,8 +3344,8 @@ int arkAccessHAdaptMem(void* arkode_mem, const char* fname, ARKodeMem* ark_mem,
   - otherwise, it sets-up and calls the error handling function
     pointed to by ark_ehfun
   ---------------------------------------------------------------*/
-void arkProcessError(ARKodeMem ark_mem, int error_code, int line, const char *func,
-                     const char* file, const char *msgfmt, ...)
+void arkProcessError(ARKodeMem ark_mem, int error_code, int line,
+                     const char* func, const char* file, const char* msgfmt, ...)
 {
   /* Initialize the argument pointer variable
      (msgfmt is the last required argument to arkProcessError) */
@@ -3352,22 +3353,22 @@ void arkProcessError(ARKodeMem ark_mem, int error_code, int line, const char *fu
   va_start(ap, msgfmt);
 
   /* Compose the message */
-  size_t msglen = vsnprintf(NULL, 0, msgfmt, ap)+1;
-  char* msg = (char*) malloc(msglen);
+  size_t msglen = vsnprintf(NULL, 0, msgfmt, ap) + 1;
+  char* msg     = (char*)malloc(msglen);
   vsnprintf(msg, msglen, msgfmt, ap);
 
-  if (ark_mem == NULL) {    /* We write to stderr */
+  if (ark_mem == NULL)
+  { /* We write to stderr */
 
 #ifndef NO_FPRINTF_OUTPUT
     fprintf(stderr, "\n[ARKODE ERROR]  %s at %s:%d\n  ", func, __FILE__, line);
     fprintf(stderr, "%s\n\n", msg);
 #endif
-
-  } else {
-
+  }
+  else
+  {
     /* Call the SUNDIALS main error handler */
     SUNHandleErrWithMsg(line, func, file, msg, error_code, ark_mem->sunctx);
-
   }
 
   /* Finalize argument processing */

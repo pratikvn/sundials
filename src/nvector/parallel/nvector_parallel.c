@@ -16,11 +16,11 @@
  * of the NVECTOR package.
  * -----------------------------------------------------------------*/
 
-#include <sundials/impl/sundials_errors_impl.h>
-#include <sundials/impl/sundials_mpi_errors_impl.h>
 #include <nvector/nvector_parallel.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sundials/impl/sundials_errors_impl.h>
+#include <sundials/impl/sundials_mpi_errors_impl.h>
 
 #define ZERO   SUN_RCONST(0.0)
 #define HALF   SUN_RCONST(0.5)
@@ -918,8 +918,8 @@ sunbooleantype N_VConstrMask_Parallel(N_Vector c, N_Vector x, N_Vector m)
 {
   SUNFunctionBegin(x->sunctx);
   sunrealtype temp, temp2;
-  sunbooleantype test =
-    N_VConstrMaskLocal_Parallel(c, x, m); SUNCheckLastErrNoRet();
+  sunbooleantype test = N_VConstrMaskLocal_Parallel(c, x, m);
+  SUNCheckLastErrNoRet();
   temp = test ? ZERO : ONE;
   SUNCheckMPICallNoRet(
     MPI_Allreduce(&temp, &temp2, 1, MPI_SUNREALTYPE, MPI_MAX, NV_COMM_P(x)));
@@ -1105,7 +1105,8 @@ int N_VDotProdMulti_Parallel(int nvec, N_Vector x, N_Vector* Y,
   /* should have called N_VDotProd */
   if (nvec == 1)
   {
-    dotprods[0] = N_VDotProd_Parallel(x, Y[0]); SUNCheckLastErr();
+    dotprods[0] = N_VDotProd_Parallel(x, Y[0]);
+    SUNCheckLastErr();
     return SUN_SUCCESS;
   }
 
@@ -1174,8 +1175,8 @@ int N_VDotProdMultiAllReduce_Parallel(int nvec, N_Vector x, sunrealtype* sum)
   comm = NV_COMM_P(x);
 
   /* perform reduction */
-  SUNCheckMPICallNoRet(MPI_Allreduce(MPI_IN_PLACE, sum, nvec,
-                                     MPI_SUNREALTYPE, MPI_SUM, comm));
+  SUNCheckMPICallNoRet(
+    MPI_Allreduce(MPI_IN_PLACE, sum, nvec, MPI_SUNREALTYPE, MPI_SUM, comm));
 
   return SUN_SUCCESS;
 }
@@ -1626,7 +1627,8 @@ int N_VLinearCombinationVectorArray_Parallel(int nvec, int nsum, sunrealtype* c,
   /* should have called N_VLinearSumVectorArray */
   if (nsum == 2)
   {
-    SUNCheckCall(N_VLinearSumVectorArray_Parallel(nvec, c[0], X[0], c[1], X[1], Z));
+    SUNCheckCall(
+      N_VLinearSumVectorArray_Parallel(nvec, c[0], X[0], c[1], X[1], Z));
     return SUN_SUCCESS;
   }
 

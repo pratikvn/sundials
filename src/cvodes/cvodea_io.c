@@ -110,7 +110,8 @@ int CVodeSetNonlinearSolverB(void* cvode_mem, int which, SUNNonlinearSolver NLS)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -152,7 +153,8 @@ int CVodeSetUserDataB(void* cvode_mem, int which, void* user_dataB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -196,7 +198,8 @@ int CVodeSetMaxOrdB(void* cvode_mem, int which, int maxordB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -242,7 +245,8 @@ int CVodeSetMaxNumStepsB(void* cvode_mem, int which, long int mxstepsB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -288,7 +292,8 @@ int CVodeSetStabLimDetB(void* cvode_mem, int which, sunbooleantype stldetB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -334,7 +339,8 @@ int CVodeSetInitStepB(void* cvode_mem, int which, sunrealtype hinB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -380,7 +386,8 @@ int CVodeSetMinStepB(void* cvode_mem, int which, sunrealtype hminB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -426,7 +433,8 @@ int CVodeSetMaxStepB(void* cvode_mem, int which, sunrealtype hmaxB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -471,7 +479,8 @@ int CVodeSetConstraintsB(void* cvode_mem, int which, N_Vector constraintsB)
   /* Check the value of which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -523,7 +532,8 @@ int CVodeSetQuadErrConB(void* cvode_mem, int which, sunbooleantype errconQB)
   /* Check which */
   if (which >= ca_mem->ca_nbckpbs)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_WHICH);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_WHICH);
     return (CV_ILL_INPUT);
   }
 
@@ -692,7 +702,8 @@ int CVodeGetAdjDataPointHermite(void* cvode_mem, int which, sunrealtype* t,
 
   if (ca_mem->ca_IMtype != CV_HERMITE)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_WRONG_INTERP);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_WRONG_INTERP);
     return (CV_ILL_INPUT);
   }
 
@@ -742,7 +753,8 @@ int CVodeGetAdjDataPointPolynomial(void* cvode_mem, int which, sunrealtype* t,
 
   if (ca_mem->ca_IMtype != CV_POLYNOMIAL)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_WRONG_INTERP);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_WRONG_INTERP);
     return (CV_ILL_INPUT);
   }
 

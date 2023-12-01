@@ -151,7 +151,8 @@ int CVodeSetMonitorFn(void* cvode_mem, CVMonitorFn fn)
   cv_mem->cv_monitorfun = fn;
   return (CV_SUCCESS);
 #else
-  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "SUNDIALS was not built with monitoring enabled.");
+  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                 "SUNDIALS was not built with monitoring enabled.");
   return (CV_ILL_INPUT);
 #endif
 }
@@ -174,7 +175,8 @@ int CVodeSetMonitorFrequency(void* cvode_mem, long int nst)
 
   if (nst < 0)
   {
-    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "step interval must be >= 0\n");
+    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "step interval must be >= 0\n");
     return (CV_ILL_INPUT);
   }
 
@@ -184,7 +186,8 @@ int CVodeSetMonitorFrequency(void* cvode_mem, long int nst)
   cv_mem->cv_monitor_interval = nst;
   return (CV_SUCCESS);
 #else
-  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "SUNDIALS was not built with monitoring enabled.");
+  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                 "SUNDIALS was not built with monitoring enabled.");
   return (CV_ILL_INPUT);
 #endif
 }
@@ -210,7 +213,8 @@ int CVodeSetMaxOrd(void* cvode_mem, int maxord)
 
   if (maxord <= 0)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NEG_MAXORD);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NEG_MAXORD);
     return (CV_ILL_INPUT);
   }
 
@@ -220,7 +224,8 @@ int CVodeSetMaxOrd(void* cvode_mem, int maxord)
 
   if (maxord > qmax_alloc)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_MAXORD);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_MAXORD);
     return (CV_ILL_INPUT);
   }
 
@@ -297,7 +302,8 @@ int CVodeSetStabLimDet(void* cvode_mem, sunbooleantype sldet)
 
   if (sldet && (cv_mem->cv_lmm != CV_BDF))
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_SET_SLDET);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_SET_SLDET);
     return (CV_ILL_INPUT);
   }
 
@@ -349,7 +355,8 @@ int CVodeSetMinStep(void* cvode_mem, sunrealtype hmin)
 
   if (hmin < ZERO)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NEG_HMIN);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NEG_HMIN);
     return (CV_ILL_INPUT);
   }
 
@@ -362,7 +369,8 @@ int CVodeSetMinStep(void* cvode_mem, sunrealtype hmin)
 
   if (hmin * cv_mem->cv_hmax_inv > ONE)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_HMIN_HMAX);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_HMIN_HMAX);
     return (CV_ILL_INPUT);
   }
 
@@ -392,7 +400,8 @@ int CVodeSetMaxStep(void* cvode_mem, sunrealtype hmax)
 
   if (hmax < ZERO)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NEG_HMAX);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NEG_HMAX);
     return (CV_ILL_INPUT);
   }
 
@@ -406,7 +415,8 @@ int CVodeSetMaxStep(void* cvode_mem, sunrealtype hmax)
   hmax_inv = ONE / hmax;
   if (hmax_inv * cv_mem->cv_hmin > ONE)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_HMIN_HMAX);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_HMIN_HMAX);
     return (CV_ILL_INPUT);
   }
 
@@ -710,7 +720,8 @@ int CVodeSetStopTime(void* cvode_mem, sunrealtype tstop)
   {
     if ((tstop - cv_mem->cv_tn) * cv_mem->cv_h < ZERO)
     {
-      cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_TSTOP);
+      cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                     MSGCV_BAD_TSTOP);
       return (CV_ILL_INPUT);
     }
   }
@@ -834,7 +845,8 @@ int CVodeSetMaxNonlinIters(void* cvode_mem, int maxcor)
 
   if (cv_mem->NLS == NULL)
   {
-    cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__, MSGCV_MEM_FAIL);
+    cvProcessError(NULL, CV_MEM_FAIL, __LINE__, __func__, __FILE__,
+                   MSGCV_MEM_FAIL);
     return (CV_MEM_FAIL);
   }
 
@@ -887,7 +899,8 @@ int CVodeSetLSetupFrequency(void* cvode_mem, long int msbp)
   /* check for a valid input */
   if (msbp < 0)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "A negative setup frequency was provided");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "A negative setup frequency was provided");
     return (CV_ILL_INPUT);
   }
 
@@ -920,7 +933,8 @@ int CVodeSetRootDirection(void* cvode_mem, int* rootdir)
   nrt = cv_mem->cv_nrtfn;
   if (nrt == 0)
   {
-    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NO_ROOT);
+    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_ROOT);
     return (CV_ILL_INPUT);
   }
 
@@ -993,7 +1007,8 @@ int CVodeSetConstraints(void* cvode_mem, N_Vector constraints)
       constraints->ops->nvconstrmask == NULL ||
       constraints->ops->nvminquotient == NULL)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_NVECTOR);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_NVECTOR);
     return (CV_ILL_INPUT);
   }
 
@@ -1001,7 +1016,8 @@ int CVodeSetConstraints(void* cvode_mem, N_Vector constraints)
   temptest = N_VMaxNorm(constraints);
   if ((temptest > TWOPT5) || (temptest < HALF))
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_BAD_CONSTR);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_BAD_CONSTR);
     return (CV_ILL_INPUT);
   }
 
@@ -1055,7 +1071,8 @@ int CVodeSetUseIntegratorFusedKernels(void* cvode_mem, sunbooleantype onoff)
   cv_mem->cv_usefused = onoff;
   return (CV_SUCCESS);
 #else
-  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "CVODE was not built with fused integrator kernels enabled");
+  cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                 "CVODE was not built with fused integrator kernels enabled");
   return (CV_ILL_INPUT);
 #endif
 }
@@ -1796,7 +1813,8 @@ int CVodePrintAllStats(void* cvode_mem, FILE* outfile, SUNOutputFormat fmt)
     break;
 
   default:
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Invalid formatting option.");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Invalid formatting option.");
     return (CV_ILL_INPUT);
   }
 

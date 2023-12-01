@@ -51,7 +51,8 @@ int CVodeSetNonlinearSolverSensStg1(void* cvode_mem, SUNNonlinearSolver NLS)
   /* Return immediately if NLS memory is NULL */
   if (NLS == NULL)
   {
-    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "NLS must be non-NULL");
+    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "NLS must be non-NULL");
     return (CV_ILL_INPUT);
   }
 
@@ -59,21 +60,24 @@ int CVodeSetNonlinearSolverSensStg1(void* cvode_mem, SUNNonlinearSolver NLS)
   if (NLS->ops->gettype == NULL || NLS->ops->solve == NULL ||
       NLS->ops->setsysfn == NULL)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "NLS does not support required operations");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "NLS does not support required operations");
     return (CV_ILL_INPUT);
   }
 
   /* check that sensitivities were initialized */
   if (!(cv_mem->cv_sensi))
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NO_SENSI);
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NO_SENSI);
     return (CV_ILL_INPUT);
   }
 
   /* check that staggered corrector was selected */
   if (cv_mem->cv_ism != CV_STAGGERED1)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Sensitivity solution method is not CV_STAGGERED1");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Sensitivity solution method is not CV_STAGGERED1");
     return (CV_ILL_INPUT);
   }
 
@@ -101,13 +105,15 @@ int CVodeSetNonlinearSolverSensStg1(void* cvode_mem, SUNNonlinearSolver NLS)
   }
   else
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Invalid nonlinear solver type");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Invalid nonlinear solver type");
     return (CV_ILL_INPUT);
   }
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Setting nonlinear system function failed");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Setting nonlinear system function failed");
     return (CV_ILL_INPUT);
   }
 
@@ -116,7 +122,8 @@ int CVodeSetNonlinearSolverSensStg1(void* cvode_mem, SUNNonlinearSolver NLS)
                                      cvode_mem);
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Setting convergence test function failed");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Setting convergence test function failed");
     return (CV_ILL_INPUT);
   }
 
@@ -124,7 +131,8 @@ int CVodeSetNonlinearSolverSensStg1(void* cvode_mem, SUNNonlinearSolver NLS)
   retval = SUNNonlinSolSetMaxIters(cv_mem->NLSstg1, NLS_MAXCOR);
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Setting maximum number of nonlinear iterations failed");
+    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Setting maximum number of nonlinear iterations failed");
     return (CV_ILL_INPUT);
   }
 
@@ -151,7 +159,8 @@ int cvNlsInitSensStg1(CVodeMem cvode_mem)
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Setting the linear solver setup function failed");
+    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Setting the linear solver setup function failed");
     return (CV_NLS_INIT_FAIL);
   }
 
@@ -164,7 +173,8 @@ int cvNlsInitSensStg1(CVodeMem cvode_mem)
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, "Setting linear solver solve function failed");
+    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   "Setting linear solver solve function failed");
     return (CV_NLS_INIT_FAIL);
   }
 
@@ -173,7 +183,8 @@ int cvNlsInitSensStg1(CVodeMem cvode_mem)
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__, MSGCV_NLS_INIT_FAIL);
+    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+                   MSGCV_NLS_INIT_FAIL);
     return (CV_NLS_INIT_FAIL);
   }
 
