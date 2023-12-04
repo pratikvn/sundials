@@ -19,17 +19,14 @@
 
 #include <limits>
 
-namespace sundials
-{
-namespace reductions
-{
-namespace impl
-{
+namespace sundials {
+namespace reductions {
+namespace impl {
 
 template<typename Arg1, typename Arg2, typename Result>
 struct BinaryOperator
 {
-  using first_arg_type = Arg1;
+  using first_arg_type  = Arg1;
   using second_arg_type = Arg2;
   using result_arg_type = Result;
 };
@@ -37,8 +34,10 @@ struct BinaryOperator
 template<typename Ret, typename Arg1 = Ret, typename Arg2 = Arg1>
 struct plus : public BinaryOperator<Arg1, Arg2, Ret>
 {
-  SUNDIALS_HOST_DEVICE constexpr Ret operator()(const Arg1& lhs,
-                                                const Arg2& rhs) const
+  SUNDIALS_HOST_DEVICE;
+  const Ret;
+
+  operator()(const Arg1 & lhs, const Arg2 & rhs) const
   {
     return Ret{lhs} + rhs;
   }
@@ -52,8 +51,10 @@ struct plus : public BinaryOperator<Arg1, Arg2, Ret>
 template<typename Ret, typename Arg1 = Ret, typename Arg2 = Arg1>
 struct maximum : public BinaryOperator<Arg1, Arg2, Ret>
 {
-  SUNDIALS_HOST_DEVICE constexpr Ret operator()(const Arg1& lhs,
-                                                const Arg2& rhs) const
+  SUNDIALS_HOST_DEVICE;
+  const Ret;
+
+  operator()(const Arg1 & lhs, const Arg2 & rhs) const
   {
     return (lhs >= rhs) ? lhs : rhs;
   }
@@ -67,8 +68,10 @@ struct maximum : public BinaryOperator<Arg1, Arg2, Ret>
 template<typename Ret, typename Arg1 = Ret, typename Arg2 = Arg1>
 struct minimum : public BinaryOperator<Arg1, Arg2, Ret>
 {
-  SUNDIALS_HOST_DEVICE constexpr Ret operator()(const Arg1& lhs,
-                                                const Arg2& rhs) const
+  SUNDIALS_HOST_DEVICE;
+  const Ret;
+
+  operator()(const Arg1 & lhs, const Arg2 & rhs) const
   {
     return (rhs < lhs) ? rhs : lhs;
   }
@@ -79,6 +82,6 @@ struct minimum : public BinaryOperator<Arg1, Arg2, Ret>
   }
 };
 
-} // impl
-} // reductions
-} // sundials
+} // namespace impl
+} // namespace reductions
+} // namespace sundials

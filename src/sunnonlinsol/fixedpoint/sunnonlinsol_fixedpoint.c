@@ -18,9 +18,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sundials/priv/sundials_errors_impl.h>
 #include <sundials/sundials_nvector_senswrapper.h>
 #include <sunnonlinsol/sunnonlinsol_fixedpoint.h>
-#include <sundials/priv/sundials_errors_impl.h>
+
 #include "sundials_logger_impl.h"
 
 /* Internal utility routines */

@@ -171,7 +171,7 @@ int EvolveProblemDIRK(N_Vector y, UserData* udata, UserOptions* uopt)
   /* Integrate to final time */
   t     = uopt->t0;
   dtout = (uopt->tf - uopt->t0);
-  if (uopt->nout != 0) dtout /= uopt->nout;
+  if (uopt->nout != 0) { dtout /= uopt->nout; }
   tout = t + dtout;
   iout = 0;
 
@@ -381,7 +381,7 @@ int EvolveProblemIMEX(N_Vector y, UserData* udata, UserOptions* uopt)
   /* Integrate to final time */
   t     = uopt->t0;
   dtout = (uopt->tf - uopt->t0);
-  if (uopt->nout != 0) dtout /= uopt->nout;
+  if (uopt->nout != 0) { dtout /= uopt->nout; }
   tout = t + dtout;
   iout = 0;
 
@@ -512,7 +512,7 @@ int EvolveProblemExplicit(N_Vector y, UserData* udata, UserOptions* uopt)
   /* Integrate to final time */
   t     = uopt->t0;
   dtout = (uopt->tf - uopt->t0);
-  if (uopt->nout != 0) dtout /= uopt->nout;
+  if (uopt->nout != 0) { dtout /= uopt->nout; }
   tout = t + dtout;
   iout = 0;
 
@@ -635,7 +635,7 @@ SUNNonlinearSolver_Type TaskLocalNewton_GetType(SUNNonlinearSolver NLS)
 int TaskLocalNewton_Initialize(SUNNonlinearSolver NLS)
 {
   /* check that the nonlinear solver is non-null */
-  if (NLS == NULL) return SUN_NLS_MEM_NULL;
+  if (NLS == NULL) { return SUN_NLS_MEM_NULL; }
 
   /* override default system and lsolve functions with local versions */
   SUNNonlinSolSetSysFn(LOCAL_NLS(NLS), TaskLocalNlsResidual);
@@ -655,34 +655,36 @@ int TaskLocalNewton_Solve(SUNNonlinearSolver NLS, N_Vector y0, N_Vector ycor,
   /* check that the inputs are non-null */
   if ((NLS == NULL) || (y0 == NULL) || (ycor == NULL) || (w == NULL) ||
       (mem == NULL))
+  {
     return SUN_NLS_MEM_NULL;
   }
+}
 
-  /* shortcuts */
-  comm = GET_NLS_CONTENT(NLS)->comm;
+/* shortcuts */
+comm = GET_NLS_CONTENT(NLS)->comm;
 
-  /* each tasks solves the local nonlinear system */
-  solve_status =
-    SUNNonlinSolSolve(LOCAL_NLS(NLS), N_VGetLocalVector_MPIPlusX(y0),
-                      N_VGetLocalVector_MPIPlusX(ycor),
-                      N_VGetLocalVector_MPIPlusX(w), tol, callLSetup, mem);
+/* each tasks solves the local nonlinear system */
+solve_status = SUNNonlinSolSolve(LOCAL_NLS(NLS), N_VGetLocalVector_MPIPlusX(y0),
+                                 N_VGetLocalVector_MPIPlusX(ycor),
+                                 N_VGetLocalVector_MPIPlusX(w), tol, callLSetup,
+                                 mem);
 
-  /* if any process had a nonrecoverable failure, return it */
-  MPI_Allreduce(&solve_status, &nonrecover, 1, MPI_INT, MPI_MIN, comm);
-  if (nonrecover < 0) { return nonrecover; }
+/* if any process had a nonrecoverable failure, return it */
+MPI_Allreduce(&solve_status, &nonrecover, 1, MPI_INT, MPI_MIN, comm);
+if (nonrecover < 0) { return nonrecover; }
 
-  /* check if any process has a recoverable convergence failure */
-  MPI_Allreduce(&solve_status, &recover, 1, MPI_INT, MPI_MAX, comm);
-  if (recover == SUN_NLS_CONV_RECVR) { GET_NLS_CONTENT(NLS)->ncnf++; }
+/* check if any process has a recoverable convergence failure */
+MPI_Allreduce(&solve_status, &recover, 1, MPI_INT, MPI_MAX, comm);
+if (recover == SUN_NLS_CONV_RECVR) { GET_NLS_CONTENT(NLS)->ncnf++; }
 
-  /* return success (recover == 0) or a recoverable error code (recover > 0) */
-  return recover;
+/* return success (recover == 0) or a recoverable error code (recover > 0) */
+return recover;
 }
 
 int TaskLocalNewton_Free(SUNNonlinearSolver NLS)
 {
   /* return if NLS is already free */
-  if (NLS == NULL) return SUN_NLS_SUCCESS;
+  if (NLS == NULL) { return SUN_NLS_SUCCESS; }
 
   /* free items from contents, then the generic structure */
   if (NLS->content)
@@ -708,7 +710,7 @@ int TaskLocalNewton_Free(SUNNonlinearSolver NLS)
 int TaskLocalNewton_SetSysFn(SUNNonlinearSolver NLS, SUNNonlinSolSysFn SysFn)
 {
   /* check that the nonlinear solver is non-null */
-  if (NLS == NULL) return SUN_NLS_MEM_NULL;
+  if (NLS == NULL) { return SUN_NLS_MEM_NULL; }
 
   return (SUNNonlinSolSetSysFn(LOCAL_NLS(NLS), SysFn));
 }
@@ -718,7 +720,7 @@ int TaskLocalNewton_SetConvTestFn(SUNNonlinearSolver NLS,
                                   void* ctest_data)
 {
   /* check that the nonlinear solver is non-null */
-  if (NLS == NULL) return SUN_NLS_MEM_NULL;
+  if (NLS == NULL) { return SUN_NLS_MEM_NULL; }
 
   return (SUNNonlinSolSetConvTestFn(LOCAL_NLS(NLS), CTestFn, ctest_data));
 }
@@ -726,7 +728,7 @@ int TaskLocalNewton_SetConvTestFn(SUNNonlinearSolver NLS,
 int TaskLocalNewton_GetNumConvFails(SUNNonlinearSolver NLS, long int* nconvfails)
 {
   /* check that the nonlinear solver is non-null */
-  if (NLS == NULL) return SUN_NLS_MEM_NULL;
+  if (NLS == NULL) { return SUN_NLS_MEM_NULL; }
 
   *nconvfails = GET_NLS_CONTENT(NLS)->ncnf;
   return (0);

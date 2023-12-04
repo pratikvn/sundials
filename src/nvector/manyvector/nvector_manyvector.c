@@ -261,7 +261,7 @@ N_Vector N_VNew_MPIManyVector(sunindextype num_subvectors, N_Vector* vec_array,
     {
       SUNCheckMPICallNoRet(MPI_Comm_compare(*vcomm, comm, &comparison));
       SUNAssert((comparison == MPI_IDENT) || (comparison == MPI_CONGRUENT),
-               SUN_ERR_MANYVECTOR_COMMNOTSAME);
+                SUN_ERR_MANYVECTOR_COMMNOTSAME);
     }
   }
 
@@ -404,7 +404,7 @@ N_Vector MVAPPEND(N_VGetSubvector)(N_Vector v, sunindextype vec_num)
 {
   SUNFunctionBegin(v->sunctx);
   SUNAssert(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
-           SUN_ERR_ARG_OUTOFRANGE);
+            SUN_ERR_ARG_OUTOFRANGE);
   return (MANYVECTOR_SUBVEC(v, vec_num));
 }
 
@@ -417,7 +417,7 @@ sunrealtype* MVAPPEND(N_VGetSubvectorArrayPointer)(N_Vector v,
 {
   SUNFunctionBegin(v->sunctx);
   SUNAssert(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
-           SUN_ERR_ARG_OUTOFRANGE);
+            SUN_ERR_ARG_OUTOFRANGE);
   if (MANYVECTOR_SUBVEC(v, vec_num)->ops->nvgetarraypointer == NULL)
   {
     return (NULL);
@@ -434,7 +434,7 @@ SUNErrCode MVAPPEND(N_VSetSubvectorArrayPointer)(sunrealtype* v_data, N_Vector v
 {
   SUNFunctionBegin(v->sunctx);
   SUNAssert(vec_num >= 0 || vec_num <= MANYVECTOR_NUM_SUBVECS(v),
-           SUN_ERR_ARG_OUTOFRANGE);
+            SUN_ERR_ARG_OUTOFRANGE);
   /* TODO(CJB): Is it valid to call the function in this case, or do we want to assert? */
   if (MANYVECTOR_SUBVEC(v, vec_num)->ops->nvsetarraypointer == NULL)
   {

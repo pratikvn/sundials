@@ -22,9 +22,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sunmatrix/sunmatrix_band.h>
-#include <sundials/sundials_math.h>
 #include <sundials/priv/sundials_errors_impl.h>
+#include <sundials/sundials_math.h>
+#include <sunmatrix/sunmatrix_band.h>
 
 #define ZERO SUN_RCONST(0.0)
 #define ONE  SUN_RCONST(1.0)

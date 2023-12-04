@@ -263,33 +263,32 @@ SUNErrCode SUNContext_Free(SUNContext* sunctx)
              !strcmp(sunprofiler_print_env, "TRUE") ||
              !strcmp(sunprofiler_print_env, "stdout"))
     {
-      fp = stdout;
-    else fp = fopen(sunprofiler_print_env, "a");
-  }
+      fp      = stdout;
+      else fp = fopen(sunprofiler_print_env, "a"); }
 
-  /* Enforce that the profiler is freed before finalizing,
+    /* Enforce that the profiler is freed before finalizing,
      if it is not owned by the sunctx. */
-  if ((*sunctx)->profiler)
-  {
-    if (fp) SUNProfiler_Print((*sunctx)->profiler, fp);
-    if (fp) fclose(fp);
-    if ((*sunctx)->own_profiler) SUNProfiler_Free(&(*sunctx)->profiler);
-  }
+    if ((*sunctx)->profiler)
+    {
+      if (fp) SUNProfiler_Print((*sunctx)->profiler, fp);
+      if (fp) fclose(fp);
+      if ((*sunctx)->own_profiler) SUNProfiler_Free(&(*sunctx)->profiler);
+    }
 #endif
 
 #ifdef SUNDIALS_ADIAK_ENABLED
-  adiak_fini();
+    adiak_fini();
 #endif
 
-  if ((*sunctx)->logger && (*sunctx)->own_logger)
-  {
-    SUNLogger_Destroy(&(*sunctx)->logger);
+    if ((*sunctx)->logger && (*sunctx)->own_logger)
+    {
+      SUNLogger_Destroy(&(*sunctx)->logger);
+    }
+
+    SUNErrHandler_Destroy((*sunctx)->err_handler);
+
+    free(*sunctx);
+    *sunctx = NULL;
+
+    return SUN_SUCCESS;
   }
-
-  SUNErrHandler_Destroy((*sunctx)->err_handler);
-
-  free(*sunctx);
-  *sunctx = NULL;
-
-  return SUN_SUCCESS;
-}
