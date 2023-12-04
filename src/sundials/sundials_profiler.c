@@ -218,6 +218,8 @@ SUNErrCode SUNProfiler_Create(SUNComm comm, const char* title, SUNProfiler* p)
 
 SUNErrCode SUNProfiler_Free(SUNProfiler* p)
 {
+  if (!p || !(*p)) { return SUN_SUCCESS; }
+
   SUNDIALS_MARK_END(*p, SUNDIALS_ROOT_TIMER);
 
   if (*p)
@@ -542,16 +544,16 @@ int sunCompareTimes(const void* l, const void* r)
   const SUNHashMapKeyValue right = *((SUNHashMapKeyValue*)r);
 
   if (left == NULL && right == NULL) { return 0; }
-  if (left == NULL) { return (1); }
-  if (right == NULL) { return (-1); }
+  if (left == NULL) { return 1; }
+  if (right == NULL) { return -1; }
 
   left_max  = ((sunTimerStruct*)left->value)->maximum;
   right_max = ((sunTimerStruct*)right->value)->maximum;
 
-  if (left_max < right_max) { return (1); }
-  if (left_max > right_max) { return (-1); }
+  if (left_max < right_max) { return 1; }
+  if (left_max > right_max) { return -1; }
 
-  return SUN_SUCCESS;
+  return 0;
 }
 
 int sunclock_gettime_monotonic(sunTimespec* ts)

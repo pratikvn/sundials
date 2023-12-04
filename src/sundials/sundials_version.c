@@ -27,7 +27,7 @@
 /* fill string with SUNDIALS version information */
 SUNErrCode SUNDIALSGetVersion(char* version, int len)
 {
-  if (version == NULL) { return SUN_ERR_CORRUPT; }
+  if (version == NULL) { return SUN_ERR_ARG_CORRUPT; }
   if (strlen(SUNDIALS_VERSION) >= (size_t)len)
   {
     return SUN_ERR_ARG_OUTOFRANGE;
@@ -45,7 +45,7 @@ SUNErrCode SUNDIALSGetVersionNumber(int* major, int* minor, int* patch,
 {
   if (major == NULL || minor == NULL || patch == NULL || label == NULL)
   {
-    return SUN_ERR_CORRUPT;
+    return SUN_ERR_ARG_CORRUPT;
   }
   if (strlen(SUNDIALS_VERSION_LABEL) >= (size_t)len)
   {

@@ -21,6 +21,7 @@
 #include <sundials/priv/sundials_errors_impl.h>
 #include <sundials/sundials_core.h>
 
+#include "sundials/sundials_errors.h"
 #include "sundials_logger_impl.h"
 
 #if defined(SUNDIALS_BUILD_WITH_PROFILING)
@@ -106,7 +107,7 @@ SUNErrCode SUNNonlinSolInitialize(SUNNonlinearSolver NLS)
   SUNErrCode ier;
   SUNDIALS_MARK_FUNCTION_BEGIN(getSUNProfiler(NLS));
   if (NLS->ops->initialize) { ier = NLS->ops->initialize(NLS); }
-  else { ier = SUN_NLS_SUCCESS; }
+  else { ier = SUN_SUCCESS; }
   SUNDIALS_MARK_FUNCTION_END(getSUNProfiler(NLS));
   return (ier);
 }

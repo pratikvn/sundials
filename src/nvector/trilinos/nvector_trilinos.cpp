@@ -24,8 +24,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "sundials_nvector_impl.h"
-
 #define ZERO   SUN_RCONST(0.0)
 #define HALF   SUN_RCONST(0.5)
 #define ONE    SUN_RCONST(1.0)
@@ -237,17 +235,16 @@ void N_VSpace_Trilinos(N_Vector x, sunindextype* lrw, sunindextype* liw)
 /*
  * MPI communicator accessor
  */
-void* N_VGetCommunicator_Trilinos(N_Vector x)
+SUNComm N_VGetCommunicator_Trilinos(N_Vector x)
 {
 #ifdef SUNDIALS_TRILINOS_HAVE_MPI
   Teuchos::RCP<const vector_type> xv = N_VGetVector_Trilinos(x);
   /* Access Teuchos::Comm* (which is actually a Teuchos::MpiComm*) */
   auto comm = Teuchos::rcp_dynamic_cast<const Teuchos::MpiComm<int>>(
     xv->getMap()->getComm());
-
-  return ((void*)comm->getRawMpiComm().get()); /* extract raw pointer to MPI_Comm */
+  return (*(comm->getRawMpiComm().get())); /* extract MPI_Comm */
 #else
-  return (NULL);
+  return (SUN_COMM_NULL);
 #endif
 }
 
