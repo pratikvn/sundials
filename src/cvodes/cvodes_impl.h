@@ -17,11 +17,10 @@
 #ifndef _CVODES_IMPL_H
 #define _CVODES_IMPL_H
 
-#include <cvodes/cvodes.h>
 #include <stdarg.h>
 #include <sundials/priv/sundials_context_impl.h>
-#include <sundials/priv/sundials_errors_impl.h>
 
+#include "cvodes/cvodes.h"
 #include "cvodes_proj_impl.h"
 #include "sundials/sundials_math.h"
 #include "sundials_logger_impl.h"
@@ -693,7 +692,7 @@ typedef struct CVodeMemRec
 
   sunbooleantype cv_adjMallocDone;
 
-} * CVodeMem;
+}* CVodeMem;
 
 /*
  * =================================================================
@@ -814,7 +813,7 @@ typedef struct CVhermiteDataMemRec
   N_Vector yd;
   N_Vector* yS;
   N_Vector* ySd;
-} * CVhermiteDataMem;
+}* CVhermiteDataMem;
 
 /* Data for polynomial interpolation */
 typedef struct CVpolynomialDataMemRec
@@ -822,7 +821,7 @@ typedef struct CVpolynomialDataMemRec
   N_Vector y;
   N_Vector* yS;
   int order;
-} * CVpolynomialDataMem;
+}* CVpolynomialDataMem;
 
 /*
  * -----------------------------------------------------------------

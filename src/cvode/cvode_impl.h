@@ -39,9 +39,9 @@ extern "C" {
 #define RSYMW "23.16g"
 #endif
 
-/*===============================================================
-  SHORTCUTS
-  ===============================================================*/
+/*=================================================================*/
+/* Shortcuts                                                       */
+/*=================================================================*/
 
 #define CV_PROFILER cv_mem->cv_sunctx->profiler
 #define CV_LOGGER   cv_mem->cv_sunctx->logger
@@ -474,7 +474,7 @@ typedef struct CVodeMemRec
 
   sunbooleantype cv_usefused; /* flag indicating if CVODE specific fused kernels should be used */
 
-} * CVodeMem;
+}* CVodeMem;
 
 /*
  * =================================================================

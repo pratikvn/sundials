@@ -38,7 +38,7 @@
 #define _NVECTOR_MANY_VECTOR_H
 
 #include <stdio.h>
-#include <sundials/sundials_core.h>
+#include <sundials/sundials_nvector.h>
 
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
@@ -66,8 +66,8 @@ SUNDIALS_EXPORT N_Vector N_VNew_ManyVector(sunindextype num_subvectors,
                                            N_Vector* vec_array,
                                            SUNContext sunctx);
 
-SUNDIALS_EXPORT
-N_Vector N_VGetSubvector_ManyVector(N_Vector v, sunindextype vec_num);
+SUNDIALS_EXPORT N_Vector N_VGetSubvector_ManyVector(N_Vector v,
+                                                    sunindextype vec_num);
 
 SUNDIALS_EXPORT sunrealtype* N_VGetSubvectorArrayPointer_ManyVector(
   N_Vector v, sunindextype vec_num);
@@ -76,8 +76,7 @@ SUNDIALS_EXPORT int N_VSetSubvectorArrayPointer_ManyVector(sunrealtype* v_data,
                                                            N_Vector v,
                                                            sunindextype vec_num);
 
-SUNDIALS_EXPORT
-sunindextype N_VGetNumSubvectors_ManyVector(N_Vector v);
+SUNDIALS_EXPORT sunindextype N_VGetNumSubvectors_ManyVector(N_Vector v);
 
 /* standard vector operations */
 SUNDIALS_EXPORT N_Vector_ID N_VGetVectorID_ManyVector(N_Vector v);
@@ -162,8 +161,7 @@ SUNDIALS_EXPORT int N_VBufUnpack_ManyVector(N_Vector x, void* buf);
    Enable / disable fused vector operations
    ----------------------------------------------------------------- */
 
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableFusedOps_ManyVector(N_Vector v, sunbooleantype tf);
+SUNDIALS_EXPORT int N_VEnableFusedOps_ManyVector(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT int N_VEnableLinearCombination_ManyVector(N_Vector v,
                                                           sunbooleantype tf);

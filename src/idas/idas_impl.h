@@ -36,9 +36,9 @@ extern "C" {
 #define RSYMW "23.16g"
 #endif
 
-/*===============================================================
-  SHORTCUTS
-  ===============================================================*/
+/*=================================================================*/
+/* Shortcuts                                                       */
+/*=================================================================*/
 
 #define IDA_PROFILER IDA_mem->ida_sunctx->profiler
 #define IDA_LOGGER   IDA_mem->ida_sunctx->logger
@@ -536,7 +536,7 @@ typedef struct IDAMemRec
 
   sunbooleantype ida_adjMallocDone;
 
-} * IDAMem;
+}* IDAMem;
 
 /*
  * =================================================================
@@ -671,7 +671,7 @@ typedef struct IDAhermiteDataMemRec
   N_Vector yd;
   N_Vector* yS;
   N_Vector* ySd;
-} * IDAhermiteDataMem;
+}* IDAhermiteDataMem;
 
 /* Data for polynomial interpolation */
 typedef struct IDApolynomialDataMemRec
@@ -684,7 +684,7 @@ typedef struct IDApolynomialDataMemRec
   N_Vector yd;
   N_Vector* ySd;
   int order;
-} * IDApolynomialDataMem;
+}* IDApolynomialDataMem;
 
 /*
  * -----------------------------------------------------------------

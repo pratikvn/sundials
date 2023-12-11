@@ -41,7 +41,7 @@ int IDASetDeltaCjLSetup(void* ida_mem, sunrealtype dcj)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetDeltaCjLSetup", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -59,7 +59,7 @@ int IDASetErrHandlerFn(void* ida_mem, IDAErrHandlerFn ehfun, void* eh_data)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetErrHandlerFn", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -77,7 +77,7 @@ int IDASetErrFile(void* ida_mem, FILE* errfp)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetErrFile", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -96,7 +96,7 @@ int IDASetUserData(void* ida_mem, void* user_data)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetUserData", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -116,7 +116,8 @@ int IDASetEtaFixedStepBounds(void* ida_mem, sunrealtype eta_min_fx,
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetEtaFixedStepBounds",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
@@ -142,7 +143,7 @@ int IDASetEtaMax(void* ida_mem, sunrealtype eta_max)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetEtaMax", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
@@ -162,7 +163,7 @@ int IDASetEtaMin(void* ida_mem, sunrealtype eta_min)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetEtaMin", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
@@ -185,7 +186,7 @@ int IDASetEtaLow(void* ida_mem, sunrealtype eta_low)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetEtaLow", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
@@ -208,7 +209,7 @@ int IDASetEtaMinErrFail(void* ida_mem, sunrealtype eta_min_ef)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetEtaMinErrFail", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
@@ -231,7 +232,7 @@ int IDASetEtaConvFail(void* ida_mem, sunrealtype eta_cf)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetEtaConvFail", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
@@ -252,7 +253,7 @@ int IDASetMaxOrd(void* ida_mem, int maxord)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxOrd", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -260,7 +261,7 @@ int IDASetMaxOrd(void* ida_mem, int maxord)
 
   if (maxord <= 0)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMaxOrd",
                     MSG_NEG_MAXORD);
     return (IDA_ILL_INPUT);
   }
@@ -271,7 +272,7 @@ int IDASetMaxOrd(void* ida_mem, int maxord)
 
   if (maxord > maxord_alloc)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMaxOrd",
                     MSG_BAD_MAXORD);
     return (IDA_ILL_INPUT);
   }
@@ -289,7 +290,7 @@ int IDASetMaxNumSteps(void* ida_mem, long int mxsteps)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxNumSteps", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -311,7 +312,7 @@ int IDASetInitStep(void* ida_mem, sunrealtype hin)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetInitStep", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -330,7 +331,7 @@ int IDASetMaxStep(void* ida_mem, sunrealtype hmax)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxStep", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -338,8 +339,7 @@ int IDASetMaxStep(void* ida_mem, sunrealtype hmax)
 
   if (hmax < ZERO)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
-                    MSG_NEG_HMAX);
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMaxStep", MSG_NEG_HMAX);
     return (IDA_ILL_INPUT);
   }
 
@@ -363,7 +363,7 @@ int IDASetMinStep(void* ida_mem, sunrealtype hmin)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMinStep", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -371,8 +371,7 @@ int IDASetMinStep(void* ida_mem, sunrealtype hmin)
 
   if (hmin < ZERO)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
-                    MSG_NEG_HMIN);
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMinStep", MSG_NEG_HMIN);
     return (IDA_ILL_INPUT);
   }
 
@@ -396,7 +395,7 @@ int IDASetStopTime(void* ida_mem, sunrealtype tstop)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetStopTime", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -410,8 +409,8 @@ int IDASetStopTime(void* ida_mem, sunrealtype tstop)
   {
     if ((tstop - IDA_mem->ida_tn) * IDA_mem->ida_hh < ZERO)
     {
-      IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
-                      MSG_BAD_TSTOP);
+      IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetStopTime",
+                      MSG_BAD_TSTOP, tstop, IDA_mem->ida_tn);
       return (IDA_ILL_INPUT);
     }
   }
@@ -430,7 +429,7 @@ int IDAClearStopTime(void* ida_mem)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAClearStopTime", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -449,7 +448,8 @@ int IDASetNonlinConvCoef(void* ida_mem, sunrealtype epcon)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetNonlinConvCoef",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -457,7 +457,7 @@ int IDASetNonlinConvCoef(void* ida_mem, sunrealtype epcon)
 
   if (epcon <= ZERO)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetNonlinConvCoef",
                     MSG_NEG_EPCON);
     return (IDA_ILL_INPUT);
   }
@@ -475,7 +475,8 @@ int IDASetMaxErrTestFails(void* ida_mem, int maxnef)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxErrTestFails",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -494,7 +495,7 @@ int IDASetMaxConvFails(void* ida_mem, int maxncf)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxConvFails", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -513,7 +514,8 @@ int IDASetMaxNonlinIters(void* ida_mem, int maxcor)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxNonlinIters",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -522,7 +524,7 @@ int IDASetMaxNonlinIters(void* ida_mem, int maxcor)
   /* check that the NLS is non-NULL */
   if (IDA_mem->NLS == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_FAIL, __LINE__, __func__, __FILE__,
+    IDAProcessError(NULL, IDA_MEM_FAIL, "IDA", "IDASetMaxNonlinIters",
                     MSG_MEM_FAIL);
     return (IDA_MEM_FAIL);
   }
@@ -538,7 +540,7 @@ int IDASetSuppressAlg(void* ida_mem, sunbooleantype suppressalg)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetSuppressAlg", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -557,7 +559,7 @@ int IDASetId(void* ida_mem, N_Vector id)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetId", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -599,7 +601,7 @@ int IDASetConstraints(void* ida_mem, N_Vector constraints)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetConstraints", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -625,7 +627,7 @@ int IDASetConstraints(void* ida_mem, N_Vector constraints)
       constraints->ops->nvconstrmask == NULL ||
       constraints->ops->nvminquotient == NULL)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetConstraints",
                     MSG_BAD_NVECTOR);
     return (IDA_ILL_INPUT);
   }
@@ -635,7 +637,7 @@ int IDASetConstraints(void* ida_mem, N_Vector constraints)
   temptest = N_VMaxNorm(constraints);
   if ((temptest > TWOPT5) || (temptest < HALF))
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetConstraints",
                     MSG_BAD_CONSTR);
     return (IDA_ILL_INPUT);
   }
@@ -671,7 +673,7 @@ int IDASetRootDirection(void* ida_mem, int* rootdir)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetRootDirection", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -680,7 +682,7 @@ int IDASetRootDirection(void* ida_mem, int* rootdir)
   nrt = IDA_mem->ida_nrtfn;
   if (nrt == 0)
   {
-    IDAProcessError(NULL, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(NULL, IDA_ILL_INPUT, "IDA", "IDASetRootDirection",
                     MSG_NO_ROOT);
     return (IDA_ILL_INPUT);
   }
@@ -703,7 +705,8 @@ int IDASetNoInactiveRootWarn(void* ida_mem)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetNoInactiveRootWarn",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -726,7 +729,8 @@ int IDASetNonlinConvCoefIC(void* ida_mem, sunrealtype epiccon)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetNonlinConvCoefIC",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -734,7 +738,7 @@ int IDASetNonlinConvCoefIC(void* ida_mem, sunrealtype epiccon)
 
   if (epiccon <= ZERO)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetNonlinConvCoefIC",
                     MSG_BAD_EPICCON);
     return (IDA_ILL_INPUT);
   }
@@ -752,7 +756,7 @@ int IDASetMaxNumStepsIC(void* ida_mem, int maxnh)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxNumStepsIC", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -760,7 +764,7 @@ int IDASetMaxNumStepsIC(void* ida_mem, int maxnh)
 
   if (maxnh <= 0)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMaxNumStepsIC",
                     MSG_BAD_MAXNH);
     return (IDA_ILL_INPUT);
   }
@@ -778,7 +782,7 @@ int IDASetMaxNumJacsIC(void* ida_mem, int maxnj)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxNumJacsIC", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -786,7 +790,7 @@ int IDASetMaxNumJacsIC(void* ida_mem, int maxnj)
 
   if (maxnj <= 0)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMaxNumJacsIC",
                     MSG_BAD_MAXNJ);
     return (IDA_ILL_INPUT);
   }
@@ -804,7 +808,7 @@ int IDASetMaxNumItersIC(void* ida_mem, int maxnit)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxNumItersIC", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -812,7 +816,7 @@ int IDASetMaxNumItersIC(void* ida_mem, int maxnit)
 
   if (maxnit <= 0)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMaxNumItersIC",
                     MSG_BAD_MAXNIT);
     return (IDA_ILL_INPUT);
   }
@@ -830,7 +834,7 @@ int IDASetMaxBacksIC(void* ida_mem, int maxbacks)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetMaxBacksIC", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -838,7 +842,7 @@ int IDASetMaxBacksIC(void* ida_mem, int maxbacks)
 
   if (maxbacks <= 0)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetMaxBacksIC",
                     MSG_IC_BAD_MAXBACKS);
     return (IDA_ILL_INPUT);
   }
@@ -856,7 +860,8 @@ int IDASetLineSearchOffIC(void* ida_mem, sunbooleantype lsoff)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetLineSearchOffIC",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -875,7 +880,8 @@ int IDASetStepToleranceIC(void* ida_mem, sunrealtype steptol)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDASetStepToleranceIC",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -883,7 +889,7 @@ int IDASetStepToleranceIC(void* ida_mem, sunrealtype steptol)
 
   if (steptol <= ZERO)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDASetStepToleranceIC",
                     MSG_BAD_STEPTOL);
     return (IDA_ILL_INPUT);
   }
@@ -905,7 +911,7 @@ int IDAGetNumSteps(void* ida_mem, long int* nsteps)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumSteps", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -924,7 +930,7 @@ int IDAGetNumResEvals(void* ida_mem, long int* nrevals)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumResEvals", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -943,7 +949,8 @@ int IDAGetNumLinSolvSetups(void* ida_mem, long int* nlinsetups)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumLinSolvSetups",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -962,7 +969,8 @@ int IDAGetNumErrTestFails(void* ida_mem, long int* netfails)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumErrTestFails",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -981,7 +989,8 @@ int IDAGetNumBacktrackOps(void* ida_mem, long int* nbacktracks)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumBacktrackOps",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1000,7 +1009,7 @@ int IDAGetConsistentIC(void* ida_mem, N_Vector yy0, N_Vector yp0)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetConsistentIC", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1008,7 +1017,7 @@ int IDAGetConsistentIC(void* ida_mem, N_Vector yy0, N_Vector yp0)
 
   if (IDA_mem->ida_kused != 0)
   {
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDAGetConsistentIC",
                     MSG_TOO_LATE);
     return (IDA_ILL_INPUT);
   }
@@ -1027,7 +1036,7 @@ int IDAGetLastOrder(void* ida_mem, int* klast)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetLastOrder", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1046,7 +1055,7 @@ int IDAGetCurrentOrder(void* ida_mem, int* kcur)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetCurrentOrder", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1065,7 +1074,8 @@ int IDAGetCurrentCj(void* ida_mem, sunrealtype* cj)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetCurrentCjRatio",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1084,7 +1094,7 @@ int IDAGetCurrentY(void* ida_mem, N_Vector* ycur)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetCurrentY", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1103,7 +1113,7 @@ int IDAGetCurrentYp(void* ida_mem, N_Vector* ypcur)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetCurrentYp", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1122,7 +1132,8 @@ int IDAGetActualInitStep(void* ida_mem, sunrealtype* hinused)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetActualInitStep",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1141,7 +1152,7 @@ int IDAGetLastStep(void* ida_mem, sunrealtype* hlast)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetLastStep", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1160,7 +1171,7 @@ int IDAGetCurrentStep(void* ida_mem, sunrealtype* hcur)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetCurrentStep", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1179,7 +1190,7 @@ int IDAGetCurrentTime(void* ida_mem, sunrealtype* tcur)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetCurrentTime", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1198,7 +1209,8 @@ int IDAGetTolScaleFactor(void* ida_mem, sunrealtype* tolsfact)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetTolScaleFactor",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1217,7 +1229,7 @@ int IDAGetErrWeights(void* ida_mem, N_Vector eweight)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetErrWeights", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1236,7 +1248,8 @@ int IDAGetEstLocalErrors(void* ida_mem, N_Vector ele)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetEstLocalErrors",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
   IDA_mem = (IDAMem)ida_mem;
@@ -1254,7 +1267,7 @@ int IDAGetWorkSpace(void* ida_mem, long int* lenrw, long int* leniw)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetWorkSpace", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1277,7 +1290,8 @@ int IDAGetIntegratorStats(void* ida_mem, long int* nsteps, long int* nrevals,
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetIntegratorStats",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1305,7 +1319,7 @@ int IDAGetNumGEvals(void* ida_mem, long int* ngevals)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumGEvals", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1325,7 +1339,7 @@ int IDAGetRootInfo(void* ida_mem, int* rootsfound)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetRootInfo", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1346,7 +1360,8 @@ int IDAGetNumNonlinSolvIters(void* ida_mem, long int* nniters)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumNonlinSolvIters",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1365,7 +1380,8 @@ int IDAGetNumNonlinSolvConvFails(void* ida_mem, long int* nnfails)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumNonlinSolvConvFails",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1384,7 +1400,8 @@ int IDAGetNonlinSolvStats(void* ida_mem, long int* nniters, long int* nnfails)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNonlinSolvStats",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1404,7 +1421,8 @@ int IDAGetNumStepSolveFails(void* ida_mem, long int* nncfails)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetNumStepSolveFails",
+                    MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1423,7 +1441,7 @@ int IDAGetUserData(void* ida_mem, void** user_data)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAGetUserData", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1443,7 +1461,7 @@ int IDAPrintAllStats(void* ida_mem, FILE* outfile, SUNOutputFormat fmt)
 
   if (ida_mem == NULL)
   {
-    IDAProcessError(NULL, IDA_MEM_NULL, __LINE__, __func__, __FILE__, MSG_NO_MEM);
+    IDAProcessError(NULL, IDA_MEM_NULL, "IDA", "IDAPrintAllStats", MSG_NO_MEM);
     return (IDA_MEM_NULL);
   }
 
@@ -1577,7 +1595,7 @@ int IDAPrintAllStats(void* ida_mem, FILE* outfile, SUNOutputFormat fmt)
     break;
 
   default:
-    IDAProcessError(IDA_mem, IDA_ILL_INPUT, __LINE__, __func__, __FILE__,
+    IDAProcessError(IDA_mem, IDA_ILL_INPUT, "IDA", "IDAPrintAllStats",
                     "Invalid formatting option.");
     return (IDA_ILL_INPUT);
   }

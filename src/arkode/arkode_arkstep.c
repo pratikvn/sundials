@@ -44,7 +44,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
   /* Check that at least one of fe, fi is supplied and is to be used */
   if (fe == NULL && fi == NULL)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ARKStep", "ARKStepCreate",
                     MSG_ARK_NULL_F);
     return (NULL);
   }
@@ -52,14 +52,14 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
   /* Check for legal input parameters */
   if (y0 == NULL)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ARKStep", "ARKStepCreate",
                     MSG_ARK_NULL_Y0);
     return (NULL);
   }
 
   if (!sunctx)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ARKStep", "ARKStepCreate",
                     MSG_ARK_NULL_SUNCTX);
     return (NULL);
   }
@@ -68,7 +68,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
   nvectorOK = arkStep_CheckNVector(y0);
   if (!nvectorOK)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ARKStep", "ARKStepCreate",
                     MSG_ARK_BAD_NVECTOR);
     return (NULL);
   }
@@ -77,7 +77,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
   ark_mem = arkCreate(sunctx);
   if (ark_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep", "ARKStepCreate",
                     MSG_ARK_NO_MEM);
     return (NULL);
   }
@@ -87,7 +87,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
   step_mem = (ARKodeARKStepMem)malloc(sizeof(struct ARKodeARKStepMemRec));
   if (step_mem == NULL)
   {
-    arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepCreate",
                     MSG_ARK_ARKMEM_FAIL);
     return (NULL);
   }
@@ -112,7 +112,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
   retval = ARKStepSetDefaults((void*)ark_mem);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ARKStep", "ARKStepCreate",
                     "Error setting default solver options");
     ARKStepFree((void**)&ark_mem);
     return (NULL);
@@ -158,7 +158,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
     NLS = SUNNonlinSol_Newton(y0, ark_mem->sunctx);
     if (NLS == NULL)
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepCreate",
                       "Error creating default Newton solver");
       ARKStepFree((void**)&ark_mem);
       return (NULL);
@@ -166,7 +166,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
     retval = ARKStepSetNonlinearSolver(ark_mem, NLS);
     if (retval != ARK_SUCCESS)
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepCreate",
                       "Error attaching default Newton solver");
       ARKStepFree((void**)&ark_mem);
       return (NULL);
@@ -218,7 +218,7 @@ void* ARKStepCreate(ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0, N_Vector y0,
   retval = arkInit(ark_mem, t0, y0, FIRST_INIT);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ARKStep", "ARKStepCreate",
                     "Unable to initialize main ARKODE infrastructure");
     ARKStepFree((void**)&ark_mem);
     return (NULL);
@@ -260,7 +260,7 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
   retval = arkResize(ark_mem, y0, hscale, t0, resize, resize_data);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ARKStep", "ARKStepResize",
                     "Unable to resize main ARKODE infrastructure");
     return (retval);
   }
@@ -269,7 +269,7 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
   if (!arkResizeVec(ark_mem, resize, resize_data, lrw_diff, liw_diff, y0,
                     &step_mem->sdata))
   {
-    arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepResize",
                     "Unable to resize vector");
     return (ARK_MEM_FAIL);
   }
@@ -277,7 +277,7 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
   if (!arkResizeVec(ark_mem, resize, resize_data, lrw_diff, liw_diff, y0,
                     &step_mem->zpred))
   {
-    arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepResize",
                     "Unable to resize vector");
     return (ARK_MEM_FAIL);
   }
@@ -285,7 +285,7 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
   if (!arkResizeVec(ark_mem, resize, resize_data, lrw_diff, liw_diff, y0,
                     &step_mem->zcor))
   {
-    arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepResize",
                     "Unable to resize vector");
     return (ARK_MEM_FAIL);
   }
@@ -299,8 +299,8 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
       if (!arkResizeVec(ark_mem, resize, resize_data, lrw_diff, liw_diff, y0,
                         &step_mem->Fe[i]))
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
-                        "Unable to resize vector");
+        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
+                        "ARKStepResize", "Unable to resize vector");
         return (ARK_MEM_FAIL);
       }
     }
@@ -313,8 +313,8 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
       if (!arkResizeVec(ark_mem, resize, resize_data, lrw_diff, liw_diff, y0,
                         &step_mem->Fi[i]))
       {
-        arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
-                        "Unable to resize vector");
+        arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep",
+                        "ARKStepResize", "Unable to resize vector");
         return (ARK_MEM_FAIL);
       }
     }
@@ -334,7 +334,7 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
     NLS = SUNNonlinSol_Newton(y0, ark_mem->sunctx);
     if (NLS == NULL)
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepResize",
                       "Error creating default Newton solver");
       return (ARK_MEM_FAIL);
     }
@@ -343,7 +343,7 @@ int ARKStepResize(void* arkode_mem, N_Vector y0, sunrealtype hscale,
     retval = ARKStepSetNonlinearSolver(ark_mem, NLS);
     if (retval != ARK_SUCCESS)
     {
-      arkProcessError(ark_mem, ARK_MEM_FAIL, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_MEM_FAIL, "ARKODE::ARKStep", "ARKStepResize",
                       "Error attaching default Newton solver");
       return (ARK_MEM_FAIL);
     }
@@ -382,7 +382,7 @@ int ARKStepReInit(void* arkode_mem, ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0,
   /* Check if ark_mem was allocated */
   if (ark_mem->MallocDone == SUNFALSE)
   {
-    arkProcessError(ark_mem, ARK_NO_MALLOC, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_NO_MALLOC, "ARKODE::ARKStep", "ARKStepReInit",
                     MSG_ARK_NO_MALLOC);
     return (ARK_NO_MALLOC);
   }
@@ -390,7 +390,7 @@ int ARKStepReInit(void* arkode_mem, ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0,
   /* Check that at least one of fe, fi is supplied and is to be used */
   if (fe == NULL && fi == NULL)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep", "ARKStepReInit",
                     MSG_ARK_NULL_F);
     return (ARK_ILL_INPUT);
   }
@@ -398,7 +398,7 @@ int ARKStepReInit(void* arkode_mem, ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0,
   /* Check that y0 is supplied */
   if (y0 == NULL)
   {
-    arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep", "ARKStepReInit",
                     MSG_ARK_NULL_Y0);
     return (ARK_ILL_INPUT);
   }
@@ -418,7 +418,7 @@ int ARKStepReInit(void* arkode_mem, ARKRhsFn fe, ARKRhsFn fi, sunrealtype t0,
   retval = arkInit(ark_mem, t0, y0, FIRST_INIT);
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ARKStep", "ARKStepReInit",
                     "Unable to reinitialize main ARKODE infrastructure");
     return (retval);
   }
@@ -454,7 +454,7 @@ int ARKStepReset(void* arkode_mem, sunrealtype tR, N_Vector yR)
 
   if (retval != ARK_SUCCESS)
   {
-    arkProcessError(ark_mem, retval, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, retval, "ARKODE::ARKStep", "ARKStepReset",
                     "Unable to initialize main ARKODE infrastructure");
     return (retval);
   }
@@ -475,8 +475,8 @@ int ARKStepSStolerances(void* arkode_mem, sunrealtype reltol, sunrealtype abstol
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "ARKStepSStolerances", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -489,8 +489,8 @@ int ARKStepSVtolerances(void* arkode_mem, sunrealtype reltol, N_Vector abstol)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "ARKStepSVtolerances", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -503,8 +503,8 @@ int ARKStepWFtolerances(void* arkode_mem, ARKEwtFn efun)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "ARKStepWFtolerances", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -517,8 +517,8 @@ int ARKStepResStolerance(void* arkode_mem, sunrealtype rabstol)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "ARKStepResStolerance", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -531,8 +531,8 @@ int ARKStepResVtolerance(void* arkode_mem, N_Vector rabstol)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "ARKStepResVtolerance", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -545,8 +545,8 @@ int ARKStepResFtolerance(void* arkode_mem, ARKRwtFn rfun)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "ARKStepResFtolerance", MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   ark_mem = (ARKodeMem)arkode_mem;
@@ -565,7 +565,7 @@ int ARKStepRootInit(void* arkode_mem, int nrtfn, ARKRootFn g)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep", "ARKStepRootInit",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -587,7 +587,7 @@ int ARKStepEvolve(void* arkode_mem, sunrealtype tout, N_Vector yout,
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep", "ARKStepEvolve",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -612,7 +612,7 @@ int ARKStepGetDky(void* arkode_mem, sunrealtype t, int k, N_Vector dky)
   ARKodeMem ark_mem;
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep", "ARKStepGetDky",
                     MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -1185,7 +1185,7 @@ int arkStep_Init(void* arkode_mem, int init_type)
     retval = arkStep_SetButcherTables(ark_mem);
     if (retval != ARK_SUCCESS)
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep", "arkStep_Init",
                       "Could not create Butcher table(s)");
       return (ARK_ILL_INPUT);
     }
@@ -1194,7 +1194,7 @@ int arkStep_Init(void* arkode_mem, int init_type)
     retval = arkStep_CheckButcherTables(ark_mem);
     if (retval != ARK_SUCCESS)
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep", "arkStep_Init",
                       "Error in Butcher table(s)");
       return (ARK_ILL_INPUT);
     }
@@ -1214,16 +1214,16 @@ int arkStep_Init(void* arkode_mem, int init_type)
     /* Ensure that if adaptivity is enabled, then method includes embedding coefficients */
     if (!ark_mem->fixedstep && (step_mem->p == 0))
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__,
-                      __FILE__, "Adaptive timestepping cannot be performed without embedding coefficients");
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep",
+                      "arkStep_Init", "Adaptive timestepping cannot be performed without embedding coefficients");
       return (ARK_ILL_INPUT);
     }
 
     /* Relaxation is incompatible with implicit RHS deduction */
     if (ark_mem->relax_enabled && step_mem->implicit && step_mem->deduce_rhs)
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__,
-                      __FILE__, "Relaxation cannot be performed when deducing implicit RHS values");
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep",
+                      "arkStep_Init", "Relaxation cannot be performed when deducing implicit RHS values");
       return ARK_ILL_INPUT;
     }
 
@@ -1337,7 +1337,7 @@ int arkStep_Init(void* arkode_mem, int init_type)
 
       if (retval != ARK_SUCCESS)
       {
-        arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+        arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep", "arkStep_Init",
                         "Unable to update interpolation polynomial degree");
         return (ARK_ILL_INPUT);
       }
@@ -1354,7 +1354,7 @@ int arkStep_Init(void* arkode_mem, int init_type)
   {
     if (step_mem->lsolve_type != step_mem->msolve_type)
     {
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep", "arkStep_Init",
                       "Incompatible linear and mass matrix solvers");
       return (ARK_ILL_INPUT);
     }
@@ -1369,8 +1369,8 @@ int arkStep_Init(void* arkode_mem, int init_type)
       retval = step_mem->minit((void*)ark_mem);
       if (retval != 0)
       {
-        arkProcessError(ark_mem, ARK_MASSINIT_FAIL, __LINE__, __func__,
-                        __FILE__, MSG_ARK_MASSINIT_FAIL);
+        arkProcessError(ark_mem, ARK_MASSINIT_FAIL, "ARKODE::ARKStep",
+                        "arkStep_Init", MSG_ARK_MASSINIT_FAIL);
         return (ARK_MASSINIT_FAIL);
       }
     }
@@ -1382,8 +1382,8 @@ int arkStep_Init(void* arkode_mem, int init_type)
                                 ark_mem->tempv2, ark_mem->tempv3);
       if (retval != 0)
       {
-        arkProcessError(ark_mem, ARK_MASSSETUP_FAIL, __LINE__, __func__,
-                        __FILE__, MSG_ARK_MASSSETUP_FAIL);
+        arkProcessError(ark_mem, ARK_MASSSETUP_FAIL, "ARKODE::ARKStep",
+                        "arkStep_Init", MSG_ARK_MASSSETUP_FAIL);
         return (ARK_MASSSETUP_FAIL);
       }
     }
@@ -1395,8 +1395,8 @@ int arkStep_Init(void* arkode_mem, int init_type)
     retval = step_mem->linit(ark_mem);
     if (retval != 0)
     {
-      arkProcessError(ark_mem, ARK_LINIT_FAIL, __LINE__, __func__, __FILE__,
-                      MSG_ARK_LINIT_FAIL);
+      arkProcessError(ark_mem, ARK_LINIT_FAIL, "ARKODE::ARKStep",
+                      "arkStep_Init", MSG_ARK_LINIT_FAIL);
       return (ARK_LINIT_FAIL);
     }
   }
@@ -1407,7 +1407,8 @@ int arkStep_Init(void* arkode_mem, int init_type)
     retval = arkStep_NlsInit(ark_mem);
     if (retval != ARK_SUCCESS)
     {
-      arkProcessError(ark_mem, ARK_NLS_INIT_FAIL, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_NLS_INIT_FAIL, "ARKODE::ARKStep",
+                      "arkStep_Init",
                       "Unable to initialize SUNNonlinearSolver object");
       return (ARK_NLS_INIT_FAIL);
     }
@@ -1497,8 +1498,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
         step_mem->nfe++;
         if (retval != 0)
         {
-          arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__,
-                          __FILE__, MSG_ARK_RHSFUNC_FAILED, t);
+          arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ARKStep",
+                          "arkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
           return (ARK_RHSFUNC_FAIL);
         }
 
@@ -1509,8 +1510,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                     step_mem->nlscoef / ark_mem->h);
           if (retval)
           {
-            arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, __LINE__, __func__,
-                            __FILE__, "Mass matrix solver failure");
+            arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, "ARKODE::ARKStep",
+                            "arkStep_FullRHS", "Mass matrix solver failure");
             return ARK_MASSSOLVE_FAIL;
           }
         }
@@ -1523,8 +1524,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
         step_mem->nfi++;
         if (retval != 0)
         {
-          arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__,
-                          __FILE__, MSG_ARK_RHSFUNC_FAILED, t);
+          arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ARKStep",
+                          "arkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
           return (ARK_RHSFUNC_FAIL);
         }
 
@@ -1535,8 +1536,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                     step_mem->nlscoef / ark_mem->h);
           if (retval)
           {
-            arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, __LINE__, __func__,
-                            __FILE__, "Mass matrix solver failure");
+            arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, "ARKODE::ARKStep",
+                            "arkStep_FullRHS", "Mass matrix solver failure");
             return ARK_MASSSOLVE_FAIL;
           }
         }
@@ -1567,8 +1568,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                 step_mem->nlscoef / ark_mem->h);
       if (retval)
       {
-        arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, __LINE__, __func__,
-                        __FILE__, "Mass matrix solver failure");
+        arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, "ARKODE::ARKStep",
+                        "arkStep_FullRHS", "Mass matrix solver failure");
         return ARK_MASSSOLVE_FAIL;
       }
     }
@@ -1622,8 +1623,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
           step_mem->nfe++;
           if (retval != 0)
           {
-            arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__,
-                            __FILE__, MSG_ARK_RHSFUNC_FAILED, t);
+            arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ARKStep",
+                            "arkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
             return (ARK_RHSFUNC_FAIL);
           }
 
@@ -1634,8 +1635,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                       step_mem->nlscoef / ark_mem->h);
             if (retval)
             {
-              arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, __LINE__, __func__,
-                              __FILE__, "Mass matrix solver failure");
+              arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, "ARKODE::ARKStep",
+                              "arkStep_FullRHS", "Mass matrix solver failure");
               return ARK_MASSSOLVE_FAIL;
             }
           }
@@ -1648,8 +1649,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
           step_mem->nfi++;
           if (retval != 0)
           {
-            arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__,
-                            __FILE__, MSG_ARK_RHSFUNC_FAILED, t);
+            arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ARKStep",
+                            "arkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
             return (ARK_RHSFUNC_FAIL);
           }
 
@@ -1660,8 +1661,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                       step_mem->nlscoef / ark_mem->h);
             if (retval)
             {
-              arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, __LINE__, __func__,
-                              __FILE__, "Mass matrix solver failure");
+              arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, "ARKODE::ARKStep",
+                              "arkStep_FullRHS", "Mass matrix solver failure");
               return ARK_MASSSOLVE_FAIL;
             }
           }
@@ -1704,8 +1705,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                 step_mem->nlscoef / ark_mem->h);
       if (retval)
       {
-        arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, __LINE__, __func__,
-                        __FILE__, "Mass matrix solver failure");
+        arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, "ARKODE::ARKStep",
+                        "arkStep_FullRHS", "Mass matrix solver failure");
         return ARK_MASSSOLVE_FAIL;
       }
     }
@@ -1731,8 +1732,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
       step_mem->nfe++;
       if (retval != 0)
       {
-        arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__, __FILE__,
-                        MSG_ARK_RHSFUNC_FAILED, t);
+        arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ARKStep",
+                        "arkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
         return (ARK_RHSFUNC_FAIL);
       }
     }
@@ -1744,8 +1745,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
       step_mem->nfi++;
       if (retval != 0)
       {
-        arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__, __FILE__,
-                        MSG_ARK_RHSFUNC_FAILED, t);
+        arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ARKStep",
+                        "arkStep_FullRHS", MSG_ARK_RHSFUNC_FAILED, t);
         return (ARK_RHSFUNC_FAIL);
       }
     }
@@ -1771,8 +1772,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
                                 step_mem->nlscoef / ark_mem->h);
       if (retval)
       {
-        arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, __LINE__, __func__,
-                        __FILE__, "Mass matrix solver failure");
+        arkProcessError(ark_mem, ARK_MASSSOLVE_FAIL, "ARKODE::ARKStep",
+                        "arkStep_FullRHS", "Mass matrix solver failure");
         return ARK_MASSSOLVE_FAIL;
       }
     }
@@ -1791,8 +1792,8 @@ int arkStep_FullRHS(void* arkode_mem, sunrealtype t, N_Vector y, N_Vector f,
 
   default:
     /* return with RHS failure if unknown mode is passed */
-    arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, __LINE__, __func__, __FILE__,
-                    "Unknown full RHS mode");
+    arkProcessError(ark_mem, ARK_RHSFUNC_FAIL, "ARKODE::ARKStep",
+                    "arkStep_FullRHS", "Unknown full RHS mode");
     return (ARK_RHSFUNC_FAIL);
   }
 
@@ -2212,14 +2213,13 @@ int arkStep_AccessStepMem(void* arkode_mem, const char* fname,
   /* access ARKodeMem structure */
   if (arkode_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARK_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep", fname, MSG_ARK_NO_MEM);
     return (ARK_MEM_NULL);
   }
   *ark_mem = (ARKodeMem)arkode_mem;
   if ((*ark_mem)->step_mem == NULL)
   {
-    arkProcessError(*ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(*ark_mem, ARK_MEM_NULL, "ARKODE::ARKStep", fname,
                     MSG_ARKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -2260,8 +2260,8 @@ int arkStep_SetButcherTables(ARKodeMem ark_mem)
   /* access ARKodeARKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARKSTEP_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "arkStep_SetButcherTables", MSG_ARKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
   step_mem = (ARKodeARKStepMem)ark_mem->step_mem;
@@ -2297,7 +2297,8 @@ int arkStep_SetButcherTables(ARKodeMem ark_mem)
       itable = ARKSTEP_DEFAULT_ARK_ITABLE_5;
       break;
     default: /* no available method, set default */
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep",
+                      "arkStep_SetButcherTables",
                       "No ImEx method at requested order, using q=5.");
       etable = ARKSTEP_DEFAULT_ARK_ETABLE_5;
       itable = ARKSTEP_DEFAULT_ARK_ITABLE_5;
@@ -2315,7 +2316,8 @@ int arkStep_SetButcherTables(ARKodeMem ark_mem)
     case (4): itable = ARKSTEP_DEFAULT_DIRK_4; break;
     case (5): itable = ARKSTEP_DEFAULT_DIRK_5; break;
     default: /* no available method, set default */
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep",
+                      "arkStep_SetButcherTables",
                       "No implicit method at requested order, using q=5.");
       itable = ARKSTEP_DEFAULT_DIRK_5;
       break;
@@ -2336,7 +2338,8 @@ int arkStep_SetButcherTables(ARKodeMem ark_mem)
     case (8): etable = ARKSTEP_DEFAULT_ERK_8; break;
     case (9): etable = ARKSTEP_DEFAULT_ERK_9; break;
     default: /* no available method, set default */
-      arkProcessError(ark_mem, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_ILL_INPUT, "ARKODE::ARKStep",
+                      "arkStep_SetButcherTables",
                       "No explicit method at requested order, using q=9.");
       etable = ARKSTEP_DEFAULT_ERK_9;
       break;
@@ -2396,8 +2399,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
   /* access ARKodeARKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARKSTEP_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "arkStep_CheckButcherTables", MSG_ARKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
   step_mem = (ARKodeARKStepMem)ark_mem->step_mem;
@@ -2405,39 +2408,39 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
   /* check that the expected tables are set */
   if (step_mem->explicit && step_mem->Be == NULL)
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "explicit table is NULL!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                    "arkStep_CheckButcherTables", "explicit table is NULL!");
     return (ARK_INVALID_TABLE);
   }
 
   if (step_mem->implicit && step_mem->Bi == NULL)
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "implicit table is NULL!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                    "arkStep_CheckButcherTables", "implicit table is NULL!");
     return (ARK_INVALID_TABLE);
   }
 
   /* check that stages > 0 */
   if (step_mem->stages < 1)
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "stages < 1!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                    "arkStep_CheckButcherTables", "stages < 1!");
     return (ARK_INVALID_TABLE);
   }
 
   /* check that method order q > 0 */
   if (step_mem->q < 1)
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "method order < 1!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                    "arkStep_CheckButcherTables", "method order < 1!");
     return (ARK_INVALID_TABLE);
   }
 
   /* check that embedding order p > 0 */
   if ((step_mem->p < 1) && (!ark_mem->fixedstep))
   {
-    arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
-                    "embedding order < 1!");
+    arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                    "arkStep_CheckButcherTables", "embedding order < 1!");
     return (ARK_INVALID_TABLE);
   }
 
@@ -2448,8 +2451,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
     {
       if (step_mem->Bi->d == NULL)
       {
-        arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__,
-                        __FILE__, "no implicit embedding!");
+        arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                        "arkStep_CheckButcherTables", "no implicit embedding!");
         return (ARK_INVALID_TABLE);
       }
     }
@@ -2457,8 +2460,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
     {
       if (step_mem->Be->d == NULL)
       {
-        arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__,
-                        __FILE__, "no explicit embedding!");
+        arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                        "arkStep_CheckButcherTables", "no explicit embedding!");
         return (ARK_INVALID_TABLE);
       }
     }
@@ -2477,7 +2480,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
     }
     if (!okay)
     {
-      arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                      "arkStep_CheckButcherTables",
                       "Ae Butcher table is implicit!");
       return (ARK_INVALID_TABLE);
     }
@@ -2493,7 +2497,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
     }
     if (!okay)
     {
-      arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                      "arkStep_CheckButcherTables",
                       "Ai Butcher table is explicit!");
       return (ARK_INVALID_TABLE);
     }
@@ -2508,7 +2513,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
     }
     if (!okay)
     {
-      arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                      "arkStep_CheckButcherTables",
                       "Ai Butcher table has entries above diagonal!");
       return (ARK_INVALID_TABLE);
     }
@@ -2519,7 +2525,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
   {
     if (step_mem->q < 2)
     {
-      arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__, __FILE__,
+      arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                      "arkStep_CheckButcherTables",
                       "The Butcher table(s) must be at least second order!");
       return ARK_INVALID_TABLE;
     }
@@ -2531,8 +2538,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
       {
         if (step_mem->Be->b[i] < ZERO)
         {
-          arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__,
-                          __FILE__,
+          arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                          "arkStep_CheckButcherTables",
                           "The explicit Butcher table has a negative b value!");
           return ARK_INVALID_TABLE;
         }
@@ -2546,8 +2553,8 @@ int arkStep_CheckButcherTables(ARKodeMem ark_mem)
       {
         if (step_mem->Bi->b[i] < ZERO)
         {
-          arkProcessError(ark_mem, ARK_INVALID_TABLE, __LINE__, __func__,
-                          __FILE__,
+          arkProcessError(ark_mem, ARK_INVALID_TABLE, "ARKODE::ARKStep",
+                          "arkStep_CheckButcherTables",
                           "The implicit Butcher table has a negative b value!");
           return ARK_INVALID_TABLE;
         }
@@ -2580,7 +2587,7 @@ int arkStep_Predict(ARKodeMem ark_mem, int istage, N_Vector yguess)
   /* access ARKodeARKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep", "arkStep_Predict",
                     MSG_ARKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -2590,7 +2597,7 @@ int arkStep_Predict(ARKodeMem ark_mem, int istage, N_Vector yguess)
   if ((ark_mem->interp == NULL) && (step_mem->predictor > 0) &&
       (step_mem->predictor < 4))
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ARKStep", "arkStep_Predict",
                     "Interpolation structure is NULL");
     return (ARK_MEM_NULL);
   }
@@ -2812,7 +2819,7 @@ int arkStep_StageSetup(ARKodeMem ark_mem, sunbooleantype implicit)
   /* access ARKodeARKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep", "arkStep_StageSetup",
                     MSG_ARKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
@@ -2939,8 +2946,8 @@ int arkStep_ComputeSolutions(ARKodeMem ark_mem, sunrealtype* dsmPtr)
   /* access ARKodeARKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARKSTEP_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "arkStep_ComputeSolutions", MSG_ARKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
   step_mem = (ARKodeARKStepMem)ark_mem->step_mem;
@@ -3113,8 +3120,8 @@ int arkStep_ComputeSolutions_MassFixed(ARKodeMem ark_mem, sunrealtype* dsmPtr)
   /* access ARKodeARKStepMem structure */
   if (ark_mem->step_mem == NULL)
   {
-    arkProcessError(NULL, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARKSTEP_NO_MEM);
+    arkProcessError(NULL, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "arkStep_ComputeSolutions_MassFixed", MSG_ARKSTEP_NO_MEM);
     return (ARK_MEM_NULL);
   }
   step_mem = (ARKodeARKStepMem)ark_mem->step_mem;
@@ -3252,7 +3259,8 @@ int ARKStepCreateMRIStepInnerStepper(void* inner_arkode_mem,
                                  &step_mem);
   if (retval)
   {
-    arkProcessError(NULL, ARK_ILL_INPUT, __LINE__, __func__, __FILE__,
+    arkProcessError(NULL, ARK_ILL_INPUT, "ARKODE::ARKStep",
+                    "ARKStepCreateMRIStepInnerStepper",
                     "The ARKStep memory pointer is NULL");
     return ARK_ILL_INPUT;
   }
@@ -3554,8 +3562,8 @@ int arkStep_RelaxDeltaE(ARKodeMem ark_mem, ARKRelaxJacFn relax_jac_fn,
   /* Access the stepper memory structure */
   if (!(ark_mem->step_mem))
   {
-    arkProcessError(ark_mem, ARK_MEM_NULL, __LINE__, __func__, __FILE__,
-                    MSG_ARKSTEP_NO_MEM);
+    arkProcessError(ark_mem, ARK_MEM_NULL, "ARKODE::ARKStep",
+                    "arkStep_RelaxDeltaE", MSG_ARKSTEP_NO_MEM);
     return ARK_MEM_NULL;
   }
   step_mem = (ARKodeARKStepMem)(ark_mem->step_mem);
@@ -3598,7 +3606,7 @@ int arkStep_RelaxDeltaE(ARKodeMem ark_mem, ARKRelaxJacFn relax_jac_fn,
     retval = relax_jac_fn(z_stage, J_relax, ark_mem->user_data);
     (*num_relax_jac_evals)++;
     if (retval < 0) { return ARK_RELAX_JAC_FAIL; }
-    if (retval > 0) { return ARK_RELAX_BRENT; }
+    if (retval > 0) { return ARK_RELAX_JAC_RECV; }
 
     /* Reset temporary RHS alias */
     rhs_tmp = z_stage;

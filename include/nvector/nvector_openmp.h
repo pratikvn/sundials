@@ -100,11 +100,9 @@ SUNDIALS_EXPORT N_Vector N_VMake_OpenMP(sunindextype vec_length,
                                         sunrealtype* v_data, int num_threads,
                                         SUNContext sunctx);
 
-SUNDIALS_EXPORT
-sunindextype N_VGetLength_OpenMP(N_Vector v);
+SUNDIALS_EXPORT sunindextype N_VGetLength_OpenMP(N_Vector v);
 
-SUNDIALS_EXPORT
-void N_VPrint_OpenMP(N_Vector v);
+SUNDIALS_EXPORT void N_VPrint_OpenMP(N_Vector v);
 
 SUNDIALS_EXPORT void N_VPrintFile_OpenMP(N_Vector v, FILE* outfile);
 
@@ -187,8 +185,7 @@ SUNDIALS_EXPORT int N_VBufUnpack_OpenMP(N_Vector x, void* buf);
  * -----------------------------------------------------------------
  */
 
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableFusedOps_OpenMP(N_Vector v, sunbooleantype tf);
+SUNDIALS_EXPORT int N_VEnableFusedOps_OpenMP(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT int N_VEnableLinearCombination_OpenMP(N_Vector v,
                                                       sunbooleantype tf);

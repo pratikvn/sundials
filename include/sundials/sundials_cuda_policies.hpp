@@ -69,11 +69,11 @@ class ThreadDirectExecPolicy : public ExecPolicy
 {
 public:
   ThreadDirectExecPolicy(const size_t blockDim, cudaStream_t stream = 0)
-    : ExecPolicy(stream), blockDim_(blockDim)
+    : blockDim_(blockDim), ExecPolicy(stream)
   {}
 
   ThreadDirectExecPolicy(const ThreadDirectExecPolicy& ex)
-    : ExecPolicy(ex.stream_), blockDim_(ex.blockDim_)
+    : blockDim_(ex.blockDim_), ExecPolicy(ex.stream_)
   {}
 
   virtual size_t gridSize(size_t numWorkUnits = 0, size_t /*blockDim*/ = 0) const
@@ -111,7 +111,7 @@ public:
   {}
 
   GridStrideExecPolicy(const GridStrideExecPolicy& ex)
-    : ExecPolicy(ex.stream_), blockDim_(ex.blockDim_), gridDim_(ex.gridDim_)
+    : blockDim_(ex.blockDim_), gridDim_(ex.gridDim_), ExecPolicy(ex.stream_)
   {}
 
   virtual size_t gridSize(size_t /*numWorkUnits*/ = 0, size_t /*blockDim*/ = 0) const
@@ -158,7 +158,7 @@ public:
   }
 
   BlockReduceAtomicExecPolicy(const BlockReduceAtomicExecPolicy& ex)
-    : ExecPolicy(ex.stream_), blockDim_(ex.blockDim_), gridDim_(ex.gridDim_)
+    : blockDim_(ex.blockDim_), gridDim_(ex.gridDim_), ExecPolicy(ex.stream_)
   {}
 
   virtual size_t gridSize(size_t numWorkUnits = 0, size_t /*blockDim*/ = 0) const
@@ -202,7 +202,7 @@ public:
   }
 
   BlockReduceExecPolicy(const BlockReduceExecPolicy& ex)
-    : ExecPolicy(ex.stream_), blockDim_(ex.blockDim_), gridDim_(ex.gridDim_)
+    : blockDim_(ex.blockDim_), gridDim_(ex.gridDim_), ExecPolicy(ex.stream_)
   {}
 
   virtual size_t gridSize(size_t numWorkUnits = 0, size_t /*blockDim*/ = 0) const

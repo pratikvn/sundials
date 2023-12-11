@@ -58,7 +58,8 @@ int CVodeSetNonlinearSolver(void* cvode_mem, SUNNonlinearSolver NLS)
   /* Return immediately if CVode memory is NULL */
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "CVodeSetNonlinearSolver",
+                   MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -66,7 +67,7 @@ int CVodeSetNonlinearSolver(void* cvode_mem, SUNNonlinearSolver NLS)
   /* Return immediately if NLS memory is NULL */
   if (NLS == NULL)
   {
-    cvProcessError(NULL, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(NULL, CV_ILL_INPUT, "CVODE", "CVodeSetNonlinearSolver",
                    "NLS must be non-NULL");
     return (CV_ILL_INPUT);
   }
@@ -75,7 +76,7 @@ int CVodeSetNonlinearSolver(void* cvode_mem, SUNNonlinearSolver NLS)
   if (NLS->ops->gettype == NULL || NLS->ops->solve == NULL ||
       NLS->ops->setsysfn == NULL)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetNonlinearSolver",
                    "NLS does not support required operations");
     return (CV_ILL_INPUT);
   }
@@ -104,14 +105,14 @@ int CVodeSetNonlinearSolver(void* cvode_mem, SUNNonlinearSolver NLS)
   }
   else
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetNonlinearSolver",
                    "Invalid nonlinear solver type");
     return (CV_ILL_INPUT);
   }
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetNonlinearSolver",
                    "Setting nonlinear system function failed");
     return (CV_ILL_INPUT);
   }
@@ -120,7 +121,7 @@ int CVodeSetNonlinearSolver(void* cvode_mem, SUNNonlinearSolver NLS)
   retval = SUNNonlinSolSetConvTestFn(cv_mem->NLS, cvNlsConvTest, cvode_mem);
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetNonlinearSolver",
                    "Setting convergence test function failed");
     return (CV_ILL_INPUT);
   }
@@ -129,7 +130,7 @@ int CVodeSetNonlinearSolver(void* cvode_mem, SUNNonlinearSolver NLS)
   retval = SUNNonlinSolSetMaxIters(cv_mem->NLS, NLS_MAXCOR);
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetNonlinearSolver",
                    "Setting maximum number of nonlinear iterations failed");
     return (CV_ILL_INPUT);
   }
@@ -140,7 +141,7 @@ int CVodeSetNonlinearSolver(void* cvode_mem, SUNNonlinearSolver NLS)
   /* Set the nonlinear system RHS function */
   if (!(cv_mem->cv_f))
   {
-    cvProcessError(cv_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cv_mem, CV_ILL_INPUT, "CVODE", "CVodeSetNonlinearSolver",
                    "The ODE RHS function is NULL");
     return (CV_ILL_INPUT);
   }
@@ -162,7 +163,7 @@ int CVodeSetNlsRhsFn(void* cvode_mem, CVRhsFn f)
 
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "CVodeSetNlsRhsFn", MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
 
@@ -189,7 +190,8 @@ int CVodeGetNonlinearSystemData(void* cvode_mem, sunrealtype* tcur,
 
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "CVodeGetNonlinearSystemData",
+                   MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
 
@@ -224,7 +226,7 @@ int cvNlsInit(CVodeMem cvode_mem)
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cvode_mem, CV_ILL_INPUT, "CVODE", "cvNlsInit",
                    "Setting the linear solver setup function failed");
     return (CV_NLS_INIT_FAIL);
   }
@@ -238,7 +240,7 @@ int cvNlsInit(CVodeMem cvode_mem)
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cvode_mem, CV_ILL_INPUT, "CVODE", "cvNlsInit",
                    "Setting linear solver solve function failed");
     return (CV_NLS_INIT_FAIL);
   }
@@ -248,7 +250,7 @@ int cvNlsInit(CVodeMem cvode_mem)
 
   if (retval != CV_SUCCESS)
   {
-    cvProcessError(cvode_mem, CV_ILL_INPUT, __LINE__, __func__, __FILE__,
+    cvProcessError(cvode_mem, CV_ILL_INPUT, "CVODE", "cvNlsInit",
                    MSGCV_NLS_INIT_FAIL);
     return (CV_NLS_INIT_FAIL);
   }
@@ -263,7 +265,7 @@ static int cvNlsLSetup(sunbooleantype jbad, sunbooleantype* jcur, void* cvode_me
 
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "cvNlsLSetup", MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -299,7 +301,7 @@ static int cvNlsLSolve(N_Vector delta, void* cvode_mem)
 
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "cvNlsLSolve", MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -323,7 +325,7 @@ static int cvNlsConvTest(SUNNonlinearSolver NLS, N_Vector ycor, N_Vector delta,
 
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "cvNlsConvTest", MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -370,7 +372,7 @@ static int cvNlsResidual(N_Vector ycor, N_Vector res, void* cvode_mem)
 
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "cvNlsResidual", MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;
@@ -408,7 +410,7 @@ static int cvNlsFPFunction(N_Vector ycor, N_Vector res, void* cvode_mem)
 
   if (cvode_mem == NULL)
   {
-    cvProcessError(NULL, CV_MEM_NULL, __LINE__, __func__, __FILE__, MSGCV_NO_MEM);
+    cvProcessError(NULL, CV_MEM_NULL, "CVODE", "cvNlsFPFunction", MSGCV_NO_MEM);
     return (CV_MEM_NULL);
   }
   cv_mem = (CVodeMem)cvode_mem;

@@ -126,22 +126,18 @@ typedef struct _Pthreads_Data Pthreads_Data;
  * -----------------------------------------------------------------
  */
 
-SUNDIALS_EXPORT
-N_Vector N_VNew_Pthreads(sunindextype vec_length, int n_threads,
-                         SUNContext sunctx);
+SUNDIALS_EXPORT N_Vector N_VNew_Pthreads(sunindextype vec_length, int n_threads,
+                                         SUNContext sunctx);
 
-SUNDIALS_EXPORT
-N_Vector N_VNewEmpty_Pthreads(sunindextype vec_length, int n_threads,
-                              SUNContext sunctx);
+SUNDIALS_EXPORT N_Vector N_VNewEmpty_Pthreads(sunindextype vec_length,
+                                              int n_threads, SUNContext sunctx);
 
 SUNDIALS_EXPORT N_Vector N_VMake_Pthreads(sunindextype vec_length, int n_threads,
                                           sunrealtype* v_data, SUNContext sunctx);
 
-SUNDIALS_EXPORT
-sunindextype N_VGetLength_Pthreads(N_Vector v);
+SUNDIALS_EXPORT sunindextype N_VGetLength_Pthreads(N_Vector v);
 
-SUNDIALS_EXPORT
-void N_VPrint_Pthreads(N_Vector v);
+SUNDIALS_EXPORT void N_VPrint_Pthreads(N_Vector v);
 
 SUNDIALS_EXPORT void N_VPrintFile_Pthreads(N_Vector v, FILE* outfile);
 
@@ -224,8 +220,7 @@ SUNDIALS_EXPORT int N_VBufUnpack_Pthreads(N_Vector x, void* buf);
  * -----------------------------------------------------------------
  */
 
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableFusedOps_Pthreads(N_Vector v, sunbooleantype tf);
+SUNDIALS_EXPORT int N_VEnableFusedOps_Pthreads(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT int N_VEnableLinearCombination_Pthreads(N_Vector v,
                                                         sunbooleantype tf);
@@ -233,34 +228,13 @@ SUNDIALS_EXPORT int N_VEnableScaleAddMulti_Pthreads(N_Vector v,
                                                     sunbooleantype tf);
 SUNDIALS_EXPORT int N_VEnableDotProdMulti_Pthreads(N_Vector v, sunbooleantype tf);
 
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleAddMulti_Pthreads(N_Vector v, sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableDotProdMulti_Pthreads(N_Vector v, sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableLinearSumVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableConstVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableWrmsNormVectorArray_Pthreads(N_Vector v, sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableWrmsNormMaskVectorArray_Pthreads(N_Vector v,
-                                                     sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableScaleAddMultiVectorArray_Pthreads(N_Vector v,
-                                                      sunbooleantype tf);
-
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableLinearCombinationVectorArray_Pthreads(N_Vector v,
+SUNDIALS_EXPORT int N_VEnableLinearSumVectorArray_Pthreads(N_Vector v,
+                                                           sunbooleantype tf);
+SUNDIALS_EXPORT int N_VEnableScaleVectorArray_Pthreads(N_Vector v,
+                                                       sunbooleantype tf);
+SUNDIALS_EXPORT int N_VEnableConstVectorArray_Pthreads(N_Vector v,
+                                                       sunbooleantype tf);
+SUNDIALS_EXPORT int N_VEnableWrmsNormVectorArray_Pthreads(N_Vector v,
                                                           sunbooleantype tf);
 SUNDIALS_EXPORT int N_VEnableWrmsNormMaskVectorArray_Pthreads(N_Vector v,
                                                               sunbooleantype tf);

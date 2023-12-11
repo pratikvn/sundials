@@ -76,8 +76,6 @@ extern "C" {
 #define _SUNDIALS_STRUCT_ struct
 #endif
 
-typedef void* SUNMPIComm;
-
 /*
  *------------------------------------------------------------------
  * Type sunrealtype

@@ -277,7 +277,7 @@ typedef struct KINMemRec
   void* kin_eh_data;         /* dats pointer passed to ehfun                 */
   FILE* kin_errfp;           /* KINSOL error messages are sent to errfp      */
 
-} * KINMem;
+}* KINMem;
 
 /*
  * =================================================================

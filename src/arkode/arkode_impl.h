@@ -28,6 +28,7 @@
 #include <sundials/sundials_linearsolver.h>
 
 #include "arkode_adapt_impl.h"
+#include "arkode_relaxation_impl.h"
 #include "arkode_root_impl.h"
 #include "arkode_types_impl.h"
 #include "sundials_logger_impl.h"
@@ -256,7 +257,7 @@ typedef struct ARKodeMassMemRec
   int msolve_type; /* mass matrix interface type:
                                   0=iterative; 1=direct; 2=custom */
 
-} * ARKodeMassMem;
+}* ARKodeMassMem;
 
 /*---------------------------------------------------------------
   Types : struct ARKodeMemRec, ARKodeMem

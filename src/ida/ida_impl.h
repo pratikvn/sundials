@@ -37,9 +37,9 @@ extern "C" {
 #define RSYMW "23.16g"
 #endif
 
-/*===============================================================
-  SHORTCUTS
-  ===============================================================*/
+/*=================================================================*/
+/* Shortcuts                                                       */
+/*=================================================================*/
 
 #define IDA_PROFILER IDA_mem->ida_sunctx->profiler
 #define IDA_LOGGER   IDA_mem->ida_sunctx->logger
@@ -338,7 +338,7 @@ typedef struct IDAMemRec
   N_Vector ida_Xvecs[MXORDP1];
   N_Vector ida_Zvecs[MXORDP1];
 
-} * IDAMem;
+}* IDAMem;
 
 /*
  * =================================================================

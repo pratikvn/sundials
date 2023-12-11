@@ -92,11 +92,9 @@ SUNDIALS_EXPORT N_Vector N_VNewEmpty_Serial(sunindextype vec_length,
 SUNDIALS_EXPORT N_Vector N_VMake_Serial(sunindextype vec_length,
                                         sunrealtype* v_data, SUNContext sunctx);
 
-SUNDIALS_EXPORT
-sunindextype N_VGetLength_Serial(N_Vector v);
+SUNDIALS_EXPORT sunindextype N_VGetLength_Serial(N_Vector v);
 
-SUNDIALS_EXPORT
-void N_VPrint_Serial(N_Vector v);
+SUNDIALS_EXPORT void N_VPrint_Serial(N_Vector v);
 
 SUNDIALS_EXPORT void N_VPrintFile_Serial(N_Vector v, FILE* outfile);
 
@@ -179,8 +177,7 @@ SUNDIALS_EXPORT int N_VBufUnpack_Serial(N_Vector x, void* buf);
  * -----------------------------------------------------------------
  */
 
-SUNDIALS_EXPORT
-SUNErrCode N_VEnableFusedOps_Serial(N_Vector v, sunbooleantype tf);
+SUNDIALS_EXPORT int N_VEnableFusedOps_Serial(N_Vector v, sunbooleantype tf);
 
 SUNDIALS_EXPORT int N_VEnableLinearCombination_Serial(N_Vector v,
                                                       sunbooleantype tf);

@@ -74,8 +74,8 @@ SUNDIALS_EXPORT N_Vector N_VNew_MPIManyVector(sunindextype num_subvectors,
                                               N_Vector* vec_array,
                                               SUNContext sunctx);
 
-SUNDIALS_EXPORT
-N_Vector N_VGetSubvector_MPIManyVector(N_Vector v, sunindextype vec_num);
+SUNDIALS_EXPORT N_Vector N_VGetSubvector_MPIManyVector(N_Vector v,
+                                                       sunindextype vec_num);
 
 SUNDIALS_EXPORT sunrealtype* N_VGetSubvectorArrayPointer_MPIManyVector(
   N_Vector v, sunindextype vec_num);
@@ -83,8 +83,7 @@ SUNDIALS_EXPORT sunrealtype* N_VGetSubvectorArrayPointer_MPIManyVector(
 SUNDIALS_EXPORT int N_VSetSubvectorArrayPointer_MPIManyVector(
   sunrealtype* v_data, N_Vector v, sunindextype vec_num);
 
-SUNDIALS_EXPORT
-sunindextype N_VGetNumSubvectors_MPIManyVector(N_Vector v);
+SUNDIALS_EXPORT sunindextype N_VGetNumSubvectors_MPIManyVector(N_Vector v);
 
 /* standard vector operations */
 SUNDIALS_EXPORT N_Vector_ID N_VGetVectorID_MPIManyVector(N_Vector v);
