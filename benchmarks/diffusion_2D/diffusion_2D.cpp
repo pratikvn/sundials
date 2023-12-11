@@ -31,7 +31,7 @@ int diffusion(sunrealtype t, N_Vector u, N_Vector f, void* user_data)
 
   // Compute the Laplacian
   int flag = laplacian(t, u, f, udata);
-  if (check_flag(&flag, "laplacian", 1)) { return -1; }
+  if (check_flag(&flag, "laplacian", 1)) return -1;
 
   return 0;
 }
@@ -68,7 +68,7 @@ int diffusion(sunrealtype t, N_Vector u, N_Vector up, N_Vector res,
 
   // Compute the Laplacian
   int flag = laplacian(t, u, res, udata);
-  if (check_flag(&flag, "laplacian", 1)) { return -1; }
+  if (check_flag(&flag, "laplacian", 1)) return -1;
 
   // Compute the residual
   N_VLinearSum(ONE, up, -ONE, res, res);

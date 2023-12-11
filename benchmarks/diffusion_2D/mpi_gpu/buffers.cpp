@@ -61,7 +61,7 @@ int UserData::pack_buffers(const N_Vector u)
   // Access data array
   const sunrealtype* uarray =
     N_VGetDeviceArrayPointer(N_VGetLocalVector_MPIPlusX(u));
-  if (check_flag((void*)uarray, "N_VGetDeviceArrayPointer", 0)) { return -1; }
+  if (check_flag((void*)uarray, "N_VGetDeviceArrayPointer", 0)) return -1;
 
   sunindextype maxdim = max(nx_loc, ny_loc);
   dim3 block(BLOCK_SIZE);

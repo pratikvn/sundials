@@ -26,7 +26,6 @@
 #include "VectorKernels.cuh"
 #include "sundials_cuda.h"
 #include "sundials_debug.h"
-#include "sundials_nvector_impl.h"
 
 #define ZERO SUN_RCONST(0.0)
 #define HALF SUN_RCONST(0.5)

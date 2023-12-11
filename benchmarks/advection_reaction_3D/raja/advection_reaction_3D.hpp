@@ -23,7 +23,7 @@
 #include <cstring>
 #include <mpi.h>
 #include <nvector/nvector_mpiplusx.h>
-#include <sundials/sundials_context.h>
+#include <sundials/sundials_core.hpp>
 
 #include "ParallelGrid.hpp"
 #include "backends.hpp"

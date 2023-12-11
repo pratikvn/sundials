@@ -28,7 +28,7 @@
 
 /* private functions */
 static int InitializeClearCache(int cachesize);
-static int FinalizeClearCache(void);
+static int FinalizeClearCache();
 
 /* private data for clearing cache */
 static sunindextype N;    /* data length */
@@ -272,13 +272,13 @@ static int InitializeClearCache(int cachesize)
   return (0);
 }
 
-static int FinalizeClearCache(void)
+static int FinalizeClearCache()
 {
   free(data);
   return (0);
 }
 
-void ClearCache(void)
+void ClearCache()
 {
   sunrealtype sum;
   sunindextype i;

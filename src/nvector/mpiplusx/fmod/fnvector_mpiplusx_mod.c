@@ -256,6 +256,24 @@ SWIGEXPORT void _wrap_FN_VSetArrayPointer_MPIPlusX(double *farg1, N_Vector farg2
 }
 
 
+SWIGEXPORT void _wrap_FN_VPrint_MPIPlusX(N_Vector farg1) {
+  N_Vector arg1 = (N_Vector) 0 ;
+  
+  arg1 = (N_Vector)(farg1);
+  N_VPrint_MPIPlusX(arg1);
+}
+
+
+SWIGEXPORT void _wrap_FN_VPrintFile_MPIPlusX(N_Vector farg1, void *farg2) {
+  N_Vector arg1 = (N_Vector) 0 ;
+  FILE *arg2 = (FILE *) 0 ;
+  
+  arg1 = (N_Vector)(farg1);
+  arg2 = (FILE *)(farg2);
+  N_VPrintFile_MPIPlusX(arg1,arg2);
+}
+
+
 SWIGEXPORT N_Vector _wrap_FN_VGetLocalVector_MPIPlusX(N_Vector farg1) {
   N_Vector fresult ;
   N_Vector arg1 = (N_Vector) 0 ;
@@ -284,31 +302,13 @@ SWIGEXPORT int _wrap_FN_VEnableFusedOps_MPIPlusX(N_Vector farg1, int const *farg
   int fresult ;
   N_Vector arg1 = (N_Vector) 0 ;
   int arg2 ;
-  SUNErrCode result;
+  int result;
   
   arg1 = (N_Vector)(farg1);
   arg2 = (int)(*farg2);
-  result = (SUNErrCode)N_VEnableFusedOps_MPIPlusX(arg1,arg2);
-  fresult = (SUNErrCode)(result);
+  result = (int)N_VEnableFusedOps_MPIPlusX(arg1,arg2);
+  fresult = (int)(result);
   return fresult;
-}
-
-
-SWIGEXPORT void _wrap_FN_VPrint_MPIPlusX(N_Vector farg1) {
-  N_Vector arg1 = (N_Vector) 0 ;
-  
-  arg1 = (N_Vector)(farg1);
-  N_VPrint_MPIPlusX(arg1);
-}
-
-
-SWIGEXPORT void _wrap_FN_VPrintFile_MPIPlusX(N_Vector farg1, void *farg2) {
-  N_Vector arg1 = (N_Vector) 0 ;
-  FILE *arg2 = (FILE *) 0 ;
-  
-  arg1 = (N_Vector)(farg1);
-  arg2 = (FILE *)(farg2);
-  N_VPrintFile_MPIPlusX(arg1,arg2);
 }
 
 

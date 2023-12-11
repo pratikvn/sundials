@@ -414,3 +414,51 @@ to ``ON``. If you just want to run the formatter, then you can run
 
    cd scripts
    ./format.sh <path to directory to format>
+
+It may be necessary to override clang-tidy at times. This can be done with the
+``NOLINT`` magic comments e.g.,
+
+.. code-block:: cpp
+
+  template<class GkoSolverType, class GkoMatrixType>
+  int SUNLinSolFree_Ginkgo(SUNLinearSolver S)
+  {
+    auto solver{static_cast<LinearSolver<GkoSolverType, GkoMatrixType>*>(S->content)};
+    delete solver; // NOLINT
+    return SUNLS_SUCCESS;
+  }
+
+  class BaseObject {
+  protected:
+    // NOLINTNEXTLINE(cppcoreguidelines-non-private-member-variables-in-classes)
+    SUNContext sunctx_{};
+  };
+
+See the clang-tidy documentation for more details.
+
+Indentation
+^^^^^^^^^^^
+
+Spaces not tabs
+
+Comments
+--------
+
+TODO Comments
+^^^^^^^^^^^^^
+
+Following the `Google Style Guide <https://google.github.io/styleguide/>`_ , TODO comments are used
+to note code that is "temporary, a short-term solution, or good-enough but not perfect."
+
+A consistent TODO comment format provides an easy to search for keyword with details on how to get
+more information. TODO comments should start with ``TODO`` followed by a unique identifier, enclosed
+in parentheses, for the person most knowledgeable about the issue and a brief description of the
+TODO item. Generally, these comments should be used sparingly and are not a substitute for creating
+an issue or bug report. When applicable, the comment should include the relevant issue or bug report
+number.
+
+Examples:
+
+.. code-block:: c
+
+   /* TODO(DJG): Update to new API in the next major release (Issue #256) */
