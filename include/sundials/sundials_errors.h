@@ -37,6 +37,7 @@
                                                                                \
   ENTRY(SUN_ERR_CORRUPT, "Object is NULL or corrupt")                          \
   ENTRY(SUN_ERR_FILE_OPEN, "Unable to open file")                              \
+  ENTRY(SUN_ERR_MEM_FAIL, "A memory error occured")                            \
   ENTRY(SUN_ERR_MALLOC_FAIL, "malloc returned NULL")                           \
   ENTRY(SUN_ERR_DESTROY_FAIL, "a destroy function returned an error")          \
   ENTRY(SUN_ERR_NOT_IMPLEMENTED,                                               \
@@ -50,6 +51,8 @@
   ENTRY(SUN_ERR_PROFILER_MAPSORT, "error sorting SUNProfiler map")             \
                                                                                \
   ENTRY(SUN_ERR_SUNCTX_CORRUPT, "SUNContext is NULL or corrupt")               \
+                                                                               \
+  ENTRY(SUN_ERR_OP_FAIL, "The operation failed")                               \
                                                                                \
   ENTRY(SUN_ERR_MPI_FAIL,                                                      \
         "an MPI call returned something other than MPI_SUCCESS")               \

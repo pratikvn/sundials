@@ -176,7 +176,7 @@ SUNLinearSolver_ID SUNLinSolGetID_cuSolverSp_batchQR(SUNLinearSolver S)
   return (SUNLINEARSOLVER_CUSOLVERSP_BATCHQR);
 }
 
-int SUNLinSolInitialize_cuSolverSp_batchQR(SUNLinearSolver S)
+SUNErrCode SUNLinSolInitialize_cuSolverSp_batchQR(SUNLinearSolver S)
 {
   SUN_CUSP_FIRSTFACTORIZE(S) = SUNTRUE;
   SUN_CUSP_LASTFLAG(S)       = SUNLS_SUCCESS;
@@ -314,7 +314,7 @@ sunindextype SUNLinSolLastFlag_cuSolverSp_batchQR(SUNLinearSolver S)
   return SUN_CUSP_LASTFLAG(S);
 }
 
-int SUNLinSolFree_cuSolverSp_batchQR(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_cuSolverSp_batchQR(SUNLinearSolver S)
 {
   /* return with success if already freed */
   if (S == NULL) { return SUNLS_SUCCESS; }

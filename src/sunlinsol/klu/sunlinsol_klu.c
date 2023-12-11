@@ -236,7 +236,7 @@ SUNLinearSolver_ID SUNLinSolGetID_KLU(SUNLinearSolver S)
   return (SUNLINEARSOLVER_KLU);
 }
 
-int SUNLinSolInitialize_KLU(SUNLinearSolver S)
+SUNErrCode SUNLinSolInitialize_KLU(SUNLinearSolver S)
 {
   /* Force factorization */
   FIRSTFACTORIZE(S) = 1;
@@ -393,7 +393,8 @@ sunindextype SUNLinSolLastFlag_KLU(SUNLinearSolver S)
   return (LASTFLAG(S));
 }
 
-int SUNLinSolSpace_KLU(SUNLinearSolver S, long int* lenrwLS, long int* leniwLS)
+SUNErrCode SUNLinSolSpace_KLU(SUNLinearSolver S, long int* lenrwLS,
+                              long int* leniwLS)
 {
   /* since the klu structures are opaque objects, we
      omit those from these results */
@@ -402,7 +403,7 @@ int SUNLinSolSpace_KLU(SUNLinearSolver S, long int* lenrwLS, long int* leniwLS)
   return (SUNLS_SUCCESS);
 }
 
-int SUNLinSolFree_KLU(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_KLU(SUNLinearSolver S)
 {
   /* return with success if already freed */
   if (S == NULL) { return (SUNLS_SUCCESS); }

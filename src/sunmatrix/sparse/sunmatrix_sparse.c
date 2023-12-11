@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <sundials/priv/sundials_errors_impl.h>
 #include <sundials/sundials_math.h>
+#include <sunmatrix/sunmatrix_dense.h>
 #include <sunmatrix/sunmatrix_sparse.h>
 
 #define ZERO SUN_RCONST(0.0)
@@ -61,10 +62,10 @@ SUNMatrix SUNSparseMatrix(sunindextype M, sunindextype N, sunindextype NNZ,
   SUNMatrixContent_Sparse content;
 
   /* return with NULL matrix on illegal input */
-  SUNAssert(M > 0 && N > 0, SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(NNZ >= 0, SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(sparsetype == CSC_MAT || sparsetype == CSR_MAT,
-            SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(M > 0 && N > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(NNZ >= 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(sparsetype == CSC_MAT || sparsetype == CSR_MAT,
+                SUN_ERR_ARG_OUTOFRANGE);
 
   /* Create an empty matrix object */
   A = NULL;
@@ -85,7 +86,7 @@ SUNMatrix SUNSparseMatrix(sunindextype M, sunindextype N, sunindextype NNZ,
   /* Create content */
   content = NULL;
   content = (SUNMatrixContent_Sparse)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   A->content = content;
@@ -119,14 +120,14 @@ SUNMatrix SUNSparseMatrix(sunindextype M, sunindextype N, sunindextype NNZ,
 
   /* Allocate content */
   content->data = (sunrealtype*)calloc(NNZ, sizeof(sunrealtype));
-  SUNAssert(content->data, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->data, SUN_ERR_MALLOC_FAIL);
 
   content->indexvals = (sunindextype*)calloc(NNZ, sizeof(sunindextype));
-  SUNAssert(content->indexvals, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->indexvals, SUN_ERR_MALLOC_FAIL);
 
   content->indexptrs = (sunindextype*)calloc((content->NP + 1),
                                              sizeof(sunindextype));
-  SUNAssert(content->indexptrs, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->indexptrs, SUN_ERR_MALLOC_FAIL);
   content->indexptrs[content->NP] = 0;
 
   return (A);
@@ -146,10 +147,10 @@ SUNMatrix SUNSparseFromDenseMatrix(SUNMatrix Ad, sunrealtype droptol,
   sunindextype M, N;
   SUNMatrix As;
 
-  SUNAssert(SUNMatGetID(Ad) == SUNMATRIX_DENSE, SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(sparsetype == CSC_MAT || sparsetype == CSR_MAT,
-            SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(droptol >= ZERO, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(SUNMatGetID(Ad) == SUNMATRIX_DENSE, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(sparsetype == CSC_MAT || sparsetype == CSR_MAT,
+                SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(droptol >= ZERO, SUN_ERR_ARG_OUTOFRANGE);
 
   /* set size of new matrix */
   M = SM_ROWS_D(Ad);
@@ -222,10 +223,10 @@ SUNMatrix SUNSparseFromBandMatrix(SUNMatrix Ab, sunrealtype droptol,
   sunindextype M, N;
   SUNMatrix As;
 
-  SUNAssert(SUNMatGetID(Ab) == SUNMATRIX_BAND, SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(sparsetype == CSC_MAT || sparsetype == CSR_MAT,
-            SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(droptol >= ZERO, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(SUNMatGetID(Ab) == SUNMATRIX_BAND, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(sparsetype == CSC_MAT || sparsetype == CSR_MAT,
+                SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(droptol >= ZERO, SUN_ERR_ARG_OUTOFRANGE);
 
   /* set size of new matrix */
   M = SM_ROWS_B(Ab);
@@ -378,7 +379,7 @@ void SUNSparseMatrix_Print(SUNMatrix A, FILE* outfile)
   char* matrixtype;
   char* indexname;
 
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertVoid(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
 
   /* perform operation */
   if (SM_SPARSETYPE_S(A) == CSC_MAT)
@@ -461,21 +462,21 @@ int SUNSparseMatrix_SparseType(SUNMatrix A)
 sunrealtype* SUNSparseMatrix_Data(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_DATA_S(A);
 }
 
 sunindextype* SUNSparseMatrix_IndexValues(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_INDEXVALS_S(A);
 }
 
 sunindextype* SUNSparseMatrix_IndexPointers(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_SPARSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_INDEXPTRS_S(A);
 }
 
@@ -631,8 +632,9 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
   Ax = SM_DATA_S(A);
   SUNCheck(Ax, SUN_ERR_ARG_CORRUPT);
 
-  /* determine if A: contains values on the diagonal (so I can just be added in);
-     if not, then increment counter for extra storage that should be required. */
+  /* determine if A: contains values on the diagonal (so I can just be added
+     in); if not, then increment counter for extra storage that should be
+     required. */
   newvals = 0;
   for (j = 0; j < SUNMIN(M, N); j++)
   {
@@ -650,8 +652,9 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
     if (!found) { newvals += 1; }
   }
 
-  /* If extra nonzeros required, check whether matrix has sufficient storage space
-     for new nonzero entries  (so I can be inserted into existing storage) */
+  /* If extra nonzeros required, check whether matrix has sufficient storage
+     space for new nonzero entries  (so I can be inserted into existing storage)
+   */
   newmat = SUNFALSE; /* no reallocation needed */
   if (newvals > (SM_NNZ_S(A) - Ap[N])) { newmat = SUNTRUE; }
 
@@ -670,11 +673,13 @@ SUNErrCode SUNMatScaleAddI_Sparse(sunrealtype c, SUNMatrix A)
       }
     }
 
-    /*   case 2: A has sufficient storage, but does not already contain a diagonal */
+    /*   case 2: A has sufficient storage, but does not already contain a
+     * diagonal */
   }
   else if (!newmat)
   {
-    /* create work arrays for nonzero row (column) indices and values in a single column (row) */
+    /* create work arrays for nonzero row (column) indices and values in a
+     * single column (row) */
     w = (sunindextype*)malloc(M * sizeof(sunindextype));
     x = (sunrealtype*)malloc(M * sizeof(sunrealtype));
 
@@ -916,7 +921,8 @@ SUNErrCode SUNMatScaleAdd_Sparse(sunrealtype c, SUNMatrix A, SUNMatrix B)
       for (i = Ap[j]; i < Ap[j + 1]; i++) { Ax[i] = c * Ax[i] + x[Ai[i]]; }
     }
 
-    /*   case 2: A has sufficient storage, but does not already contain B's sparsity */
+    /*   case 2: A has sufficient storage, but does not already contain B's
+     * sparsity */
   }
   else if (!newmat)
   {
@@ -1246,7 +1252,8 @@ SUNErrCode format_convert(const SUNMatrix A, SUNMatrix B)
 
   SUNCheckCall(SUNMatZero_Sparse(B));
 
-  /* compute number of non-zero entries per column (if CSR) or per row (if CSC) of A */
+  /* compute number of non-zero entries per column (if CSR) or per row (if CSC)
+   * of A */
   for (n = 0; n < nnz; n++) { Bp[Aj[n]]++; }
 
   /* cumualtive sum the nnz per column to get Bp[] */

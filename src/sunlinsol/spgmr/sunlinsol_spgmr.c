@@ -63,10 +63,10 @@ SUNLinearSolver SUNLinSol_SPGMR(N_Vector y, int pretype, int maxl,
   if (maxl <= 0) { maxl = SUNSPGMR_MAXL_DEFAULT; }
 
   /* check that the supplied N_Vector supports all requisite operations */
-  SUNAssert((y->ops->nvclone) && (y->ops->nvdestroy) && (y->ops->nvlinearsum) &&
-              (y->ops->nvconst) && (y->ops->nvprod) && (y->ops->nvdiv) &&
-              (y->ops->nvscale) && (y->ops->nvdotprod),
-            SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull((y->ops->nvclone) && (y->ops->nvdestroy) &&
+                  (y->ops->nvlinearsum) && (y->ops->nvconst) && (y->ops->nvprod) &&
+                  (y->ops->nvdiv) && (y->ops->nvscale) && (y->ops->nvdotprod),
+                SUN_ERR_ARG_OUTOFRANGE);
 
   /* Create linear solver */
   S = NULL;
@@ -93,7 +93,7 @@ SUNLinearSolver SUNLinSol_SPGMR(N_Vector y, int pretype, int maxl,
   /* Create content */
   content = NULL;
   content = (SUNLinearSolverContent_SPGMR)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   S->content = content;
@@ -325,6 +325,11 @@ SUNErrCode SUNLinSolSetZeroGuess_SPGMR(SUNLinearSolver S, sunbooleantype onff)
 
 int SUNLinSolSetup_SPGMR(SUNLinearSolver S, SUNMatrix A)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
+  SUNFunctionBegin(S->sunctx);
+
   int status = SUNLS_SUCCESS;
 
   /* Set shortcuts to SPGMR memory structures */
@@ -351,6 +356,9 @@ int SUNLinSolSetup_SPGMR(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
                          sunrealtype delta)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
 
   /* local data and shortcut variables */

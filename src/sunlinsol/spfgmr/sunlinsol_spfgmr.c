@@ -65,10 +65,10 @@ SUNLinearSolver SUNLinSol_SPFGMR(N_Vector y, int pretype, int maxl,
   if (maxl <= 0) { maxl = SUNSPFGMR_MAXL_DEFAULT; }
 
   /* check that the supplied N_Vector supports all requisite operations */
-  SUNAssert((y->ops->nvclone) && (y->ops->nvdestroy) && (y->ops->nvlinearsum) &&
-              (y->ops->nvconst) && (y->ops->nvprod) && (y->ops->nvdiv) &&
-              (y->ops->nvscale) && (y->ops->nvdotprod),
-            SUN_ERR_ARG_INCOMPATIBLE);
+  SUNAssertNull((y->ops->nvclone) && (y->ops->nvdestroy) &&
+                  (y->ops->nvlinearsum) && (y->ops->nvconst) && (y->ops->nvprod) &&
+                  (y->ops->nvdiv) && (y->ops->nvscale) && (y->ops->nvdotprod),
+                SUN_ERR_ARG_INCOMPATIBLE);
 
   /* Create linear solver */
   S = NULL;
@@ -95,7 +95,7 @@ SUNLinearSolver SUNLinSol_SPFGMR(N_Vector y, int pretype, int maxl,
   /* Create content */
   content = NULL;
   content = (SUNLinearSolverContent_SPFGMR)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   S->content = content;
@@ -338,6 +338,11 @@ SUNErrCode SUNLinSolSetZeroGuess_SPFGMR(SUNLinearSolver S, sunbooleantype onoff)
 
 int SUNLinSolSetup_SPFGMR(SUNLinearSolver S, SUNMatrix A)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
+  SUNFunctionBegin(S->sunctx);
+
   int status;
   SUNPSetupFn Psetup;
   void* PData;
@@ -366,8 +371,12 @@ int SUNLinSolSetup_SPFGMR(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_SPFGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
                           N_Vector b, sunrealtype delta)
 {
-  /* local data and shortcut variables */
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
+
+  /* local data and shortcut variables */
   N_Vector *V, *Z, xcor, vtemp, s1, s2;
   sunrealtype **Hes, *givens, *yg, *res_norm;
   sunrealtype beta, rotation_product, r_norm, s_product, rho;
@@ -428,10 +437,10 @@ int SUNLinSolSolve_SPFGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
 #endif
 
   /* Check if Atimes function has been set */
-  SUNAssert(atimes, SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(atimes, SUN_ERR_ARG_CORRUPT);
 
   /* If preconditioning, check if psolve has been set */
-  SUNAssert(!preOnRight || psolve, SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(!preOnRight || psolve, SUN_ERR_ARG_CORRUPT);
 
   /* Set vtemp and V[0] to initial (unscaled) residual r_0 = b - A*x_0 */
   if (*zeroguess)

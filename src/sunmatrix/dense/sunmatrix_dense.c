@@ -49,7 +49,7 @@ SUNMatrix SUNDenseMatrix(sunindextype M, sunindextype N, SUNContext sunctx)
   sunindextype j;
 
   /* return with NULL matrix on illegal dimension input */
-  SUNAssert(N > 0 && M > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(N > 0 && M > 0, SUN_ERR_ARG_OUTOFRANGE);
 
   /* Create an empty matrix object */
   A = NULL;
@@ -70,7 +70,7 @@ SUNMatrix SUNDenseMatrix(sunindextype M, sunindextype N, SUNContext sunctx)
   /* Create content */
   content = NULL;
   content = (SUNMatrixContent_Dense)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   A->content = content;
@@ -84,10 +84,10 @@ SUNMatrix SUNDenseMatrix(sunindextype M, sunindextype N, SUNContext sunctx)
 
   /* Allocate content */
   content->data = (sunrealtype*)calloc(M * N, sizeof(sunrealtype));
-  SUNAssert(content->data, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->data, SUN_ERR_MALLOC_FAIL);
 
   content->cols = (sunrealtype**)malloc(N * sizeof(sunrealtype*));
-  SUNAssert(content->cols, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->cols, SUN_ERR_MALLOC_FAIL);
   for (j = 0; j < N; j++) { content->cols[j] = content->data + j * M; }
 
   return (A);
@@ -102,7 +102,7 @@ void SUNDenseMatrix_Print(SUNMatrix A, FILE* outfile)
   SUNFunctionBegin(A->sunctx);
   sunindextype i, j;
 
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertVoid(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
 
   /* perform operation */
   fprintf(outfile, "\n");
@@ -152,21 +152,21 @@ sunindextype SUNDenseMatrix_LData(SUNMatrix A)
 sunrealtype* SUNDenseMatrix_Data(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_DATA_D(A);
 }
 
 sunrealtype** SUNDenseMatrix_Cols(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_COLS_D(A);
 }
 
 sunrealtype* SUNDenseMatrix_Column(SUNMatrix A, sunindextype j)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
   return SM_COLUMN_D(A, j);
 }
 

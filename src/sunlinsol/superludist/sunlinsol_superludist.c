@@ -176,7 +176,7 @@ SUNLinearSolver_ID SUNLinSolGetID_SuperLUDIST(SUNLinearSolver S)
   return (SUNLINEARSOLVER_SUPERLUDIST);
 }
 
-int SUNLinSolInitialize_SuperLUDIST(SUNLinearSolver S)
+SUNErrCode SUNLinSolInitialize_SuperLUDIST(SUNLinearSolver S)
 {
   SLU_FIRSTFACTORIZE(S) = SUNTRUE;
 
@@ -266,7 +266,7 @@ sunindextype SUNLinSolLastFlag_SuperLUDIST(SUNLinearSolver S)
   return (SLU_LASTFLAG(S));
 }
 
-int SUNLinSolFree_SuperLUDIST(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_SuperLUDIST(SUNLinearSolver S)
 {
   /* return with success if already freed */
   if (S == NULL) { return (SUNLS_SUCCESS); }
@@ -297,8 +297,8 @@ int SUNLinSolFree_SuperLUDIST(SUNLinearSolver S)
   return (SUNLS_SUCCESS);
 }
 
-int SUNLinSolSpace_SuperLUDIST(SUNLinearSolver S, long int* leniwLS,
-                               long int* lenrwLS)
+SUNErrCode SUNLinSolSpace_SuperLUDIST(SUNLinearSolver S, long int* leniwLS,
+                                      long int* lenrwLS)
 {
   /* since the SuperLU_DIST structures are opaque objects, we
      omit those from these results */

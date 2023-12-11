@@ -1786,9 +1786,9 @@ static void InputHelp()
   cout << "  --np <npx> <npy>        : number of MPI processes in the x and y "
           "directions"
        << endl;
-  cout
-    << "  --domain <xu> <yu>      : domain upper bound in the x and y direction"
-    << endl;
+  cout << "  --domain <xu> <yu>      : domain upper bound in the x and y "
+          "direction"
+       << endl;
   cout << "  --k <kx> <ky>           : diffusion coefficients" << endl;
   cout << "  --noforcing             : disable forcing term" << endl;
   cout << "  --tf <time>             : final time" << endl;
@@ -2337,7 +2337,7 @@ int Hypre5ptMatrix_Copy(SUNMatrix A, SUNMatrix B)
   if (flag != 0) { return (flag); }
 
   // Return success
-  return (SUNMAT_SUCCESS);
+  return (SUN_SUCCESS);
 }
 
 int Hypre5ptMatrix_ScaleAddI(sunrealtype c, SUNMatrix A)
@@ -2370,7 +2370,7 @@ int Hypre5ptMatrix_ScaleAddI(sunrealtype c, SUNMatrix A)
   if (flag != 0) { return (flag); }
 
   // Return success
-  return (SUNMAT_SUCCESS);
+  return (SUN_SUCCESS);
 }
 
 // -----------------------------------------------------------------------------

@@ -52,18 +52,18 @@ SUNLinearSolver SUNLinSol_Band(N_Vector y, SUNMatrix A, SUNContext sunctx)
   SUNLinearSolverContent_Band content;
   sunindextype MatrixRows;
 
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
-  SUNAssert(SUNBandMatrix_Rows(A) == SUNBandMatrix_Columns(A),
-            SUN_ERR_ARG_DIMSMISMATCH);
-  SUNAssert(y->ops->nvgetarraypointer, SUN_ERR_ARG_INCOMPATIBLE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNBandMatrix_Rows(A) == SUNBandMatrix_Columns(A),
+                SUN_ERR_ARG_DIMSMISMATCH);
+  SUNAssertNull(y->ops->nvgetarraypointer, SUN_ERR_ARG_INCOMPATIBLE);
 
   /* Check that A has appropriate storage upper bandwidth for factorization */
   MatrixRows = SUNBandMatrix_Rows(A);
-  SUNAssert(SUNBandMatrix_StoredUpperBandwidth(A) >=
-              SUNMIN(MatrixRows - 1, SUNBandMatrix_LowerBandwidth(A) +
-                                       SUNBandMatrix_UpperBandwidth(A)),
-            SUN_ERR_ARG_INCOMPATIBLE);
-  SUNAssert(MatrixRows == N_VGetLength(y), SUN_ERR_ARG_DIMSMISMATCH);
+  SUNAssertNull(SUNBandMatrix_StoredUpperBandwidth(A) >=
+                  SUNMIN(MatrixRows - 1, SUNBandMatrix_LowerBandwidth(A) +
+                                           SUNBandMatrix_UpperBandwidth(A)),
+                SUN_ERR_ARG_INCOMPATIBLE);
+  SUNAssertNull(MatrixRows == N_VGetLength(y), SUN_ERR_ARG_DIMSMISMATCH);
 
   /* Create an empty linear solver */
   S = NULL;
@@ -83,7 +83,7 @@ SUNLinearSolver SUNLinSol_Band(N_Vector y, SUNMatrix A, SUNContext sunctx)
   /* Create content */
   content = NULL;
   content = (SUNLinearSolverContent_Band)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   S->content = content;
@@ -95,7 +95,7 @@ SUNLinearSolver SUNLinSol_Band(N_Vector y, SUNMatrix A, SUNContext sunctx)
 
   /* Allocate content */
   content->pivots = (sunindextype*)malloc(MatrixRows * sizeof(sunindextype));
-  SUNAssert(content->pivots, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->pivots, SUN_ERR_MALLOC_FAIL);
 
   return (S);
 }
@@ -125,11 +125,14 @@ SUNErrCode SUNLinSolInitialize_Band(SUNLinearSolver S)
 
 int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
   sunrealtype** A_cols;
   sunindextype* pivots;
 
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNoRet(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
 
   /* access data pointers (return with failure on NULL) */
   A_cols = NULL;
@@ -161,6 +164,9 @@ int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_Band(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
                         sunrealtype tol)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
   sunrealtype **A_cols, *xdata;
   sunindextype* pivots;

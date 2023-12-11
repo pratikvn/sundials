@@ -63,9 +63,9 @@ SUNMatrix SUNBandMatrixStorage(sunindextype N, sunindextype mu, sunindextype ml,
   SUNMatrixContent_Band content;
   sunindextype j, colSize;
 
-  SUNAssert(N > 0, SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(smu >= 0, SUN_ERR_ARG_OUTOFRANGE);
-  SUNAssert(ml >= 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(N > 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(smu >= 0, SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull(ml >= 0, SUN_ERR_ARG_OUTOFRANGE);
 
   /* Create an empty matrix object */
   A = NULL;
@@ -86,7 +86,7 @@ SUNMatrix SUNBandMatrixStorage(sunindextype N, sunindextype mu, sunindextype ml,
   /* Create content */
   content = NULL;
   content = (SUNMatrixContent_Band)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   A->content = content;
@@ -105,10 +105,10 @@ SUNMatrix SUNBandMatrixStorage(sunindextype N, sunindextype mu, sunindextype ml,
 
   /* Allocate content */
   content->data = (sunrealtype*)calloc(N * colSize, sizeof(sunrealtype));
-  SUNAssert(content->data, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->data, SUN_ERR_MALLOC_FAIL);
 
   content->cols = (sunrealtype**)malloc(N * sizeof(sunrealtype*));
-  SUNAssert(content->cols, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->cols, SUN_ERR_MALLOC_FAIL);
   for (j = 0; j < N; j++) { content->cols[j] = content->data + j * colSize; }
 
   return (A);
@@ -122,8 +122,6 @@ void SUNBandMatrix_Print(SUNMatrix A, FILE* outfile)
 {
   SUNFunctionBegin(A->sunctx);
   sunindextype i, j, start, finish;
-
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
 
   /* perform operation */
   fprintf(outfile, "\n");
@@ -204,21 +202,21 @@ sunindextype SUNBandMatrix_LData(SUNMatrix A)
 sunrealtype* SUNBandMatrix_Data(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
   return SM_DATA_B(A);
 }
 
 sunrealtype** SUNBandMatrix_Cols(SUNMatrix A)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
   return SM_COLS_B(A);
 }
 
 sunrealtype* SUNBandMatrix_Column(SUNMatrix A, sunindextype j)
 {
   SUNFunctionBegin(A->sunctx);
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_BAND, SUN_ERR_ARG_WRONGTYPE);
   return SM_COLUMN_B(A, j);
 }
 

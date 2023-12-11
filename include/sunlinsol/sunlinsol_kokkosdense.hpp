@@ -132,7 +132,7 @@ int SUNLinSolSolve_KokkosDense(SUNLinearSolver S, SUNMatrix A, N_Vector x,
 }
 
 template<class LinearSolverType>
-int SUNLinSolFree_KokkosDense(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_KokkosDense(SUNLinearSolver S)
 {
   auto S_ls{static_cast<LinearSolverType*>(S->content)};
   delete S_ls; // NOLINT

@@ -270,7 +270,7 @@ SUNErrCode SUNContext_Free(SUNContext* sunctx)
     else { fp = fopen(sunprofiler_print_env, "a"); }
   }
 
-    /* Enforce that the profiler is freed before finalizing,
+  /* Enforce that the profiler is freed before finalizing,
      if it is not owned by the sunctx. */
   if ((*sunctx)->profiler)
   {

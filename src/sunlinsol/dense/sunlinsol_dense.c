@@ -52,13 +52,13 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
   SUNLinearSolverContent_Dense content;
   sunindextype MatrixRows;
 
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
-  SUNAssert(SUNDenseMatrix_Rows(A) == SUNDenseMatrix_Columns(A),
-            SUN_ERR_ARG_DIMSMISMATCH);
-  SUNAssert(y->ops->nvgetarraypointer, SUN_ERR_ARG_INCOMPATIBLE);
+  SUNAssertNull(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNull(SUNDenseMatrix_Rows(A) == SUNDenseMatrix_Columns(A),
+                SUN_ERR_ARG_DIMSMISMATCH);
+  SUNAssertNull(y->ops->nvgetarraypointer, SUN_ERR_ARG_INCOMPATIBLE);
 
   MatrixRows = SUNDenseMatrix_Rows(A);
-  SUNAssert(MatrixRows == N_VGetLength(y), SUN_ERR_ARG_DIMSMISMATCH);
+  SUNAssertNull(MatrixRows == N_VGetLength(y), SUN_ERR_ARG_DIMSMISMATCH);
 
   /* Create an empty linear solver */
   S = NULL;
@@ -78,7 +78,7 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
   /* Create content */
   content = NULL;
   content = (SUNLinearSolverContent_Dense)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   S->content = content;
@@ -90,7 +90,7 @@ SUNLinearSolver SUNLinSol_Dense(N_Vector y, SUNMatrix A, SUNContext sunctx)
 
   /* Allocate content */
   content->pivots = (sunindextype*)malloc(MatrixRows * sizeof(sunindextype));
-  SUNAssert(content->pivots, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content->pivots, SUN_ERR_MALLOC_FAIL);
 
   return (S);
 }
@@ -120,11 +120,14 @@ SUNErrCode SUNLinSolInitialize_Dense(SUNLinearSolver S)
 
 int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
   sunrealtype** A_cols;
   sunindextype* pivots;
 
-  SUNAssert(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
+  SUNAssertNoRet(SUNMatGetID(A) == SUNMATRIX_DENSE, SUN_ERR_ARG_WRONGTYPE);
 
   /* access data pointers (return with failure on NULL) */
   A_cols = NULL;
@@ -149,6 +152,9 @@ int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_Dense(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
                          sunrealtype tol)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
   sunrealtype **A_cols, *xdata;
   sunindextype* pivots;

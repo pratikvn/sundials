@@ -59,6 +59,7 @@ BraceWrapping                                 :
   SplitEmptyFunction                            : false
   SplitEmptyRecord                              : false
   SplitEmptyNamespace                           : false
+BreakAfterAttributes                          : Always
 BreakBeforeBinaryOperators                    : None
 BreakBeforeBraces                             : Custom
 BreakBeforeConceptDeclarations                : true

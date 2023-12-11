@@ -62,10 +62,10 @@ SUNLinearSolver SUNLinSol_SPTFQMR(N_Vector y, int pretype, int maxl,
   if (maxl <= 0) { maxl = SUNSPTFQMR_MAXL_DEFAULT; }
 
   /* check that the supplied N_Vector supports all requisite operations */
-  SUNAssert((y->ops->nvclone) && (y->ops->nvdestroy) && (y->ops->nvlinearsum) &&
-              (y->ops->nvconst) && (y->ops->nvprod) && (y->ops->nvdiv) &&
-              (y->ops->nvscale) && (y->ops->nvdotprod),
-            SUN_ERR_ARG_INCOMPATIBLE);
+  SUNAssertNull((y->ops->nvclone) && (y->ops->nvdestroy) &&
+                  (y->ops->nvlinearsum) && (y->ops->nvconst) && (y->ops->nvprod) &&
+                  (y->ops->nvdiv) && (y->ops->nvscale) && (y->ops->nvdotprod),
+                SUN_ERR_ARG_INCOMPATIBLE);
 
   /* Create linear solver */
   S = NULL;
@@ -92,7 +92,7 @@ SUNLinearSolver SUNLinSol_SPTFQMR(N_Vector y, int pretype, int maxl,
   /* Create content */
   content = NULL;
   content = (SUNLinearSolverContent_SPTFQMR)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   S->content = content;
@@ -268,6 +268,11 @@ SUNErrCode SUNLinSolSetZeroGuess_SPTFQMR(SUNLinearSolver S, sunbooleantype onoff
 
 int SUNLinSolSetup_SPTFQMR(SUNLinearSolver S, SUNMatrix A)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
+  SUNFunctionBegin(S->sunctx);
+
   int status = SUNLS_SUCCESS;
   SUNPSetupFn Psetup;
   void* PData;
@@ -296,8 +301,12 @@ int SUNLinSolSetup_SPTFQMR(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
                            N_Vector b, sunrealtype delta)
 {
-  /* local data and shortcut variables */
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
+
+  /* local data and shortcut variables */
   sunrealtype alpha, tau, eta, beta, c, sigma, v_bar, omega;
   sunrealtype rho[2];
   sunrealtype r_init_norm, r_curr_norm;
@@ -909,7 +918,8 @@ int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   } /* END outer loop */
 
   /* Determine return value */
-  /* If iteration converged or residual was reduced, then return current iterate (x) */
+  /* If iteration converged or residual was reduced, then return current iterate
+   * (x) */
   if ((converged == SUNTRUE) || (r_curr_norm < r_init_norm))
   {
     if (scale_x)

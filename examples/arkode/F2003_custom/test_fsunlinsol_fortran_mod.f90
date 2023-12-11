@@ -74,6 +74,7 @@ program main
   use, intrinsic :: iso_c_binding
   use fsundials_types_mod
   use fsundials_context_mod
+  use fsundials_errors_mod
   use fsunlinsol_test_mod
 
   !======= Declarations =========
@@ -143,7 +144,7 @@ program main
 
   ! compute B = A*X
   retval = FSUNMatMatvec(sA, sX, sB)
-  if (retval /= SUNMAT_SUCCESS) then
+  if (retval /= SUN_SUCCESS) then
      print *, 'ERROR: FSUNMatMatvec fail'
      stop 1
   end if

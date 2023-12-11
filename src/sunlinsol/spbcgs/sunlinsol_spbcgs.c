@@ -64,10 +64,10 @@ SUNLinearSolver SUNLinSol_SPBCGS(N_Vector y, int pretype, int maxl,
   if (maxl <= 0) { maxl = SUNSPBCGS_MAXL_DEFAULT; }
 
   /* check that the supplied N_Vector supports all requisite operations */
-  SUNAssert((y->ops->nvclone) && (y->ops->nvdestroy) && (y->ops->nvlinearsum) &&
-              (y->ops->nvprod) && (y->ops->nvdiv) && (y->ops->nvscale) &&
-              (y->ops->nvdotprod),
-            SUN_ERR_ARG_OUTOFRANGE);
+  SUNAssertNull((y->ops->nvclone) && (y->ops->nvdestroy) &&
+                  (y->ops->nvlinearsum) && (y->ops->nvprod) &&
+                  (y->ops->nvdiv) && (y->ops->nvscale) && (y->ops->nvdotprod),
+                SUN_ERR_ARG_OUTOFRANGE);
 
   /* Create linear solver */
   S = NULL;
@@ -94,7 +94,7 @@ SUNLinearSolver SUNLinSol_SPBCGS(N_Vector y, int pretype, int maxl,
   /* Create content */
   content = NULL;
   content = (SUNLinearSolverContent_SPBCGS)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content */
   S->content = content;
@@ -266,6 +266,11 @@ SUNErrCode SUNLinSolSetZeroGuess_SPBCGS(SUNLinearSolver S, sunbooleantype onoff)
 
 int SUNLinSolSetup_SPBCGS(SUNLinearSolver S, SUNMatrix A)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
+  SUNFunctionBegin(S->sunctx);
+
   int status;
   SUNPSetupFn Psetup;
   void* PData;
@@ -294,7 +299,11 @@ int SUNLinSolSetup_SPBCGS(SUNLinearSolver S, SUNMatrix A)
 int SUNLinSolSolve_SPBCGS(SUNLinearSolver S, SUNMatrix A, N_Vector x,
                           N_Vector b, sunrealtype delta)
 {
+  /* Error checks in this function must be NoRet because the return value
+    is an integer code specific to the SUNLinearSolver. */
+
   SUNFunctionBegin(S->sunctx);
+
   /* local data and shortcut variables */
   sunrealtype alpha, beta, omega, omega_denom, beta_num, beta_denom, r_norm, rho;
   N_Vector r_star, r, p, q, u, Ap, vtemp;
@@ -357,10 +366,10 @@ int SUNLinSolSolve_SPBCGS(SUNLinearSolver S, SUNMatrix A, N_Vector x,
 #endif
 
   /* Check if Atimes function has been set */
-  SUNAssert(atimes, SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(atimes, SUN_ERR_ARG_CORRUPT);
 
   /* If preconditioning, check if psolve has been set */
-  SUNAssert(!(preOnLeft || preOnRight) || psolve, SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(!(preOnLeft || preOnRight) || psolve, SUN_ERR_ARG_CORRUPT);
 
   /* Set r_star to initial (unscaled) residual r_0 = b - A*x_0 */
 

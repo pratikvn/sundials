@@ -225,7 +225,7 @@ SUNLinearSolver_ID SUNLinSolGetID_MagmaDense(SUNLinearSolver S)
   return (SUNLINEARSOLVER_MAGMADENSE);
 }
 
-int SUNLinSolInitialize_MagmaDense(SUNLinearSolver S)
+SUNErrCode SUNLinSolInitialize_MagmaDense(SUNLinearSolver S)
 {
   /* All solver-specific memory has already been allocated */
   if (S == NULL) { return SUNLS_MEM_NULL; }
@@ -383,15 +383,15 @@ sunindextype SUNLinSolLastFlag_MagmaDense(SUNLinearSolver S)
   return (LASTFLAG(S));
 }
 
-int SUNLinSolSpace_MagmaDense(SUNLinearSolver S, long int* lenrwLS,
-                              long int* leniwLS)
+SUNErrCode SUNLinSolSpace_MagmaDense(SUNLinearSolver S, long int* lenrwLS,
+                                     long int* leniwLS)
 {
   *lenrwLS = 0;
   *leniwLS = 2 + MAGMADENSE_CONTENT(S)->N;
   return (SUNLS_SUCCESS);
 }
 
-int SUNLinSolFree_MagmaDense(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_MagmaDense(SUNLinearSolver S)
 {
   /* return if S is already free */
   if (S == NULL) { return (SUNLS_SUCCESS); }

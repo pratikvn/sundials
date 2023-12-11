@@ -43,9 +43,9 @@ SUNNonlinearSolver SUNNonlinSol_Newton(N_Vector y, SUNContext sunctx)
   SUNNonlinearSolverContent_Newton content;
 
   /* Check that the supplied N_Vector supports all required operations */
-  SUNAssert(y->ops->nvclone && y->ops->nvdestroy && y->ops->nvscale &&
-              y->ops->nvlinearsum,
-            SUN_ERR_ARG_CORRUPT);
+  SUNAssertNull(y->ops->nvclone && y->ops->nvdestroy && y->ops->nvscale &&
+                  y->ops->nvlinearsum,
+                SUN_ERR_ARG_CORRUPT);
 
   /* Create an empty nonlinear linear solver object */
   NLS = SUNNonlinSolNewEmpty(sunctx);
@@ -68,7 +68,7 @@ SUNNonlinearSolver SUNNonlinSol_Newton(N_Vector y, SUNContext sunctx)
   /* Create content */
   content = NULL;
   content = (SUNNonlinearSolverContent_Newton)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Initialize all components of content to 0/NULL */
   memset(content, 0, sizeof(struct _SUNNonlinearSolverContent_Newton));
@@ -180,6 +180,9 @@ int SUNNonlinSolSolve_Newton(SUNNonlinearSolver NLS, N_Vector y0, N_Vector ycor,
                              N_Vector w, sunrealtype tol,
                              sunbooleantype callLSetup, void* mem)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNNonlinearSolver. */
+
   SUNFunctionBegin(NLS->sunctx);
   /* local variables */
   int retval;
@@ -187,11 +190,11 @@ int SUNNonlinSolSolve_Newton(SUNNonlinearSolver NLS, N_Vector y0, N_Vector ycor,
   N_Vector delta;
 
   /* check that all required function pointers have been set */
-  SUNAssert(NEWTON_CONTENT(NLS)->Sys && NEWTON_CONTENT(NLS)->CTest &&
-              NEWTON_CONTENT(NLS)->LSolve,
-            SUN_ERR_ARG_CORRUPT);
-  SUNAssert(!callLSetup || (callLSetup && NEWTON_CONTENT(NLS)->LSetup),
-            SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(NEWTON_CONTENT(NLS)->Sys && NEWTON_CONTENT(NLS)->CTest &&
+                   NEWTON_CONTENT(NLS)->LSolve,
+                 SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(!callLSetup || (callLSetup && NEWTON_CONTENT(NLS)->LSetup),
+                 SUN_ERR_ARG_CORRUPT);
 
   /* set local shortcut variables */
   delta = NEWTON_CONTENT(NLS)->delta;

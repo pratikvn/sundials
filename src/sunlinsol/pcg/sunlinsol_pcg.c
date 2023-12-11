@@ -86,7 +86,7 @@ SUNLinearSolver SUNLinSol_PCG(N_Vector y, int pretype, int maxl, SUNContext sunc
   /* Create content */
   content = NULL;
   content = (SUNLinearSolverContent_PCG)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Attach content  */
   S->content = content;
@@ -239,6 +239,9 @@ SUNErrCode SUNLinSolSetZeroGuess_PCG(SUNLinearSolver S, sunbooleantype onoff)
 
 int SUNLinSolSetup_PCG(SUNLinearSolver S, SUNMatrix nul)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   int status;
   SUNPSetupFn Psetup;
   void* PData;
@@ -267,6 +270,9 @@ int SUNLinSolSetup_PCG(SUNLinearSolver S, SUNMatrix nul)
 int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x, N_Vector b,
                        sunrealtype delta)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNLinearSolver. */
+
   /* local data and shortcut variables */
   SUNFunctionBegin(S->sunctx);
   sunrealtype alpha, beta, r0_norm, rho, rz, rz_old;
@@ -313,10 +319,10 @@ int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x, N_Vector b,
 #endif
 
   /* Check if Atimes function has been set */
-  SUNAssert(atimes, SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(atimes, SUN_ERR_ARG_CORRUPT);
 
   /* If preconditioning, check if psolve has been set */
-  SUNAssert(!UsePrec || psolve, SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(!UsePrec || psolve, SUN_ERR_ARG_CORRUPT);
 
   /* Set r to initial residual r_0 = b - A*x_0 */
   if (*zeroguess)

@@ -238,7 +238,7 @@ SUNLinearSolver_ID SUNLinSolGetID_SuperLUMT(SUNLinearSolver S)
   return (SUNLINEARSOLVER_SUPERLUMT);
 }
 
-int SUNLinSolInitialize_SuperLUMT(SUNLinearSolver S)
+SUNErrCode SUNLinSolInitialize_SuperLUMT(SUNLinearSolver S)
 {
   /* force a first factorization */
   FIRSTFACTORIZE(S) = 1;
@@ -361,8 +361,8 @@ sunindextype SUNLinSolLastFlag_SuperLUMT(SUNLinearSolver S)
   return (LASTFLAG(S));
 }
 
-int SUNLinSolSpace_SuperLUMT(SUNLinearSolver S, long int* lenrwLS,
-                             long int* leniwLS)
+SUNErrCode SUNLinSolSpace_SuperLUMT(SUNLinearSolver S, long int* lenrwLS,
+                                    long int* leniwLS)
 {
   /* since the SuperLU_MT structures are opaque objects, we
      omit those from these results */
@@ -371,7 +371,7 @@ int SUNLinSolSpace_SuperLUMT(SUNLinearSolver S, long int* lenrwLS,
   return (SUNLS_SUCCESS);
 }
 
-int SUNLinSolFree_SuperLUMT(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_SuperLUMT(SUNLinearSolver S)
 {
   /* return with success if already freed */
   if (S == NULL) { return (SUNLS_SUCCESS); }

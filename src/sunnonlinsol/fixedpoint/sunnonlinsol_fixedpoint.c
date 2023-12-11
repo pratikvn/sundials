@@ -49,9 +49,9 @@ SUNNonlinearSolver SUNNonlinSol_FixedPoint(N_Vector y, int m, SUNContext sunctx)
   SUNNonlinearSolverContent_FixedPoint content = NULL;
 
   /* Check that the supplied N_Vector supports all required operations */
-  SUNAssert(y->ops->nvclone && y->ops->nvdestroy && y->ops->nvscale &&
-              y->ops->nvlinearsum && y->ops->nvdotprod,
-            SUN_ERR_ARG_CORRUPT);
+  SUNAssertNull(y->ops->nvclone && y->ops->nvdestroy && y->ops->nvscale &&
+                  y->ops->nvlinearsum && y->ops->nvdotprod,
+                SUN_ERR_ARG_CORRUPT);
 
   /* Create nonlinear linear solver */
   NLS = SUNNonlinSolNewEmpty(sunctx);
@@ -72,7 +72,7 @@ SUNNonlinearSolver SUNNonlinSol_FixedPoint(N_Vector y, int m, SUNContext sunctx)
   /* Create nonlinear solver content structure */
   content = NULL;
   content = (SUNNonlinearSolverContent_FixedPoint)malloc(sizeof *content);
-  SUNAssert(content, SUN_ERR_MALLOC_FAIL);
+  SUNAssertNull(content, SUN_ERR_MALLOC_FAIL);
 
   /* Initialize all components of content to 0/NULL */
   memset(content, 0, sizeof(struct _SUNNonlinearSolverContent_FixedPoint));
@@ -175,13 +175,17 @@ int SUNNonlinSolSolve_FixedPoint(SUNNonlinearSolver NLS, N_Vector y0,
                                  N_Vector ycor, N_Vector w, sunrealtype tol,
                                  sunbooleantype callSetup, void* mem)
 {
+  /* Error checks in this function must be NoRet because the return value
+     is an integer code specific to the SUNNonlinearSolver. */
+
   SUNFunctionBegin(NLS->sunctx);
   /* local variables */
   int retval;
   N_Vector yprev, gy, delta;
 
   /* check that all required function pointers have been set */
-  SUNAssert(FP_CONTENT(NLS)->Sys && FP_CONTENT(NLS)->CTest, SUN_ERR_ARG_CORRUPT);
+  SUNAssertNoRet(FP_CONTENT(NLS)->Sys && FP_CONTENT(NLS)->CTest,
+                 SUN_ERR_ARG_CORRUPT);
 
   /* set local shortcut variables */
   yprev = FP_CONTENT(NLS)->yprev;

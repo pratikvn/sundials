@@ -265,7 +265,7 @@ SUNLinearSolver SUNLinSol_OneMklDense(N_Vector y, SUNMatrix Amat,
  * Implementation of SUNLinearSolver operations
  * -------------------------------------------------------------------------- */
 
-int SUNLinSolInitialize_OneMklDense(SUNLinearSolver S)
+SUNErrCode SUNLinSolInitialize_OneMklDense(SUNLinearSolver S)
 {
   // All solver-specific memory has already been allocated
   if (!S)
@@ -596,8 +596,8 @@ sunindextype SUNLinSolLastFlag_OneMklDense(SUNLinearSolver S)
   return LS_LASTFLAG(S);
 }
 
-int SUNLinSolSpace_OneMklDense(SUNLinearSolver S, long int* lenrwLS,
-                               long int* leniwLS)
+SUNErrCode SUNLinSolSpace_OneMklDense(SUNLinearSolver S, long int* lenrwLS,
+                                      long int* leniwLS)
 {
   if (!S)
   {
@@ -612,7 +612,7 @@ int SUNLinSolSpace_OneMklDense(SUNLinearSolver S, long int* lenrwLS,
   return SUNLS_SUCCESS;
 }
 
-int SUNLinSolFree_OneMklDense(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_OneMklDense(SUNLinearSolver S)
 {
   // return if S is already free
   if (!S) { return SUNLS_SUCCESS; }

@@ -138,7 +138,7 @@ SUNLinearSolver_ID SUNLinSolGetID_LapackDense(SUNLinearSolver S)
   return (SUNLINEARSOLVER_LAPACKDENSE);
 }
 
-int SUNLinSolInitialize_LapackDense(SUNLinearSolver S)
+SUNErrCode SUNLinSolInitialize_LapackDense(SUNLinearSolver S)
 {
   /* all solver-specific memory has already been allocated */
   LASTFLAG(S) = SUNLS_SUCCESS;
@@ -211,15 +211,15 @@ sunindextype SUNLinSolLastFlag_LapackDense(SUNLinearSolver S)
   return (LASTFLAG(S));
 }
 
-int SUNLinSolSpace_LapackDense(SUNLinearSolver S, long int* lenrwLS,
-                               long int* leniwLS)
+SUNErrCode SUNLinSolSpace_LapackDense(SUNLinearSolver S, long int* lenrwLS,
+                                      long int* leniwLS)
 {
   *lenrwLS = 0;
   *leniwLS = 2 + LAPACKDENSE_CONTENT(S)->N;
   return (SUNLS_SUCCESS);
 }
 
-int SUNLinSolFree_LapackDense(SUNLinearSolver S)
+SUNErrCode SUNLinSolFree_LapackDense(SUNLinearSolver S)
 {
   /* return if S is already free */
   if (S == NULL) { return (SUNLS_SUCCESS); }
