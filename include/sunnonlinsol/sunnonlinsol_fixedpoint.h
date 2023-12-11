@@ -23,6 +23,7 @@
 #define _SUNNONLINSOL_FIXEDPOINT_H
 
 #include <sundials/sundials_core.h>
+
 #include "sundials/sundials_types.h"
 
 #ifdef __cplusplus /* wrapper to enable C++ usage */
@@ -40,18 +41,18 @@ struct _SUNNonlinearSolverContent_FixedPoint
   SUNNonlinSolConvTestFn CTest; /* convergence test function      */
 
   /* nonlinear solver variables */
-  int m;               /* number of acceleration vectors to use          */
-  int* imap;           /* array of length m                              */
+  int m;                  /* number of acceleration vectors to use          */
+  int* imap;              /* array of length m                              */
   sunbooleantype damping; /* flag to apply dampling in acceleration         */
   sunrealtype beta;       /* damping paramter                               */
   sunrealtype* R;         /* array of length m*m                            */
   sunrealtype* gamma;     /* array of length m                              */
   sunrealtype* cvals;     /* array of length m+1 for fused vector op        */
-  N_Vector* df;        /* vector array of length m                       */
-  N_Vector* dg;        /* vector array of length m                       */
-  N_Vector* q;         /* vector array of length m                       */
-  N_Vector* Xvecs;     /* array of length m+1 for fused vector op        */
-  N_Vector yprev;      /* temporary vectors for performing solve         */
+  N_Vector* df;           /* vector array of length m                       */
+  N_Vector* dg;           /* vector array of length m                       */
+  N_Vector* q;            /* vector array of length m                       */
+  N_Vector* Xvecs;        /* array of length m+1 for fused vector op        */
+  N_Vector yprev;         /* temporary vectors for performing solve         */
   N_Vector gy;
   N_Vector fold;
   N_Vector gold;
@@ -85,8 +86,7 @@ SUNNonlinearSolver SUNNonlinSol_FixedPointSens(int count, N_Vector y, int m,
 
 /* core functions */
 SUNDIALS_EXPORT
-SUNNonlinearSolver_Type SUNNonlinSolGetType_FixedPoint(SUNNonlinearSolver NLS)
- ;
+SUNNonlinearSolver_Type SUNNonlinSolGetType_FixedPoint(SUNNonlinearSolver NLS);
 
 SUNDIALS_EXPORT
 SUNErrCode SUNNonlinSolInitialize_FixedPoint(SUNNonlinearSolver NLS);

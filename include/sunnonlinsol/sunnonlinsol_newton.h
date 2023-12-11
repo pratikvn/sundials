@@ -23,6 +23,8 @@
 #define _SUNNONLINSOL_NEWTON_H
 
 #include "sundials/sundials_nonlinearsolver.h"
+#include "sundials/sundials_nvector.h"
+#include "sundials/sundials_types.h"
 
 #ifdef __cplusplus /* wrapper to enable C++ usage */
 extern "C" {
@@ -41,11 +43,11 @@ struct _SUNNonlinearSolverContent_Newton
   SUNNonlinSolConvTestFn CTest; /* nonlinear solver convergence test function */
 
   /* nonlinear solver variables */
-  N_Vector delta;   /* Newton update vector                                   */
+  N_Vector delta; /* Newton update vector                                   */
   sunbooleantype jcur; /* Jacobian status, current = SUNTRUE / stale = SUNFALSE  */
-  int curiter;      /* current number of iterations in a solve attempt        */
-  int maxiters;     /* maximum number of iterations in a solve attempt        */
-  long int niters;  /* total number of nonlinear iterations across all solves */
+  int curiter;     /* current number of iterations in a solve attempt        */
+  int maxiters;    /* maximum number of iterations in a solve attempt        */
+  long int niters; /* total number of nonlinear iterations across all solves */
   long int nconvfails; /* total number of convergence failures across all solves
                         */
   void* ctest_data; /* data to pass to convergence test function              */
@@ -73,15 +75,14 @@ SUNNonlinearSolver SUNNonlinSol_NewtonSens(int count, N_Vector y,
 
 /* core functions */
 SUNDIALS_EXPORT
-SUNNonlinearSolver_Type SUNNonlinSolGetType_Newton(SUNNonlinearSolver NLS)
- ;
+SUNNonlinearSolver_Type SUNNonlinSolGetType_Newton(SUNNonlinearSolver NLS);
 
 SUNDIALS_EXPORT
 SUNErrCode SUNNonlinSolInitialize_Newton(SUNNonlinearSolver NLS);
 
 SUNDIALS_EXPORT
-int SUNNonlinSolSolve_Newton(SUNNonlinearSolver NLS, N_Vector y0,
-                             N_Vector y, N_Vector w, sunrealtype tol,
+int SUNNonlinSolSolve_Newton(SUNNonlinearSolver NLS, N_Vector y0, N_Vector y,
+                             N_Vector w, sunrealtype tol,
                              sunbooleantype callLSetup, void* mem);
 
 SUNDIALS_EXPORT

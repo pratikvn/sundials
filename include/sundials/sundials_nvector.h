@@ -259,52 +259,45 @@ SUNDIALS_EXPORT sunrealtype N_VMinQuotient(N_Vector num, N_Vector denom);
  */
 
 /* fused vector operations */
-SUNDIALS_EXPORT 
-SUNErrCode N_VLinearCombination(int nvec, sunrealtype* c,
-                                                N_Vector* X, N_Vector z);
+SUNDIALS_EXPORT
+SUNErrCode N_VLinearCombination(int nvec, sunrealtype* c, N_Vector* X,
+                                N_Vector z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleAddMulti(int nvec, sunrealtype* a, N_Vector x,
-                                            N_Vector* Y, N_Vector* Z);
+SUNErrCode N_VScaleAddMulti(int nvec, sunrealtype* a, N_Vector x, N_Vector* Y,
+                            N_Vector* Z);
 
 SUNDIALS_EXPORT
 SUNErrCode N_VDotProdMulti(int nvec, N_Vector x, N_Vector* Y,
-                                           sunrealtype* dotprods);
+                           sunrealtype* dotprods);
 
 /* vector array operations */
 SUNDIALS_EXPORT
-SUNErrCode N_VLinearSumVectorArray(int nvec, sunrealtype a,
-                                                   N_Vector* X, sunrealtype b,
-                                                   N_Vector* Y, N_Vector* Z);
+SUNErrCode N_VLinearSumVectorArray(int nvec, sunrealtype a, N_Vector* X,
+                                   sunrealtype b, N_Vector* Y, N_Vector* Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleVectorArray(int nvec, sunrealtype* c,
-                                               N_Vector* X, N_Vector* Z);
+SUNErrCode N_VScaleVectorArray(int nvec, sunrealtype* c, N_Vector* X,
+                               N_Vector* Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VConstVectorArray(int nvec, sunrealtype c,
-                                               N_Vector* Z);
+SUNErrCode N_VConstVectorArray(int nvec, sunrealtype c, N_Vector* Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VWrmsNormVectorArray(int nvec, N_Vector* X,
-                                                  N_Vector* W, sunrealtype* nrm);
+SUNErrCode N_VWrmsNormVectorArray(int nvec, N_Vector* X, N_Vector* W,
+                                  sunrealtype* nrm);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VWrmsNormMaskVectorArray(int nvec, N_Vector* X,
-                                                      N_Vector* W, N_Vector id,
-                                                      sunrealtype* nrm);
+SUNErrCode N_VWrmsNormMaskVectorArray(int nvec, N_Vector* X, N_Vector* W,
+                                      N_Vector id, sunrealtype* nrm);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VScaleAddMultiVectorArray(int nvec, int nsum,
-                                                       sunrealtype* a,
-                                                       N_Vector* X, N_Vector** Y,
-                                                       N_Vector** Z);
+SUNErrCode N_VScaleAddMultiVectorArray(int nvec, int nsum, sunrealtype* a,
+                                       N_Vector* X, N_Vector** Y, N_Vector** Z);
 
 SUNDIALS_EXPORT
-SUNErrCode N_VLinearCombinationVectorArray(int nvec, int nsum,
-                                            sunrealtype* c,
-                                            N_Vector** X,
-                                            N_Vector* Z);
+SUNErrCode N_VLinearCombinationVectorArray(int nvec, int nsum, sunrealtype* c,
+                                           N_Vector** X, N_Vector* Z);
 
 /*
  * OPTIONAL operations with no default implementation.
@@ -320,7 +313,7 @@ SUNDIALS_EXPORT sunrealtype N_VWSqrSumMaskLocal(N_Vector x, N_Vector w,
                                                 N_Vector id);
 SUNDIALS_EXPORT sunbooleantype N_VInvTestLocal(N_Vector x, N_Vector z);
 SUNDIALS_EXPORT sunbooleantype N_VConstrMaskLocal(N_Vector c, N_Vector x,
-                                               N_Vector m);
+                                                  N_Vector m);
 SUNDIALS_EXPORT sunrealtype N_VMinQuotientLocal(N_Vector num, N_Vector denom);
 
 /* single buffer reduction operations */
