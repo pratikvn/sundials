@@ -180,7 +180,7 @@ SUNErrCode SUNLinSolInitialize_SuperLUDIST(SUNLinearSolver S)
 {
   SLU_FIRSTFACTORIZE(S) = SUNTRUE;
 
-  SLU_LASTFLAG(S) = SUNLS_SUCCESS;
+  SLU_LASTFLAG(S) = SUN_SUCCESS;
   return (SLU_LASTFLAG(S));
 }
 
@@ -205,7 +205,7 @@ int SUNLinSolSetup_SuperLUDIST(SUNLinearSolver S, SUNMatrix A)
     SLU_OPTIONS(S)->Fact = SamePattern;
   }
 
-  SLU_LASTFLAG(S) = SUNLS_SUCCESS;
+  SLU_LASTFLAG(S) = SUN_SUCCESS;
   return (SLU_LASTFLAG(S));
 }
 
@@ -219,7 +219,7 @@ int SUNLinSolSolve_SuperLUDIST(SUNLinearSolver S, SUNMatrix A, N_Vector x,
 
   if ((S == NULL) || (A == NULL) || (x == NULL) || (b == NULL))
   {
-    return (SUNLS_MEM_NULL);
+    return (SUN_ERR_ARG_CORRUPT);
   }
 
   Asuper = SUNMatrix_SLUNRloc_SuperMatrix(A);
@@ -231,7 +231,7 @@ int SUNLinSolSolve_SuperLUDIST(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   xdata = N_VGetArrayPointer(x);
   if (xdata == NULL)
   {
-    SLU_LASTFLAG(S) = SUNLS_MEM_FAIL;
+    SLU_LASTFLAG(S) = SUN_ERR_MEM_FAIL;
     return (SLU_LASTFLAG(S));
   }
 
@@ -256,7 +256,7 @@ int SUNLinSolSolve_SuperLUDIST(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   /* Tell SuperLU-DIST that A is already factored so do not factorize */
   SLU_OPTIONS(S)->Fact = FACTORED;
 
-  SLU_LASTFLAG(S) = SUNLS_SUCCESS;
+  SLU_LASTFLAG(S) = SUN_SUCCESS;
   return (SLU_LASTFLAG(S));
 }
 
@@ -269,7 +269,7 @@ sunindextype SUNLinSolLastFlag_SuperLUDIST(SUNLinearSolver S)
 SUNErrCode SUNLinSolFree_SuperLUDIST(SUNLinearSolver S)
 {
   /* return with success if already freed */
-  if (S == NULL) { return (SUNLS_SUCCESS); }
+  if (S == NULL) { return (SUN_SUCCESS); }
 
   /* Call SuperLU DIST destroy/finalize routines,
      but don't free the sturctures themselves - that is the user's job */
@@ -294,7 +294,7 @@ SUNErrCode SUNLinSolFree_SuperLUDIST(SUNLinearSolver S)
   free(S);
   S = NULL;
 
-  return (SUNLS_SUCCESS);
+  return (SUN_SUCCESS);
 }
 
 SUNErrCode SUNLinSolSpace_SuperLUDIST(SUNLinearSolver S, long int* leniwLS,
@@ -306,5 +306,5 @@ SUNErrCode SUNLinSolSpace_SuperLUDIST(SUNLinearSolver S, long int* leniwLS,
   *leniwLS = 2; /* last_flag, N */
   *lenrwLS = 1; /* berr */
 
-  return (SUNLS_SUCCESS);
+  return (SUN_SUCCESS);
 }

@@ -119,7 +119,7 @@ SUNLinearSolver_ID SUNLinSolGetID_Band(SUNLinearSolver S)
 SUNErrCode SUNLinSolInitialize_Band(SUNLinearSolver S)
 {
   /* all solver-specific memory has already been allocated */
-  LASTFLAG(S) = SUNLS_SUCCESS;
+  LASTFLAG(S) = SUN_SUCCESS;
   return SUN_SUCCESS;
 }
 
@@ -141,15 +141,15 @@ int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
   pivots = PIVOTS(S);
   if ((A_cols == NULL) || (pivots == NULL))
   {
-    LASTFLAG(S) = SUNLS_MEM_FAIL;
-    return (SUNLS_MEM_FAIL);
+    LASTFLAG(S) = SUN_ERR_MEM_FAIL;
+    return (SUN_ERR_MEM_FAIL);
   }
 
   /* ensure that storage upper bandwidth is sufficient for fill-in */
   if (SM_SUBAND_B(A) < SUNMIN(SM_COLUMNS_B(A) - 1, SM_UBAND_B(A) + SM_LBAND_B(A)))
   {
-    LASTFLAG(S) = SUNLS_MEM_FAIL;
-    return (SUNLS_MEM_FAIL);
+    LASTFLAG(S) = SUN_ERR_MEM_FAIL;
+    return (SUN_ERR_MEM_FAIL);
   }
 
   /* perform LU factorization of input matrix */
@@ -158,7 +158,7 @@ int SUNLinSolSetup_Band(SUNLinearSolver S, SUNMatrix A)
 
   /* store error flag (if nonzero, that row encountered zero-valued pivod) */
   if (LASTFLAG(S) > 0) { return (SUNLS_LUFACT_FAIL); }
-  return (SUNLS_SUCCESS);
+  return (SUN_SUCCESS);
 }
 
 int SUNLinSolSolve_Band(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
@@ -186,15 +186,15 @@ int SUNLinSolSolve_Band(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
   pivots = PIVOTS(S);
   if ((A_cols == NULL) || (xdata == NULL) || (pivots == NULL))
   {
-    LASTFLAG(S) = SUNLS_MEM_FAIL;
-    return (SUNLS_MEM_FAIL);
+    LASTFLAG(S) = SUN_ERR_MEM_FAIL;
+    return (SUN_ERR_MEM_FAIL);
   }
 
   /* solve using LU factors */
   SUNDlsMat_bandGBTRS(A_cols, SM_COLUMNS_B(A), SM_SUBAND_B(A), SM_LBAND_B(A),
                       pivots, xdata);
-  LASTFLAG(S) = SUNLS_SUCCESS;
-  return (SUNLS_SUCCESS);
+  LASTFLAG(S) = SUN_SUCCESS;
+  return (SUN_SUCCESS);
 }
 
 sunindextype SUNLinSolLastFlag_Band(SUNLinearSolver S)

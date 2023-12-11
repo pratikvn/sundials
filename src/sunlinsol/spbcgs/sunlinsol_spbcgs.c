@@ -292,7 +292,7 @@ int SUNLinSolSetup_SPBCGS(SUNLinearSolver S, SUNMatrix A)
   }
 
   /* return with success */
-  LASTFLAG(S) = SUNLS_SUCCESS;
+  LASTFLAG(S) = SUN_SUCCESS;
   return (LASTFLAG(S));
 }
 
@@ -355,8 +355,8 @@ int SUNLinSolSolve_SPBCGS(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   if (preOnRight && !(*zeroguess))
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUNLS_ILL_INPUT;
-    return (SUNLS_ILL_INPUT);
+    LASTFLAG(S) = SUN_ERR_ARG_INCOMPATIBLE;
+    return (SUN_ERR_ARG_INCOMPATIBLE);
   }
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_INFO
@@ -448,7 +448,7 @@ int SUNLinSolSolve_SPBCGS(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   if (r_norm <= delta)
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUNLS_SUCCESS;
+    LASTFLAG(S) = SUN_SUCCESS;
     return (LASTFLAG(S));
   }
 
@@ -738,7 +738,7 @@ int SUNLinSolSolve_SPBCGS(SUNLinearSolver S, SUNMatrix A, N_Vector x,
     }
 
     *zeroguess = SUNFALSE;
-    if (converged == SUNTRUE) { LASTFLAG(S) = SUNLS_SUCCESS; }
+    if (converged == SUNTRUE) { LASTFLAG(S) = SUN_SUCCESS; }
     else { LASTFLAG(S) = SUNLS_RES_REDUCED; }
     return (LASTFLAG(S));
   }

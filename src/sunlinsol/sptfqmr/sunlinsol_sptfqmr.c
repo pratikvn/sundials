@@ -273,7 +273,7 @@ int SUNLinSolSetup_SPTFQMR(SUNLinearSolver S, SUNMatrix A)
 
   SUNFunctionBegin(S->sunctx);
 
-  int status = SUNLS_SUCCESS;
+  int status = SUN_SUCCESS;
   SUNPSetupFn Psetup;
   void* PData;
 
@@ -294,8 +294,8 @@ int SUNLinSolSetup_SPTFQMR(SUNLinearSolver S, SUNMatrix A)
   }
 
   /* return with success */
-  LASTFLAG(S) = SUNLS_SUCCESS;
-  return (SUNLS_SUCCESS);
+  LASTFLAG(S) = SUN_SUCCESS;
+  return (SUN_SUCCESS);
 }
 
 int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
@@ -322,7 +322,7 @@ int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   N_Vector sx, sb, r_star, q, d, v, p, *r, u, vtemp1, vtemp2, vtemp3;
   sunrealtype cv[3];
   N_Vector Xv[3];
-  int status = SUNLS_SUCCESS;
+  int status = SUN_SUCCESS;
 
   /* Make local shorcuts to solver variables. */
   l_max     = SPTFQMR_CONTENT(S)->maxl;
@@ -364,8 +364,8 @@ int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   if (preOnRight && !(*zeroguess))
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUNLS_ILL_INPUT;
-    return (SUNLS_ILL_INPUT);
+    LASTFLAG(S) = SUN_ERR_ARG_INCOMPATIBLE;
+    return (SUN_ERR_ARG_INCOMPATIBLE);
   }
 
 #if SUNDIALS_LOGGING_LEVEL >= SUNDIALS_LOGGING_INFO
@@ -457,7 +457,7 @@ int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
   if (r_init_norm <= delta)
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUNLS_SUCCESS;
+    LASTFLAG(S) = SUN_SUCCESS;
     return (LASTFLAG(S));
   }
 
@@ -943,7 +943,7 @@ int SUNLinSolSolve_SPTFQMR(SUNLinearSolver S, SUNMatrix A, N_Vector x,
     }
 
     *zeroguess = SUNFALSE;
-    if (converged == SUNTRUE) { LASTFLAG(S) = SUNLS_SUCCESS; }
+    if (converged == SUNTRUE) { LASTFLAG(S) = SUN_SUCCESS; }
     else { LASTFLAG(S) = SUNLS_RES_REDUCED; }
     return (LASTFLAG(S));
   }
@@ -993,7 +993,7 @@ SUNErrCode SUNLinSolSpace_SPTFQMR(SUNLinearSolver S, long int* lenrwLS,
 
 SUNErrCode SUNLinSolFree_SPTFQMR(SUNLinearSolver S)
 {
-  if (S == NULL) { return (SUNLS_SUCCESS); }
+  if (S == NULL) { return (SUN_SUCCESS); }
 
   if (S->content)
   {

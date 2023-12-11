@@ -263,8 +263,8 @@ int SUNLinSolSetup_PCG(SUNLinearSolver S, SUNMatrix nul)
   }
 
   /* return with success */
-  LASTFLAG(S) = SUNLS_SUCCESS;
-  return (SUNLS_SUCCESS);
+  LASTFLAG(S) = SUN_SUCCESS;
+  return (SUN_SUCCESS);
 }
 
 int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x, N_Vector b,
@@ -273,8 +273,9 @@ int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x, N_Vector b,
   /* Error checks in this function must be NoRet because the return value
      is an integer code specific to the SUNLinearSolver. */
 
-  /* local data and shortcut variables */
   SUNFunctionBegin(S->sunctx);
+
+  /* local data and shortcut variables */
   sunrealtype alpha, beta, r0_norm, rho, rz, rz_old;
   N_Vector r, p, z, Ap, w;
   sunbooleantype UsePrec, UseScaling, converged;
@@ -375,7 +376,7 @@ int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x, N_Vector b,
   if (rho <= delta)
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUNLS_SUCCESS;
+    LASTFLAG(S) = SUN_SUCCESS;
     return (LASTFLAG(S));
   }
 
@@ -512,7 +513,7 @@ int SUNLinSolSolve_PCG(SUNLinearSolver S, SUNMatrix nul, N_Vector x, N_Vector b,
 
   /* Main loop finished, return with result */
   *zeroguess = SUNFALSE;
-  if (converged == SUNTRUE) { LASTFLAG(S) = SUNLS_SUCCESS; }
+  if (converged == SUNTRUE) { LASTFLAG(S) = SUN_SUCCESS; }
   else if (rho < r0_norm) { LASTFLAG(S) = SUNLS_RES_REDUCED; }
   else { LASTFLAG(S) = SUNLS_CONV_FAIL; }
   return (LASTFLAG(S));

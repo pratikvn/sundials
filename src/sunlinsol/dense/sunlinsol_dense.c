@@ -114,7 +114,7 @@ SUNLinearSolver_ID SUNLinSolGetID_Dense(SUNLinearSolver S)
 SUNErrCode SUNLinSolInitialize_Dense(SUNLinearSolver S)
 {
   /* all solver-specific memory has already been allocated */
-  LASTFLAG(S) = SUNLS_SUCCESS;
+  LASTFLAG(S) = SUN_SUCCESS;
   return SUN_SUCCESS;
 }
 
@@ -136,8 +136,8 @@ int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
   pivots = PIVOTS(S);
   if ((A_cols == NULL) || (pivots == NULL))
   {
-    LASTFLAG(S) = SUNLS_MEM_FAIL;
-    return (SUNLS_MEM_FAIL);
+    LASTFLAG(S) = SUN_ERR_MEM_FAIL;
+    return (SUN_ERR_MEM_FAIL);
   }
 
   /* perform LU factorization of input matrix */
@@ -146,7 +146,7 @@ int SUNLinSolSetup_Dense(SUNLinearSolver S, SUNMatrix A)
 
   /* store error flag (if nonzero, this row encountered zero-valued pivod) */
   if (LASTFLAG(S) > 0) { return (SUNLS_LUFACT_FAIL); }
-  return (SUNLS_SUCCESS);
+  return (SUN_SUCCESS);
 }
 
 int SUNLinSolSolve_Dense(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
@@ -174,14 +174,14 @@ int SUNLinSolSolve_Dense(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
   pivots = PIVOTS(S);
   if ((A_cols == NULL) || (xdata == NULL) || (pivots == NULL))
   {
-    LASTFLAG(S) = SUNLS_MEM_FAIL;
-    return (SUNLS_MEM_FAIL);
+    LASTFLAG(S) = SUN_ERR_MEM_FAIL;
+    return (SUN_ERR_MEM_FAIL);
   }
 
   /* solve using LU factors */
   SUNDlsMat_denseGETRS(A_cols, SUNDenseMatrix_Rows(A), pivots, xdata);
-  LASTFLAG(S) = SUNLS_SUCCESS;
-  return (SUNLS_SUCCESS);
+  LASTFLAG(S) = SUN_SUCCESS;
+  return (SUN_SUCCESS);
 }
 
 sunindextype SUNLinSolLastFlag_Dense(SUNLinearSolver S)

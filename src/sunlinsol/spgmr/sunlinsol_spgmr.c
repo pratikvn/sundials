@@ -330,7 +330,7 @@ int SUNLinSolSetup_SPGMR(SUNLinearSolver S, SUNMatrix A)
 
   SUNFunctionBegin(S->sunctx);
 
-  int status = SUNLS_SUCCESS;
+  int status = SUN_SUCCESS;
 
   /* Set shortcuts to SPGMR memory structures */
   SUNPSetupFn Psetup = SPGMR_CONTENT(S)->Psetup;
@@ -349,8 +349,8 @@ int SUNLinSolSetup_SPGMR(SUNLinearSolver S, SUNMatrix A)
   }
 
   /* return with success */
-  LASTFLAG(S) = SUNLS_SUCCESS;
-  return (SUNLS_SUCCESS);
+  LASTFLAG(S) = SUN_SUCCESS;
+  return (SUN_SUCCESS);
 }
 
 int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
@@ -499,7 +499,7 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
   if (r_norm <= delta)
   {
     *zeroguess  = SUNFALSE;
-    LASTFLAG(S) = SUNLS_SUCCESS;
+    LASTFLAG(S) = SUN_SUCCESS;
     return (LASTFLAG(S));
   }
 
@@ -710,7 +710,7 @@ int SUNLinSolSolve_SPGMR(SUNLinearSolver S, SUNMatrix A, N_Vector x, N_Vector b,
       }
 
       *zeroguess  = SUNFALSE;
-      LASTFLAG(S) = SUNLS_SUCCESS;
+      LASTFLAG(S) = SUN_SUCCESS;
       return (LASTFLAG(S));
     }
 
